@@ -1,10 +1,17 @@
 use std::collections::HashSet;
+use std::sync::{Mutex, MutexGuard};
+use rusqlite::Connection;
 
-use ::error::{Result, into_err};
-use super::types::{Blob, Categories, Category, Id, Note, Record, RecordType};
-use db::{ConnectionProvider, DBUtils, RecordProp};
+use error::{Result, into_err};
+use storage::types::*;
 
-fn cats_into_params<'a>(cats: &'a Categories) -> Vec<(RecordProp, &'a str)> {
+use storage::db::{RecordProp, DB};
+
+fn in_mem_conn() -> Result<Connection> {
+    Connection::open_in_memory().map_err(into_err)
+}
+
+fn cats_into_params(cats: &Categories) -> Vec<(RecordProp, &str)> {
     let mut params = vec![];
     let categories: Vec<_> = cats.iter().map(|c| &c.0 as &str).collect();
     for cat in categories {
@@ -15,146 +22,232 @@ fn cats_into_params<'a>(cats: &'a Categories) -> Vec<(RecordProp, &'a str)> {
 }
 
 pub struct Storage {
-    provider: Box<ConnectionProvider>,
+    conn: Mutex<Connection>,
 }
 
-// TODO destructor to close connections
 impl Storage {
-    pub fn new(provider: Box<ConnectionProvider>) -> Storage {
-        Storage { provider: provider }
+    pub fn new(conn: Connection) -> Storage {
+        Storage { conn: Mutex::new(conn) }
+    }
+
+    pub fn in_mem() -> Storage {
+        Storage::new(in_mem_conn().expect("failed to open in-mem connection"))
+    }
+
+    fn conn_mutex(&self) -> MutexGuard<Connection> {
+        self.conn.lock().unwrap()
+    }
+
+    pub fn init(&self) -> Result<()> {
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
+
+        {
+            let db = DB::new(&tx);
+            db.init_schema()?;
+        }
+
+        tx.commit()?;
+
+        Ok(())
     }
 
     pub fn list_records(&self) -> Result<Vec<Record>> {
-        let conn = self.provider.conn();
-
-        let records = try!(conn.get_records());
-        let mut categories = try!(conn.get_records_categories());
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
 
         let mut res = Vec::new();
 
-        // create list of records
-        for (id, name, create_ts, update_ts) in records {
-            // add record categories
-            let cats = categories.remove(&id).unwrap_or(Categories::new());
+        {
+            let db = DB::new(&tx);
 
-            res.push(Record::new(id, name, create_ts, update_ts, cats));
+            let records = db.get_records()?;
+            let mut categories = db.get_records_categories()?;
+
+            // create list of records
+            for (id, name, create_ts, update_ts) in records {
+                // add record categories
+                let cats = categories.remove(&id).unwrap_or_default();
+
+                res.push(Record::new(id, name, create_ts, update_ts, cats));
+            }
         }
+
+        tx.commit()?;
 
         Ok(res)
     }
 
     pub fn add_note(&self, name: &str, data: &str, categories: &Categories) -> Result<Id> {
-        let mut conn = self.provider.conn();
-
-        let tx = try!(conn.transaction());
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
 
         // add new record
-        let id = try!(tx.add_record(name, &RecordType::Note.to_string()));
+        let id = {
+            let db = DB::new(&tx);
+            let id = db.add_record(name, &RecordType::Note.to_string())?;
 
-        // add record props
-        let mut params = vec![(RecordProp::Data, data)];
-        for cat in categories {
-            params.push((RecordProp::Category, &cat.0));
-        }
+            // add record props
+            let mut params = vec![(RecordProp::Data, data)];
+            for cat in categories {
+                params.push((RecordProp::Category, &cat.0));
+            }
 
-        try!(tx.add_record_props(id, &params));
+            db.add_record_props(id, &params)?;
 
-        try!(tx.commit());
+            id
+        };
+
+        tx.commit()?;
 
         Ok(id)
     }
 
     pub fn get_note(&self, id: Id) -> Result<Option<Note>> {
-        let mut data = "".to_string();
-        let mut categories = HashSet::new();
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
 
-        let conn = self.provider.conn();
+        let note = {
+            let db = DB::new(&tx);
 
-        let result = conn.get_record(id, &RecordType::Note.to_string());
+            let mut data = "".to_string();
+            let mut categories = HashSet::new();
 
-        let (name, create_ts, update_ts) = match try!(result) {
-            Some(data) => data,
-            None => return Ok(None),
-        };
+            let result = db.get_record(id, &RecordType::Note.to_string());
 
-        let props = try!(conn.get_record_props(id, &[RecordProp::Data, RecordProp::Category]));
-        for (prop, val) in props {
-            match prop {
-                RecordProp::Data => data = val,
-                RecordProp::Category => {
-                    categories.insert(val);
+            let (name, create_ts, update_ts) = match result? {
+                Some(data) => data,
+                None => return Ok(None),
+            };
+
+            let props = db.get_record_props(id, &[RecordProp::Data, RecordProp::Category])?;
+            for (prop, val) in props {
+                match prop {
+                    RecordProp::Data => data = val,
+                    RecordProp::Category => {
+                        categories.insert(val);
+                    }
                 }
             }
-        }
-        let categories = categories.into_iter().map(|s| Category(s)).collect();
+            let categories = categories.into_iter().map(Category).collect();
 
-        let rec = Record::new(id, name, create_ts, update_ts, categories);
-        let note = Note::new(rec, data);
+            let rec = Record::new(id, name, create_ts, update_ts, categories);
+
+            Note::new(rec, data)
+        };
+
+        tx.commit()?;
 
         Ok(Some(note))
     }
 
     pub fn update_note(&self, id: Id, name: &str, data: &str, categories: &Categories) -> Result<bool> {
-        let mut conn = self.provider.conn();
-        let tx = try!(conn.transaction());
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
 
-        // update name
-        let updated = tx.update_record(id, name)?;
+        let updated = {
+            let db = DB::new(&tx);
 
-        // update props if note with specified id exists
-        if updated {
-            // delete old props
-            try!(tx.remove_record_props(id));
+            // update name
+            let updated = db.update_record(id, name)?;
 
-            // add new record props
-            let mut params = cats_into_params(categories);
-            params.push((RecordProp::Data, data));
+            // update props if note with specified id exists
+            if updated {
+                // delete old props
+                db.remove_record_props(id)?;
 
-            try!(tx.add_record_props(id, &params));
-        }
+                // add new record props
+                let mut params = cats_into_params(categories);
+                params.push((RecordProp::Data, data));
 
-        try!(tx.commit());
+                db.add_record_props(id, &params)?;
+            }
+
+            updated
+        };
+
+        tx.commit()?;
 
         Ok(updated)
     }
 
     pub fn remove_note(&self, id: Id) -> Result<bool> {
-        let mut conn = self.provider.conn();
+        let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let removed = tx.remove_record(id)?;
+        let removed = {
+            let db = DB::new(&tx);
 
-        // remove props if not with specified id exists
-        if removed {
-            try!(tx.remove_record_props(id));
-        }
+            let removed = db.remove_record(id)?;
 
-        try!(tx.commit());
+            // remove props if note with specified id exists
+            if removed {
+                db.remove_record_props(id)?;
+            }
+
+            removed
+        };
+
+        tx.commit()?;
 
         Ok(removed)
     }
 
     pub fn add_file(&self, name: &str, data: &Blob) -> Result<Id> {
-        self.provider.conn().add_file(name, data).map_err(into_err)
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
+
+        let result = {
+            let db = DB::new(&tx);
+
+            db.add_file(name, data).map_err(into_err)
+        };
+
+        tx.commit()?;
+
+        result
     }
 
     pub fn get_file(&self, id: Id) -> Result<Option<Blob>> {
-        self.provider.conn().get_file(id).map_err(into_err)
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
+
+        let result = {
+            let db = DB::new(&tx);
+
+            db.get_file(id).map_err(into_err)
+        };
+
+        tx.commit()?;
+
+        result
     }
 
     pub fn remove_file(&self, id: Id) -> Result<bool> {
-        self.provider.conn().remove_file(id)
+        let mut conn = self.conn_mutex();
+        let tx = conn.transaction()?;
+
+        let result = {
+            let db = DB::new(&tx);
+
+            db.remove_file(id)
+        };
+
+        tx.commit()?;
+
+        result
     }
 }
 
 #[cfg(test)]
 mod viter {
-    use db;
     use storage::storage::*;
     use storage::types::{into_categories, Categories};
 
     fn new_storage() -> Storage {
-        Storage::new(db::in_mem_provider())
+        let storage = Storage::in_mem();
+        storage.init().expect("failed to init DB");
+        storage
     }
 
     fn empty_categories() -> Categories {

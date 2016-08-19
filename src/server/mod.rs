@@ -263,104 +263,116 @@ fn get_id (req: &Request) -> Result<Id> {
 
 pub fn start_server(addr: &str) {
     use storage::storage::Storage;
-    use db;
     use std::sync::Arc;
 
-    let storage_ = Arc::new(Storage::new(db::in_mem_provider()));
+    let storage = Storage::in_mem();
+    storage.init().expect("failed to init DB");
+
+    let storage = Arc::new(storage);
 
     let mut router = Router::new();
 
     // GET /records
-    let storage = storage_.clone();
-    router.get("/records", move |_req: &mut Request| {
+    {
+        let storage = storage.clone();
+        router.get("/records", move |_req: &mut Request| {
 
-        let records = itry!(storage.list_records(), status::InternalServerError);
+            let records = itry!(storage.list_records(), status::InternalServerError);
 
-        let dtos = records.into_iter().map(rec_to_dto).collect::<Vec<RecordDTO>>();
+            let dtos = records.into_iter().map(rec_to_dto).collect::<Vec<RecordDTO>>();
 
-        create_response(&dtos)
-    });
+            create_response(&dtos)
+        });
+    }
 
     // POST /notes
-    let storage = storage_.clone();
-    router.post("/notes", move |req: &mut Request| {
-        // parse request body
-        let body = itry!(
-            get_request_body(req), status::BadRequest
-        );
-        let dto: CreateNoteDTO = itry!(
-            serde_json::from_str(&body), status::BadRequest
-        );
+    {
+        let storage = storage.clone();
+        router.post("/notes", move |req: &mut Request| {
+            // parse request body
+            let body = itry!(
+                get_request_body(req), status::BadRequest
+            );
+            let dto: CreateNoteDTO = itry!(
+                serde_json::from_str(&body), status::BadRequest
+            );
 
-        let id = itry!(
-            storage.add_note(&dto.name, &dto.data, &into_categories(dto.categories)),
-            status::InternalServerError
-        );
+            let id = itry!(
+                storage.add_note(&dto.name, &dto.data, &into_categories(dto.categories)),
+                status::InternalServerError
+            );
 
-        let note_opt = itry!(
-            storage.get_note(id),
-            status::InternalServerError
-        );
+            let note_opt = itry!(
+                storage.get_note(id),
+                status::InternalServerError
+            );
 
-        let note = iexpect!(note_opt, status::InternalServerError);
+            let note = iexpect!(note_opt, status::InternalServerError);
 
-        create_response(&note_to_dto(note))
-    });
+            create_response(&note_to_dto(note))
+        });
+    }
 
     // PUT /notes/:id
-    let storage = storage_.clone();
-    router.put("/notes/:id", move |req: &mut Request| {
-        let id = itry!(get_id(req), status::BadRequest);
+    {
+        let storage = storage.clone();
+        router.put("/notes/:id", move |req: &mut Request| {
+            let id = itry!(get_id(req), status::BadRequest);
 
-        // parse request body
-        let body = itry!(
-            get_request_body(req), status::BadRequest
-        );
-        let dto: UpdateNoteDTO = itry!(
-            serde_json::from_str(&body), status::BadRequest
-        );
+            // parse request body
+            let body = itry!(
+                get_request_body(req), status::BadRequest
+            );
+            let dto: UpdateNoteDTO = itry!(
+                serde_json::from_str(&body), status::BadRequest
+            );
 
-        // update note
-        let updated = itry!(
-            storage.update_note(id, &dto.name, &dto.data, &into_categories(dto.categories)),
-            status::InternalServerError
-        );
+            // update note
+            let updated = itry!(
+                storage.update_note(id, &dto.name, &dto.data, &into_categories(dto.categories)),
+                status::InternalServerError
+            );
 
-        if !updated {
-            return Ok(Response::with(status::NotFound));
-        }
+            if !updated {
+                return Ok(Response::with(status::NotFound));
+            }
 
-        // return updated note
-        let note_opt = itry!(storage.get_note(id), status::InternalServerError);
-        let note = iexpect!(note_opt, status::InternalServerError);
+            // return updated note
+            let note_opt = itry!(storage.get_note(id), status::InternalServerError);
+            let note = iexpect!(note_opt, status::InternalServerError);
 
-        create_response(&note_to_dto(note))
-    });
+            create_response(&note_to_dto(note))
+        });
+    }
 
     // GET /notes/:id
-    let storage = storage_.clone();
-    router.get("/notes/:id", move |req: &mut Request| {
-        let id = itry!(get_id(req), status::BadRequest);
+    {
+        let storage = storage.clone();
+        router.get("/notes/:id", move |req: &mut Request| {
+            let id = itry!(get_id(req), status::BadRequest);
 
-        let note_opt = itry!(storage.get_note(id));
-        let note = iexpect!(note_opt, status::NotFound);
+            let note_opt = itry!(storage.get_note(id));
+            let note = iexpect!(note_opt, status::NotFound);
 
-        create_response(&note_to_dto(note))
-    });
+            create_response(&note_to_dto(note))
+        });
+    }
 
     // DELETE /notes/:id
-    let storage = storage_.clone();
-    router.delete("/notes/:id", move |req: &mut Request| {
-        let id = itry!(get_id(req), status::BadRequest);
+    {
+        let storage = storage.clone();
+        router.delete("/notes/:id", move |req: &mut Request| {
+            let id = itry!(get_id(req), status::BadRequest);
 
-        let status = if itry!(storage.remove_note(id)) {
-            status::Ok
-        } else {
-            status::NotFound
-        };
+            let status = if itry!(storage.remove_note(id)) {
+                status::Ok
+            } else {
+                status::NotFound
+            };
 
-        Ok(Response::with(status))
-    });
+            Ok(Response::with(status))
+        });
+    }
 
     println!("running server on {}", addr);
 

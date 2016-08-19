@@ -12,7 +12,6 @@ extern crate serde_json;
 extern crate router;
 
 pub mod storage;
-pub mod db;
 pub mod utils;
 pub mod server;
 pub mod error;

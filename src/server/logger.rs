@@ -11,7 +11,7 @@ fn shorten_url(url: &::iron::Url) -> String {
 }
 
 fn stringify_status(status: Option<::iron::status::Status>) -> String {
-    status.map(|s| s.to_string()).unwrap_or("NO STATUS".into())
+    status.map_or("NO STATUS".into(), |s| s.to_string())
 }
 
 impl Handler for LoggerHandler {
