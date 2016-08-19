@@ -1,0 +1,13 @@
+[package]
+name = "viter"
+version = "0.1.0"
+authors = ["mbme"]
+
+[dependencies]
+time = "0.1"
+rusqlite = "0.7"
+iron = "0.4"
+router = "0.2"
+serde = "0.8"
+serde_json = "0.8"
+serde_macros = "0.8"
