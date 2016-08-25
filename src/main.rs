@@ -1,7 +1,7 @@
-#![feature(box_syntax, box_patterns)]
-#![feature(question_mark)]
-#![feature(custom_derive, plugin)]
+#![feature(box_syntax, box_patterns, question_mark, custom_derive, plugin)]
+
 #![plugin(serde_macros)]
+#![plugin(clippy)]
 
 extern crate time;
 extern crate rusqlite;

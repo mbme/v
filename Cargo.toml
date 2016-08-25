@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["mbme"]
 
 [dependencies]
+clippy = "0.0.85"
 time = "0.1"
 rusqlite = "0.7"
 iron = "0.4"
