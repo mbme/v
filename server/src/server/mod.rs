@@ -11,105 +11,6 @@ use storage::types::*;
 use ::error::{Result, Error, into_err};
 
 use self::logger::LoggerHandler;
-// use std::collections::{HashSet, BTreeMap};
-
-// fn parse_request(req: Request) -> Result<Action> {
-//     use hyper::method::Method;
-
-//     if req.matches(Method::Post, "/api", false) {
-//         request::parse_action(req)
-//     } else if req.matches(Method::Post, "/files", false) {
-//         request::add_file_action(req)
-//     } else if req.matches(Method::Get, "/files/", true) {
-//         let url = req.get_request_url();
-//         let file_id = url.trim_left_matches("/files/");
-//         request::get_file_action(file_id.into())
-//     } else if req.matches(Method::Delete, "/files/", true) {
-//         let url = req.get_request_url();
-//         let file_id = url.trim_left_matches("/files/");
-//         request::remove_file_action(file_id.into())
-//     } else {
-//         Err(Error::ActionProcessingError(
-//             format!("unsupported request {} {}", req.method, req.uri)
-//         ))
-//     }
-// }
-
-// fn process_action(action: Action, s: &Storage, res: Response) {
-//     match action {
-//         Action::ListRecords => {
-//             match s.list_records()
-//                 .and_then(|records| to_json(&records)) {
-//                     Ok(bin) => res.write_all(bin),
-//                     Err(err) => res.write_all(bin),
-//             }
-//         },
-
-//         Action::CreateNote { name, data, categories } => {
-//             let id = try!(s.add_note(&name, &data, &categories));
-//             let note = try!(s.get_note(id));
-
-//             to_json(&note)
-//         },
-
-//         Action::GetNote(id) => {
-//             let note = try!(s.get_note(id));
-
-//             to_json(&note)
-//         }
-
-//         Action::UpdateNote { id, name, data, categories } => {
-//             let mut note = try!(s.get_note(id));
-
-//             note.record.name = name;
-//             note.record.categories = categories;
-//             note.data = data;
-
-// try!(s.update_note(&note));
-
-// let note = try!(s.get_note(id));
-
-//             to_json(&note)
-//         }
-
-//         Action::RemoveNote(id) => {
-//             try!(s.remove_note(id));
-
-//             Ok(vec![])
-//         }
-
-//         Action::AddFile { name, data } => {
-//             try!(s.add_file(&name, &data));
-
-//             Ok(vec![])
-//         }
-
-//         Action::GetFile(id) => {
-//             let data = try!(s.get_file(id));
-
-//             Ok(data)
-//         }
-
-//         Action::RemoveFile(id) => {
-//             try!(s.remove_file(id));
-
-//             Ok(vec![])
-//         }
-//     }
-// }
-
-
-// fn handle_request(req: Request, res: Response, s: &Storage) {
-//     let result = parse_request(req).and_then(
-//         |action| process_action(action, s)
-//     );
-// }
-
-// fn into_json_bytes<T: json::ToJson>(x: &T) -> Result<Vec<u8>> {
-//     json::encode(&x.to_json())
-//         .map(|s| s.into())
-//         .map_err(|err| Error::new(box err, "failed to serialize into json"))
-// }
 
 fn get_request_body(req: &mut Request) -> Result<String> {
     use std::io::Read;
@@ -128,82 +29,16 @@ fn parse_id (id_str: &str) -> Result<Id> {
     }
 }
 
-
-// fn json_as_obj(json: &mut Json) -> Result<&mut Object> {
-//     json.as_object_mut().ok_or(Error::from_str("can't cast to object"))
-// }
-
-// fn get_obj_prop<'a>(obj: &'a Object, prop: &str) -> Result<&'a Json> {
-//     obj.get(prop)
-//         .ok_or(Error::from_str(format!("can't find property '{}'", prop)))
-// }
-
-// fn json_as_string(json: &Json) -> Result<&str> {
-//     json.as_string()
-//         .ok_or(Error::from_str("can't cast to string"))
-// }
-
-
-// fn get_obj_string<'a>(obj: &'a Object, prop: &str) -> Result<&'a str> {
-//     get_obj_prop(obj, prop).and_then(json_as_string)
-// }
-
-// fn json_as_arr(json: &Json) -> Result<&Vec<Json>> {
-//     json.as_array()
-//         .ok_or(Error::from_str("can't cast to array"))
-// }
-
-
-// fn parse_categories(json: &Json) -> Result<types::Categories> {
-
-//     let arr = try!(json_as_arr(json));
-
-//     let mut str_arr = vec![];
-//     for json in arr {
-//         match json_as_string(json) {
-//             Ok(val) => str_arr.push(val),
-//             Err(e) => return Err(e),
-//         }
-//     }
-
-//     Ok(types::into_categories(str_arr))
-// }
-
-// fn parse_create_note(req: &mut Request) -> Result<(String, String, types::Categories)> {
-//     let body = try!(get_request_body(req).map_err(into_err));
-//     let mut json = try!(Json::from_str(&body).map_err(into_err));
-//     let obj = try!(json_as_obj(&mut json));
-
-//     let name = try!(get_obj_string(obj, "name"));
-//     let data = try!(get_obj_string(obj, "data"));
-
-//     let categories = try!(
-//         get_obj_prop(obj, "categories").and_then(|json| parse_categories(json))
-//     );
-
-//     Ok((name.into(), data.into(), categories))
-// }
-
-// fn into_response<T: json::ToJson>(data: &T) -> IronResult<Response> {
-//     let data = itry!(into_json_bytes(data), status::InternalServerError);
-
-//     let content_type = "application/json".parse::<Mime>().unwrap();
-
-//     Ok(Response::with((content_type, status::Ok, data)))
-// }
-
 #[derive(Debug, Deserialize)]
 struct CreateNoteDTO {
     name: String,
     data: String,
-    categories: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct UpdateNoteDTO {
     name: String,
     data: String,
-    categories: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -212,7 +47,6 @@ struct RecordDTO {
     name: String,
     create_ts: i64,
     update_ts: i64,
-    categories: RawCategories,
 }
 
 #[derive(Debug, Serialize)]
@@ -221,7 +55,6 @@ struct NoteDTO {
     name: String,
     create_ts: i64,
     update_ts: i64,
-    categories: RawCategories,
     data: String,
 }
 
@@ -231,7 +64,6 @@ fn rec_to_dto (rec: Record) -> RecordDTO {
         name: rec.name,
         create_ts: rec.create_ts.sec,
         update_ts: rec.update_ts.sec,
-        categories: cats_into_vec(rec.categories),
     }
 }
 
@@ -241,7 +73,6 @@ fn note_to_dto(note: Note) -> NoteDTO {
         name: note.record.name,
         create_ts: note.record.create_ts.sec,
         update_ts: note.record.update_ts.sec,
-        categories: cats_into_vec(note.record.categories),
         data: note.data,
     }
 }
@@ -298,7 +129,7 @@ pub fn start_server(addr: &str) {
             );
 
             let id = itry!(
-                storage.add_note(&dto.name, &dto.data, &into_categories(dto.categories)),
+                storage.add_note(&dto.name, &dto.data),
                 status::InternalServerError
             );
 
@@ -329,7 +160,7 @@ pub fn start_server(addr: &str) {
 
             // update note
             let updated = itry!(
-                storage.update_note(id, &dto.name, &dto.data, &into_categories(dto.categories)),
+                storage.update_note(id, &dto.name, &dto.data),
                 status::InternalServerError
             );
 

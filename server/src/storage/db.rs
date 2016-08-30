@@ -1,8 +1,5 @@
-use storage::types::{Blob, Categories, Category, Id};
+use storage::types::{Blob, Id};
 use error::{Result, Error, into_err};
-
-use std::collections::HashMap;
-use std::fmt;
 
 use time::{self, Timespec};
 use rusqlite::{Statement, Transaction, Error as RusqliteError};
@@ -18,14 +15,12 @@ fn now() -> Timespec {
 #[derive(Debug)]
 pub enum RecordProp {
     Data,
-    Category,
 }
 
-impl fmt::Display for RecordProp {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl ::std::fmt::Display for RecordProp {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         let result = match *self {
             RecordProp::Data => "data",
-            RecordProp::Category => "category",
         };
 
         write!(fmt, "{}", result)
@@ -38,7 +33,6 @@ impl ::std::str::FromStr for RecordProp {
     fn from_str(s: &str) -> Result<RecordProp> {
         match s {
             "data" => Ok(RecordProp::Data),
-            "category" => Ok(RecordProp::Category),
             _ => Err(Error::from_str(format!("unknown record property {}", s))),
         }
     }
@@ -145,33 +139,6 @@ impl<'a> DB<'a> {
         }
 
         Ok(records)
-    }
-
-    pub fn get_records_categories(&self) -> Result<HashMap<Id, Categories>> {
-        let mut stmt = self.prepare_stmt("SELECT record_id, data FROM props WHERE prop = $1")?;
-        let mut rows = stmt.query(&[&RecordProp::Category.to_string()])?;
-
-        let mut res: HashMap<Id, Categories> = HashMap::new();
-
-        while let Some(result_row) = rows.next() {
-            let row = result_row?;
-
-            let id: i64 = row.get(0);
-            let id = id as Id;
-
-            let category = Category(row.get(1));
-
-            if res.contains_key(&id) {
-                let mut categories = res.get_mut(&id).unwrap();
-                categories.insert(category);
-            } else {
-                let mut categories = Categories::new();
-                categories.insert(category);
-                res.insert(id, categories);
-            }
-        }
-
-        Ok(res)
     }
 
     pub fn get_record_props(&self, record_id: Id, props: &[RecordProp]) -> Result<Vec<(RecordProp, String)>> {

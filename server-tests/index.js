@@ -77,7 +77,7 @@ function arr2obj(arr) {
 
 function validateNote(body, expected) {
   expect(body).to.have.all.keys(
-    'id', 'name', 'data', 'categories', 'create_ts', 'update_ts'
+    'id', 'name', 'data', 'create_ts', 'update_ts'
   );
 
   expect(body.id).to.be.a('number');
@@ -85,8 +85,6 @@ function validateNote(body, expected) {
   expect(body.data).to.equal(expected.data);
   expect(body.create_ts).to.be.a('number');
   expect(body.update_ts).to.be.a('number');
-
-  expect(arr2obj(body.categories)).to.eql(arr2obj(expected.categories));
 }
 
 describe('GET /records', () => {
@@ -104,7 +102,6 @@ describe('POST /notes', () => {
     const note = {
       name: uniq('name'),
       data: '',
-      categories: [],
     };
 
     return postNote(note).then(({ body }) => {
@@ -124,7 +121,6 @@ describe('GET /notes/:id', () => {
     const note = {
       name: uniq('name'),
       data: 'some data',
-      categories: ['test'],
     };
     let noteId;
 
@@ -154,13 +150,11 @@ describe('PUT /notes/:id', () => {
     const note = {
       name: uniq('name'),
       data: '123',
-      categories: ['123', '321'],
     };
 
     const note1 = {
       name: uniq('name'),
       data: 'other data',
-      categories: ['test'],
     };
 
     let id;
@@ -186,7 +180,6 @@ describe('PUT /notes/:id', () => {
     const note = {
       name: uniq('name'),
       data: '123',
-      categories: ['123', '321'],
     };
 
     return expectFailure(putNote(randomInt(), note), 404);
@@ -198,7 +191,6 @@ describe('DELETE /notes/:id', () => {
     const note = {
       name: uniq('name'),
       data: '123',
-      categories: ['123', '321'],
     };
 
     let id;
