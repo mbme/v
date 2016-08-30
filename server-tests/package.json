@@ -1,0 +1,22 @@
+{
+    "name": "test-viter",
+    "version": "0.0.1",
+    "description": "functional tests for viter",
+    "main": "index.js",
+    "dependencies": {
+        "superagent": "1.8.3",
+        "chai": "3.5.0",
+        "mocha": "2.4.5"
+    },
+    "devDependencies": {
+        "eslint": "2.9.0",
+        "eslint-config-airbnb-base": "3.0.1",
+        "eslint-plugin-import": "1.7.0"
+    },
+    "scripts": {
+        "test": "mocha index.js",
+        "lint": "eslint ."
+    },
+    "author": "mbme",
+    "license": "GPL-3.0"
+}
