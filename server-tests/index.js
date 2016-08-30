@@ -1,3 +1,5 @@
+/* eslint arrow-body-style: 0 */
+
 const request = require('superagent');
 const expect = require('chai').expect;
 
