@@ -130,17 +130,19 @@ impl<'a> DB<'a> {
             "SELECT id, name, create_ts, update_ts FROM records"
         )?;
 
-        let records = stmt.query_map(&[], |row| {
+        let results = stmt.query_map(&[], |row| {
             let id: i64 = row.get(0);
-            let id = id as Id;
             let name: String = row.get(1);
             let create_ts: Timespec = row.get(2);
             let update_ts: Timespec = row.get(3);
 
-            (id, name, create_ts, update_ts)
+            (id as Id, name, create_ts, update_ts)
         })?;
 
-        let records = records.collect()?;
+        let mut records = Vec::new();
+        for result in results {
+            records.push(result?);
+        }
 
         Ok(records)
     }
