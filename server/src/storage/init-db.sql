@@ -14,8 +14,12 @@ CREATE TABLE IF NOT EXISTS props (
 );
 
 CREATE TABLE IF NOT EXISTS files (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    record_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     data BLOB NOT NULL,
-    create_ts INTEGER NOT NULL
+    size INTEGER NOT NULL,
+    create_ts INTEGER NOT NULL,
+
+    CONSTRAINT unique_name UNIQUE (record_id, name),
+    FOREIGN KEY(record_id) REFERENCES records(id)
 );

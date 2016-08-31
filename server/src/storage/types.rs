@@ -1,9 +1,18 @@
 use time::Timespec;
+use error::{Result, Error};
 
 pub type Id = u64;
 
-pub type Blob = Vec<u8>;
+#[derive(Eq, PartialEq, Debug)]
+pub struct Blob(pub Vec<u8>);
 
+impl Blob {
+    pub fn size(&self) -> usize {
+        self.0.len()
+    }
+}
+
+#[derive(Eq, PartialEq, Debug)]
 pub enum RecordType {
     Note,
 }
@@ -12,6 +21,17 @@ impl RecordType {
     pub fn to_string(&self) -> String {
         match *self {
             RecordType::Note => "note".to_string(),
+        }
+    }
+}
+
+impl ::std::str::FromStr for RecordType {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<RecordType> {
+        match s {
+            "note" => Ok(RecordType::Note),
+            _ => Err(Error::from_str(format!("unknown record type {}", s))),
         }
     }
 }
