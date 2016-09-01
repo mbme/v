@@ -1,4 +1,4 @@
-use storage::types::{Blob, Id, RecordType};
+use storage::types::{Blob, Id, RecordType, Record, FileInfo};
 use error::{Result, Error, into_err};
 use std::str::FromStr;
 
@@ -34,9 +34,6 @@ impl ::std::str::FromStr for RecordProp {
         }
     }
 }
-
-pub type RecordRow = (RecordType, String, Timespec, Timespec);
-pub type FullRecordRow = (Id, String, Timespec, Timespec);
 
 pub struct DB<'a> {
     tx: &'a Transaction<'a>,
@@ -97,7 +94,7 @@ impl<'a> DB<'a> {
         Ok(())
     }
 
-    pub fn get_record(&self, id: Id) -> Result<Option<RecordRow>> {
+    pub fn get_record(&self, id: Id) -> Result<Option<Record>> {
         let result = self.tx.query_row(
             "SELECT type, name, create_ts, update_ts FROM records WHERE id = $1",
             &[&(id as i64)],
@@ -107,7 +104,14 @@ impl<'a> DB<'a> {
                 let name: String = row.get(1);
                 let create_ts: Timespec = row.get(2);
                 let update_ts: Timespec = row.get(3);
-                (RecordType::from_str(&_type).unwrap(), name, create_ts, update_ts)
+
+                Record {
+                    id: id,
+                    name: name,
+                    record_type: RecordType::from_str(&_type).unwrap(),
+                    create_ts: create_ts,
+                    update_ts: update_ts,
+                }
             }
         );
 
@@ -122,18 +126,25 @@ impl<'a> DB<'a> {
         self.get_record(id).map(|result| result.is_some())
     }
 
-    pub fn get_records(&self) -> Result<Vec<FullRecordRow>> {
+    pub fn list_records(&self) -> Result<Vec<Record>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT id, name, create_ts, update_ts FROM records"
+            "SELECT id, name, type, create_ts, update_ts FROM records"
         )?;
 
         let results = stmt.query_map(&[], |row| {
             let id: i64 = row.get(0);
             let name: String = row.get(1);
-            let create_ts: Timespec = row.get(2);
-            let update_ts: Timespec = row.get(3);
+            let _type: String = row.get(2);
+            let create_ts: Timespec = row.get(3);
+            let update_ts: Timespec = row.get(4);
 
-            (id as Id, name, create_ts, update_ts)
+            Record {
+                id: id as Id,
+                name: name,
+                record_type: RecordType::from_str(&_type).unwrap(),
+                create_ts: create_ts,
+                update_ts: update_ts,
+            }
         })?;
 
         let mut records = Vec::new();
@@ -206,6 +217,31 @@ impl<'a> DB<'a> {
             Err(RusqliteError::QueryReturnedNoRows) => Ok(None),
             Err(err) => Err(into_err(err)),
         }
+    }
+
+    pub fn get_record_files(&self, record_id: Id) -> Result<Vec<FileInfo>> {
+        let mut stmt = self.prepare_stmt(
+            "SELECT name, size, create_ts FROM files WHERE record_id = $1",
+        )?;
+
+        let results = stmt.query_map(&[&(record_id as i64)], |row| {
+            let name: String = row.get(0);
+            let size: i64 = row.get(1);
+            let create_ts: Timespec = row.get(2);
+
+            FileInfo {
+                name: name,
+                size: size as usize,
+                create_ts: create_ts,
+            }
+        })?;
+
+        let mut files = Vec::new();
+        for result in results {
+            files.push(result?);
+        }
+
+        Ok(files)
     }
 
     pub fn remove_record_files(&self, record_id: Id) -> Result<()> {

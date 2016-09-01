@@ -36,34 +36,32 @@ impl ::std::str::FromStr for RecordType {
     }
 }
 
+pub struct FileInfo {
+    pub name: String,
+    pub size: usize,
+    pub create_ts: Timespec,
+}
+
 pub struct Record {
     pub id: Id,
     pub name: String,
+    pub record_type: RecordType,
     pub create_ts: Timespec,
     pub update_ts: Timespec,
-}
-
-impl Record {
-    pub fn new(id: Id, name: String, create_ts: Timespec, update_ts: Timespec) -> Record {
-        Record {
-            id: id,
-            name: name,
-            create_ts: create_ts,
-            update_ts: update_ts,
-        }
-    }
 }
 
 pub struct Note {
     pub record: Record,
     pub data: String,
+    pub files: Vec<FileInfo>,
 }
 
 impl Note {
-    pub fn new(rec: Record, data: String) -> Note {
+    pub fn new(rec: Record, data: String, files: Vec<FileInfo>) -> Note {
         Note {
             record: rec,
             data: data,
+            files: files,
         }
     }
 }

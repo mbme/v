@@ -45,23 +45,16 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let mut res = Vec::new();
 
-        {
+        let result = {
             let db = DB::new(&tx);
 
-            let records = db.get_records()?;
-
-            // create list of records
-            for (id, name, create_ts, update_ts) in records {
-                // FIXME add files info to the record
-                res.push(Record::new(id, name, create_ts, update_ts));
-            }
-        }
+            db.list_records()
+        };
 
         tx.commit()?;
 
-        Ok(res)
+        result
     }
 
     pub fn add_note(&self, name: &str, data: &str) -> Result<Id> {
@@ -93,15 +86,15 @@ impl Storage {
 
             let mut data = "".to_string();
 
-            let result = db.get_record(id);
+            let result = db.get_record(id)?;
 
             // extract results
-            let (record_type, name, create_ts, update_ts) = match result? {
-                Some(row) => row,
+            let record = match result {
+                Some(record) => record,
                 None => return Ok(None),
             };
 
-            if record_type != RecordType::Note {
+            if record.record_type != RecordType::Note {
                 return Err(Error::from_str(format!("record {} is not a Note", id)));
             }
 
@@ -113,9 +106,9 @@ impl Storage {
                 }
             }
 
-            let rec = Record::new(id, name, create_ts, update_ts);
+            let files = db.get_record_files(id)?;
 
-            Note::new(rec, data)
+            Note::new(record, data, files)
         };
 
         tx.commit()?;
