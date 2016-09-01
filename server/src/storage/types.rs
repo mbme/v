@@ -12,7 +12,7 @@ impl Blob {
     }
 }
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug, Serialize)]
 pub enum RecordType {
     Note,
 }

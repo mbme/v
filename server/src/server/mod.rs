@@ -1,4 +1,5 @@
 mod logger;
+mod dto;
 
 use iron::prelude::*;
 use iron::status;
@@ -7,8 +8,10 @@ use iron::mime::Mime;
 use serde::Serialize;
 use serde_json;
 
-use storage::types::*;
-use ::error::{Result, Error, into_err};
+use storage::types::Id;
+use server::dto::*;
+use utils::convert_all_into;
+use error::{Result, Error, into_err};
 
 use self::logger::LoggerHandler;
 
@@ -26,54 +29,6 @@ fn parse_id (id_str: &str) -> Result<Id> {
     match id_str.parse() {
         Ok(id) => Ok(id),
         Err(_) => Err(Error::from_str("can't parse id")),
-    }
-}
-
-#[derive(Debug, Deserialize)]
-struct CreateNoteDTO {
-    name: String,
-    data: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct UpdateNoteDTO {
-    name: String,
-    data: String,
-}
-
-#[derive(Debug, Serialize)]
-struct RecordDTO {
-    id: Id,
-    name: String,
-    create_ts: i64,
-    update_ts: i64,
-}
-
-#[derive(Debug, Serialize)]
-struct NoteDTO {
-    id: Id,
-    name: String,
-    create_ts: i64,
-    update_ts: i64,
-    data: String,
-}
-
-fn rec_to_dto (rec: Record) -> RecordDTO {
-    RecordDTO {
-        id: rec.id,
-        name: rec.name,
-        create_ts: rec.create_ts.sec,
-        update_ts: rec.update_ts.sec,
-    }
-}
-
-fn note_to_dto(note: Note) -> NoteDTO {
-    NoteDTO {
-        id: note.record.id,
-        name: note.record.name,
-        create_ts: note.record.create_ts.sec,
-        update_ts: note.record.update_ts.sec,
-        data: note.data,
     }
 }
 
@@ -110,7 +65,7 @@ pub fn start_server(addr: &str) {
 
             let records = itry!(storage.list_records(), status::InternalServerError);
 
-            let dtos = records.into_iter().map(rec_to_dto).collect::<Vec<RecordDTO>>();
+            let dtos: Vec<RecordDTO> = convert_all_into(records);
 
             create_response(&dtos)
         });
@@ -140,7 +95,9 @@ pub fn start_server(addr: &str) {
 
             let note = iexpect!(note_opt, status::InternalServerError);
 
-            create_response(&note_to_dto(note))
+            let dto: NoteDTO = note.into();
+
+            create_response(&dto)
         });
     }
 
@@ -172,7 +129,9 @@ pub fn start_server(addr: &str) {
             let note_opt = itry!(storage.get_note(id), status::InternalServerError);
             let note = iexpect!(note_opt, status::InternalServerError);
 
-            create_response(&note_to_dto(note))
+            let dto: NoteDTO = note.into();
+
+            create_response(&dto)
         });
     }
 
@@ -185,7 +144,9 @@ pub fn start_server(addr: &str) {
             let note_opt = itry!(storage.get_note(id));
             let note = iexpect!(note_opt, status::NotFound);
 
-            create_response(&note_to_dto(note))
+            let dto: NoteDTO = note.into();
+
+            create_response(&dto)
         });
     }
 
