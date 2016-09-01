@@ -84,8 +84,6 @@ impl Storage {
         let note = {
             let db = DB::new(&tx);
 
-            let mut data = "".to_string();
-
             let result = db.get_record(id)?;
 
             // extract results
@@ -98,13 +96,7 @@ impl Storage {
                 return Err(Error::from_str(format!("record {} is not a Note", id)));
             }
 
-            // FIXME create db.get_record_prop(id, prop);
-            let props = db.get_record_props(id, &[RecordProp::Data])?;
-            for (prop, val) in props {
-                match prop {
-                    RecordProp::Data => data = val,
-                }
-            }
+            let data = db.get_record_prop(id, RecordProp::Data)?.expect("can't find note data");
 
             let files = db.get_record_files(id)?;
 

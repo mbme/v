@@ -1,12 +1,25 @@
 use storage::types::{Blob, Id, RecordType, Record, FileInfo};
 use error::{Result, Error, into_err};
-use std::str::FromStr;
 
 use time::{self, Timespec};
-use rusqlite::{Statement, Transaction, Error as RusqliteError};
+use rusqlite::{Statement, Transaction, MappedRows, Row};
 
 fn now() -> Timespec {
     time::now().to_timespec()
+}
+
+fn get_single_result<T, F> (rows: MappedRows<F>) -> Result<Option<T>>
+    where F: FnMut(&Row) -> T {
+    let mut result = None;
+    for row in rows {
+        if result.is_none() {
+            result = Some(row?);
+        } else {
+            return Err(Error::from_str("too many results"));
+        }
+    }
+
+    Ok(result)
 }
 
 #[derive(Debug)]
@@ -95,12 +108,14 @@ impl<'a> DB<'a> {
     }
 
     pub fn get_record(&self, id: Id) -> Result<Option<Record>> {
-        let result = self.tx.query_row(
-            "SELECT type, name, create_ts, update_ts FROM records WHERE id = $1",
+        let mut stmt = self.prepare_stmt(
+            "SELECT type, name, create_ts, update_ts FROM records WHERE id = $1"
+        )?;
+
+        let rows = stmt.query_map(
             &[&(id as i64)],
             |row| {
-                // FIXME replace all .get() with .get_checked() and propagate errors
-                let _type: String = row.get(0);
+                let record_type: String = row.get(0);
                 let name: String = row.get(1);
                 let create_ts: Timespec = row.get(2);
                 let update_ts: Timespec = row.get(3);
@@ -108,18 +123,14 @@ impl<'a> DB<'a> {
                 Record {
                     id: id,
                     name: name,
-                    record_type: RecordType::from_str(&_type).unwrap(),
+                    record_type: record_type.parse().expect("Unknown record type"),
                     create_ts: create_ts,
                     update_ts: update_ts,
                 }
             }
-        );
+        )?;
 
-        match result {
-            Ok(rec_row) => Ok(Some(rec_row)),
-            Err(RusqliteError::QueryReturnedNoRows) => Ok(None),
-            Err(err) => Err(into_err(err)),
-        }
+        get_single_result(rows)
     }
 
     pub fn record_exists(&self, id: Id) -> Result<bool> {
@@ -134,14 +145,14 @@ impl<'a> DB<'a> {
         let results = stmt.query_map(&[], |row| {
             let id: i64 = row.get(0);
             let name: String = row.get(1);
-            let _type: String = row.get(2);
+            let record_type: String = row.get(2);
             let create_ts: Timespec = row.get(3);
             let update_ts: Timespec = row.get(4);
 
             Record {
                 id: id as Id,
                 name: name,
-                record_type: RecordType::from_str(&_type).unwrap(),
+                record_type: record_type.parse().expect("Unknown record type"),
                 create_ts: create_ts,
                 update_ts: update_ts,
             }
@@ -155,29 +166,17 @@ impl<'a> DB<'a> {
         Ok(records)
     }
 
-    pub fn get_record_props(&self, id: Id, props: &[RecordProp]) -> Result<Vec<(RecordProp, String)>> {
-        let props = props.iter()
-            .map(|s| format!("'{}'", s))
-            .collect::<Vec<_>>()
-            .join(", ");
-
+    pub fn get_record_prop(&self, id: Id, prop: RecordProp) -> Result<Option<String>> {
         let mut stmt = self.prepare_stmt(
-            &format!("SELECT prop, data FROM props WHERE record_id = $1 AND prop IN ({})", props)
+            "SELECT data FROM props WHERE record_id = $1 AND prop = $2"
         )?;
-        let mut rows = stmt.query(&[&(id as i64)])?;
 
-        let mut res = vec![];
-        while let Some(result_row) = rows.next() {
-            let row = result_row?;
+        let rows = stmt.query_map(
+            &[&(id as i64), &prop.to_string()],
+            |row| row.get::<i32, String>(0)
+        )?;
 
-            let prop: String = row.get(0);
-            let prop: RecordProp = prop.parse()?;
-
-            let data: String = row.get(1);
-            res.push((prop, data));
-        }
-
-        Ok(res)
+        get_single_result(rows)
     }
 
     pub fn remove_record(&self, id: Id) -> Result<bool> {
@@ -207,16 +206,16 @@ impl<'a> DB<'a> {
     }
 
     pub fn get_file(&self, record_id: Id, name: &str) -> Result<Option<Blob>> {
-        let result = self.tx.query_row(
-            "SELECT data FROM files WHERE record_id = $1 AND name = $2",
-            &[&(record_id as i64), &name], |row| row.get::<i32, Vec<u8>>(0)
-        );
+        let mut stmt = self.prepare_stmt(
+            "SELECT data FROM files WHERE record_id = $1 AND name = $2"
+        )?;
 
-        match result {
-            Ok(data) => Ok(Some(Blob(data))),
-            Err(RusqliteError::QueryReturnedNoRows) => Ok(None),
-            Err(err) => Err(into_err(err)),
-        }
+        let rows = stmt.query_map(
+            &[&(record_id as i64), &name],
+            |row| Blob(row.get::<i32, Vec<u8>>(0))
+        )?;
+
+        get_single_result(rows)
     }
 
     pub fn get_record_files(&self, record_id: Id) -> Result<Vec<FileInfo>> {
