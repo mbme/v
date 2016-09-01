@@ -93,7 +93,7 @@ fn get_id (req: &Request) -> Result<Id> {
 
 
 pub fn start_server(addr: &str) {
-    use storage::storage::Storage;
+    use storage::Storage;
     use std::sync::Arc;
 
     let storage = Storage::in_mem();
