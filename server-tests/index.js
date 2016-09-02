@@ -214,6 +214,12 @@ function getFile(noteId, name) {
   );
 }
 
+function deleteFile(noteId, name) {
+  return utils.intoPromise(
+    request.delete(url(`/notes/${noteId}/files/${name}`))
+  );
+}
+
 describe('POST /notes/:id/files', () => {
   it('should create new file', () => {
     const fileName = genAttachmentName();
@@ -264,4 +270,24 @@ describe('GET /notes/:id/files/:name', () => {
 });
 
 describe('DELETE /notes/:id/files/:name', () => {
+  it('should delete attached file', () => {
+    const fileName = genAttachmentName();
+    let id;
+
+    return postRandomNote()
+      .then(({ body }) => {
+        id = body.id;
+        return postStandardFile(id, fileName);
+      })
+      .then(() => deleteFile(id, fileName))
+      .then(() => expectFailure(getFile(id, fileName), 404));
+  });
+
+  it('should fail if trying to delete non-existing file', () => {
+    return expectFailure(
+      postRandomNote()
+        .then(({ body }) => deleteFile(body.id, genAttachmentName())),
+      404
+    );
+  });
 });

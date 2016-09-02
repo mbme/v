@@ -215,14 +215,36 @@ pub fn start_server(addr: &str) {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
-            // extract :name
+            // extract file :name
             let name = itry!(get_url_param(req, "name"), status::BadRequest);
 
+            // read and send file
             if let Some(blob) = itry!(storage.get_file(id, &name)) {
                 Ok(Response::with((guess_mime_type(name), status::Ok, blob.0)))
             } else {
                 Ok(Response::with(status::NotFound))
             }
+        });
+    }
+
+    // DELETE /notes/:id/files/:name
+    {
+        let storage = storage.clone();
+        router.delete("/notes/:id/files/:name", move |req: &mut Request| {
+            // extract :id
+            let id = itry!(get_id(req), status::BadRequest);
+
+            // extract file :name
+            let name = itry!(get_url_param(req, "name"), status::BadRequest);
+
+            // delete file
+            let status = if itry!(storage.remove_file(id, &name)) {
+                status::Ok
+            } else {
+                status::NotFound
+            };
+
+            Ok(Response::with(status))
         });
     }
 
