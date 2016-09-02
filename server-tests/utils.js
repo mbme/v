@@ -1,3 +1,4 @@
+const fs = require('fs');
 
 function randomInt() {
   return Math.floor(Math.random() * 999999999999999);
@@ -20,6 +21,10 @@ function intoPromise(req) {
   });
 }
 
+function readBinaryFile(name) {
+  return fs.readFileSync(name);
+}
+
 module.exports = {
-  uniq, intoPromise, randomInt,
+  uniq, intoPromise, randomInt, readBinaryFile,
 };

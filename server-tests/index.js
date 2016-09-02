@@ -1,4 +1,5 @@
 /* eslint arrow-body-style: 0 */
+/* eslint-disable no-unused-expressions */
 
 const utils = require('./utils');
 
@@ -207,6 +208,12 @@ function postStandardFile(noteId, name) {
   return postFile(noteId, attachmentPath, name);
 }
 
+function getFile(noteId, name) {
+  return utils.intoPromise(
+    request.get(url(`/notes/${noteId}/files/${name}`))
+  );
+}
+
 describe('POST /notes/:id/files', () => {
   it('should create new file', () => {
     const fileName = genAttachmentName();
@@ -226,6 +233,34 @@ describe('POST /notes/:id/files', () => {
 });
 
 describe('GET /notes/:id/files/:name', () => {
+  it('should return file content', () => {
+    const fileName = genAttachmentName();
+    let id;
+
+    return postRandomNote()
+      .then(({ body }) => {
+        id = body.id;
+        return postStandardFile(id, fileName);
+      })
+      .then(() => getFile(id, fileName))
+      .then((response) => {
+        const data = response.body;
+        const expectedData = utils.readBinaryFile(attachmentPath);
+        expect(expectedData.equals(data)).to.be.true;
+      });
+  });
+
+  it('should fail if trying to get file from non-existing note', () => {
+    return expectFailure(getFile(utils.randomInt(), genAttachmentName()), 404);
+  });
+
+  it('should fail if trying to get non-existing file', () => {
+    return expectFailure(
+      postRandomNote()
+        .then(({ body }) => getFile(body.id, genAttachmentName())),
+      404
+    );
+  });
 });
 
 describe('DELETE /notes/:id/files/:name', () => {

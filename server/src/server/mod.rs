@@ -6,6 +6,7 @@ use iron::prelude::*;
 use iron::status;
 use router::Router;
 use iron::mime::Mime;
+use mime_guess::guess_mime_type;
 use serde::Serialize;
 use serde_json;
 
@@ -42,10 +43,18 @@ fn create_response<T: Serialize> (data: &T) -> IronResult<Response> {
     Ok(Response::with((content_type, status::Ok, data)))
 }
 
-fn get_id (req: &Request) -> Result<Id> {
-    let id = req.extensions.get::<Router>().unwrap().find("id").unwrap();
+fn get_url_param (req: &Request, name: &str) -> Result<String> {
+    let result = req.extensions.get::<Router>().expect("failed to load Iron Router").find(name);
 
-    parse_id(id)
+    if let Some(value) = result {
+        Ok(value.into())
+    } else {
+        Err(Error::from_str(format!("can't find required url param :{}", name)))
+    }
+}
+
+fn get_id (req: &Request) -> Result<Id> {
+    parse_id(&get_url_param(req, "id")?)
 }
 
 
@@ -63,7 +72,7 @@ pub fn start_server(addr: &str) {
     // GET /records
     {
         let storage = storage.clone();
-        router.get("/records", move |_req: &mut Request| {
+        router.get("/records", move |_: &mut Request| {
 
             let records = itry!(storage.list_records(), status::InternalServerError);
 
@@ -178,7 +187,7 @@ pub fn start_server(addr: &str) {
             // parse form data
             let data = itry!(parse_multipart(req), status::BadRequest);
 
-            if data.len() != 2 {
+            if data.len() != 2 { // unexpected number of form fields
                 return Ok(Response::with(status::BadRequest));
             }
 
@@ -195,6 +204,24 @@ pub fn start_server(addr: &str) {
                     create_response(&info_dto)
                 },
                 _ => Ok(Response::with(status::BadRequest)),
+            }
+        });
+    }
+
+    // GET /notes/:id/files/:name
+    {
+        let storage = storage.clone();
+        router.get("/notes/:id/files/:name", move |req: &mut Request| {
+            // extract :id
+            let id = itry!(get_id(req), status::BadRequest);
+
+            // extract :name
+            let name = itry!(get_url_param(req, "name"), status::BadRequest);
+
+            if let Some(blob) = itry!(storage.get_file(id, &name)) {
+                Ok(Response::with((guess_mime_type(name), status::Ok, blob.0)))
+            } else {
+                Ok(Response::with(status::NotFound))
             }
         });
     }
