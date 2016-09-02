@@ -5,7 +5,7 @@
 
 extern crate time;
 extern crate rusqlite;
-// extern crate multipart;
+extern crate multipart;
 extern crate serde;
 extern crate serde_json;
 #[macro_use] extern crate iron;

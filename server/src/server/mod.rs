@@ -1,5 +1,6 @@
 mod logger;
 mod dto;
+mod multipart;
 
 use iron::prelude::*;
 use iron::status;
@@ -9,11 +10,12 @@ use serde::Serialize;
 use serde_json;
 
 use storage::types::Id;
-use server::dto::*;
 use utils::convert_all_into;
 use error::{Result, Error, into_err};
 
 use self::logger::LoggerHandler;
+use self::dto::*;
+use self::multipart::{parse_multipart, RequestData};
 
 fn get_request_body(req: &mut Request) -> Result<String> {
     use std::io::Read;
@@ -163,6 +165,37 @@ pub fn start_server(addr: &str) {
             };
 
             Ok(Response::with(status))
+        });
+    }
+
+    // POST /notes/:id/files
+    {
+        let storage = storage.clone();
+        router.post("/notes/:id/files", move |req: &mut Request| {
+            // extract :id
+            let id = itry!(get_id(req), status::BadRequest);
+
+            // parse form data
+            let data = itry!(parse_multipart(req), status::BadRequest);
+
+            if data.len() != 2 {
+                return Ok(Response::with(status::BadRequest));
+            }
+
+            let name_field = iexpect!(data.get("name"), status::BadRequest);
+            let data_field = iexpect!(data.get("data"), status::BadRequest);
+
+            match (name_field, data_field) {
+                (&RequestData::Field(ref name), &RequestData::File(ref data)) => {
+
+                    let info = itry!(storage.add_file(id, name, data));
+
+                    let info_dto: FileInfoDTO = info.into();
+
+                    create_response(&info_dto)
+                },
+                _ => Ok(Response::with(status::BadRequest)),
+            }
         });
     }
 

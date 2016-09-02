@@ -187,12 +187,17 @@ impl<'a> DB<'a> {
         Ok(rows_count > 0)
     }
 
-    pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<()> {
+    pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<FileInfo> {
+        let create_ts = now();
         self.tx.execute(
             "INSERT INTO files (record_id, name, data, size, create_ts) VALUES ($1, $2, $3, $4, $5)",
-            &[&(record_id as i64), &name, &data.0, &(data.size() as i64), &now()]
+            &[&(record_id as i64), &name, &data.0, &(data.size() as i64), &create_ts]
         )
-            .map(|_| ()) // return nothing
+            .map(|_| FileInfo {
+                name: name.into(),
+                size: data.size(),
+                create_ts: create_ts,
+            }) // return nothing
             .map_err(into_err)
     }
 

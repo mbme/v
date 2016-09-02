@@ -161,7 +161,7 @@ impl Storage {
         Ok(removed)
     }
 
-    pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<()> {
+    pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<FileInfo> {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
@@ -289,9 +289,17 @@ mod viter {
     #[test]
     fn test_add_file() {
         let s = new_storage();
+
         let id = s.add_note("test", "data").unwrap();
         let blob = new_blob("test");
-        assert!(s.add_file(id, "test", &blob).is_ok());
+        let name = "test";
+
+        let result = s.add_file(id, name, &blob);
+        assert!(result.is_ok());
+        let info = result.unwrap();
+
+        assert_eq!(name, info.name);
+        assert_eq!(blob.size(), info.size);
     }
 
     #[test]

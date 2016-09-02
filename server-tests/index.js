@@ -1,22 +1,12 @@
 /* eslint arrow-body-style: 0 */
 
+const utils = require('./utils');
+
 const request = require('superagent');
 const expect = require('chai').expect;
 
 function url(path) {
   return `http://127.0.0.1:8080${path}`;
-}
-
-function intoPromise(req) {
-  return new Promise((resolve, reject) => {
-    req.end((err, res) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(res);
-      }
-    });
-  });
 }
 
 function expectFailure(promise, status) {
@@ -29,62 +19,66 @@ function expectFailure(promise, status) {
 }
 
 function listRecords() {
-  return intoPromise(request.get(url('/records')));
+  return utils.intoPromise(request.get(url('/records')));
 }
 
 function postNote(note) {
-  return intoPromise(
+  return utils.intoPromise(
     request.post(url('/notes')).send(note)
   );
 }
 
+function randomNote() {
+  return {
+    name: utils.uniq('name'),
+    data: utils.uniq('data'),
+  };
+}
+
+function postRandomNote() {
+  return postNote(randomNote());
+}
+
 function putNote(id, note) {
-  return intoPromise(
+  return utils.intoPromise(
     request.put(url(`/notes/${id}`)).send(note)
   );
 }
 
 function getNote(id) {
-  return intoPromise(
+  return utils.intoPromise(
     request.get(url(`/notes/${id}`))
   );
 }
 
 function deleteNote(id) {
-  return intoPromise(
+  return utils.intoPromise(
     request.delete(url(`/notes/${id}`))
   );
 }
 
-function randomInt() {
-  return Math.floor(Math.random() * 999999999999999);
-}
-
-// add uniq suffix to string
-function uniq(str) {
-  return `${str}_${randomInt()}`;
-}
-
-function arr2obj(arr) {
-  const result = {};
-
-  arr.forEach((val) => {
-    result[val] = true;
-  });
-
-  return result;
-}
-
 function validateNote(body, expected) {
   expect(body).to.have.all.keys(
-    'id', 'name', 'data', 'create_ts', 'update_ts'
+    'id', 'name', 'data', 'create_ts', 'update_ts', 'files'
   );
 
   expect(body.id).to.be.a('number');
   expect(body.name).to.equal(expected.name);
   expect(body.data).to.equal(expected.data);
+  expect(body.files).to.be.an('array');
   expect(body.create_ts).to.be.a('number');
   expect(body.update_ts).to.be.a('number');
+}
+
+function validateFileInfo(body, expected) {
+  expect(body).to.have.all.keys(
+    'name', 'size', 'create_ts'
+  );
+
+  expect(body.name).to.equal(expected.name);
+  expect(body.size).to.be.a('number');
+  expect(body.size).to.be.above(0);
+  expect(body.create_ts).to.be.a('number');
 }
 
 describe('GET /records', () => {
@@ -99,10 +93,7 @@ describe('GET /records', () => {
 
 describe('POST /notes', () => {
   it('should create new note', () => {
-    const note = {
-      name: uniq('name'),
-      data: '',
-    };
+    const note = randomNote();
 
     return postNote(note).then(({ body }) => {
       expect(body).to.be.an('object');
@@ -118,10 +109,8 @@ describe('POST /notes', () => {
 
 describe('GET /notes/:id', () => {
   it('should return existing note', () => {
-    const note = {
-      name: uniq('name'),
-      data: 'some data',
-    };
+    const note = randomNote();
+
     let noteId;
 
     return postNote(note).then(({ body }) => {
@@ -137,7 +126,7 @@ describe('GET /notes/:id', () => {
   });
 
   it('should return 404 NOT FOUND for non-existing note', () => {
-    return expectFailure(getNote(randomInt()), 404);
+    return expectFailure(getNote(utils.randomInt()), 404);
   });
 
   it('should return 400 BAD REQUEST for invalid ids', () => {
@@ -147,15 +136,8 @@ describe('GET /notes/:id', () => {
 
 describe('PUT /notes/:id', () => {
   it('should update note', () => {
-    const note = {
-      name: uniq('name'),
-      data: '123',
-    };
-
-    const note1 = {
-      name: uniq('name'),
-      data: 'other data',
-    };
+    const note = randomNote();
+    const note1 = randomNote();
 
     let id;
     return postNote(note)
@@ -163,8 +145,6 @@ describe('PUT /notes/:id', () => {
         expect(body).to.be.an('object');
 
         id = body.id;
-
-        validateNote(body, note);
 
         // update note
         return putNote(id, note1);
@@ -177,21 +157,15 @@ describe('PUT /notes/:id', () => {
   });
 
   it('should fail if trying to update non-existing note', () => {
-    const note = {
-      name: uniq('name'),
-      data: '123',
-    };
+    const note = randomNote();
 
-    return expectFailure(putNote(randomInt(), note), 404);
+    return expectFailure(putNote(utils.randomInt(), note), 404);
   });
 });
 
 describe('DELETE /notes/:id', () => {
   it('should remove note', () => {
-    const note = {
-      name: uniq('name'),
-      data: '123',
-    };
+    const note = randomNote();
 
     let id;
     return expectFailure(
@@ -209,64 +183,50 @@ describe('DELETE /notes/:id', () => {
   });
 
   it('should fail if trying to delete non-existing note', () => {
-    return expectFailure(deleteNote(randomInt()), 404);
+    return expectFailure(deleteNote(utils.randomInt()), 404);
   });
 });
 
 // ************* FILES
 
-function listFiles() {
-  return intoPromise(request.get(url('/files')));
-}
-
 const attachmentPath = './data/city-view.jpg';
 function genAttachmentName() {
-  return `${uniq('attachment')}.jpg`;
+  const name = utils.uniq('attachment');
+  return `${name}.jpg`;
 }
 
-function postFile(path, name) {
-  return intoPromise(
-    request.post(url('/files'))
+function postFile(noteId, path, name) {
+  return utils.intoPromise(
+    request.post(url(`/notes/${noteId}/files`))
       .field('name', name)
       .attach('data', path)
   );
 }
 
-describe('GET /files', () => {
-  it('should return an array', () => {
-    return listFiles().then(
-      ({ body }) => {
-        expect(body).to.be.an('array');
-      }
-    );
-  });
-});
+function postStandardFile(noteId, name) {
+  return postFile(noteId, attachmentPath, name);
+}
 
-describe('POST /files', () => {
+describe('POST /notes/:id/files', () => {
   it('should create new file', () => {
     const fileName = genAttachmentName();
-    return postFile(attachmentPath, fileName).then(({ body }) => {
-      expect(body).to.be.an('object');
 
-      expect(body).to.have.all.keys(
-        'id', 'name', 'size', 'create_ts', 'update_ts'
-      );
+    return postRandomNote()
+      .then(({ body }) => postStandardFile(body.id, fileName))
+      .then(({ body }) => {
+        validateFileInfo(body, {
+          name: fileName,
+        });
+      });
+  });
 
-      expect(body.id).to.be.a('number');
-      expect(body.size).to.be.a('number');
-      expect(body.create_ts).to.be.a('number');
-      expect(body.update_ts).to.be.a('number');
-      expect(body.name).to.equal(fileName);
-
-      return listRecords();
-    }).then(({ body }) => {
-      expect(body.filter(file => file.name === fileName)).to.have.lengthOf(1);
-    });
+  it('should fail if trying to add file to non-existing note', () => {
+    return expectFailure(postStandardFile(utils.randomInt(), genAttachmentName()), 500);
   });
 });
 
-describe('GET /files/:id', () => {
+describe('GET /notes/:id/files/:name', () => {
 });
 
-describe('DELETE /files/:id', () => {
+describe('DELETE /notes/:id/files/:name', () => {
 });
