@@ -13,6 +13,7 @@ use serde_json;
 use storage::types::Id;
 use utils::convert_all_into;
 use error::{Result, Error, into_err};
+use config::Config;
 
 use self::logger::LoggerHandler;
 use self::dto::*;
@@ -58,7 +59,7 @@ fn get_id (req: &Request) -> Result<Id> {
 }
 
 
-pub fn start_server(addr: &str) {
+pub fn start_server(config: &Config) {
     use storage::Storage;
     use std::sync::Arc;
 
@@ -248,7 +249,7 @@ pub fn start_server(addr: &str) {
         });
     }
 
-    println!("running server on {}", addr);
+    println!("running server on {}", &config.server_address);
 
-    Iron::new(LoggerHandler::new(router)).http(addr).expect("failed to run server");
+    Iron::new(LoggerHandler::new(router)).http(&config.server_address as &str).expect("failed to run server");
 }

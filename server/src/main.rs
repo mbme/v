@@ -12,11 +12,16 @@ extern crate serde_json;
 extern crate router;
 extern crate mime_guess;
 
-pub mod storage;
-pub mod utils;
-pub mod server;
-pub mod error;
+mod storage;
+mod utils;
+mod server;
+mod error;
+mod config;
+
+use config::Config;
 
 fn main() {
-    ::server::start_server("127.0.0.1:8080");
+    let config = Config::read("./config.json").expect("Failed to load config.json");
+
+    server::start_server(&config);
 }

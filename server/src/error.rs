@@ -1,6 +1,8 @@
 use std::fmt;
 use std::error::Error as StdError;
+use std::io::Error as IOError;
 use rusqlite::Error as SQLiteErr;
+use serde_json::Error as JSONError;
 
 pub type SafeError = StdError + Send + Sync;
 
@@ -52,6 +54,18 @@ impl StdError for Error {
 
 impl From<SQLiteErr> for Error {
     fn from(err: SQLiteErr) -> Error {
+        Error::from(box err)
+    }
+}
+
+impl From<IOError> for Error {
+    fn from(err: IOError) -> Error {
+        Error::from(box err)
+    }
+}
+
+impl From<JSONError> for Error {
+    fn from(err: JSONError) -> Error {
         Error::from(box err)
     }
 }
