@@ -1,0 +1,29 @@
+{
+  "name": "web-client",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@types/react": "^0.14.33",
+    "@types/react-dom": "^0.14.16",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^2.22.0",
+    "ts-loader": "^0.8.2",
+    "tslint": "^3.15.1",
+    "tslint-loader": "^2.1.5",
+    "typescript": "^2.0.2",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --config ./webpack.config.js --hot --inline --progress",
+    "lint": "tslint \"src/**/*.tsx\"",
+    "prod": "NODE_ENV=production & webpack --config ./webpack.config.js --progress",
+    "gen-stats": "webpack --config ./webpack.config.js --progress --json > ./stats.json"
+  },
+  "author": "",
+  "license": "ISC"
+}
