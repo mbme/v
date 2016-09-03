@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js --hot --inline --progress",
-    "lint": "tslint \"src/**/*.tsx\"",
+    "lint": "tslint --force \"src/**/*.tsx\" \"src/**/*.ts\"",
     "prod": "NODE_ENV=production & webpack --config ./webpack.config.js --progress",
     "gen-stats": "webpack --config ./webpack.config.js --progress --json > ./stats.json"
   },
