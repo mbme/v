@@ -1,6 +1,10 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
+// STYLES
+import 'normalize.css'
+import 'main.css'
+
 import {useStrict} from 'mobx'
 import DevTools from 'mobx-react-devtools'
 

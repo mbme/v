@@ -2,6 +2,12 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const postcssMixins = require('postcss-mixins');
+const postcssNested = require('postcss-nested');
+const postcssSimpleVars = require('postcss-simple-vars');
+const postcssVerticalRhythm = require('postcss-vertical-rhythm');
+const postcssAutoprefixer = require('autoprefixer');
+
 const isProdMode = process.env.NODE_ENV === 'production';
 const NODE_ENV = JSON.stringify(isProdMode ? 'production' : 'development');
 
@@ -45,10 +51,27 @@ const config = {
         loader: 'ts-loader',
         include: PATHS.app,
       },
+      { // CSS
+        test: /\.css$/,
+        loader: 'style-loader!css-loader!postcss-loader'
+      },
+      { // FONTS
+        test: /\.woff|\.woff2/,
+        loader: 'url-loader?limit=100000'
+      },
     ],
   },
   tslint: {
     emitErrors: true,
+  },
+  postcss: function (webpack) {
+    return [
+      postcssMixins,
+      postcssNested,
+      postcssSimpleVars(),
+      postcssVerticalRhythm(),
+      postcssAutoprefixer({ browsers: ['last 2 versions'] }),
+    ];
   },
   plugins: [
     new HtmlWebpackPlugin({ template: 'src/index.html' }),
