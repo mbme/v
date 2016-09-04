@@ -3,11 +3,11 @@ import {simpleFetch} from 'utils'
 
 // type RecordType = 'note'
 
-type Id = number
+export type Id = number
 type Name = string
 type Timestamp = number
 
-interface INoteRecord {
+export interface INoteRecord {
   id: Id,
   name: Name,
   create_ts: Timestamp,

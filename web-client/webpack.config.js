@@ -23,7 +23,7 @@ const config = {
   env: NODE_ENV,
   entry: {
     app: path.resolve(PATHS.app, 'main.tsx'),
-    vendor: ['react', 'react-dom', 'mobx', 'mobx-react'],
+    vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'moment'],
   },
   output: {
     path: PATHS.build,
@@ -77,6 +77,8 @@ const config = {
     new HtmlWebpackPlugin({ template: 'src/index.html' }),
     new webpack.optimize.CommonsChunkPlugin('vendor', 'app/vendor.bundle.js'),
     new webpack.NoErrorsPlugin(),
+    // do not load moment locales
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': NODE_ENV,
       __DEV__: JSON.stringify(!isProdMode),
