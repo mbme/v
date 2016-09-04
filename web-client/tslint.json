@@ -50,6 +50,8 @@
       "log",
       "debug",
       "info",
+      "error",
+      "warn",
       "time",
       "timeEnd",
       "trace"
@@ -100,7 +102,6 @@
       true,
       "ignore-for-loop"
     ],
-    "ordered-imports": true,
     "quotemark": [
       true,
       "single",
@@ -147,6 +148,7 @@
       true,
       "ban-keywords",
       "check-format",
+      "allow-pascal-case",
       "allow-leading-underscore"
     ],
     "whitespace": [

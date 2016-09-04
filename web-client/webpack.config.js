@@ -17,7 +17,7 @@ const config = {
   env: NODE_ENV,
   entry: {
     app: path.resolve(PATHS.app, 'main.tsx'),
-    vendor: ['react', 'react-dom'],
+    vendor: ['react', 'react-dom', 'mobx', 'mobx-react'],
   },
   output: {
     path: PATHS.build,
@@ -30,6 +30,7 @@ const config = {
   },
   resolve: {
     extensions: ['', '.js', '.ts', '.tsx'],
+    root: [PATHS.app],
   },
   module: {
     preLoaders: [
@@ -77,6 +78,14 @@ if (isProdMode) {
     contentBase: PATHS.src,
     port: 8080,
     historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://' + require('../server/config.json').server_address,
+        pathRewrite: {
+          '^/api': '',
+        },
+      },
+    }
   };
   config.devtool = 'eval';
 }

@@ -6,8 +6,9 @@ const utils = require('./utils');
 const request = require('superagent');
 const expect = require('chai').expect;
 
+const SERVER_ADDRESS = require('../server/config.json').server_address;
 function url(path) {
-  return `http://127.0.0.1:8080${path}`;
+  return `${SERVER_ADDRESS}${path}`;
 }
 
 function expectFailure(promise, status) {
