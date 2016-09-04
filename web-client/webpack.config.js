@@ -55,7 +55,7 @@ const config = {
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': NODE_ENV,
-      __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false')),
+      __DEV__: JSON.stringify(!isProdMode),
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
   ],
