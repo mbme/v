@@ -1,10 +1,11 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {INoteRecord, Id} from './store'
+import {NoteRecord as NRecord, Id} from './store'
 import * as moment from 'moment'
+import * as cx from 'classnames'
 
 interface IProps {
-  record: INoteRecord,
+  record: NRecord,
   onClick: (id: Id) => void,
 }
 
@@ -13,10 +14,10 @@ class NoteRecord extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { record } = this.props
     return (
-      <li className="NoteRecord" onClick={this.onClick}>
+      <li className={cx('NoteRecord', { 'is-open': record.isOpen })} onClick={this.onClick}>
         <div className="NoteRecord-title">{record.name}</div>
         <small className="NoteRecord-time">
-          {moment(record.update_ts * 1000).format('MMM DD YYYY')}
+          {moment(record.updateTs * 1000).format('MMM DD YYYY')}
         </small>
       </li>
     )

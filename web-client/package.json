@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@types/classnames": "0.0.28",
     "@types/react": "^0.14.33",
     "@types/react-dom": "^0.14.16",
     "@types/whatwg-fetch": "0.0.30",
+    "classnames": "^2.2.5",
     "mobx": "^2.5.1",
     "mobx-react": "^3.5.5",
     "moment": "^2.14.1",

@@ -23,7 +23,7 @@ const config = {
   env: NODE_ENV,
   entry: {
     app: path.resolve(PATHS.app, 'main.tsx'),
-    vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'moment'],
+    vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'moment', 'classnames'],
   },
   output: {
     path: PATHS.build,
@@ -60,9 +60,6 @@ const config = {
         loader: 'url-loader?limit=100000'
       },
     ],
-  },
-  tslint: {
-    emitErrors: true,
   },
   postcss: function (webpack) {
     return [
