@@ -1,9 +1,9 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import NotesStore, { Id } from './store'
-import NoteRecord from './NoteRecord'
-import Note from './Note'
+import NotesStore from './store'
+import NoteRecordsList from './NoteRecordsList'
+import NotesList from './NotesList'
 
 interface IProps {
   store: NotesStore,
@@ -13,28 +13,17 @@ interface IProps {
 class NotesPage extends React.Component<IProps, {}> {
 
   render (): JSX.Element {
-    const records = this.props.store.records.map(
-      record => <NoteRecord key={record.id} record={record} onClick={this.onItemClick} />
-    )
-
-    const notes = this.props.store.openNotes.map(
-      note => <Note key={note.id} note={note} />
-    )
-
+    const { store } = this.props
     return (
       <div className="NotesPage">
         <div className="NotesPage-left">
-          <ul>{records}</ul>
+          <NoteRecordsList store={store} />
         </div>
         <div className="NotesPage-center">
-          {notes}
+          <NotesList store={store} />
         </div>
       </div>
     )
-  }
-
-  onItemClick = (id: Id) => {
-    this.props.store.openNote(id)
   }
 
 }
