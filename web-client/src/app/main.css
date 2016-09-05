@@ -1,6 +1,6 @@
 $base-bg-color: #fff;
 $base-font-color: #333;
-$base-font-size: 20px;
+$base-font-size: 16px;
 $base-line-height: 1.4;
 
 html {
@@ -10,13 +10,64 @@ html {
   font: $base-font-size/$base-line-height Open Sans, Helvetica, Arial, sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+@define-mixin like-a-h {
   text-rendering: optimizelegibility;
   font-weight: 600;
+}
+
+@define-mixin like-secondary {
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @mixin like-a-h;
 }
 
 ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
+}
+
+
+.NotesPage {
+  $left-width: 350px;
+  $border: 1px solid #E6E0E6;
+
+  position: relative;
+
+  &-left {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: $left-width;
+    height: 100%;
+    overflow-y: auto;
+    border-right: $border;
+  }
+
+  &-center {
+    margin-left: $left-width;
+    background-color: yellow;
+  }
+
+  .NoteRecord {
+    color: $base-font-color;
+    border-bottom: $border;
+    padding: 0.5vr 1vr;
+    cursor: pointer;
+
+    &-title {
+      @mixin like-a-h;
+    }
+
+    &-time {
+      @mixin like-secondary;
+      color: rgba(0,0,0,.44);
+    }
+
+    &:hover {
+      background-color: #E6E0E6;
+    }
+  }
 }

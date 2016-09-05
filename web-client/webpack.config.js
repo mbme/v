@@ -69,7 +69,7 @@ const config = {
       postcssMixins,
       postcssNested,
       postcssSimpleVars(),
-      postcssVerticalRhythm(),
+      postcssVerticalRhythm({ rootSelector: 'html' }),
       postcssAutoprefixer({ browsers: ['last 2 versions'] }),
     ];
   },

@@ -1,8 +1,6 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import './styles.css'
-
 import NotesStore, { Id } from './store'
 import NoteRecord from './NoteRecord'
 

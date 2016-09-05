@@ -15,9 +15,9 @@ class NoteRecord extends React.Component<IProps, {}> {
     return (
       <li className="NoteRecord" onClick={this.onClick}>
         <div className="NoteRecord-title">{record.name}</div>
-        <div className="NoteRecord-time">
-          {moment(record.update_ts * 1000).format('MMM DD YYYY HH:mm')}
-        </div>
+        <small className="NoteRecord-time">
+          {moment(record.update_ts * 1000).format('MMM DD YYYY')}
+        </small>
       </li>
     )
   }
