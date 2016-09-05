@@ -131,6 +131,10 @@ ul {
     .Toolbar {
       padding-top: 0.5vr;
       text-align: right;
+
+      .LinkButton {
+        margin-left: 0.5vr;
+      }
     }
 
     &-title {

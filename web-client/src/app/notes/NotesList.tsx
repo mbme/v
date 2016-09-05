@@ -13,7 +13,9 @@ class NotesList extends React.Component<IProps, {}> {
 
   render (): JSX.Element {
     const notes = this.props.store.openNotes.map(
-      note => <Note key={note.id} note={note} onClose={this.closeNote} />
+      note => <Note key={note.id}
+                    note={note}
+                    onClose={this.closeNote} />
     )
 
     return (

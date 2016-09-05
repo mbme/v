@@ -15,6 +15,7 @@ class Note extends React.Component<IProps, {}> {
     return (
       <div className="Note">
         <div className="Toolbar">
+          <LinkButton onClick={this.onClickEdit}>Edit</LinkButton>
           <LinkButton onClick={this.onClickClose}>Close</LinkButton>
         </div>
         <h1 className="Note-title">{note.name}</h1>
@@ -25,6 +26,10 @@ class Note extends React.Component<IProps, {}> {
 
   onClickClose = () => {
     this.props.onClose(this.props.note.id)
+  }
+
+  onClickEdit = () => {
+    console.error('EDIT')
   }
 }
 
