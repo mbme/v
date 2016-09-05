@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import NotesStore from './store'
+import NotesStore, {Id} from './store'
 import Note from './Note'
 
 interface IProps {
@@ -13,7 +13,7 @@ class NotesList extends React.Component<IProps, {}> {
 
   render (): JSX.Element {
     const notes = this.props.store.openNotes.map(
-      note => <Note key={note.id} note={note} />
+      note => <Note key={note.id} note={note} onClose={this.closeNote} />
     )
 
     return (
@@ -21,6 +21,10 @@ class NotesList extends React.Component<IProps, {}> {
         {notes}
       </div>
     )
+  }
+
+  closeNote = (id: Id) => {
+    this.props.store.closeNote(id)
   }
 
 }

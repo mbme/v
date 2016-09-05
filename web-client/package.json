@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@types/classnames": "0.0.28",
     "@types/react": "^0.14.33",
     "@types/react-dom": "^0.14.16",
     "@types/whatwg-fetch": "0.0.30",
@@ -18,7 +17,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^6.4.1",
-    "css-loader": "^0.24.0",
+    "css-loader": "^0.25.0",
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",
     "mobx-react-devtools": "^4.2.5",

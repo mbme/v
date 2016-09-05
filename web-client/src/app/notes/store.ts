@@ -93,6 +93,15 @@ export default class NotesStore {
   }
 
   @action
+  closeNote(id: Id): void {
+    const pos = this.openNotes.findIndex(note => note.id === id)
+
+    if (pos > -1) {
+      this.openNotes.splice(pos, 1)
+    }
+  }
+
+  @action
   setRecordsFilter(filter: string): void {
     this.recordsFilter = filter
   }

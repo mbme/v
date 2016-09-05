@@ -45,6 +45,12 @@ ul {
 
 /*       COMPONENTS        */
 
+.LinkButton {
+  text-decoration: none;
+  color: #4078c0;
+  font-weight: 600;
+}
+
 .NotesPage {
   $left-width: 350px;
   $border: 1px solid #E6E0E6;
@@ -65,7 +71,6 @@ ul {
   &-center {
     margin-top: 2vh;
     margin-left: $left-width;
-    text-align: center;
   }
 
   $filter-height: 60px;
@@ -115,15 +120,21 @@ ul {
   }
 
   .Note {
-    display: inline-block;
-    text-align: left;
-
     width: 600px;
     min-height: 300px;
 
-    padding: 1vr;
-    margin: 1vr 0;
+    padding: 0 1vr 1vr;
+    margin: 1vr auto;
 
     @mixin paper-shadow;
+
+    .Toolbar {
+      padding-top: 0.5vr;
+      text-align: right;
+    }
+
+    &-title {
+      margin-top: 0;
+    }
   }
 }
