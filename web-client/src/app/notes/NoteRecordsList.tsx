@@ -17,7 +17,9 @@ class NoteRecordsList extends React.Component<IProps, {}> {
     )
 
     return (
-      <ul>{records}</ul>
+      <ul className="NoteRecordsList">
+        {records}
+      </ul>
     )
   }
 

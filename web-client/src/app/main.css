@@ -20,6 +20,10 @@ $base-line-height: 1.4;
 
 /*       BASIC STYLES        */
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   background: $base-bg-color;
   color: $base-font-color;
@@ -51,9 +55,10 @@ ul {
     position: fixed;
     top: 0;
     left: 0;
+
     width: $left-width;
     height: 100%;
-    overflow-y: auto;
+
     border-right: $border;
   }
 
@@ -61,6 +66,24 @@ ul {
     margin-top: 2vh;
     margin-left: $left-width;
     text-align: center;
+  }
+
+  $filter-height: 60px;
+
+  .SearchBox {
+    height: $filter-height;
+    padding: 0 1vr;
+
+    .RecordsFilter {
+      margin-top: 10px;
+      padding: 5px 10px;
+      width: 100%;
+    }
+  }
+
+  .NoteRecordsList {
+    height: calc(100% - $filter-height);
+    overflow-y: auto;
   }
 
   .NoteRecord {
@@ -84,6 +107,10 @@ ul {
 
     &.is-open {
       background-color: yellow;
+    }
+
+    &.is-hidden {
+      display: none;
     }
   }
 

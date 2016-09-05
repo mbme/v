@@ -2,6 +2,7 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 
 import NotesStore from './store'
+import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
 import NotesList from './NotesList'
 
@@ -17,6 +18,7 @@ class NotesPage extends React.Component<IProps, {}> {
     return (
       <div className="NotesPage">
         <div className="NotesPage-left">
+          <SearchBox store={store} />
           <NoteRecordsList store={store} />
         </div>
         <div className="NotesPage-center">

@@ -1,5 +1,6 @@
 import {action, observable, computed} from 'mobx'
-import {simpleFetch} from 'utils'
+import {simpleFetch, fuzzySearch} from 'utils'
+import * as config from 'config'
 
 // type RecordType = 'note'
 
@@ -34,6 +35,20 @@ export class NoteRecord {
   @computed get isOpen(): boolean {
     return this.store.isOpen(this.id)
   }
+
+  @computed get isVisible(): boolean {
+    let filter = this.store.recordsFilter
+
+    if (config.searchIgnoreCase) {
+      filter = filter.toLowerCase()
+    }
+
+    if (config.searchIgnoreSpaces) {
+      filter = filter.replace(/\s/g, '') // remove spaces from the string
+    }
+
+    return fuzzySearch(filter, this.name)
+  }
 }
 
 type FileName = string
@@ -56,6 +71,7 @@ export interface INote {
 
 export default class NotesStore {
   @observable records: NoteRecord[] = []
+  @observable recordsFilter: string = ''
   @observable openNotes: INote[] = []
 
   @action
@@ -74,6 +90,11 @@ export default class NotesStore {
     simpleFetch(`/api/notes/${id}`).then((data: INote) => {
       this.addOpenNote(data)
     })
+  }
+
+  @action
+  setRecordsFilter(filter: string): void {
+    this.recordsFilter = filter
   }
 
   isOpen(id: Id): boolean {

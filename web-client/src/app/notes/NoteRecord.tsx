@@ -13,8 +13,14 @@ interface IProps {
 class NoteRecord extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { record } = this.props
+    const className = cx(
+      'NoteRecord', {
+        'is-open': record.isOpen,
+        'is-hidden': !record.isVisible
+      }
+    )
     return (
-      <li className={cx('NoteRecord', { 'is-open': record.isOpen })} onClick={this.onClick}>
+      <li className={className} onClick={this.onClick}>
         <div className="NoteRecord-title">{record.name}</div>
         <small className="NoteRecord-time">
           {moment(record.updateTs * 1000).format('MMM DD YYYY')}
