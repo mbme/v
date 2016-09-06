@@ -1,9 +1,9 @@
 /**
  * Simple wrapper around fetch that rejects on anything but a succesful json response
  */
-export function simpleFetch<T>(url: string): Promise<T> {
+function simpleFetch<T>(request: Request): Promise<T> {
   return new Promise((resolve, reject) => {
-    window.fetch(url)
+    fetch(request)
       .then((res) => {
         if (res.ok) {
           res.json().then(resolve).catch(reject)
@@ -13,6 +13,26 @@ export function simpleFetch<T>(url: string): Promise<T> {
       })
       .catch(reject)
   })
+}
+
+export const http = {
+  GET<T> (url: string): Promise<T> {
+    return simpleFetch<T>(new Request(url))
+  },
+
+  POST<T> (url: string, data: FormData | string): Promise<T> {
+    return simpleFetch<T>(new Request(url, {
+      'method': 'POST',
+      'body': data,
+    }))
+  },
+
+  PUT<T> (url: string, data: FormData | string): Promise<T> {
+    return simpleFetch<T>(new Request(url, {
+      'method': 'PUT',
+      'body': data,
+    }))
+  },
 }
 
 /**

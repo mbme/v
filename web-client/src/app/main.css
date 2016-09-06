@@ -3,6 +3,8 @@ $base-font-color: #333;
 $base-font-size: 16px;
 $base-line-height: 1.4;
 
+$light-border: 1px solid #E6E0E6;
+
 /*       MIXINS        */
 
 @define-mixin like-a-h {
@@ -42,6 +44,11 @@ ul {
   margin: 0;
 }
 
+input[type=text], textarea {
+  border: $light-border;
+  padding: 5px 10px;
+}
+
 
 /*       COMPONENTS        */
 
@@ -53,7 +60,7 @@ ul {
 
 .NotesPage {
   $left-width: 350px;
-  $border: 1px solid #E6E0E6;
+  $border: $light-border;
 
   position: relative;
 
@@ -79,9 +86,10 @@ ul {
     height: $filter-height;
     padding: 0 1vr;
 
+    border-bottom: $border;
+
     .RecordsFilter {
       margin-top: 10px;
-      padding: 5px 10px;
       width: 100%;
     }
   }
@@ -119,7 +127,7 @@ ul {
     }
   }
 
-  .Note {
+  @define-mixin NoteContainer {
     width: 600px;
     min-height: 300px;
 
@@ -136,9 +144,35 @@ ul {
         margin-left: 0.5vr;
       }
     }
+  }
 
-    &-title {
+  .Note {
+    @mixin NoteContainer;
+
+    &-name {
       margin-top: 0;
+    }
+
+    &-data {
+      white-space: pre;
+    }
+  }
+
+  .NoteEditor {
+    @mixin NoteContainer;
+
+    &-name, &-data {
+      display: block;
+      width: 100%;
+      margin-top: 0.5vr;
+    }
+
+    &-name {
+      @mixin like-a-h;
+    }
+
+    &-data {
+      height: 190px;
     }
   }
 }

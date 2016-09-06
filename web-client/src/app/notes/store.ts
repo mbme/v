@@ -1,11 +1,12 @@
 import {action, observable, computed} from 'mobx'
-import {simpleFetch, fuzzySearch} from 'utils'
+import {http, fuzzySearch} from 'utils'
 import * as config from 'config'
 
 // type RecordType = 'note'
 
 export type Id = number
-type Name = string
+export type Name = string
+export type Data = string
 type Timestamp = number
 
 interface INoteRecordDTO {
@@ -65,7 +66,7 @@ export interface INote {
   name: Name,
   create_ts: Timestamp,
   update_ts: Timestamp,
-  data: string,
+  data: Data,
   files: IFileInfo[],
 }
 
@@ -76,7 +77,7 @@ export default class NotesStore {
 
   @action
   loadRecordsList(): void {
-    simpleFetch('/api/records').then((data: INoteRecordDTO[]) => {
+    http.GET('/api/records').then((data: INoteRecordDTO[]) => {
       this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
     })
   }
@@ -87,18 +88,29 @@ export default class NotesStore {
       return
     }
 
-    simpleFetch(`/api/notes/${id}`).then((data: INote) => {
+    http.GET(`/api/notes/${id}`).then((data: INote) => {
       this.addOpenNote(data)
     })
   }
 
   @action
   closeNote(id: Id): void {
-    const pos = this.openNotes.findIndex(note => note.id === id)
+    const pos = this.indexOfNote(id)
 
     if (pos > -1) {
       this.openNotes.splice(pos, 1)
     }
+  }
+
+  @action
+  updateNote(id: Id, name: Name, data: Data): Promise<void> {
+    const body = JSON.stringify({id, name, data})
+
+    return http.PUT(`/api/notes/${id}`, body)
+      .then((note: INote) => {
+        this.replaceOpenNote(note)
+        this.loadRecordsList()
+      })
   }
 
   @action
@@ -107,7 +119,7 @@ export default class NotesStore {
   }
 
   isOpen(id: Id): boolean {
-    return this.openNotes.filter(n => n.id === id).length === 1
+    return this.indexOfNote(id) > -1
   }
 
   @action
@@ -120,4 +132,15 @@ export default class NotesStore {
     this.openNotes.unshift(note)
   }
 
+  @action
+  private replaceOpenNote(note: INote): void {
+    const pos = this.indexOfNote(note.id)
+    if (pos > -1) {
+      this.openNotes.splice(pos, 1, note)
+    }
+  }
+
+  private indexOfNote(id: Id): number {
+    return this.openNotes.findIndex(note => note.id === id)
+  }
 }
