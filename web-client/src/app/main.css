@@ -189,7 +189,7 @@ input[type=text], textarea {
 
     @mixin paper-shadow;
 
-    .Toolbar {
+    &-toolbar {
       padding-top: 0.5vr;
       text-align: right;
 

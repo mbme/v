@@ -15,7 +15,7 @@ class Note extends React.Component<IProps, {}> {
     const { note } = this.props
     return (
       <div className="Note">
-        <div className="Toolbar">
+        <div className="Note-toolbar">
           <LinkButton onClick={this.onClickEdit}>Edit</LinkButton>
           <LinkButton onClick={this.onClickClose}>Close</LinkButton>
         </div>
