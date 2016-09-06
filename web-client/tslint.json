@@ -62,7 +62,7 @@
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
-    "no-inferrable-types": true,
+    "no-inferrable-types": [true, "ignore-params"],
     "no-internal-module": true,
     "no-invalid-this": true,
     "no-mergeable-namespace": true,

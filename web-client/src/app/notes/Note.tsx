@@ -1,10 +1,10 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {INote} from './store'
+import {Note as NoteEntity} from './store'
 import LinkButton from 'common/LinkButton'
 
 interface IProps {
-  note: INote,
+  note: NoteEntity,
   onClose: () => void,
   onEdit: () => void,
 }

@@ -61,7 +61,7 @@ interface IFileInfo {
   create_ts: Timestamp,
 }
 
-export interface INote {
+export interface INoteDTO {
   id: Id,
   name: Name,
   create_ts: Timestamp,
@@ -70,10 +70,37 @@ export interface INote {
   files: IFileInfo[],
 }
 
+export class Note {
+  readonly id: Id
+  readonly name: Name
+  readonly createTs: Timestamp
+  readonly updateTs: Timestamp
+  readonly data: Data
+  readonly files: IFileInfo[]
+
+  @observable editMode: boolean
+
+  constructor (dto: INoteDTO, editMode: boolean = false) {
+    this.id = dto.id
+    this.name = dto.name
+    this.createTs = dto.create_ts
+    this.updateTs = dto.update_ts
+    this.data = dto.data
+    this.files = dto.files
+
+    this.editMode = editMode
+  }
+
+  @action
+  edit(edit: boolean): void {
+    this.editMode = edit
+  }
+}
+
 export default class NotesStore {
   @observable records: NoteRecord[] = []
   @observable recordsFilter: string = ''
-  @observable openNotes: INote[] = []
+  @observable openNotes: Note[] = []
 
   @action
   loadRecordsList(): void {
@@ -88,8 +115,8 @@ export default class NotesStore {
       return
     }
 
-    http.GET(`/api/notes/${id}`).then((data: INote) => {
-      this.addOpenNote(data)
+    http.GET(`/api/notes/${id}`).then((data: INoteDTO) => {
+      this.addOpenNote(new Note(data))
     })
   }
 
@@ -103,12 +130,22 @@ export default class NotesStore {
   }
 
   @action
+  createNote(name: Name): Promise<void> {
+    const body = JSON.stringify({ name, 'data': '' })
+
+    return http.POST(`/api/notes`, body).then((data: INoteDTO) => {
+      this.addOpenNote(new Note(data, true))
+      this.loadRecordsList()
+    })
+  }
+
+  @action
   updateNote(id: Id, name: Name, data: Data): Promise<void> {
     const body = JSON.stringify({id, name, data})
 
     return http.PUT(`/api/notes/${id}`, body)
-      .then((note: INote) => {
-        this.replaceOpenNote(note)
+      .then((note: INoteDTO) => {
+        this.replaceOpenNote(new Note(note))
         this.loadRecordsList()
       })
   }
@@ -128,12 +165,12 @@ export default class NotesStore {
   }
 
   @action
-  private addOpenNote(note: INote): void {
+  private addOpenNote(note: Note): void {
     this.openNotes.unshift(note)
   }
 
   @action
-  private replaceOpenNote(note: INote): void {
+  private replaceOpenNote(note: Note): void {
     const pos = this.indexOfNote(note.id)
     if (pos > -1) {
       this.openNotes.splice(pos, 1, note)
