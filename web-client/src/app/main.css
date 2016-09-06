@@ -50,13 +50,60 @@ input[type=text], textarea {
 }
 
 
-/*       COMPONENTS        */
+/*       COMMON        */
 
 .LinkButton {
   text-decoration: none;
   color: #4078c0;
   font-weight: 600;
 }
+
+.ModalsContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+
+  width: 100%;
+  height: 100%;
+
+  &.is-hidden {
+    display: none;
+  }
+
+  &-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: #000 none repeat scroll 0% 0%;
+    opacity: 0.5;
+  }
+
+  .Modal {
+    position: relative;
+
+    width: 50%;
+    max-width: 768px;
+
+    min-height: 150px;
+
+    margin: 5% auto;
+
+    padding: 0.5vr 1vr;
+
+    background-color: white;
+    @mixin paper-shadow;
+    border-radius: 2px 2px;
+  }
+}
+
+
+/*       PAGES        */
+
 
 .NotesPage {
   $left-width: 350px;
@@ -78,6 +125,12 @@ input[type=text], textarea {
   &-center {
     margin-top: 2vh;
     margin-left: $left-width;
+  }
+
+  &-plus {
+    position: fixed;
+    top: 2vr;
+    right: 1vr;
   }
 
   $filter-height: 60px;
