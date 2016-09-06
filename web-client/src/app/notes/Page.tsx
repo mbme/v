@@ -6,8 +6,8 @@ import NotesStore from './store'
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
 import NotesList from './NotesList'
+import AddNoteModal from './AddNoteModal'
 import LinkButton from 'common/LinkButton'
-import Modal from 'modals/Modal'
 
 interface IProps {
   store: NotesStore,
@@ -31,14 +31,13 @@ class NotesPage extends React.Component<IProps, {}> {
         </div>
         <div className="NotesPage-center">
           <NotesList store={store} />
+
           <LinkButton className="NotesPage-plus"
                       onClick={this.onClickPlus} >
             Add Note
           </LinkButton>
 
-          <Modal className="AddNote" isOpen={this.showAddNoteModal}>
-            <h1>HELLO WORLD!!!!</h1>
-          </Modal>
+          <AddNoteModal isVisible={this.showAddNoteModal} />
         </div>
       </div>
     )
