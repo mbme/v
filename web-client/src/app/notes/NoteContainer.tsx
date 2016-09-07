@@ -17,6 +17,7 @@ class NoteContainer extends React.Component<IProps, {}> {
     if (note.editMode) {
       return <NoteEditor note={note}
                          onSave={this.onClickSave}
+                         onDelete={this.onClickDelete}
                          onCancel={this.onClickCancel} />
     } else {
       return <NoteView note={note}
@@ -27,6 +28,10 @@ class NoteContainer extends React.Component<IProps, {}> {
 
   onClickClose = () => {
     this.props.store.closeNote(this.props.note.id)
+  }
+
+  onClickDelete = () => {
+    this.props.store.deleteNote(this.props.note.id)
   }
 
   onClickEdit = () => {

@@ -153,6 +153,14 @@ export default class NotesStore {
   }
 
   @action
+  deleteNote(id: Id): Promise<void> {
+    return http.DELETE(`/api/notes/${id}`).then(() => {
+      this.closeNote(id)
+      this.loadRecordsList()
+    })
+  }
+
+  @action
   setRecordsFilter(filter: string): void {
     this.recordsFilter = filter
   }

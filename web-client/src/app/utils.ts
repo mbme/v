@@ -1,36 +1,29 @@
-/**
- * Simple wrapper around fetch that rejects on anything but a succesful json response
- */
-function simpleFetch<T>(request: Request): Promise<T> {
-  return new Promise((resolve, reject) => {
-    fetch(request)
-      .then((res) => {
-        if (res.ok) {
-          res.json().then(resolve).catch(reject)
-        } else {
-          reject(res)
-        }
-      })
-      .catch(reject)
-  })
+function fetchData<T>(request: Request): Promise<T> {
+  return fetch(request).then(response => response.json())
 }
 
 export const http = {
   GET<T> (url: string): Promise<T> {
-    return simpleFetch<T>(new Request(url))
+    return fetchData<T>(new Request(url))
   },
 
   POST<T> (url: string, data: FormData | string): Promise<T> {
-    return simpleFetch<T>(new Request(url, {
+    return fetchData<T>(new Request(url, {
       'method': 'POST',
       'body': data,
     }))
   },
 
   PUT<T> (url: string, data: FormData | string): Promise<T> {
-    return simpleFetch<T>(new Request(url, {
+    return fetchData<T>(new Request(url, {
       'method': 'PUT',
       'body': data,
+    }))
+  },
+
+  DELETE (url: string): Promise<void> {
+    return fetch(new Request(url, {
+      'method': 'DELETE',
     }))
   },
 }
