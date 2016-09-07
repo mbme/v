@@ -39,16 +39,18 @@ export class NoteRecord {
 
   @computed get isVisible(): boolean {
     let filter = this.store.recordsFilter
+    let name = this.name
 
     if (config.searchIgnoreCase) {
       filter = filter.toLowerCase()
+      name = name.toLowerCase()
     }
 
     if (config.searchIgnoreSpaces) {
       filter = filter.replace(/\s/g, '') // remove spaces from the string
     }
 
-    return fuzzySearch(filter, this.name)
+    return fuzzySearch(filter, name)
   }
 }
 
