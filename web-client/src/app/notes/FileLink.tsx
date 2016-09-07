@@ -18,7 +18,7 @@ class FileLink extends React.Component<IProps, {}> {
     return (
       <div className="FileLink">
         <a href={url} target="_blank">{file.name}</a>
-        <small>{formatBytes(file.size)}</small>
+        <span className="size">{formatBytes(file.size)}</span>
       </div>
     )
   }

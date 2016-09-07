@@ -3,6 +3,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import {Note as NoteEntity, Name, Data} from './store'
 import LinkButton from 'common/LinkButton'
+import FileLink from './FileLink'
 
 import DeleteNoteModal from './DeleteNoteModal'
 import CloseEditorModal from './CloseEditorModal'
@@ -26,8 +27,14 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   render (): JSX.Element {
     const { note } = this.props
+
+    const files = note.files.map(
+      file => <FileLink key={file.name} noteId={note.id} file={file} />
+    )
+
     return (
       <div className="NoteEditor">
+
         <div className="NoteEditor-toolbar">
           <LinkButton onClick={this.onClickSave}>Save</LinkButton>
           <LinkButton type="dangerous" onClick={this.onClickDelete}>Delete</LinkButton>
@@ -43,15 +50,19 @@ class NoteEditor extends React.Component<IProps, {}> {
                             onCancel={this.hideModal}
                             onClose={this.props.onCloseEditor} />
         </div>
+
         <input className="NoteEditor-name"
                ref="name"
                type="text"
                placeholder="Name"
                defaultValue={note.name} />
+
         <textarea className="NoteEditor-data"
                   ref="data"
                   placeholder="Type something here"
                   defaultValue={note.data} />
+
+        <div className="NoteEditor-files">{files}</div>
       </div>
     )
   }

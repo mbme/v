@@ -20,6 +20,7 @@ $link-color: $color-primary;
 
 @define-mixin like-secondary {
   font-weight: 400;
+  color: rgba(0,0,0,.44);
 }
 
 @define-mixin paper-shadow {
@@ -160,8 +161,10 @@ a:visited {
     font-weight: 600;
   }
 
-  small {
+  .size {
     padding-left: 5px;
+    font-size: 0.75em;
+    @mixin like-secondary;
   }
 }
 
@@ -224,7 +227,6 @@ a:visited {
 
     &-time {
       @mixin like-secondary;
-      color: rgba(0,0,0,.44);
     }
 
     &:hover {
@@ -257,6 +259,12 @@ a:visited {
         margin-left: 0.5vr;
       }
     }
+
+    &-files {
+      border-top: $border;
+      margin-top: 1vr;
+      padding: 0.5vr 0;
+    }
   }
 
   .Note {
@@ -271,12 +279,6 @@ a:visited {
     &-data {
       white-space: pre;
       flex: 1;
-    }
-
-    &-files {
-      border-top: $border;
-      margin-top: 1vr;
-      padding: 0.5vr 0;
     }
   }
 

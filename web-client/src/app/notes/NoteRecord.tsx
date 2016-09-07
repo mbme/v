@@ -9,6 +9,10 @@ interface IProps {
   onClick: (id: Id) => void,
 }
 
+function formatTime(ts: number): string {
+  return moment.unix(ts).format('MMM DD YYYY')
+}
+
 @observer
 class NoteRecord extends React.Component<IProps, {}> {
   render (): JSX.Element {
@@ -22,9 +26,7 @@ class NoteRecord extends React.Component<IProps, {}> {
     return (
       <li className={className} onClick={this.onClick}>
         <div className="NoteRecord-title">{record.name}</div>
-        <small className="NoteRecord-time">
-          {moment(record.updateTs * 1000).format('MMM DD YYYY')}
-        </small>
+        <small className="NoteRecord-time">{formatTime(record.updateTs)}</small>
       </li>
     )
   }
