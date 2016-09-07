@@ -35,7 +35,7 @@ ReactDOM.render(
   <Provider modalsStore={modalsStore}>
     <div>
       <NotesPage store={notesStore} />
-      <ModalsContainer store={modalsStore} />
+      <ModalsContainer />
       {devTools}
     </div>
   </Provider>,

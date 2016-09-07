@@ -118,6 +118,7 @@ a:visited {
 
   .Modal {
     position: relative;
+    background-color: $base-bg-color;
 
     width: 50%;
     max-width: 768px;

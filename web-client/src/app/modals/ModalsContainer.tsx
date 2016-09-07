@@ -4,14 +4,14 @@ import * as cx from 'classnames'
 import ModalsStore from './store'
 
 interface IProps {
-  store: ModalsStore,
+  modalsStore?: ModalsStore,
 }
 
-@observer
+@observer(['modalsStore'])
 class ModalsContainer extends React.Component<IProps, {}> {
 
   render (): JSX.Element {
-    const modal = this.props.store.visibleModal
+    const modal = this.props.modalsStore!.visibleModal
 
     return (
       <div className={cx('ModalsContainer', { 'is-hidden': !modal })}>
