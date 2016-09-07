@@ -10,27 +10,28 @@ interface IProps {
   isVisible: boolean,
   name: Name,
   onCancel: () => void,
-  onDelete: () => void,
+  onClose: () => void,
 }
 
 @observer
-class DeleteNoteModal extends React.Component<IProps, {}> {
+class CloseEditorModal extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { isVisible } = this.props
     return (
       <Modal isOpen={isVisible}>
-        <ModalTitle>Delete note</ModalTitle>
+        <ModalTitle>Close editor</ModalTitle>
 
         <ModalBody>
-          Do you really want to delete note <b>{this.props.name}</b>?
+          There are unsaved changes in <b>{this.props.name}</b>. <br />
+          Do you really want to close editor?
         </ModalBody>
 
         <ModalFooter>
           <LinkButton type="secondary" onClick={this.props.onCancel}>
             Cancel
           </LinkButton>
-          <LinkButton type="dangerous" onClick={this.props.onDelete}>
-            Delete
+          <LinkButton type="dangerous" onClick={this.props.onClose}>
+            Close
           </LinkButton>
         </ModalFooter>
       </Modal>
@@ -38,4 +39,4 @@ class DeleteNoteModal extends React.Component<IProps, {}> {
   }
 }
 
-export default DeleteNoteModal
+export default CloseEditorModal

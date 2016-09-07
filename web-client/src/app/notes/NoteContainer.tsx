@@ -18,7 +18,7 @@ class NoteContainer extends React.Component<IProps, {}> {
       return <NoteEditor note={note}
                          onSave={this.onClickSave}
                          onDelete={this.onClickDelete}
-                         onCancel={this.onClickCancel} />
+                         onCloseEditor={this.onCloseEditor} />
     } else {
       return <NoteView note={note}
                        onEdit={this.onClickEdit}
@@ -44,8 +44,7 @@ class NoteContainer extends React.Component<IProps, {}> {
     )
   }
 
-  onClickCancel = () => {
-    // FIXME modal dialog here
+  onCloseEditor = () => {
     this.props.note.edit(false)
   }
 }

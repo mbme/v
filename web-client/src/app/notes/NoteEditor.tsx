@@ -3,21 +3,25 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import {Note as NoteEntity, Name, Data} from './store'
 import LinkButton from 'common/LinkButton'
+
 import DeleteNoteModal from './DeleteNoteModal'
+import CloseEditorModal from './CloseEditorModal'
 
 interface IProps {
   note: NoteEntity,
   onDelete: () => void,
   onSave: (name: Name, data: Data) => void,
-  onCancel: () => void,
+  onCloseEditor: () => void,
 }
+
+type ModalState = 'deleteNote' | 'closeEditor' | 'hidden'
 
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
-  @observable showDeleteNoteModal: boolean = false
+  @observable modalState: ModalState = 'hidden'
 
-  @action showModal(show: boolean): void {
-    this.showDeleteNoteModal = show
+  @action changeModalState(state: ModalState): void {
+    this.modalState = state
   }
 
   render (): JSX.Element {
@@ -27,12 +31,17 @@ class NoteEditor extends React.Component<IProps, {}> {
         <div className="NoteEditor-toolbar">
           <LinkButton onClick={this.onClickSave}>Save</LinkButton>
           <LinkButton type="dangerous" onClick={this.onClickDelete}>Delete</LinkButton>
-          <LinkButton type="secondary" onClick={this.onClickCancel}>Cancel</LinkButton>
+          <LinkButton type="secondary" onClick={this.onClickCloseEditor}>Close editor</LinkButton>
 
-          <DeleteNoteModal isVisible={this.showDeleteNoteModal}
+          <DeleteNoteModal isVisible={this.modalState === 'deleteNote'}
                            name={note.name}
-                           onCancel={this.onCancelDelete}
+                           onCancel={this.hideModal}
                            onDelete={this.props.onDelete} />
+
+          <CloseEditorModal isVisible={this.modalState === 'closeEditor'}
+                            name={note.name}
+                            onCancel={this.hideModal}
+                            onClose={this.props.onCloseEditor} />
         </div>
         <input className="NoteEditor-name"
                ref="name"
@@ -47,23 +56,41 @@ class NoteEditor extends React.Component<IProps, {}> {
     )
   }
 
+  getNameInputValue(): string {
+    return (this.refs['name'] as HTMLInputElement).value
+  }
+
+  getDataTextareaValue(): string {
+    return (this.refs['data'] as HTMLTextAreaElement).value
+  }
+
   onClickSave = () => {
-    const name = (this.refs['name'] as HTMLInputElement).value
-    const data = (this.refs['data'] as HTMLTextAreaElement).value
+    const name = this.getNameInputValue()
+    const data = this.getDataTextareaValue()
 
     this.props.onSave(name, data)
   }
 
   onClickDelete = () => {
-    this.showModal(true)
+    this.changeModalState('deleteNote')
   }
 
-  onCancelDelete = () => {
-    this.showModal(false)
+  hideModal = () => {
+    this.changeModalState('hidden')
   }
 
-  onClickCancel = () => {
-    this.props.onCancel()
+  onClickCloseEditor = () => {
+    const name = this.getNameInputValue()
+    const data = this.getDataTextareaValue()
+    const { note } = this.props
+
+    // do not show modal if there are no changes
+    if (note.name === name && note.data === data) {
+      this.props.onCloseEditor() // just close editor
+      return
+    }
+
+    this.changeModalState('closeEditor')
   }
 }
 
