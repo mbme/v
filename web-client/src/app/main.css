@@ -5,6 +5,10 @@ $base-line-height: 1.4;
 
 $light-border: 1px solid #E6E0E6;
 
+$color-primary: #4078c0;
+$color-secondary: #bdbdbd;
+$color-dangerous: #dd2c00;
+
 /*       MIXINS        */
 
 @define-mixin like-a-h {
@@ -54,8 +58,16 @@ input[type=text], textarea {
 
 .LinkButton {
   text-decoration: none;
-  color: #4078c0;
+  color: $color-primary;
   font-weight: 600;
+
+  &.is-dangerous {
+    color: $color-dangerous;
+  }
+
+  &.is-secondary {
+    color: $color-secondary;
+  }
 }
 
 .ModalsContainer {
@@ -91,7 +103,7 @@ input[type=text], textarea {
 
     min-height: 150px;
 
-    margin: 5% auto;
+    margin: 10% auto;
 
     padding: 0.5vr 1vr;
 

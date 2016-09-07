@@ -25,7 +25,7 @@ class AddNoteModal extends React.Component<IProps, {}> {
         </ModalBody>
 
         <ModalFooter>
-          <LinkButton onClick={this.props.onCancel}>
+          <LinkButton type="secondary" onClick={this.props.onCancel}>
             Cancel
           </LinkButton>
           <LinkButton onClick={this.onClickCreate}>

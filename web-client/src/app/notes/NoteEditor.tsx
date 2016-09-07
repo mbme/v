@@ -17,7 +17,7 @@ class NoteEditor extends React.Component<IProps, {}> {
       <div className="NoteEditor">
         <div className="NoteEditor-toolbar">
           <LinkButton onClick={this.onClickSave}>Save</LinkButton>
-          <LinkButton onClick={this.onClickCancel}>Cancel</LinkButton>
+          <LinkButton type="secondary" onClick={this.onClickCancel}>Cancel</LinkButton>
         </div>
         <input className="NoteEditor-name"
                ref="name"
