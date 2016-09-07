@@ -9,6 +9,8 @@ $color-primary: #4078c0;
 $color-secondary: #bdbdbd;
 $color-dangerous: #dd2c00;
 
+$link-color: $color-primary;
+
 /*       MIXINS        */
 
 @define-mixin like-a-h {
@@ -35,6 +37,7 @@ html {
   color: $base-font-color;
   /* for postcss-vertical-rhythm */
   font: $base-font-size/$base-line-height Open Sans, Helvetica, Arial, sans-serif;
+  overflow-y: scroll;
 }
 
 
@@ -53,11 +56,28 @@ input[type=text], textarea {
   padding: 5px 10px;
 }
 
+a,
+a:visited {
+  color: $link-color;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 
 /*       COMMON        */
 
 .LinkButton {
-  text-decoration: none;
+  border: 0 none;
+  background-color: inherit;
+  padding: 0;
+  &:focus {
+    outline: none;
+  }
+
+  cursor: pointer;
   color: $color-primary;
   font-weight: 600;
 
@@ -107,7 +127,6 @@ input[type=text], textarea {
 
     padding: 0.5vr 1vr;
 
-    background-color: white;
     @mixin paper-shadow;
     border-radius: 2px 2px;
 
@@ -133,6 +152,18 @@ input[type=text], textarea {
 
 /*       PAGES        */
 
+.FileLink {
+  font-size: 0.85em;
+
+  a {
+    color: #00695c;
+    font-weight: 600;
+  }
+
+  small {
+    padding-left: 5px;
+  }
+}
 
 .NotesPage {
   $left-width: 350px;
@@ -230,6 +261,8 @@ input[type=text], textarea {
 
   .Note {
     @mixin NoteContainer;
+    display: flex;
+    flex-direction: column;
 
     &-name {
       margin-top: 0;
@@ -237,6 +270,13 @@ input[type=text], textarea {
 
     &-data {
       white-space: pre;
+      flex: 1;
+    }
+
+    &-files {
+      border-top: $border;
+      margin-top: 1vr;
+      padding: 0.5vr 0;
     }
   }
 

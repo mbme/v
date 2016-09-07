@@ -61,3 +61,23 @@ export function fuzzySearch(needle: string, haystack: string): boolean {
 
   return true
 }
+
+const B_IN_KB = 1024
+const B_IN_MB = B_IN_KB * 1024
+const B_IN_GB = B_IN_MB * 1024
+
+export function formatBytes (bytes: number): string {
+  if (bytes < B_IN_KB) {
+    return bytes + 'B'
+  }
+
+  if (bytes < B_IN_MB) {
+    return (bytes / B_IN_KB).toFixed(1) + 'KB'
+  }
+
+  if (bytes < B_IN_GB) {
+    return (bytes / B_IN_MB).toFixed(2) + 'MB'
+  }
+
+  return (bytes / B_IN_GB).toFixed(2) + 'GB'
+}

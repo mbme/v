@@ -15,11 +15,10 @@ class LinkButton extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { type } = this.props
     return (
-      <a className={cx('LinkButton', this.props.className, { [`is-${type}`]: !!type })}
-         href=""
-         onClick={this.onClick}>
+      <button className={cx('LinkButton', this.props.className, { [`is-${type}`]: !!type })}
+              onClick={this.onClick}>
         [{this.props.children}]
-      </a>
+      </button>
     )
   }
 

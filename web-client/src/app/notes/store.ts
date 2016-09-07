@@ -57,7 +57,7 @@ export class NoteRecord {
 type FileName = string
 type FileSize = number
 
-interface IFileInfo {
+export interface IFileInfo {
   name: FileName,
   size: FileSize,
   create_ts: Timestamp,
