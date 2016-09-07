@@ -1,7 +1,7 @@
 import NotesStore from 'notes/store'
 import ModalsStore from 'modals/store'
 
-export default class AppState {
+export class AppState {
   readonly notesStore: NotesStore
   readonly modalsStore: ModalsStore
 
@@ -13,4 +13,11 @@ export default class AppState {
   init(): void {
     this.notesStore.loadRecordsList()
   }
+}
+
+export function initState(): AppState {
+  const state = new AppState()
+  state.init()
+
+  return state
 }

@@ -22,7 +22,7 @@ const PATHS = {
 const config = {
   env: NODE_ENV,
   entry: {
-    app: path.resolve(PATHS.app, 'index.tsx'),
+    app: path.resolve(PATHS.app, 'index.js'),
     vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'moment', 'classnames'],
   },
   output: {
