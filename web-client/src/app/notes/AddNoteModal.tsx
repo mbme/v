@@ -1,11 +1,15 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import Modal from 'modals/Modal'
+import {Name} from 'notes/store'
+
+import Modal, { ModalTitle, ModalBody, ModalFooter } from 'modals/Modal'
 import LinkButton from 'common/LinkButton'
 
 interface IProps {
   isVisible: boolean,
+  onCancel: () => void,
+  onCreate: (name: Name) => void,
 }
 
 @observer
@@ -13,29 +17,28 @@ class AddNoteModal extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { isVisible } = this.props
     return (
-      <Modal className="AddNote" isOpen={isVisible}>
-        <h1>Create new note</h1>
+      <Modal className="AddNoteModal" isOpen={isVisible}>
+        <ModalTitle>Create new note</ModalTitle>
 
-        <input name="" type="text" placeholder="Note name"/>
+        <ModalBody>
+          <input ref="name" type="text" placeholder="Note name" />
+        </ModalBody>
 
-        <div className="buttons">
-          <LinkButton onClick={this.onClickCancel}>
+        <ModalFooter>
+          <LinkButton onClick={this.props.onCancel}>
             Cancel
           </LinkButton>
-          <LinkButton onClick={this.onClickSave}>
-            Save
+          <LinkButton onClick={this.onClickCreate}>
+            Create
           </LinkButton>
-        </div>
+        </ModalFooter>
       </Modal>
     )
   }
 
-  onClickSave = () => {
-    console.error('save')
-  }
-
-  onClickCancel = () => {
-    console.error('cancel')
+  onClickCreate = () => {
+    const name = (this.refs['name'] as HTMLInputElement).value
+    this.props.onCreate(name)
   }
 }
 

@@ -64,4 +64,38 @@ class Modal extends React.Component<IProps, {}> {
   }
 }
 
+interface IModalProps {
+  className?: string,
+}
+
+export class ModalTitle extends React.Component<IModalProps, {}> {
+  render(): JSX.Element {
+    return (
+      <h2 className={cx('ModalTitle', this.props.className)}>
+        {this.props.children}
+      </h2>
+    )
+  }
+}
+
+export class ModalBody extends React.Component<IModalProps, {}> {
+  render(): JSX.Element {
+    return (
+      <div className={cx('ModalBody', this.props.className)}>
+        {this.props.children}
+      </div>
+    )
+  }
+}
+
+export class ModalFooter extends React.Component<IModalProps, {}> {
+  render(): JSX.Element {
+    return (
+      <div className={cx('ModalFooter', this.props.className)}>
+        {this.props.children}
+      </div>
+    )
+  }
+}
+
 export default Modal

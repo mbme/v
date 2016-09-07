@@ -98,6 +98,23 @@ input[type=text], textarea {
     background-color: white;
     @mixin paper-shadow;
     border-radius: 2px 2px;
+
+    .ModalTitle {
+      margin: 0.5vr 0;
+    }
+
+    .ModalBody {
+      padding: 0.5vr 0;
+    }
+
+    .ModalFooter {
+      padding: 0.5vr 0;
+      text-align: center;
+
+      .LinkButton {
+        margin: 0 1vr;
+      }
+    }
   }
 }
 
@@ -227,5 +244,17 @@ input[type=text], textarea {
     &-data {
       height: 190px;
     }
+  }
+}
+
+.AddNoteModal.Modal {
+  width: 400px;
+
+  .ModalTitle {
+    text-align: center;
+  }
+
+  input {
+    width: 100%;
   }
 }

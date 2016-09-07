@@ -2,7 +2,7 @@ import * as React from 'react'
 import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 
-import NotesStore from './store'
+import NotesStore, {Name} from './store'
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
 import NotesList from './NotesList'
@@ -37,7 +37,9 @@ class NotesPage extends React.Component<IProps, {}> {
             Add Note
           </LinkButton>
 
-          <AddNoteModal isVisible={this.showAddNoteModal} />
+          <AddNoteModal isVisible={this.showAddNoteModal}
+                        onCreate={this.onCreateNote}
+                        onCancel={this.onModalCancel} />
         </div>
       </div>
     )
@@ -45,12 +47,15 @@ class NotesPage extends React.Component<IProps, {}> {
 
   onClickPlus = () => {
     this.showModal(true)
-
-    setTimeout(() => {
-      this.showModal(false)
-    }, 3000)
   }
 
+  onModalCancel = () => {
+    this.showModal(false)
+  }
+
+  onCreateNote = (name: Name) => {
+    this.props.store.createNote(name).then(() => this.showModal(false))
+  }
 }
 
 export default NotesPage
