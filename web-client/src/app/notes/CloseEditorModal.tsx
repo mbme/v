@@ -7,7 +7,6 @@ import Modal, { ModalTitle, ModalBody, ModalFooter } from 'modals/Modal'
 import LinkButton from 'common/LinkButton'
 
 interface IProps {
-  isVisible: boolean,
   name: Name,
   onCancel: () => void,
   onClose: () => void,
@@ -16,9 +15,8 @@ interface IProps {
 @observer
 class CloseEditorModal extends React.Component<IProps, {}> {
   render (): JSX.Element {
-    const { isVisible } = this.props
     return (
-      <Modal isOpen={isVisible}>
+      <Modal>
         <ModalTitle>Close editor</ModalTitle>
 
         <ModalBody>

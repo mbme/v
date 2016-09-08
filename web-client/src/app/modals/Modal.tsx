@@ -7,7 +7,6 @@ import ModalsStore from './store'
 
 interface IProps {
   className?: string,
-  isOpen: boolean,
   modalsStore?: ModalsStore,
 }
 
@@ -19,24 +18,7 @@ class Modal extends React.Component<IProps, {}> {
 
   componentWillMount(): void {
     this.id = Modal._counter += 1
-
-    // show modal if required while rendering first time
-    if (this.props.isOpen) {
-      this.showModal()
-    }
-  }
-
-  componentWillReceiveProps(props: IProps): void {
-    // update modal visibility only if "isOpen" property changed
-    if (this.props.isOpen === props.isOpen) {
-      return
-    }
-
-    if (props.isOpen) {
-      this.showModal()
-    } else {
-      this.hideModal()
-    }
+    this.props.modalsStore!.open(this.id, this.renderModal())
   }
 
   componentWillUnmount(): void {
@@ -49,14 +31,6 @@ class Modal extends React.Component<IProps, {}> {
         {this.props.children}
       </div>
     )
-  }
-
-  showModal(): void {
-    this.props.modalsStore!.openOrUpdate(this.id, this.renderModal())
-  }
-
-  hideModal(): void {
-    this.props.modalsStore!.close(this.id)
   }
 
   render (): null {

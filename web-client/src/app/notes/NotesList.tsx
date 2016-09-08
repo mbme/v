@@ -19,7 +19,7 @@ class NotesList extends React.Component<IProps, {}> {
     )
 
     return (
-      <div>
+      <div className="NotesList">
         {notes}
       </div>
     )

@@ -1,12 +1,15 @@
 import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
+import * as cx from 'classnames'
 import {Note as NoteEntity, Name, Data} from './store'
 import LinkButton from 'common/LinkButton'
+import FilePicker from './FilePicker'
 import FileLink from './FileLink'
 
 import DeleteNoteModal from './DeleteNoteModal'
 import CloseEditorModal from './CloseEditorModal'
+import UploadFileModal from './UploadFileModal'
 
 interface IProps {
   note: NoteEntity,
@@ -15,7 +18,16 @@ interface IProps {
   onCloseEditor: () => void,
 }
 
-type ModalState = 'deleteNote' | 'closeEditor' | 'hidden'
+class UploadFileState {
+  files: File[] = []
+  constructor(files: FileList) {
+    for (let i = 0; i < files.length; i += 1) {
+      this.files.push(files[i])
+    }
+  }
+}
+
+type ModalState = 'hidden' | 'deleteNote' | 'closeEditor' | UploadFileState
 
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
@@ -23,6 +35,30 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   @action changeModalState(state: ModalState): void {
     this.modalState = state
+  }
+
+  renderModals (): JSX.Element | undefined {
+    switch (this.modalState) {
+      case 'deleteNote':
+        return (
+          <DeleteNoteModal name={this.props.note.name}
+                           onCancel={this.hideModal}
+                           onDelete={this.props.onDelete} />
+        )
+      case 'closeEditor':
+        return (
+          <CloseEditorModal name={this.props.note.name}
+                            onCancel={this.hideModal}
+                            onClose={this.props.onCloseEditor} />
+        )
+      default:
+        if (this.modalState instanceof UploadFileState) {
+          return (
+            <UploadFileModal files={this.modalState.files}
+                             onCancel={this.hideModal} />
+          )
+        }
+    }
   }
 
   render (): JSX.Element {
@@ -34,21 +70,11 @@ class NoteEditor extends React.Component<IProps, {}> {
 
     return (
       <div className="NoteEditor">
-
+        {this.renderModals()}
         <div className="NoteEditor-toolbar">
           <LinkButton onClick={this.onClickSave}>Save</LinkButton>
           <LinkButton type="dangerous" onClick={this.onClickDelete}>Delete</LinkButton>
           <LinkButton type="secondary" onClick={this.onClickCloseEditor}>Close editor</LinkButton>
-
-          <DeleteNoteModal isVisible={this.modalState === 'deleteNote'}
-                           name={note.name}
-                           onCancel={this.hideModal}
-                           onDelete={this.props.onDelete} />
-
-          <CloseEditorModal isVisible={this.modalState === 'closeEditor'}
-                            name={note.name}
-                            onCancel={this.hideModal}
-                            onClose={this.props.onCloseEditor} />
         </div>
 
         <input className="NoteEditor-name"
@@ -62,7 +88,10 @@ class NoteEditor extends React.Component<IProps, {}> {
                   placeholder="Type something here"
                   defaultValue={note.data} />
 
-        <div className="NoteEditor-files">{files}</div>
+        <FilePicker label="Attach file"
+                    onFilesPicked={this.onFilesPicked} />
+
+        <div className={cx('NoteEditor-files', { 'is-hidden': !files.length })}>{files}</div>
       </div>
     )
   }
@@ -102,6 +131,10 @@ class NoteEditor extends React.Component<IProps, {}> {
     }
 
     this.changeModalState('closeEditor')
+  }
+
+  onFilesPicked = (files: FileList) => {
+    this.changeModalState(new UploadFileState(files))
   }
 }
 

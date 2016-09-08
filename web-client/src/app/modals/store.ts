@@ -16,8 +16,7 @@ export default class ModalsStore {
     }
   }
 
-  @action openOrUpdate(id: Id, el: JSX.Element): void {
-    this.close(id)
+  @action open(id: Id, el: JSX.Element): void {
     this.modals.unshift({ id, el })
   }
 

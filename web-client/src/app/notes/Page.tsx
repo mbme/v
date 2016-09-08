@@ -23,8 +23,18 @@ class NotesPage extends React.Component<IProps, {}> {
 
   render (): JSX.Element {
     const { store } = this.props
+
+    let modal: JSX.Element | undefined
+    if (this.showAddNoteModal) {
+      modal = (
+        <AddNoteModal onCreate={this.onCreateNote}
+                      onCancel={this.onModalCancel} />
+      )
+    }
+
     return (
       <div className="NotesPage">
+        {modal}
         <div className="NotesPage-left">
           <SearchBox store={store} />
           <NoteRecordsList store={store} />
@@ -36,10 +46,6 @@ class NotesPage extends React.Component<IProps, {}> {
                       onClick={this.onClickPlus} >
             Add Note
           </LinkButton>
-
-          <AddNoteModal isVisible={this.showAddNoteModal}
-                        onCreate={this.onCreateNote}
-                        onCancel={this.onModalCancel} />
         </div>
       </div>
     )

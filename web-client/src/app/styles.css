@@ -265,6 +265,10 @@ a:visited {
       border-top: $border;
       margin-top: 1vr;
       padding: 0.5vr 0;
+
+      &.is-hidden {
+        display: none;
+      }
     }
   }
 
@@ -281,19 +285,21 @@ a:visited {
       white-space: pre;
       flex: 1;
     }
-
-    &-files.is-hidden {
-      display: none;
-    }
   }
 
   .NoteEditor {
     @mixin NoteContainer;
 
+    &-name,
+    &-data,
+    .FilePicker,
+    &-files {
+      margin-top: 0.5vr;
+    }
+
     &-name, &-data {
       display: block;
       width: 100%;
-      margin-top: 0.5vr;
     }
 
     &-name {
@@ -302,6 +308,10 @@ a:visited {
 
     &-data {
       height: 190px;
+    }
+
+    .FilePicker {
+      text-align: right;
     }
   }
 }
@@ -315,5 +325,11 @@ a:visited {
 
   input {
     width: 100%;
+  }
+}
+
+.FilePicker {
+  form {
+    display: none;
   }
 }

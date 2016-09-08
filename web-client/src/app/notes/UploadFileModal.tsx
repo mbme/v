@@ -1,25 +1,28 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Name} from 'notes/store'
-
 import Modal, { ModalTitle, ModalBody, ModalFooter } from 'modals/Modal'
 import LinkButton from 'common/LinkButton'
+import {formatBytes} from 'utils'
 
 interface IProps {
+  files: File[],
   onCancel: () => void,
-  onCreate: (name: Name) => void,
 }
 
 @observer
-class AddNoteModal extends React.Component<IProps, {}> {
+class UploadFileModal extends React.Component<IProps, {}> {
   render (): JSX.Element {
+    const { files } = this.props
+    const file = files[0]
     return (
-      <Modal className="AddNoteModal">
-        <ModalTitle>Create new note</ModalTitle>
+      <Modal className="UploadFileModal">
+        <ModalTitle>Upload files</ModalTitle>
 
         <ModalBody>
-          <input ref="name" type="text" placeholder="Note name" />
+          <input ref="fileName" type="text" defaultValue={file.name} />
+          <span className="fileSize">{formatBytes(file.size)}</span>
+          <span className="fileType">{file.type}</span>
         </ModalBody>
 
         <ModalFooter>
@@ -27,7 +30,7 @@ class AddNoteModal extends React.Component<IProps, {}> {
             Cancel
           </LinkButton>
           <LinkButton onClick={this.onClickCreate}>
-            Create
+            Upload
           </LinkButton>
         </ModalFooter>
       </Modal>
@@ -35,9 +38,8 @@ class AddNoteModal extends React.Component<IProps, {}> {
   }
 
   onClickCreate = () => {
-    const name = (this.refs['name'] as HTMLInputElement).value
-    this.props.onCreate(name)
+
   }
 }
 
-export default AddNoteModal
+export default UploadFileModal
