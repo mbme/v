@@ -22,7 +22,7 @@ class LinkButton extends React.Component<IProps, {}> {
     )
   }
 
-  onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     this.props.onClick()
   }

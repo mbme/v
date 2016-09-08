@@ -1,5 +1,6 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
+import * as cx from 'classnames'
 import {Note as NoteEntity} from './store'
 import LinkButton from 'common/LinkButton'
 import FileLink from './FileLink'
@@ -27,7 +28,7 @@ class Note extends React.Component<IProps, {}> {
         </div>
         <h1 className="Note-name">{note.name}</h1>
         <div className="Note-data">{note.data}</div>
-        <div className="Note-files">{files}</div>
+        <div className={cx('Note-files', { 'is-hidden': !files.length })}>{files}</div>
       </div>
     )
   }

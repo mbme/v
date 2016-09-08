@@ -281,6 +281,10 @@ a:visited {
       white-space: pre;
       flex: 1;
     }
+
+    &-files.is-hidden {
+      display: none;
+    }
   }
 
   .NoteEditor {
