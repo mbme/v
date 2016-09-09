@@ -3,7 +3,7 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
-import ModalsStore from './store'
+import ModalsStore, {Id} from './store'
 
 interface IProps {
   className?: string,
@@ -24,25 +24,22 @@ function renderModal (props: ReactProps): JSX.Element {
 
 @observer(['modalsStore'])
 class Modal extends React.Component<IProps, {}> {
-  private static _counter: number = 0
-
-  id: number
+  id: Id
 
   componentWillMount(): void {
-    this.id = Modal._counter += 1
-    this.props.modalsStore!.open(
-      this.id, renderModal(this.props)
+    this.id = this.props.modalsStore!.openModal(
+      renderModal(this.props)
     )
   }
 
   componentWillUpdate(nextProps: ReactProps): void {
-    this.props.modalsStore!.update(
+    this.props.modalsStore!.updateModal(
       this.id, renderModal(nextProps)
     )
   }
 
   componentWillUnmount(): void {
-    this.props.modalsStore!.close(this.id)
+    this.props.modalsStore!.closeModal(this.id)
   }
 
   render (): null {

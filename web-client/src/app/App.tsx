@@ -8,6 +8,7 @@ import { AppState } from 'AppState'
 
 import NotesPage from 'notes/Page'
 import ModalsContainer from 'modals/ModalsContainer'
+import ToastsContainer from 'modals/ToastsContainer'
 
 interface IProps {
   state: AppState,
@@ -23,6 +24,7 @@ export class App extends React.Component<IProps, {}> {
         <div>
           <NotesPage store={state.notesStore} />
           <ModalsContainer />
+          <ToastsContainer />
           {devTools}
         </div>
       </Provider>

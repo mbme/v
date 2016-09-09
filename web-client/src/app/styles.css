@@ -170,6 +170,29 @@ pre {
   }
 }
 
+.ToastsContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 101;
+
+  padding: 1vr;
+
+  display: flex;
+  flex-direction: column;
+
+  .Toast {
+    width: 300px;
+    min-height: 70px;
+
+    margin: 1vr;
+    padding: 1vr;
+
+    background-color: yellow;
+    border: $light-border;
+  }
+}
+
 
 /*       PAGES        */
 
