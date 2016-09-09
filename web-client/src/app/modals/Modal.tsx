@@ -10,6 +10,18 @@ interface IProps {
   modalsStore?: ModalsStore,
 }
 
+type ReactProps = IProps & {
+  children?: {} | undefined
+}
+
+function renderModal (props: ReactProps): JSX.Element {
+  return (
+    <div className={cx('Modal', props.className)} >
+      {props.children}
+    </div>
+  )
+}
+
 @observer(['modalsStore'])
 class Modal extends React.Component<IProps, {}> {
   private static _counter: number = 0
@@ -18,19 +30,19 @@ class Modal extends React.Component<IProps, {}> {
 
   componentWillMount(): void {
     this.id = Modal._counter += 1
-    this.props.modalsStore!.open(this.id, this.renderModal())
+    this.props.modalsStore!.open(
+      this.id, renderModal(this.props)
+    )
+  }
+
+  componentWillUpdate(nextProps: ReactProps): void {
+    this.props.modalsStore!.update(
+      this.id, renderModal(nextProps)
+    )
   }
 
   componentWillUnmount(): void {
     this.props.modalsStore!.close(this.id)
-  }
-
-  renderModal (): JSX.Element {
-    return (
-      <div className={cx('Modal', this.props.className)} >
-        {this.props.children}
-      </div>
-    )
   }
 
   render (): null {

@@ -20,11 +20,24 @@ export default class ModalsStore {
     this.modals.unshift({ id, el })
   }
 
+  @action update(id: Id, el: JSX.Element): void {
+    const pos = this.findModalPos(id)
+
+    if (pos > -1) {
+      this.modals.splice(pos, 1, { id, el })
+    } else {
+      throw new Error(`Can't find modal with id ${id}`)
+    }
+  }
+
   @action close(id: Id): void {
-    const pos = this.modals.findIndex(modal => modal.id === id)
+    const pos = this.findModalPos(id)
     if (pos > -1) {
       this.modals.splice(pos, 1)
     }
   }
 
+  private findModalPos(id: Id): number {
+    return this.modals.findIndex(modal => modal.id === id)
+  }
 }
