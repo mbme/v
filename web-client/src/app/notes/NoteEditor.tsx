@@ -2,6 +2,7 @@ import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
+import * as config from 'config'
 import {Note as NoteEntity, Name, Data, IFileInfo} from './store'
 import LinkButton from 'common/LinkButton'
 import FilePicker from './FilePicker'
@@ -15,7 +16,7 @@ import UploadFileModal from './UploadFileModal'
 interface IProps {
   note: NoteEntity,
   onDelete: () => void,
-  onSave: (name: Name, data: Data) => void,
+  onSave: (name: Name, data: Data) => Promise<void>,
   onFileUpload: (name: string, file: File) => Promise<void>,
   onDeleteFile: (file: IFileInfo) => Promise<void>,
   onCloseEditor: () => void,
@@ -135,11 +136,23 @@ class NoteEditor extends React.Component<IProps, {}> {
     return (this.refs['data'] as HTMLTextAreaElement).value
   }
 
+  maybeCloseEditor = () => {
+    if (config.closeEditorOnSave) {
+      this.props.onCloseEditor()
+    }
+  }
+
   onClickSave = () => {
     const name = this.getNameInputValue()
     const data = this.getDataTextareaValue()
 
-    this.props.onSave(name, data)
+    // do not save if there are no changes
+    if (this.props.note.name === name && this.props.note.data === data) {
+      this.maybeCloseEditor()
+      return
+    }
+
+    this.props.onSave(name, data).then(this.maybeCloseEditor)
   }
 
   onClickDelete = () => {
