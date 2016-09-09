@@ -3,6 +3,7 @@ import * as React from 'react'
 import NotesStore, {Note as NoteEntity, Name, Data, FileName} from './store'
 import NoteView from './Note'
 import NoteEditor from './NoteEditor'
+import * as config from 'config'
 
 interface IProps {
   note: NoteEntity,
@@ -41,7 +42,11 @@ class NoteContainer extends React.Component<IProps, {}> {
 
   onClickSave = (name: Name, data: Data) => {
     this.props.store.updateNote(this.props.note.id, name, data).then(
-      () => this.props.note.edit(false)
+      () => {
+        if (config.closeEditorOnSave) {
+          this.props.note.edit(false)
+        }
+      }
     )
   }
 

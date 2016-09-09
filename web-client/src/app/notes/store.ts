@@ -147,8 +147,12 @@ export default class NotesStore {
 
     return http.PUT(`/api/notes/${id}`, body)
       .then((note: INoteDTO) => {
-        this.replaceOpenNote(new Note(note))
         this.loadRecordsList()
+
+        const oldNote = this.getOpenNote(id)
+        if (oldNote) {
+          this.replaceOpenNote(new Note(note, oldNote.editMode))
+        }
       })
   }
 
@@ -218,5 +222,12 @@ export default class NotesStore {
 
   private indexOfNote(id: Id): number {
     return this.openNotes.findIndex(note => note.id === id)
+  }
+
+  private getOpenNote(id: Id): Note | undefined {
+    const pos = this.indexOfNote(id)
+    if (pos > -1) {
+      return this.openNotes[pos]
+    }
   }
 }
