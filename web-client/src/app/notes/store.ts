@@ -1,6 +1,7 @@
 import {action, observable, computed} from 'mobx'
 import {http, fuzzySearch} from 'utils'
 import * as config from 'config'
+import * as urls from 'urls'
 
 // type RecordType = 'note'
 
@@ -106,7 +107,7 @@ export default class NotesStore {
 
   @action
   loadRecordsList(): void {
-    http.GET('/api/records').then((data: INoteRecordDTO[]) => {
+    http.GET(urls.records()).then((data: INoteRecordDTO[]) => {
       this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
     })
   }
@@ -117,7 +118,7 @@ export default class NotesStore {
       return
     }
 
-    http.GET(`/api/notes/${id}`).then((data: INoteDTO) => {
+    http.GET(urls.note(id)).then((data: INoteDTO) => {
       this.addOpenNote(new Note(data))
     })
   }
@@ -135,7 +136,7 @@ export default class NotesStore {
   createNote(name: Name): Promise<void> {
     const body = JSON.stringify({ name, 'data': '' })
 
-    return http.POST(`/api/notes`, body).then((data: INoteDTO) => {
+    return http.POST(urls.notes(), body).then((data: INoteDTO) => {
       this.addOpenNote(new Note(data, true))
       this.loadRecordsList()
     })
@@ -145,7 +146,7 @@ export default class NotesStore {
   updateNote(id: Id, name: Name, data: Data): Promise<void> {
     const body = JSON.stringify({id, name, data})
 
-    return http.PUT(`/api/notes/${id}`, body)
+    return http.PUT(urls.note(id), body)
       .then((note: INoteDTO) => {
         this.loadRecordsList()
 
@@ -158,7 +159,7 @@ export default class NotesStore {
 
   @action
   deleteNote(id: Id): Promise<void> {
-    return http.DELETE(`/api/notes/${id}`).then(() => {
+    return http.DELETE(urls.note(id)).then(() => {
       this.closeNote(id)
       this.loadRecordsList()
     })
@@ -170,7 +171,7 @@ export default class NotesStore {
     data.append('name', name)
     data.append('data', file)
 
-    return http.POST(`/api/notes/${noteId}/files`, data)
+    return http.POST(urls.noteFiles(noteId), data)
       .then(() => this.loadNoteFiles(noteId))
       .then((files: IFileInfo[]) => {
         this.replaceNoteFiles(noteId, files)
@@ -179,7 +180,7 @@ export default class NotesStore {
 
   @action
   deleteFile(noteId: Id, file: IFileInfo): Promise<void> {
-    return http.DELETE(`/api/notes/${noteId}/files/${file.name}`)
+    return http.DELETE(urls.noteFile(noteId, file.name))
       .then(() => this.loadNoteFiles(noteId))
       .then((files: IFileInfo[]) => {
         this.replaceNoteFiles(noteId, files)
@@ -196,7 +197,7 @@ export default class NotesStore {
   }
 
   private loadNoteFiles(noteId: Id): Promise<IFileInfo[]> {
-    return http.GET(`/api/notes/${noteId}/files`)
+    return http.GET(urls.noteFiles(noteId))
   }
 
   @action
