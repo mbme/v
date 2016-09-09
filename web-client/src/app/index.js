@@ -9,6 +9,11 @@ require('styles.css')
 // do not allow to modify state out of actions
 useStrict(true)
 
+// prevent default drag-n-drop behavior in Chrome
+// (it just opens the file in the current tab)
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => e.preventDefault());
+
 if (__DEV__) {
   document.title += ' -> DEV'
 }

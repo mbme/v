@@ -73,7 +73,7 @@ class NoteEditor extends React.Component<IProps, {}> {
     )
 
     return (
-      <div className="NoteEditor">
+      <div className="NoteEditor" onDrop={this.onDrop}>
         {this.renderModals()}
         <div className="NoteEditor-toolbar">
           <LinkButton onClick={this.onClickSave}>Save</LinkButton>
@@ -139,6 +139,10 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   onFilesPicked = (files: FileList) => {
     this.changeModalState(new UploadFileState(files))
+  }
+
+  onDrop = (e: React.DragEvent<HTMLElement>) => {
+    this.changeModalState(new UploadFileState(e.dataTransfer.files))
   }
 }
 
