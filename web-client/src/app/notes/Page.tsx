@@ -15,26 +15,18 @@ interface IProps {
 
 @observer
 class NotesPage extends React.Component<IProps, {}> {
-  @observable showAddNoteModal: boolean = false
+  @observable modal: JSX.Element | undefined
 
-  @action showModal(show: boolean): void {
-    this.showAddNoteModal = show
+  @action showModal(modal?: JSX.Element): void {
+    this.modal = modal
   }
 
   render (): JSX.Element {
     const { store } = this.props
 
-    let modal: JSX.Element | undefined
-    if (this.showAddNoteModal) {
-      modal = (
-        <AddNoteModal onCreate={this.onCreateNote}
-                      onCancel={this.onModalCancel} />
-      )
-    }
-
     return (
       <div className="NotesPage">
-        {modal}
+        {this.modal}
         <div className="NotesPage-left">
           <SearchBox store={store} />
           <NoteRecordsList store={store} />
@@ -52,15 +44,18 @@ class NotesPage extends React.Component<IProps, {}> {
   }
 
   onClickPlus = () => {
-    this.showModal(true)
+    this.showModal(
+      <AddNoteModal onCreate={this.onCreateNote}
+                    onCancel={this.onModalCancel} />
+    )
   }
 
   onModalCancel = () => {
-    this.showModal(false)
+    this.showModal()
   }
 
   onCreateNote = (name: Name) => {
-    this.props.store.createNote(name).then(() => this.showModal(false))
+    this.props.store.createNote(name).then(() => this.showModal())
   }
 }
 

@@ -22,62 +22,12 @@ interface IProps {
   onCloseEditor: () => void,
 }
 
-class UploadFileState {
-  files: File[] = []
-  constructor(files: FileList) {
-    for (let i = 0; i < files.length; i += 1) {
-      this.files.push(files[i])
-    }
-  }
-}
-
-class DeleteFileState {
-  constructor (public file: IFileInfo) {}
-}
-
-type ModalState = 'hidden' | 'deleteNote' | 'closeEditor' | UploadFileState | DeleteFileState
-
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
-  @observable modalState: ModalState = 'hidden'
+  @observable modal: JSX.Element | undefined
 
-  @action changeModalState(state: ModalState): void {
-    this.modalState = state
-  }
-
-  renderModals (): JSX.Element | undefined {
-    switch (this.modalState) {
-      case 'deleteNote':
-        return (
-          <DeleteNoteModal name={this.props.note.name}
-                           onCancel={this.hideModal}
-                           onDelete={this.props.onDelete} />
-        )
-      case 'closeEditor':
-        return (
-          <CloseEditorModal name={this.props.note.name}
-                            onCancel={this.hideModal}
-                            onClose={this.props.onCloseEditor} />
-        )
-      default:
-        if (this.modalState instanceof UploadFileState) {
-          return (
-            <UploadFileModal noteName={this.props.note.name}
-                             file={this.modalState.files[0]}
-                             onClose={this.hideModal}
-                             onCancel={this.hideModal}
-                             onUpload={this.props.onFileUpload} />
-          )
-        }
-
-        if (this.modalState instanceof DeleteFileState) {
-          return (
-            <DeleteFileModal file={this.modalState.file}
-                             onCancel={this.hideModal}
-                             onDelete={this.onDeleteFile} />
-          )
-        }
-    }
+  @action changeModal(modal?: JSX.Element): void {
+    this.modal = modal
   }
 
   renderFiles(): JSX.Element[] {
@@ -100,7 +50,7 @@ class NoteEditor extends React.Component<IProps, {}> {
 
     return (
       <div className="NoteEditor" onDrop={this.onDrop}>
-        {this.renderModals()}
+        {this.modal}
         <div className="NoteEditor-toolbar">
           <LinkButton onClick={this.onClickSave}>Save</LinkButton>
           <LinkButton type="dangerous" onClick={this.onClickDelete}>Delete</LinkButton>
@@ -156,11 +106,15 @@ class NoteEditor extends React.Component<IProps, {}> {
   }
 
   onClickDelete = () => {
-    this.changeModalState('deleteNote')
+    this.changeModal(
+      <DeleteNoteModal name={this.props.note.name}
+                       onCancel={this.hideModal}
+                       onDelete={this.props.onDelete} />
+    )
   }
 
   hideModal = () => {
-    this.changeModalState('hidden')
+    this.changeModal()
   }
 
   onClickCloseEditor = () => {
@@ -174,19 +128,37 @@ class NoteEditor extends React.Component<IProps, {}> {
       return
     }
 
-    this.changeModalState('closeEditor')
+    this.changeModal(
+      <CloseEditorModal name={note.name}
+                        onCancel={this.hideModal}
+                        onClose={this.props.onCloseEditor} />
+    )
+  }
+
+  showFileUploadModal(files: FileList): void {
+    this.changeModal(
+      <UploadFileModal noteName={this.props.note.name}
+                       file={files[0]}
+                       onClose={this.hideModal}
+                       onCancel={this.hideModal}
+                       onUpload={this.props.onFileUpload} />
+    )
   }
 
   onFilesPicked = (files: FileList) => {
-    this.changeModalState(new UploadFileState(files))
+    this.showFileUploadModal(files)
   }
 
   onDrop = (e: React.DragEvent<HTMLElement>) => {
-    this.changeModalState(new UploadFileState(e.dataTransfer.files))
+    this.showFileUploadModal(e.dataTransfer.files)
   }
 
   onClickDeleteFile = (file: IFileInfo) => {
-    this.changeModalState(new DeleteFileState(file))
+    this.changeModal(
+      <DeleteFileModal file={file}
+                       onCancel={this.hideModal}
+                       onDelete={this.onDeleteFile} />
+    )
   }
 
   onDeleteFile = (file: IFileInfo) => {
