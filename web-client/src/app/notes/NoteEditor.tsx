@@ -15,6 +15,7 @@ interface IProps {
   note: NoteEntity,
   onDelete: () => void,
   onSave: (name: Name, data: Data) => void,
+  onFileUpload: (name: string, file: File) => Promise<void>,
   onCloseEditor: () => void,
 }
 
@@ -54,8 +55,11 @@ class NoteEditor extends React.Component<IProps, {}> {
       default:
         if (this.modalState instanceof UploadFileState) {
           return (
-            <UploadFileModal files={this.modalState.files}
-                             onCancel={this.hideModal} />
+            <UploadFileModal noteName={this.props.note.name}
+                             file={this.modalState.files[0]}
+                             onClose={this.hideModal}
+                             onCancel={this.hideModal}
+                             onUpload={this.props.onFileUpload} />
           )
         }
     }

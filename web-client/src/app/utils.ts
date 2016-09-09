@@ -1,5 +1,11 @@
 function fetchData<T>(request: Request): Promise<T> {
-  return fetch(request).then(response => response.json())
+  return fetch(request).then((response) => {
+    if (response.status === 200) {
+      return response.json()
+    } else {
+      throw new Error('bad status code: ' + response.status)
+    }
+  })
 }
 
 export const http = {

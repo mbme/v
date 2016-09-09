@@ -8,8 +8,13 @@ $light-border: 1px solid #E6E0E6;
 $color-primary: #4078c0;
 $color-secondary: #bdbdbd;
 $color-dangerous: #dd2c00;
+$color-error: #dd2c00;
+$color-progress: #388e3c;
 
 $link-color: $color-primary;
+
+$font-monospace: Menlo, Monaco, "Courier New", monospace;
+$font-common: Open Sans, Helvetica, Arial, sans-serif;
 
 /*       MIXINS        */
 
@@ -27,6 +32,16 @@ $link-color: $color-primary;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
+@define-mixin like-pre {
+  font-family: $font-common;
+
+  white-space: pre;
+  white-space: pre-wrap;
+
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
 /*       BASIC STYLES        */
 
 * {
@@ -37,7 +52,7 @@ html {
   background: $base-bg-color;
   color: $base-font-color;
   /* for postcss-vertical-rhythm */
-  font: $base-font-size/$base-line-height Open Sans, Helvetica, Arial, sans-serif;
+  font: $base-font-size/$base-line-height $font-common;
   overflow-y: scroll;
 }
 
@@ -65,6 +80,10 @@ a:visited {
   &:hover {
     text-decoration: underline;
   }
+}
+
+pre {
+  @mixin like-pre;
 }
 
 
@@ -156,6 +175,8 @@ a:visited {
 
 .FileLink {
   font-size: 0.85em;
+  display: inline-block;
+  margin: 0.5vr;
 
   a {
     color: #00695c;
@@ -282,7 +303,7 @@ a:visited {
     }
 
     &-data {
-      white-space: pre;
+      @mixin like-pre;
       flex: 1;
     }
   }
@@ -331,5 +352,23 @@ a:visited {
 .FilePicker {
   form {
     display: none;
+  }
+}
+
+.UploadFileModal.Modal {
+  width: 500px;
+
+  .fileType, .fileSize {
+    margin-left: 1vr;
+    @mixin like-secondary;
+  }
+
+  .error-msg {
+    margin-top: 1vr;
+    color: $color-error;
+  }
+
+  .uploading {
+    color: $color-progress;
   }
 }

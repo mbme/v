@@ -21,8 +21,10 @@ renderApp(state)
 
 // hot reloading
 if (__DEV__ && module.hot) {
-  module.hot.accept('./App', () => {
+  function updater() {
     const { renderApp } = require('App')
     renderApp(state)
-  })
+  }
+
+  module.hot.accept('./App', updater)
 }

@@ -1,6 +1,6 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import NotesStore, {Note as NoteEntity, Name, Data} from './store'
+import NotesStore, {Note as NoteEntity, Name, Data, FileName} from './store'
 import NoteView from './Note'
 import NoteEditor from './NoteEditor'
 
@@ -18,6 +18,7 @@ class NoteContainer extends React.Component<IProps, {}> {
       return <NoteEditor note={note}
                          onSave={this.onClickSave}
                          onDelete={this.onClickDelete}
+                         onFileUpload={this.onFileUpload}
                          onCloseEditor={this.onCloseEditor} />
     } else {
       return <NoteView note={note}
@@ -46,6 +47,10 @@ class NoteContainer extends React.Component<IProps, {}> {
 
   onCloseEditor = () => {
     this.props.note.edit(false)
+  }
+
+  onFileUpload = (name: FileName, file: File): Promise<void> => {
+    return this.props.store.uploadFile(this.props.note.id, name, file)
   }
 }
 

@@ -10,10 +10,10 @@ export type Data = string
 type Timestamp = number
 
 interface INoteRecordDTO {
-  id: Id,
-  name: Name,
-  create_ts: Timestamp,
-  update_ts: Timestamp,
+  readonly id: Id,
+  readonly name: Name,
+  readonly create_ts: Timestamp,
+  readonly update_ts: Timestamp,
 }
 
 export class NoteRecord {
@@ -54,22 +54,22 @@ export class NoteRecord {
   }
 }
 
-type FileName = string
+export type FileName = string
 type FileSize = number
 
 export interface IFileInfo {
-  name: FileName,
-  size: FileSize,
-  create_ts: Timestamp,
+  readonly name: FileName,
+  readonly size: FileSize,
+  readonly create_ts: Timestamp,
 }
 
 export interface INoteDTO {
-  id: Id,
-  name: Name,
-  create_ts: Timestamp,
-  update_ts: Timestamp,
-  data: Data,
-  files: IFileInfo[],
+  readonly id: Id,
+  readonly name: Name,
+  readonly create_ts: Timestamp,
+  readonly update_ts: Timestamp,
+  readonly data: Data,
+  readonly files: ReadonlyArray<IFileInfo>,
 }
 
 export class Note {
@@ -78,7 +78,7 @@ export class Note {
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
   readonly data: Data
-  readonly files: IFileInfo[]
+  files: ReadonlyArray<IFileInfo>
 
   @observable editMode: boolean
 
@@ -161,12 +161,29 @@ export default class NotesStore {
   }
 
   @action
+  uploadFile(noteId: Id, name: FileName, file: File): Promise<void> {
+    const data = new FormData()
+    data.append('name', name)
+    data.append('data', file)
+
+    return http.POST(`/api/notes/${noteId}/files`, data)
+      .then(() => this.loadNoteFiles(noteId))
+      .then((files: IFileInfo[]) => {
+        this.replaceNoteFiles(noteId, files)
+      })
+  }
+
+  @action
   setRecordsFilter(filter: string): void {
     this.recordsFilter = filter
   }
 
   isOpen(id: Id): boolean {
     return this.indexOfNote(id) > -1
+  }
+
+  private loadNoteFiles(noteId: Id): Promise<IFileInfo[]> {
+    return http.GET(`/api/notes/${noteId}/files`)
   }
 
   @action
@@ -177,6 +194,18 @@ export default class NotesStore {
   @action
   private addOpenNote(note: Note): void {
     this.openNotes.unshift(note)
+  }
+
+  @action
+  private replaceNoteFiles(id: Id, files: IFileInfo[]): void {
+    const pos = this.indexOfNote(id)
+    if (pos === -1) {
+      return
+    }
+
+    const note = this.openNotes[pos]
+
+    note.files = files
   }
 
   @action
