@@ -5,7 +5,7 @@ import {observer} from 'mobx-react'
 import Modal, { ModalTitle, ModalBody, ModalFooter } from 'modals/Modal'
 import LinkButton from 'common/LinkButton'
 import {formatBytes} from 'utils'
-import {FileName} from './store'
+import {FileName} from 'types'
 
 interface IProps {
   file: File,

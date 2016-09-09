@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {IFileInfo} from 'notes/store'
+import {IFileInfo} from 'types'
 
 import Modal, { ModalTitle, ModalBody, ModalFooter } from 'modals/Modal'
 import LinkButton from 'common/LinkButton'

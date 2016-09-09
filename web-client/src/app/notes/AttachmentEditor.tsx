@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 
-import {IFileInfo, Id} from './store'
+import {IFileInfo, Id} from 'types'
 
 import LinkButton from 'common/LinkButton'
 import FileLink from './FileLink'

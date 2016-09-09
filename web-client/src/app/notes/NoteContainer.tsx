@@ -1,6 +1,7 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import NotesStore, {Note as NoteEntity, Name, Data, FileName, IFileInfo} from './store'
+import {Name, FileName, IFileInfo} from 'types'
+import NotesStore, {Note as NoteEntity, NoteData} from './store'
 import NoteView from './Note'
 import NoteEditor from './NoteEditor'
 
@@ -40,7 +41,7 @@ class NoteContainer extends React.Component<IProps, {}> {
     this.props.note.edit(true)
   }
 
-  onClickSave = (name: Name, data: Data): Promise<void> => {
+  onClickSave = (name: Name, data: NoteData): Promise<void> => {
     return this.props.store.updateNote(this.props.note.id, name, data)
   }
 

@@ -1,7 +1,8 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import NotesStore, { Id } from './store'
+import {Id} from 'types'
+import NotesStore from './store'
 import NoteRecord from './NoteRecord'
 
 interface IProps {

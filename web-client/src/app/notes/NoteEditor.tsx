@@ -3,7 +3,8 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 import * as config from 'config'
-import {Note as NoteEntity, Name, Data, IFileInfo} from './store'
+import {Name, IFileInfo} from 'types'
+import {Note as NoteEntity, NoteData} from './store'
 import LinkButton from 'common/LinkButton'
 import FilePicker from './FilePicker'
 import AttachmentEditor from './AttachmentEditor'
@@ -16,7 +17,7 @@ import UploadFileModal from './UploadFileModal'
 interface IProps {
   note: NoteEntity,
   onDelete: () => void,
-  onSave: (name: Name, data: Data) => Promise<void>,
+  onSave: (name: Name, data: NoteData) => Promise<void>,
   onFileUpload: (name: string, file: File) => Promise<void>,
   onDeleteFile: (file: IFileInfo) => Promise<void>,
   onCloseEditor: () => void,

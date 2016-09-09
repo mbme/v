@@ -3,7 +3,7 @@ import * as React from 'react'
 import {formatBytes} from 'utils'
 import {noteFile} from 'urls'
 
-import {IFileInfo, Id} from './store'
+import {IFileInfo, Id} from 'types'
 
 interface IProps {
   noteId: Id,

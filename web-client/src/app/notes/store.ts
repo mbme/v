@@ -2,13 +2,9 @@ import {action, observable, computed} from 'mobx'
 import {http, fuzzySearch} from 'utils'
 import * as config from 'config'
 import * as urls from 'urls'
+import {Id, Name, Timestamp, FileName, IFileInfo} from 'types'
 
-// type RecordType = 'note'
-
-export type Id = number
-export type Name = string
-export type Data = string
-type Timestamp = number
+export type NoteData = string
 
 interface INoteRecordDTO {
   readonly id: Id,
@@ -55,21 +51,12 @@ export class NoteRecord {
   }
 }
 
-export type FileName = string
-type FileSize = number
-
-export interface IFileInfo {
-  readonly name: FileName,
-  readonly size: FileSize,
-  readonly create_ts: Timestamp,
-}
-
 export interface INoteDTO {
   readonly id: Id,
   readonly name: Name,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
-  readonly data: Data,
+  readonly data: NoteData,
   readonly files: ReadonlyArray<IFileInfo>,
 }
 
@@ -78,7 +65,7 @@ export class Note {
   readonly name: Name
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
-  readonly data: Data
+  readonly data: NoteData
   files: ReadonlyArray<IFileInfo>
 
   @observable editMode: boolean
@@ -143,7 +130,7 @@ export default class NotesStore {
   }
 
   @action
-  updateNote(id: Id, name: Name, data: Data): Promise<void> {
+  updateNote(id: Id, name: Name, data: NoteData): Promise<void> {
     const body = JSON.stringify({id, name, data})
 
     return http.PUT(urls.note(id), body)

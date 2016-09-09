@@ -1,4 +1,4 @@
-import {Id, FileName} from 'notes/store'
+import {Id, FileName} from 'types'
 
 export function records(): string {
   return '/api/records'
