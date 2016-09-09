@@ -22,12 +22,12 @@ function expectFailure(promise, status) {
 }
 
 function listRecords() {
-  return utils.intoPromise(request.get(url('/records')));
+  return utils.intoPromise(request.get(url('/api/records')));
 }
 
 function postNote(note) {
   return utils.intoPromise(
-    request.post(url('/notes')).send(note)
+    request.post(url('/api/notes')).send(note)
   );
 }
 
@@ -44,19 +44,19 @@ function postRandomNote() {
 
 function putNote(id, note) {
   return utils.intoPromise(
-    request.put(url(`/notes/${id}`)).send(note)
+    request.put(url(`/api/notes/${id}`)).send(note)
   );
 }
 
 function getNote(id) {
   return utils.intoPromise(
-    request.get(url(`/notes/${id}`))
+    request.get(url(`/api/notes/${id}`))
   );
 }
 
 function deleteNote(id) {
   return utils.intoPromise(
-    request.delete(url(`/notes/${id}`))
+    request.delete(url(`/api/notes/${id}`))
   );
 }
 
@@ -94,7 +94,7 @@ describe('GET /records', () => {
   });
 });
 
-describe('POST /notes', () => {
+describe('POST /api/notes', () => {
   it('should create new note', () => {
     const note = randomNote();
 
@@ -110,7 +110,7 @@ describe('POST /notes', () => {
   });
 });
 
-describe('GET /notes/:id', () => {
+describe('GET /api/notes/:id', () => {
   it('should return existing note', () => {
     const note = randomNote();
 
@@ -137,7 +137,7 @@ describe('GET /notes/:id', () => {
   });
 });
 
-describe('PUT /notes/:id', () => {
+describe('PUT /api/notes/:id', () => {
   it('should update note', () => {
     const note = randomNote();
     const note1 = randomNote();
@@ -166,7 +166,7 @@ describe('PUT /notes/:id', () => {
   });
 });
 
-describe('DELETE /notes/:id', () => {
+describe('DELETE /api/notes/:id', () => {
   it('should remove note', () => {
     const note = randomNote();
 
@@ -200,7 +200,7 @@ function genAttachmentName() {
 
 function postFile(noteId, path, name) {
   return utils.intoPromise(
-    request.post(url(`/notes/${noteId}/files`))
+    request.post(url(`/api/notes/${noteId}/files`))
       .field('name', name)
       .attach('data', path)
   );
@@ -212,23 +212,23 @@ function postStandardFile(noteId, name) {
 
 function getNoteFiles(id) {
   return utils.intoPromise(
-    request.get(url(`/notes/${id}/files`))
+    request.get(url(`/api/notes/${id}/files`))
   );
 }
 
 function getFile(noteId, name) {
   return utils.intoPromise(
-    request.get(url(`/notes/${noteId}/files/${name}`))
+    request.get(url(`/api/notes/${noteId}/files/${name}`))
   );
 }
 
 function deleteFile(noteId, name) {
   return utils.intoPromise(
-    request.delete(url(`/notes/${noteId}/files/${name}`))
+    request.delete(url(`/api/notes/${noteId}/files/${name}`))
   );
 }
 
-describe('POST /notes/:id/files', () => {
+describe('POST /api/notes/:id/files', () => {
   it('should create new file', () => {
     const fileName = genAttachmentName();
 
@@ -246,7 +246,7 @@ describe('POST /notes/:id/files', () => {
   });
 });
 
-describe('GET /notes/:id/files/:name', () => {
+describe('GET /api/notes/:id/files/:name', () => {
   it('should return file content', () => {
     const fileName = genAttachmentName();
     let id;
@@ -277,7 +277,7 @@ describe('GET /notes/:id/files/:name', () => {
   });
 });
 
-describe('GET /notes/:id/files', () => {
+describe('GET /api/notes/:id/files', () => {
   it('should return all note files', () => {
     let noteId;
     return postRandomNote().then(({ body }) => noteId = body.id)
@@ -301,7 +301,7 @@ describe('GET /notes/:id/files', () => {
 });
 
 
-describe('DELETE /notes/:id/files/:name', () => {
+describe('DELETE /api/notes/:id/files/:name', () => {
   it('should delete attached file', () => {
     const fileName = genAttachmentName();
     let id;

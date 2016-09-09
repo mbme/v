@@ -103,9 +103,6 @@ if (isProdMode) {
     proxy: {
       '/api': {
         target: 'http://' + require('../server/config.json').server_address,
-        pathRewrite: {
-          '^/api': '',
-        },
       },
     }
   };

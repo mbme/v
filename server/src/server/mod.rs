@@ -70,23 +70,23 @@ pub fn start_server(config: &Config) {
 
     let mut router = Router::new();
 
-    // GET /records
+    // GET /api/records
     {
         let storage = storage.clone();
-        router.get("/records", move |_: &mut Request| {
+        router.get("/api/records", move |_: &mut Request| {
 
             let records = itry!(storage.list_records(), status::InternalServerError);
 
             let dtos: Vec<RecordDTO> = convert_all_into(records);
 
             create_response(&dtos)
-        });
+        }, "get records");
     }
 
-    // POST /notes
+    // POST /api/notes
     {
         let storage = storage.clone();
-        router.post("/notes", move |req: &mut Request| {
+        router.post("/api/notes", move |req: &mut Request| {
             // parse request body
             let body = itry!(
                 get_request_body(req), status::BadRequest
@@ -110,13 +110,13 @@ pub fn start_server(config: &Config) {
             let dto: NoteDTO = note.into();
 
             create_response(&dto)
-        });
+        }, "add note");
     }
 
-    // PUT /notes/:id
+    // PUT /api/notes/:id
     {
         let storage = storage.clone();
-        router.put("/notes/:id", move |req: &mut Request| {
+        router.put("/api/notes/:id", move |req: &mut Request| {
             let id = itry!(get_id(req), status::BadRequest);
 
             // parse request body
@@ -144,13 +144,13 @@ pub fn start_server(config: &Config) {
             let dto: NoteDTO = note.into();
 
             create_response(&dto)
-        });
+        }, "update note");
     }
 
-    // GET /notes/:id
+    // GET /api/notes/:id
     {
         let storage = storage.clone();
-        router.get("/notes/:id", move |req: &mut Request| {
+        router.get("/api/notes/:id", move |req: &mut Request| {
             let id = itry!(get_id(req), status::BadRequest);
 
             let note_opt = itry!(storage.get_note(id));
@@ -159,13 +159,13 @@ pub fn start_server(config: &Config) {
             let dto: NoteDTO = note.into();
 
             create_response(&dto)
-        });
+        }, "get note");
     }
 
-    // DELETE /notes/:id
+    // DELETE /api/notes/:id
     {
         let storage = storage.clone();
-        router.delete("/notes/:id", move |req: &mut Request| {
+        router.delete("/api/notes/:id", move |req: &mut Request| {
             let id = itry!(get_id(req), status::BadRequest);
 
             let status = if itry!(storage.remove_note(id)) {
@@ -175,13 +175,13 @@ pub fn start_server(config: &Config) {
             };
 
             Ok(Response::with(status))
-        });
+        }, "delete note");
     }
 
-    // GET /notes/:id/files
+    // GET /api/notes/:id/files
     {
         let storage = storage.clone();
-        router.get("/notes/:id/files", move |req: &mut Request| {
+        router.get("/api/notes/:id/files", move |req: &mut Request| {
             let id = itry!(get_id(req), status::BadRequest);
 
             let note_opt = itry!(storage.get_note(id));
@@ -190,13 +190,13 @@ pub fn start_server(config: &Config) {
             let dto: NoteDTO = note.into();
 
             create_response(&dto.files)
-        });
+        }, "get note files");
     }
 
-    // POST /notes/:id/files
+    // POST /api/notes/:id/files
     {
         let storage = storage.clone();
-        router.post("/notes/:id/files", move |req: &mut Request| {
+        router.post("/api/notes/:id/files", move |req: &mut Request| {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
@@ -221,13 +221,13 @@ pub fn start_server(config: &Config) {
                 },
                 _ => Ok(Response::with(status::BadRequest)),
             }
-        });
+        }, "add note file");
     }
 
-    // GET /notes/:id/files/:name
+    // GET /api/notes/:id/files/:name
     {
         let storage = storage.clone();
-        router.get("/notes/:id/files/:name", move |req: &mut Request| {
+        router.get("/api/notes/:id/files/:name", move |req: &mut Request| {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
@@ -240,13 +240,13 @@ pub fn start_server(config: &Config) {
             } else {
                 Ok(Response::with(status::NotFound))
             }
-        });
+        }, "get note file");
     }
 
-    // DELETE /notes/:id/files/:name
+    // DELETE /api/notes/:id/files/:name
     {
         let storage = storage.clone();
-        router.delete("/notes/:id/files/:name", move |req: &mut Request| {
+        router.delete("/api/notes/:id/files/:name", move |req: &mut Request| {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
@@ -261,7 +261,7 @@ pub fn start_server(config: &Config) {
             };
 
             Ok(Response::with(status))
-        });
+        }, "delete note file");
     }
 
     println!("running server on {}", &config.server_address);
