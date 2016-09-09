@@ -178,6 +178,15 @@ export default class NotesStore {
   }
 
   @action
+  deleteFile(noteId: Id, file: IFileInfo): Promise<void> {
+    return http.DELETE(`/api/notes/${noteId}/files/${file.name}`)
+      .then(() => this.loadNoteFiles(noteId))
+      .then((files: IFileInfo[]) => {
+        this.replaceNoteFiles(noteId, files)
+      })
+  }
+
+  @action
   setRecordsFilter(filter: string): void {
     this.recordsFilter = filter
   }

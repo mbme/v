@@ -2,12 +2,13 @@ import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
-import {Note as NoteEntity, Name, Data} from './store'
+import {Note as NoteEntity, Name, Data, IFileInfo} from './store'
 import LinkButton from 'common/LinkButton'
 import FilePicker from './FilePicker'
-import FileLink from './FileLink'
+import AttachmentEditor from './AttachmentEditor'
 
 import DeleteNoteModal from './DeleteNoteModal'
+import DeleteFileModal from './DeleteFileModal'
 import CloseEditorModal from './CloseEditorModal'
 import UploadFileModal from './UploadFileModal'
 
@@ -16,6 +17,7 @@ interface IProps {
   onDelete: () => void,
   onSave: (name: Name, data: Data) => void,
   onFileUpload: (name: string, file: File) => Promise<void>,
+  onDeleteFile: (file: IFileInfo) => Promise<void>,
   onCloseEditor: () => void,
 }
 
@@ -28,7 +30,11 @@ class UploadFileState {
   }
 }
 
-type ModalState = 'hidden' | 'deleteNote' | 'closeEditor' | UploadFileState
+class DeleteFileState {
+  constructor (public file: IFileInfo) {}
+}
+
+type ModalState = 'hidden' | 'deleteNote' | 'closeEditor' | UploadFileState | DeleteFileState
 
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
@@ -62,15 +68,34 @@ class NoteEditor extends React.Component<IProps, {}> {
                              onUpload={this.props.onFileUpload} />
           )
         }
+
+        if (this.modalState instanceof DeleteFileState) {
+          return (
+            <DeleteFileModal file={this.modalState.file}
+                             onCancel={this.hideModal}
+                             onDelete={this.onDeleteFile} />
+          )
+        }
     }
+  }
+
+  renderFiles(): JSX.Element[] {
+    const { note } = this.props
+
+    return note.files.map(
+      file => (
+        <AttachmentEditor key={file.name}
+                          noteId={note.id}
+                          file={file}
+                          onRemove={this.onClickDeleteFile} />
+      )
+    )
   }
 
   render (): JSX.Element {
     const { note } = this.props
 
-    const files = note.files.map(
-      file => <FileLink key={file.name} noteId={note.id} file={file} />
-    )
+    const files = this.renderFiles()
 
     return (
       <div className="NoteEditor" onDrop={this.onDrop}>
@@ -95,7 +120,9 @@ class NoteEditor extends React.Component<IProps, {}> {
         <FilePicker label="Attach file"
                     onFilesPicked={this.onFilesPicked} />
 
-        <div className={cx('NoteEditor-files', { 'is-hidden': !files.length })}>{files}</div>
+        <div className={cx('NoteEditor-files', { 'is-hidden': !files.length })}>
+          {files}
+        </div>
       </div>
     )
   }
@@ -143,6 +170,16 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   onDrop = (e: React.DragEvent<HTMLElement>) => {
     this.changeModalState(new UploadFileState(e.dataTransfer.files))
+  }
+
+  onClickDeleteFile = (file: IFileInfo) => {
+    this.changeModalState(new DeleteFileState(file))
+  }
+
+  onDeleteFile = (file: IFileInfo) => {
+    this.props.onDeleteFile(file).then(
+      () => this.hideModal()
+    )
   }
 }
 

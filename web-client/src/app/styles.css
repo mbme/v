@@ -334,6 +334,21 @@ pre {
     .FilePicker {
       text-align: right;
     }
+
+    &-files {
+      .Attachment {
+        display: inline-block;
+        margin-right: 0.5vr;
+
+        .FileLink {
+          margin-right: 5px;
+        }
+
+        .remove {
+          font-size: 0.85em;
+        }
+      }
+    }
   }
 }
 
