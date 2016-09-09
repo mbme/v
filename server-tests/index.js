@@ -1,5 +1,5 @@
 /* eslint arrow-body-style: 0 */
-/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions, no-return-assign */
 
 const utils = require('./utils');
 
@@ -7,6 +7,7 @@ const request = require('superagent');
 const expect = require('chai').expect;
 
 const SERVER_ADDRESS = require('../server/config.json').server_address;
+
 function url(path) {
   return `${SERVER_ADDRESS}${path}`;
 }
@@ -209,6 +210,12 @@ function postStandardFile(noteId, name) {
   return postFile(noteId, attachmentPath, name);
 }
 
+function getNoteFiles(id) {
+  return utils.intoPromise(
+    request.get(url(`/notes/${id}/files`))
+  );
+}
+
 function getFile(noteId, name) {
   return utils.intoPromise(
     request.get(url(`/notes/${noteId}/files/${name}`))
@@ -269,6 +276,30 @@ describe('GET /notes/:id/files/:name', () => {
     );
   });
 });
+
+describe('GET /notes/:id/files', () => {
+  it('should return all note files', () => {
+    let noteId;
+    return postRandomNote().then(({ body }) => noteId = body.id)
+      .then(() => postStandardFile(noteId, genAttachmentName()))
+      .then(() => postStandardFile(noteId, genAttachmentName()))
+      .then(() => Promise.all([getNote(noteId), getNoteFiles(noteId)]))
+      .then((results) => {
+        const noteFiles = results[0].body.files;
+        const files = results[1].body;
+        expect(files).to.deep.equal(noteFiles);
+      });
+  });
+
+  it('should return 404 NOT FOUND for non-existing note', () => {
+    return expectFailure(getNoteFiles(utils.randomInt()), 404);
+  });
+
+  it('should return 400 BAD REQUEST for invalid ids', () => {
+    return expectFailure(getNoteFiles('some-invalid-id'), 400);
+  });
+});
+
 
 describe('DELETE /notes/:id/files/:name', () => {
   it('should delete attached file', () => {

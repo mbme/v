@@ -178,6 +178,21 @@ pub fn start_server(config: &Config) {
         });
     }
 
+    // GET /notes/:id/files
+    {
+        let storage = storage.clone();
+        router.get("/notes/:id/files", move |req: &mut Request| {
+            let id = itry!(get_id(req), status::BadRequest);
+
+            let note_opt = itry!(storage.get_note(id));
+            let note = iexpect!(note_opt, status::NotFound);
+
+            let dto: NoteDTO = note.into();
+
+            create_response(&dto.files)
+        });
+    }
+
     // POST /notes/:id/files
     {
         let storage = storage.clone();
