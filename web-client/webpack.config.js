@@ -21,13 +21,10 @@ const PATHS = {
 
 const config = {
   env: NODE_ENV,
-  entry: {
-    app: path.resolve(PATHS.app, 'index.js'),
-    vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'moment', 'classnames'],
-  },
+  entry: path.resolve(PATHS.app, 'index.js'),
   output: {
     path: PATHS.build,
-    filename: 'app/[name].js',
+    filename: 'app.js',
     publicPath: '/',
   },
   stats: {
@@ -72,15 +69,12 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: 'src/index.html' }),
-    new webpack.optimize.CommonsChunkPlugin('vendor', 'app/vendor.bundle.js'),
-    new webpack.NoErrorsPlugin(),
     // do not load moment locales
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': NODE_ENV,
+      // 'process.env.NODE_ENV': NODE_ENV, // FIXME breaks production build
       __DEV__: JSON.stringify(!isProdMode),
     }),
-    new webpack.optimize.OccurenceOrderPlugin(),
   ],
 };
 
@@ -88,14 +82,26 @@ if (isProdMode) {
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
-      minimize: true,
       compress: {
         warnings: false,
         screw_ie8: true,
       },
+      output: {
+        comments: false
+      },
     })
   );
+  config.devtool = 'source-map';
+  config.ts = {
+    compilerOptions: {
+      sourceMap: true
+    }
+  };
+
 } else {
+  config.plugins.push(
+    new webpack.NoErrorsPlugin()
+  );
   config.devServer = {
     contentBase: PATHS.src,
     port: 8080,

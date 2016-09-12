@@ -1,6 +1,9 @@
 mod logger;
 mod dto;
 mod multipart;
+mod resources;
+
+use std::collections::HashMap;
 
 use iron::prelude::*;
 use iron::status;
@@ -42,6 +45,14 @@ fn create_response<T: Serialize> (data: &T) -> IronResult<Response> {
     let content_type = "application/json".parse::<Mime>().unwrap();
 
     Ok(Response::with((content_type, status::Ok, data)))
+}
+
+fn create_static_response (file_name: &str, files: &HashMap<&str, &str>) -> IronResult<Response> {
+    if let Some(&data) = files.get(file_name) {
+        Ok(Response::with((guess_mime_type(file_name), status::Ok, data)))
+    } else {
+        Ok(Response::with((status::NotFound, "Not Found")))
+    }
 }
 
 fn get_url_param (req: &Request, name: &str) -> Result<String> {
@@ -262,6 +273,23 @@ pub fn start_server(config: &Config) {
 
             Ok(Response::with(status))
         }, "delete note file");
+    }
+
+    // Serve static files
+    {
+        let static_files = resources::get_static_files();
+        router.get("/", move |_: &mut Request| {
+            create_static_response("index.html", &static_files)
+        }, "static_index_handler");
+    }
+    {
+        let static_files = resources::get_static_files();
+        router.get("/*", move |req: &mut Request| {
+            let path = req.url.path();
+            assert!(path.len() == 1);
+
+            create_static_response(path[0], &static_files)
+        }, "static_handler");
     }
 
     println!("running server on {}", &config.server_address);

@@ -22,7 +22,7 @@
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",
     "mobx-react-devtools": "^4.2.5",
-    "postcss-loader": "^0.11.1",
+    "postcss-loader": "^0.13.0",
     "postcss-mixins": "^5.2.0",
     "postcss-nested": "^1.0.0",
     "postcss-simple-vars": "^3.0.0",
@@ -39,7 +39,7 @@
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js --hot --inline --progress",
     "lint": "tslint --force \"src/**/*.tsx\" \"src/**/*.ts\"",
-    "prod": "NODE_ENV=production & webpack --config ./webpack.config.js --progress",
+    "prod": "NODE_ENV=production webpack --config ./webpack.config.js --progress",
     "gen-stats": "webpack --config ./webpack.config.js --progress --json > ./stats.json"
   },
   "author": "",
