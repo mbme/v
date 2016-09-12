@@ -8,6 +8,7 @@ import {IFileInfo, FileName} from 'types'
 
 import {InjectStore} from 'AppState'
 import NotesStore, {Note as NoteEntity} from './store'
+import ModalsStore from 'modals/store'
 
 import LinkButton from 'common/LinkButton'
 import FilePicker from './FilePicker'
@@ -25,6 +26,7 @@ interface IProps {
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
   @InjectStore notesStore: NotesStore
+  @InjectStore modalsStore: ModalsStore
 
   @observable modal: JSX.Element | undefined
 
@@ -116,12 +118,15 @@ class NoteEditor extends React.Component<IProps, {}> {
     this.changeModal(
       <DeleteNoteModal name={this.props.note.name}
                        onCancel={this.hideModal}
-                       onDelete={this.onDelete} />
+                       onDelete={this.deleteNote} />
     )
   }
 
-  onDelete = () => {
-    this.notesStore.deleteNote(this.props.note.id)
+  deleteNote = () => {
+    const { note } = this.props
+    this.notesStore.deleteNote(note.id).catch(
+      err => this.modalsStore.showErrorToast(`can't delete note ${note.name}`, err)
+    )
   }
 
   hideModal = () => {
@@ -151,7 +156,7 @@ class NoteEditor extends React.Component<IProps, {}> {
       <UploadFileModal noteName={this.props.note.name}
                        file={files[0]}
                        onCancel={this.hideModal}
-                       onUpload={this.onFileUpload} />
+                       onUpload={this.uploadFile} />
     )
   }
 
@@ -167,16 +172,17 @@ class NoteEditor extends React.Component<IProps, {}> {
     this.changeModal(
       <DeleteFileModal file={file}
                        onCancel={this.hideModal}
-                       onDelete={this.onDeleteFile} />
+                       onDelete={this.deleteFile} />
     )
   }
 
-  onDeleteFile = (file: IFileInfo) => {
+  deleteFile = (file: IFileInfo) => {
     this.notesStore.deleteFile(this.props.note.id, file)
+        .catch(err => this.modalsStore.showErrorToast(`failed to delete file ${file.name}`, err))
         .then(this.hideModal)
   }
 
-  onFileUpload = (name: FileName, file: File): Promise<void> => {
+  uploadFile = (name: FileName, file: File): Promise<void> => {
     return this.notesStore.uploadFile(this.props.note.id, name, file)
                .then(this.hideModal)
   }

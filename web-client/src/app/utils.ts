@@ -8,6 +8,16 @@ function fetchData<T>(request: Request): Promise<T> {
   })
 }
 
+function fetchExec(request: Request): Promise<void> {
+  return fetch(request).then((response) => {
+    if (response.status === 200) {
+      return response.json()
+    } else {
+      throw new Error('bad status code: ' + response.status)
+    }
+  })
+}
+
 export const http = {
   GET<T> (url: string): Promise<T> {
     return fetchData<T>(new Request(url))
@@ -28,7 +38,7 @@ export const http = {
   },
 
   DELETE (url: string): Promise<void> {
-    return fetch(new Request(url, {
+    return fetchExec(new Request(url, {
       'method': 'DELETE',
     }))
   },
