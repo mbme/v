@@ -1,6 +1,7 @@
+require('reflect-metadata')
+
 const { useStrict } = require('mobx')
 const { renderApp } = require('App')
-const { initState } = require('AppState')
 
 // STYLES
 require('normalize.css')
@@ -14,22 +15,19 @@ useStrict(true)
 document.addEventListener('dragover', e => e.preventDefault());
 document.addEventListener('drop', e => e.preventDefault());
 
+// init state
+require('AppState')
+
 if (__DEV__) {
   document.title += ' -> DEV'
 }
 
-// init stores
-const state = initState()
-
 // initial render
-renderApp(state)
+renderApp()
 
 // hot reloading
 if (__DEV__ && module.hot) {
-  function updater() {
-    const { renderApp } = require('App')
-    renderApp(state)
-  }
-
-  module.hot.accept('./App', updater)
+  module.hot.accept(
+    './App', () => require('App').renderApp()
+  )
 }

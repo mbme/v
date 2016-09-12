@@ -1,18 +1,21 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
-import {Note as NoteEntity} from './store'
+
+import {InjectStore} from 'AppState'
+import NotesStore, {Note as NoteEntity} from './store'
+
 import LinkButton from 'common/LinkButton'
 import FileLink from './FileLink'
 
 interface IProps {
   note: NoteEntity,
-  onClose: () => void,
-  onEdit: () => void,
 }
 
 @observer
 class Note extends React.Component<IProps, {}> {
+  @InjectStore store: NotesStore
+
   render (): JSX.Element {
     const { note } = this.props
 
@@ -34,11 +37,11 @@ class Note extends React.Component<IProps, {}> {
   }
 
   onClickClose = () => {
-    this.props.onClose()
+    this.store.closeNote(this.props.note.id)
   }
 
   onClickEdit = () => {
-    this.props.onEdit()
+    this.props.note.edit(true)
   }
 }
 

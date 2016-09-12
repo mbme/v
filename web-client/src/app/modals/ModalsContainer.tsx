@@ -1,17 +1,16 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
+
+import {InjectStore} from 'AppState'
 import ModalsStore from './store'
 
-interface IProps {
-  modalsStore?: ModalsStore,
-}
-
-@observer(['modalsStore'])
-class ModalsContainer extends React.Component<IProps, {}> {
+@observer
+class ModalsContainer extends React.Component<{}, {}> {
+  @InjectStore store: ModalsStore
 
   render (): JSX.Element {
-    const modal = this.props.modalsStore!.visibleModal
+    const modal = this.store.visibleModal
 
     return (
       <div className={cx('ModalsContainer', { 'is-hidden': !modal })}>
@@ -20,7 +19,6 @@ class ModalsContainer extends React.Component<IProps, {}> {
       </div>
     )
   }
-
 }
 
 export default ModalsContainer

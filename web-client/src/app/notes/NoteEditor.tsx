@@ -2,9 +2,13 @@ import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
+
 import * as config from 'config'
-import {Name, IFileInfo} from 'types'
-import {Note as NoteEntity, NoteData} from './store'
+import {IFileInfo, FileName} from 'types'
+
+import {InjectStore} from 'AppState'
+import NotesStore, {Note as NoteEntity} from './store'
+
 import LinkButton from 'common/LinkButton'
 import FilePicker from './FilePicker'
 import AttachmentEditor from './AttachmentEditor'
@@ -16,15 +20,12 @@ import UploadFileModal from './UploadFileModal'
 
 interface IProps {
   note: NoteEntity,
-  onDelete: () => void,
-  onSave: (name: Name, data: NoteData) => Promise<void>,
-  onFileUpload: (name: string, file: File) => Promise<void>,
-  onDeleteFile: (file: IFileInfo) => Promise<void>,
-  onCloseEditor: () => void,
 }
 
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
+  @InjectStore notesStore: NotesStore
+
   @observable modal: JSX.Element | undefined
 
   @action changeModal(modal?: JSX.Element): void {
@@ -89,8 +90,12 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   maybeCloseEditor = () => {
     if (config.closeEditorOnSave) {
-      this.props.onCloseEditor()
+      this.closeEditor()
     }
+  }
+
+  closeEditor = () => {
+    this.props.note.edit(false)
   }
 
   onClickSave = () => {
@@ -103,15 +108,20 @@ class NoteEditor extends React.Component<IProps, {}> {
       return
     }
 
-    this.props.onSave(name, data).then(this.maybeCloseEditor)
+    this.notesStore.updateNote(this.props.note.id, name, data)
+        .then(this.maybeCloseEditor)
   }
 
   onClickDelete = () => {
     this.changeModal(
       <DeleteNoteModal name={this.props.note.name}
                        onCancel={this.hideModal}
-                       onDelete={this.props.onDelete} />
+                       onDelete={this.onDelete} />
     )
+  }
+
+  onDelete = () => {
+    this.notesStore.deleteNote(this.props.note.id)
   }
 
   hideModal = () => {
@@ -125,14 +135,14 @@ class NoteEditor extends React.Component<IProps, {}> {
 
     // do not show modal if there are no changes
     if (note.name === name && note.data === data) {
-      this.props.onCloseEditor() // just close editor
+      this.closeEditor() // just close editor
       return
     }
 
     this.changeModal(
       <CloseEditorModal name={note.name}
                         onCancel={this.hideModal}
-                        onClose={this.props.onCloseEditor} />
+                        onClose={this.closeEditor} />
     )
   }
 
@@ -140,9 +150,8 @@ class NoteEditor extends React.Component<IProps, {}> {
     this.changeModal(
       <UploadFileModal noteName={this.props.note.name}
                        file={files[0]}
-                       onClose={this.hideModal}
                        onCancel={this.hideModal}
-                       onUpload={this.props.onFileUpload} />
+                       onUpload={this.onFileUpload} />
     )
   }
 
@@ -163,9 +172,13 @@ class NoteEditor extends React.Component<IProps, {}> {
   }
 
   onDeleteFile = (file: IFileInfo) => {
-    this.props.onDeleteFile(file).then(
-      () => this.hideModal()
-    )
+    this.notesStore.deleteFile(this.props.note.id, file)
+        .then(this.hideModal)
+  }
+
+  onFileUpload = (name: FileName, file: File): Promise<void> => {
+    return this.notesStore.uploadFile(this.props.note.id, name, file)
+               .then(this.hideModal)
   }
 }
 

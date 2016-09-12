@@ -3,11 +3,12 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
+
+import {InjectStore} from 'AppState'
 import ModalsStore, {Id} from './store'
 
 interface IProps {
   className?: string,
-  modalsStore?: ModalsStore,
 }
 
 type ReactProps = IProps & {
@@ -22,24 +23,26 @@ function renderModal (props: ReactProps): JSX.Element {
   )
 }
 
-@observer(['modalsStore'])
+@observer
 class Modal extends React.Component<IProps, {}> {
+  @InjectStore store: ModalsStore
+
   id: Id
 
   componentWillMount(): void {
-    this.id = this.props.modalsStore!.openModal(
+    this.id = this.store.openModal(
       renderModal(this.props)
     )
   }
 
   componentWillUpdate(nextProps: ReactProps): void {
-    this.props.modalsStore!.updateModal(
+    this.store.updateModal(
       this.id, renderModal(nextProps)
     )
   }
 
   componentWillUnmount(): void {
-    this.props.modalsStore!.closeModal(this.id)
+    this.store.closeModal(this.id)
   }
 
   render (): null {

@@ -13,7 +13,8 @@
     "moment": "^2.14.1",
     "normalize.css": "^4.2.0",
     "react": "^15.3.1",
-    "react-dom": "^15.3.1"
+    "react-dom": "^15.3.1",
+    "reflect-metadata": "^0.1.8"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.1",

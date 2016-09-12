@@ -1,21 +1,21 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
+import {InjectStore} from 'AppState'
 import NotesStore from './store'
-import NoteContainer from './NoteContainer'
 
-interface IProps {
-  store: NotesStore,
-}
+import NoteView from './Note'
+import NoteEditor from './NoteEditor'
 
 @observer
-class NotesList extends React.Component<IProps, {}> {
+class NotesList extends React.Component<{}, {}> {
+  @InjectStore store: NotesStore
 
   render (): JSX.Element {
-    const notes = this.props.store.openNotes.map(
-      note => <NoteContainer key={note.id}
-                             note={note}
-                             store={this.props.store} />
+    const notes = this.store.openNotes.map(
+      (note) => note.editMode
+            ? <NoteEditor key={note.id} note={note} />
+            : <NoteView key={note.id} note={note} />
     )
 
     return (

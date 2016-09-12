@@ -3,37 +3,43 @@ import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 
 import {Name} from 'types'
-import NotesStore from './store'
+import {InjectStore} from 'AppState'
+
+import NotesStore from 'notes/store'
+import ModalsStore from 'modals/store'
+
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
 import NotesList from './NotesList'
 import AddNoteModal from './AddNoteModal'
 import LinkButton from 'common/LinkButton'
 
-interface IProps {
-  store: NotesStore,
-}
-
 @observer
-class NotesPage extends React.Component<IProps, {}> {
+class NotesPage extends React.Component<{}, {}> {
+  @InjectStore notesStore: NotesStore
+  @InjectStore modalsStore: ModalsStore
+
   @observable modal: JSX.Element | undefined
 
   @action showModal(modal?: JSX.Element): void {
     this.modal = modal
   }
 
-  render (): JSX.Element {
-    const { store } = this.props
+  componentWillMount(): void { // FIXME load notes in router when opening the page
+    this.notesStore.loadRecordsList()
+        .catch(err => this.modalsStore.showErrorToast('Failed to load records list', err))
+  }
 
+  render (): JSX.Element {
     return (
       <div className="NotesPage">
         {this.modal}
         <div className="NotesPage-left">
-          <SearchBox store={store} />
-          <NoteRecordsList store={store} />
+          <SearchBox />
+          <NoteRecordsList />
         </div>
         <div className="NotesPage-center">
-          <NotesList store={store} />
+          <NotesList />
 
           <LinkButton className="NotesPage-plus"
                       onClick={this.onClickPlus} >
@@ -56,7 +62,7 @@ class NotesPage extends React.Component<IProps, {}> {
   }
 
   onCreateNote = (name: Name) => {
-    this.props.store.createNote(name).then(() => this.showModal())
+    this.notesStore.createNote(name).then(() => this.showModal())
   }
 }
 

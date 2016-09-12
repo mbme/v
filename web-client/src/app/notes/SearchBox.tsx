@@ -1,27 +1,26 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
+import {InjectStore} from 'AppState'
 import NotesStore from './store'
+
 import RecordsFilter from './RecordsFilter'
 
-interface IProps {
-  store: NotesStore,
-}
-
 @observer
-class SearchBox extends React.Component<IProps, {}> {
+class SearchBox extends React.Component<{}, {}> {
+  @InjectStore store: NotesStore
 
   render (): JSX.Element {
-    const { store } = this.props
     return (
       <div className="SearchBox">
-        <RecordsFilter initialValue={store.recordsFilter} onChange={this.onInputChange} />
+        <RecordsFilter initialValue={this.store.recordsFilter}
+                       onChange={this.onInputChange} />
       </div>
     )
   }
 
   onInputChange = (val: string) => {
-    this.props.store.setRecordsFilter(val)
+    this.store.setRecordsFilter(val)
   }
 }
 

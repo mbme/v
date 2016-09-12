@@ -11,7 +11,7 @@
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "lib": ["dom", "es5", "es6"],
-    "types": ["whatwg-fetch"],
+    "types": ["whatwg-fetch", "reflect-metadata"],
     "baseUrl": "./src/app"
   },
   "exclude": [

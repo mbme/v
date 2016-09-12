@@ -11,7 +11,6 @@ interface IProps {
   file: File,
   noteName: string,
   onCancel: () => void,
-  onClose: () => void,
   onUpload: (name: FileName, file: File) => Promise<void>,
 }
 
@@ -79,8 +78,7 @@ class UploadFileModal extends React.Component<IProps, {}> {
 
     const name = (this.refs['fileName'] as HTMLInputElement).value
 
-    this.props.onUpload(name, this.props.file).then(
-      () => this.props.onClose(),
+    this.props.onUpload(name, this.props.file).catch(
       (err: Error) => this.switchModalState(new StateEdit(err.toString()))
     )
   }
