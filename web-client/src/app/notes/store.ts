@@ -93,19 +93,19 @@ export default class NotesStore {
   @observable openNotes: Note[] = []
 
   @action
-  loadRecordsList(): void {
-    http.GET(urls.records()).then((data: INoteRecordDTO[]) => {
+  loadRecordsList(): Promise<void> {
+    return http.GET(urls.records()).then((data: INoteRecordDTO[]) => {
       this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
     })
   }
 
   @action
-  openNote(id: Id): void {
+  openNote(id: Id): Promise<void> {
     if (this.isOpen(id)) {
-      return
+      return Promise.resolve()
     }
 
-    http.GET(urls.note(id)).then((data: INoteDTO) => {
+    return http.GET(urls.note(id)).then((data: INoteDTO) => {
       this.addOpenNote(new Note(data))
     })
   }

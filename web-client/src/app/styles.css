@@ -176,20 +176,25 @@ pre {
   right: 0;
   z-index: 101;
 
-  padding: 1vr;
-
   display: flex;
   flex-direction: column;
 
   .Toast {
-    width: 300px;
-    min-height: 70px;
+    width: 260px;
 
-    margin: 1vr;
-    padding: 1vr;
+    margin: 0.5vr 0.5vr 0 0;
+    padding: 0.5vr;
 
-    background-color: yellow;
     border: $light-border;
+    opacity: 0.91;
+
+    &.is-normal {
+      background-color: #dcedc8;
+    }
+
+    &.is-error {
+      background-color: #ef5350;
+    }
   }
 }
 

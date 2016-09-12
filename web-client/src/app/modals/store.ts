@@ -8,8 +8,11 @@ interface IModal {
   el: JSX.Element,
 }
 
-interface IToast {
+export type ToastType = 'normal' | 'error'
+
+export interface IToast {
   id: Id,
+  type: ToastType,
   content: JSX.Element | string,
 }
 
@@ -49,11 +52,15 @@ export default class ModalsStore {
     }
   }
 
-  @action showToast(content: JSX.Element | string): void {
+  @action showToast(content: JSX.Element | string, type: ToastType = 'normal'): void {
     const id = this.genId()
-    this.toasts.unshift({ id, content })
+    this.toasts.unshift({ id, type, content })
 
     setTimeout(() => this.hideToast(id), toastExpirationMs)
+  }
+
+  showErrorToast(msg: string, err: Error): void {
+    this.showToast(`${msg}: ${err.toString()}`, 'error')
   }
 
   @action

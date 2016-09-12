@@ -12,6 +12,7 @@ export class AppState {
 
   init(): void {
     this.notesStore.loadRecordsList()
+      .catch(err => this.modalsStore.showErrorToast('Failed to load records list', err))
   }
 }
 
