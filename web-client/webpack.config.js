@@ -16,14 +16,14 @@ const PATHS = {
   src: path.resolve(__dirname, './src'),
   app: path.resolve(__dirname, './src/app'),
   styles: path.resolve(__dirname, './src/styles'),
-  build: path.resolve(__dirname, './build'),
+  build: path.resolve(__dirname, './build/'),
+  prod_build: path.resolve(__dirname, './prod/'),
 };
 
 const config = {
   env: NODE_ENV,
   entry: path.resolve(PATHS.app, 'index.js'),
   output: {
-    path: PATHS.build,
     filename: 'app.js',
     publicPath: '/',
   },
@@ -79,6 +79,7 @@ const config = {
 };
 
 if (isProdMode) {
+  config.output.path = PATHS.prod_build;
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
@@ -99,6 +100,7 @@ if (isProdMode) {
   };
 
 } else {
+  config.output.path = PATHS.build;
   config.plugins.push(
     new webpack.NoErrorsPlugin()
   );

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-const INDEX_HTML: &str = include_str!("../../../web-client/build/index.html");
-const APP_JS: &str = include_str!("../../../web-client/build/app.js");
-const APP_JS_MAP: &str = include_str!("../../../web-client/build/app.js.map");
+const INDEX_HTML: &'static str = include_str!("../../../web-client/prod/index.html");
+const APP_JS:     &'static str = include_str!("../../../web-client/prod/app.js");
+const APP_JS_MAP: &'static str = include_str!("../../../web-client/prod/app.js.map");
 
 pub fn get_static_files() -> HashMap<&'static str, &'static str> {
     let mut map = HashMap::new();
