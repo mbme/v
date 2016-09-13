@@ -62,7 +62,10 @@ class UploadFileModal extends React.Component<IProps, {}> {
         <ModalTitle>Upload file for "{noteName}"</ModalTitle>
 
         <ModalBody>
-          <input ref="fileName" type="text" defaultValue={file.name} />
+          <input className="fileName"
+                 ref="fileName"
+                 type="text"
+                 defaultValue={file.name} />
           <span className="fileType">{file.type}</span>
           <span className="fileSize">{formatBytes(file.size)}</span>
           <div className="error-msg">{error}</div>

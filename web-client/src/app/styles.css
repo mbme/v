@@ -401,8 +401,14 @@ pre {
 .UploadFileModal.Modal {
   width: 500px;
 
+  .fileName {
+    width: 100%;
+  }
+
   .fileType, .fileSize {
-    margin-left: 1vr;
+    display: inline-block;
+    margin-top: 0.5vr;
+    margin-left: 0.5vr;
     @mixin like-secondary;
   }
 
