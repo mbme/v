@@ -1,9 +1,9 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {IToast} from './store'
+import {Toast as ToastClass} from './store'
 
 interface IProps {
-  toast: IToast,
+  toast: ToastClass,
 }
 
 @observer

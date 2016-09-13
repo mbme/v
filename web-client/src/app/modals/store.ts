@@ -1,28 +1,45 @@
-import {action, observable, computed} from 'mobx'
+import {action, observable, computed, asReference} from 'mobx'
 import {toastExpirationMs} from 'config'
+import {BaseModel} from 'utils'
 
 export type Id = number
 
-interface IModal {
-  id: Id,
-  el: JSX.Element,
+class Modal extends BaseModel {
+  readonly id: Id
+  @observable readonly el: JSX.Element
+
+  constructor(id: Id, el: JSX.Element) {
+    super('Modal')
+
+    this.id = id
+    this.el = asReference(el)
+  }
 }
 
 export type ToastType = 'normal' | 'error'
+type ToastContent = JSX.Element | string
 
-export interface IToast {
-  id: Id,
-  type: ToastType,
-  content: JSX.Element | string,
+export class Toast extends BaseModel {
+  readonly id: Id
+  readonly type: ToastType
+  @observable readonly content: ToastContent
+
+  constructor(id: Id, type: ToastType, content: ToastContent) {
+    super('Toast')
+
+    this.id = id
+    this.type = type
+    this.content = asReference(content)
+  }
 }
 
 export default class ModalsStore {
   private static _counter: number = 0
 
-  @observable modals: IModal[] = []
-  @observable toasts: IToast[] = []
+  @observable modals: Modal[] = []
+  @observable toasts: Toast[] = []
 
-  @computed get visibleModal(): IModal | undefined {
+  @computed get visibleModal(): Modal | undefined {
     if (this.modals.length > 0) {
       return this.modals[0]
     }
@@ -30,7 +47,7 @@ export default class ModalsStore {
 
   @action openModal(el: JSX.Element): Id {
     const id = this.genId()
-    this.modals.unshift({ id, el })
+    this.modals.unshift(new Modal(id, el))
 
     return id
   }
@@ -39,7 +56,7 @@ export default class ModalsStore {
     const pos = this.findModalPos(id)
 
     if (pos > -1) {
-      this.modals.splice(pos, 1, { id, el })
+      this.modals.splice(pos, 1, new Modal(id, el))
     } else {
       throw new Error(`Can't find modal with id ${id}`)
     }
@@ -54,7 +71,7 @@ export default class ModalsStore {
 
   @action showToast(content: JSX.Element | string, type: ToastType = 'normal'): void {
     const id = this.genId()
-    this.toasts.unshift({ id, type, content })
+    this.toasts.unshift(new Toast(id, type, content))
 
     setTimeout(() => this.hideToast(id), toastExpirationMs)
   }

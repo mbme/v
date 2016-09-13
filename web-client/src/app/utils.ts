@@ -97,3 +97,14 @@ export function formatBytes (bytes: number): string {
 
   return (bytes / B_IN_GB).toFixed(2) + 'GB'
 }
+
+// Fighting with TS structural type matching
+// Classes which extend this class will not be
+// structurally equal to interfaces with the same fields
+export class BaseModel {
+  private s: symbol
+
+  constructor(name: string) {
+    this.s = Symbol(name)
+  }
+}

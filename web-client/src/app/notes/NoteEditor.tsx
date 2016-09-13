@@ -1,4 +1,4 @@
-import {observable, action} from 'mobx'
+import {observable, action, asReference} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
@@ -28,7 +28,7 @@ class NoteEditor extends React.Component<IProps, {}> {
   @InjectStore notesStore: NotesStore
   @InjectStore modalsStore: ModalsStore
 
-  @observable modal: JSX.Element | undefined
+  @observable modal: JSX.Element | undefined = asReference(undefined)
 
   @action changeModal(modal?: JSX.Element): void {
     this.modal = modal

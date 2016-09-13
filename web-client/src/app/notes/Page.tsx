@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {observable, action} from 'mobx'
+import {observable, action, asReference} from 'mobx'
 import {observer} from 'mobx-react'
 
 import {Name} from 'types'
@@ -19,7 +19,7 @@ class NotesPage extends React.Component<{}, {}> {
   @InjectStore notesStore: NotesStore
   @InjectStore modalsStore: ModalsStore
 
-  @observable modal: JSX.Element | undefined
+  @observable modal: JSX.Element | undefined = asReference(undefined)
 
   @action showModal(modal?: JSX.Element): void {
     this.modal = modal

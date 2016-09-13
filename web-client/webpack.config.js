@@ -72,7 +72,7 @@ const config = {
     // do not load moment locales
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
-      // 'process.env.NODE_ENV': NODE_ENV, // FIXME breaks production build
+      'process.env.NODE_ENV': NODE_ENV,
       __DEV__: JSON.stringify(!isProdMode),
     }),
   ],
