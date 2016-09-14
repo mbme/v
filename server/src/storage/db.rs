@@ -109,7 +109,7 @@ impl<'a> DB<'a> {
 
     pub fn get_record(&self, id: Id) -> Result<Option<Record>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT type, name, create_ts, update_ts FROM records WHERE id = $1"
+            "SELECT type, name, create_ts, update_ts FROM records WHERE id = $1 ORDER BY id"
         )?;
 
         let rows = stmt.query_map(
@@ -139,7 +139,7 @@ impl<'a> DB<'a> {
 
     pub fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT id, name, create_ts, update_ts FROM records WHERE type = $1"
+            "SELECT id, name, create_ts, update_ts FROM records WHERE type = $1 ORDER BY id"
         )?;
 
         let results = stmt.query_map(&[&record_type.to_string()], |row| {
@@ -167,7 +167,7 @@ impl<'a> DB<'a> {
 
     pub fn get_record_prop(&self, id: Id, prop: RecordProp) -> Result<Option<String>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT data FROM props WHERE record_id = $1 AND prop = $2"
+            "SELECT data FROM props WHERE record_id = $1 AND prop = $2 ORDER BY prop"
         )?;
 
         let rows = stmt.query_map(
@@ -211,7 +211,7 @@ impl<'a> DB<'a> {
 
     pub fn get_file(&self, record_id: Id, name: &str) -> Result<Option<Blob>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT data FROM files WHERE record_id = $1 AND name = $2"
+            "SELECT data FROM files WHERE record_id = $1 AND name = $2 ORDER BY name"
         )?;
 
         let rows = stmt.query_map(
@@ -224,7 +224,7 @@ impl<'a> DB<'a> {
 
     pub fn get_record_files(&self, record_id: Id) -> Result<Vec<FileInfo>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT name, size, create_ts FROM files WHERE record_id = $1",
+            "SELECT name, size, create_ts FROM files WHERE record_id = $1 ORDER BY name",
         )?;
 
         let results = stmt.query_map(&[&(record_id as i64)], |row| {
