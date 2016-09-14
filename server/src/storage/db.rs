@@ -137,22 +137,21 @@ impl<'a> DB<'a> {
         self.get_record(id).map(|result| result.is_some())
     }
 
-    pub fn list_records(&self) -> Result<Vec<Record>> {
+    pub fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {
         let mut stmt = self.prepare_stmt(
-            "SELECT id, name, type, create_ts, update_ts FROM records"
+            "SELECT id, name, create_ts, update_ts FROM records WHERE type = $1"
         )?;
 
-        let results = stmt.query_map(&[], |row| {
+        let results = stmt.query_map(&[&record_type.to_string()], |row| {
             let id: i64 = row.get(0);
             let name: String = row.get(1);
-            let record_type: String = row.get(2);
-            let create_ts: Timespec = row.get(3);
-            let update_ts: Timespec = row.get(4);
+            let create_ts: Timespec = row.get(2);
+            let update_ts: Timespec = row.get(3);
 
             Record {
                 id: id as Id,
                 name: name,
-                record_type: record_type.parse().expect("Unknown record type"),
+                record_type: record_type,
                 create_ts: create_ts,
                 update_ts: update_ts,
             }

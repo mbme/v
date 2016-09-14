@@ -13,7 +13,7 @@ use mime_guess::guess_mime_type;
 use serde::Serialize;
 use serde_json;
 
-use storage::types::Id;
+use storage::types::{Id, RecordType};
 use utils::convert_all_into;
 use error::{Result, Error, into_err};
 use config::Config;
@@ -84,9 +84,12 @@ pub fn start_server(config: &Config) {
     // GET /api/records
     {
         let storage = storage.clone();
-        router.get("/api/records", move |_: &mut Request| {
+        router.get("/api/records/notes", move |_: &mut Request| {
 
-            let records = itry!(storage.list_records(), status::InternalServerError);
+            let records = itry!(
+                storage.list_records(RecordType::Note),
+                status::InternalServerError
+            );
 
             let dtos: Vec<RecordDTO> = convert_all_into(records);
 
@@ -286,9 +289,12 @@ pub fn start_server(config: &Config) {
         let static_files = resources::get_static_files();
         router.get("/*", move |req: &mut Request| {
             let path = req.url.path();
-            assert!(path.len() == 1);
 
-            create_static_response(path[0], &static_files)
+            if path.len() == 1 {
+                create_static_response(path[0], &static_files)
+            } else {
+                Ok(Response::with(status::NotFound))
+            }
         }, "static_handler");
     }
 

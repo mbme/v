@@ -44,7 +44,7 @@ impl Storage {
         Ok(())
     }
 
-    pub fn list_records(&self) -> Result<Vec<Record>> {
+    pub fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
@@ -52,7 +52,7 @@ impl Storage {
         let result = {
             let db = DB::new(&tx);
 
-            db.list_records()
+            db.list_records(record_type)
         };
 
         tx.commit()?;
@@ -214,7 +214,7 @@ impl Storage {
 #[cfg(test)]
 mod viter {
     use storage::*;
-    use storage::types::Blob;
+    use storage::types::{Blob, RecordType};
 
     fn new_storage() -> Storage {
         let storage = Storage::in_mem();
@@ -349,6 +349,6 @@ mod viter {
         let s = new_storage();
         s.add_note("test", "data").unwrap();
 
-        assert!(s.list_records().unwrap().len() == 1);
+        assert!(s.list_records(RecordType::Note).unwrap().len() == 1);
     }
 }

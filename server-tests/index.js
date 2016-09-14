@@ -21,8 +21,8 @@ function expectFailure(promise, status) {
   );
 }
 
-function listRecords() {
-  return utils.intoPromise(request.get(url('/api/records')));
+function listNoteRecords() {
+  return utils.intoPromise(request.get(url('/api/records/notes')));
 }
 
 function postNote(note) {
@@ -84,9 +84,9 @@ function validateFileInfo(body, expected) {
   expect(body.create_ts).to.be.a('number');
 }
 
-describe('GET /records', () => {
+describe('GET /api/records/notes', () => {
   it('should return an array', () => {
-    return listRecords().then(
+    return listNoteRecords().then(
       ({ body }) => {
         expect(body).to.be.an('array');
       }
@@ -103,7 +103,7 @@ describe('POST /api/notes', () => {
 
       validateNote(body, note);
 
-      return listRecords();
+      return listNoteRecords();
     }).then(({ body }) => { // check if new note is searchable
       expect(body.filter(rec => rec.name === note.name)).to.have.lengthOf(1);
     });
