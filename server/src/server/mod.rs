@@ -74,7 +74,7 @@ pub fn start_server(config: &Config) {
     use storage::Storage;
     use std::sync::Arc;
 
-    let storage = Storage::in_mem();
+    let storage = Storage::new(&config.db_file).expect("failed to open db");
     storage.init().expect("failed to init DB");
 
     let storage = Arc::new(storage);

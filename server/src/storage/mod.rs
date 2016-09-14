@@ -9,21 +9,15 @@ use storage::types::*;
 
 use storage::db::{RecordProp, DB};
 
-fn in_mem_conn() -> Result<Connection> {
-    Connection::open_in_memory().map_err(into_err)
-}
-
 pub struct Storage {
     conn: Mutex<Connection>,
 }
 
 impl Storage {
-    pub fn new(conn: Connection) -> Storage {
-        Storage { conn: Mutex::new(conn) }
-    }
+    pub fn new(path: &str) -> Result<Storage> {
+        let conn = Connection::open(path).map_err(into_err);
 
-    pub fn in_mem() -> Storage {
-        Storage::new(in_mem_conn().expect("failed to open in-mem connection"))
+        Ok(Storage { conn: Mutex::new(conn?) })
     }
 
     fn conn_mutex(&self) -> MutexGuard<Connection> {
@@ -217,7 +211,7 @@ mod viter {
     use storage::types::{Blob, RecordType};
 
     fn new_storage() -> Storage {
-        let storage = Storage::in_mem();
+        let storage = Storage::new(":memory:").expect("failed to open db");
         storage.init().expect("failed to init DB");
         storage
     }

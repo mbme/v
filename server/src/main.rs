@@ -24,7 +24,7 @@ use std::env;
 fn main() {
     let path = env::var("V_CONFIG").unwrap_or("~/.config/v/config.json".into());
 
-    let config = Config::read(&path).expect(&format!("Failed to load config.json from {}", &path));
+    let config = Config::read(&path).expect("Failed to load config file");
 
     server::start_server(&config);
 }

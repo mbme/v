@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::fmt::Display;
 use serde_json;
 
 use error::{Result};
@@ -8,6 +9,7 @@ use error::{Result};
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub server_address: String,
+    pub db_file: String,
 }
 
 fn read_file_to_string<P: AsRef<Path>>(path: P) -> Result<String> {
@@ -20,7 +22,8 @@ fn read_file_to_string<P: AsRef<Path>>(path: P) -> Result<String> {
 }
 
 impl Config {
-    pub fn read<P: AsRef<Path>>(path: P) -> Result<Config> {
+    pub fn read<P: AsRef<Path> + Display>(path: P) -> Result<Config> {
+        println!("config file: {}", &path);
         let s = read_file_to_string(path)?;
 
         let config: Config = serde_json::from_str(&s)?;
