@@ -19,9 +19,12 @@ mod error;
 mod config;
 
 use config::Config;
+use std::env;
 
 fn main() {
-    let config = Config::read("./config.json").expect("Failed to load config.json");
+    let path = env::var("V_CONFIG").unwrap_or("~/.config/v/config.json".into());
+
+    let config = Config::read(&path).expect(&format!("Failed to load config.json from {}", &path));
 
     server::start_server(&config);
 }

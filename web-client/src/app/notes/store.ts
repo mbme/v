@@ -94,7 +94,7 @@ export default class NotesStore {
 
   @action
   loadRecordsList(): Promise<void> {
-    return http.GET(urls.records()).then((data: INoteRecordDTO[]) => {
+    return http.GET(urls.noteRecords()).then((data: INoteRecordDTO[]) => {
       this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
     })
   }

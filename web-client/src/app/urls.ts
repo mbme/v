@@ -1,7 +1,7 @@
 import {Id, FileName} from 'types'
 
-export function records(): string {
-  return '/api/records'
+export function noteRecords(): string {
+  return '/api/records/notes'
 }
 
 export function notes(): string {
