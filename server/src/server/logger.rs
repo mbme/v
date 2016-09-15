@@ -1,10 +1,11 @@
 use iron::prelude::*;
-use iron::Handler;
-use router::Router;
+use iron::{BeforeMiddleware, AfterMiddleware, typemap};
+use iron::status;
+use iron::mime::Mime;
+use time::precise_time_ns;
+use serde_json;
 
-pub struct LoggerHandler {
-    router: Router
-}
+use super::dto::ErrorDTO;
 
 fn shorten_url(url: &::iron::Url) -> String {
     url.path().iter().map(|s| format!("/{}", s)).collect()
@@ -14,33 +15,54 @@ fn stringify_status(status: Option<::iron::status::Status>) -> String {
     status.map_or("NO STATUS".into(), |s| s.to_string())
 }
 
-impl Handler for LoggerHandler {
-    fn handle(&self, req: &mut Request) -> IronResult<Response> {
-        let entry_ts = ::time::precise_time_ns();
-        let res = self.router.handle(req);
-        let total_time_ms = (::time::precise_time_ns() - entry_ts) / 1_000_000;
+pub struct Logger;
+impl typemap::Key for Logger { type Value = u64; }
 
-        let log_prefix = format!("{:>3}ms {:^7} {}", total_time_ms, req.method.to_string(), shorten_url(&req.url));
-
-        match res {
-            Ok(ref resp) => {
-                println!("{} -> {}", log_prefix, stringify_status(resp.status));
-            },
-            Err(ref err) => {
-                println!("{} -> {}", log_prefix, stringify_status(err.response.status));
-                println!("               {:?}", err.error);
-            },
-        };
-
-        res
+impl BeforeMiddleware for Logger {
+    fn before(&self, req: &mut Request) -> IronResult<()> {
+        req.extensions.insert::<Logger>(precise_time_ns());
+        Ok(())
     }
 }
 
-impl LoggerHandler {
-    pub fn new(router: Router) -> Self {
-        LoggerHandler {
-            router: router
-        }
+impl AfterMiddleware for Logger {
+    fn after(&self, req: &mut Request, res: Response) -> IronResult<Response> {
+        let start = *req.extensions.get::<Logger>().expect("no request start timestamp");
+        let delta_ms = (precise_time_ns() - start) / 1_000_000;
+
+        let log_prefix = format!(
+            "{:>3}ms {:^7} {}", delta_ms, req.method.to_string(), shorten_url(&req.url)
+        );
+
+        println!("{} -> {}", log_prefix, stringify_status(res.status));
+
+        Ok(res)
+    }
+
+    fn catch(&self, req: &mut Request, err: IronError) -> IronResult<Response> {
+        let start = *req.extensions.get::<Logger>().expect("no request start timestamp");
+        let delta_ms = (precise_time_ns() - start) / 1_000_000;
+
+        let log_prefix = format!(
+            "{:>3}ms {:^7} {}", delta_ms, req.method.to_string(), shorten_url(&req.url)
+        );
+
+        println!("{} -> {}", log_prefix, stringify_status(err.response.status));
+
+        // serialize error to JSON
+
+        let dto = ErrorDTO {
+            error: format!("{}", err)
+        };
+
+        let data = itry!(serde_json::to_string(&dto), status::InternalServerError);
+
+        println!("               {}", data);
+
+        let status = err.response.status.unwrap_or(status::InternalServerError);
+        let content_type = "application/json".parse::<Mime>().unwrap();
+
+        Ok(Response::with((content_type, status, data)))
     }
 }
 

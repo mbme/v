@@ -7,7 +7,6 @@ use std::collections::HashMap;
 
 use iron::prelude::*;
 use iron::status;
-use iron::AfterMiddleware;
 use router::Router;
 use iron::mime::Mime;
 use mime_guess::guess_mime_type;
@@ -19,7 +18,7 @@ use utils::convert_all_into;
 use error::{Result, Error, into_err};
 use config::Config;
 
-use self::logger::LoggerHandler;
+use self::logger::Logger;
 use self::dto::*;
 use self::multipart::{parse_multipart, RequestData};
 
@@ -68,23 +67,6 @@ fn get_url_param (req: &Request, name: &str) -> Result<String> {
 
 fn get_id (req: &Request) -> Result<Id> {
     parse_id(&get_url_param(req, "id")?)
-}
-
-struct ErrorSerializer;
-
-impl AfterMiddleware for ErrorSerializer {
-    fn catch(&self, _: &mut Request, err: IronError) -> IronResult<Response> {
-        let dto = ErrorDTO {
-            error: format!("{}", err)
-        };
-
-        let data = itry!(serde_json::to_string(&dto), status::InternalServerError);
-
-        let status = err.response.status.unwrap_or(status::InternalServerError);
-        let content_type = "application/json".parse::<Mime>().unwrap();
-
-        Ok(Response::with((content_type, status, data)))
-    }
 }
 
 pub fn start_server(config: &Config) {
@@ -329,9 +311,10 @@ pub fn start_server(config: &Config) {
 
     println!("running server on {}", &config.server_address);
 
-    let mut chain = Chain::new(LoggerHandler::new(router));
-    chain.link_after(ErrorSerializer);
-    Iron::new(
-        chain
-    ).http(&config.server_address as &str).expect("failed to run server");
+    let mut chain = Chain::new(router);
+
+    chain.link_before(Logger);
+    chain.link_after(Logger);
+
+    Iron::new(chain).http(&config.server_address as &str).expect("failed to run server");
 }
