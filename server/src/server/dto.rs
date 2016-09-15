@@ -1,6 +1,11 @@
 use storage::types::*;
 use utils::convert_all_into;
 
+#[derive(Debug, Serialize)]
+pub struct ErrorDTO {
+    pub error: String,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CreateNoteDTO {
     pub name: String,

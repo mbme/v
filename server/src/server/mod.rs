@@ -7,6 +7,7 @@ use std::collections::HashMap;
 
 use iron::prelude::*;
 use iron::status;
+use iron::AfterMiddleware;
 use router::Router;
 use iron::mime::Mime;
 use mime_guess::guess_mime_type;
@@ -69,6 +70,22 @@ fn get_id (req: &Request) -> Result<Id> {
     parse_id(&get_url_param(req, "id")?)
 }
 
+struct ErrorSerializer;
+
+impl AfterMiddleware for ErrorSerializer {
+    fn catch(&self, _: &mut Request, err: IronError) -> IronResult<Response> {
+        let dto = ErrorDTO {
+            error: format!("{}", err)
+        };
+
+        let data = itry!(serde_json::to_string(&dto), status::InternalServerError);
+
+        let status = err.response.status.unwrap_or(status::InternalServerError);
+        let content_type = "application/json".parse::<Mime>().unwrap();
+
+        Ok(Response::with((content_type, status, data)))
+    }
+}
 
 pub fn start_server(config: &Config) {
     use storage::Storage;
@@ -114,12 +131,11 @@ pub fn start_server(config: &Config) {
                 status::InternalServerError
             );
 
-            let note_opt = itry!(
-                storage.get_note(id),
-                status::InternalServerError
+            let note_opt = itry!(storage.get_note(id));
+            let note = itry!(
+                note_opt.ok_or(Error::from_str("Can't find note")),
+                status::NotFound
             );
-
-            let note = iexpect!(note_opt, status::InternalServerError);
 
             let dto: NoteDTO = note.into();
 
@@ -148,12 +164,15 @@ pub fn start_server(config: &Config) {
             );
 
             if !updated {
-                return Ok(Response::with(status::NotFound));
+                return Err(IronError::new(Error::from_str("Can't find note"), status::NotFound));
             }
 
             // return updated note
-            let note_opt = itry!(storage.get_note(id), status::InternalServerError);
-            let note = iexpect!(note_opt, status::InternalServerError);
+            let note = itry!(
+                storage.get_note(id)
+                    .and_then(|note| note.ok_or(Error::from_str("Can't find note"))),
+                status::InternalServerError
+            );
 
             let dto: NoteDTO = note.into();
 
@@ -168,7 +187,10 @@ pub fn start_server(config: &Config) {
             let id = itry!(get_id(req), status::BadRequest);
 
             let note_opt = itry!(storage.get_note(id));
-            let note = iexpect!(note_opt, status::NotFound);
+            let note = itry!(
+                note_opt.ok_or(Error::from_str("Can't find note")),
+                status::NotFound
+            );
 
             let dto: NoteDTO = note.into();
 
@@ -182,13 +204,12 @@ pub fn start_server(config: &Config) {
         router.delete("/api/notes/:id", move |req: &mut Request| {
             let id = itry!(get_id(req), status::BadRequest);
 
-            let status = if itry!(storage.remove_note(id)) {
-                status::Ok
+            if itry!(storage.remove_note(id)) {
+                Ok(Response::with(status::Ok))
             } else {
-                status::NotFound
-            };
+                Err(IronError::new(Error::from_str("Can't find note"), status::NotFound))
+            }
 
-            Ok(Response::with(status))
         }, "delete note");
     }
 
@@ -199,7 +220,10 @@ pub fn start_server(config: &Config) {
             let id = itry!(get_id(req), status::BadRequest);
 
             let note_opt = itry!(storage.get_note(id));
-            let note = iexpect!(note_opt, status::NotFound);
+            let note = itry!(
+                note_opt.ok_or(Error::from_str("Can't find note")),
+                status::NotFound
+            );
 
             let dto: NoteDTO = note.into();
 
@@ -221,8 +245,14 @@ pub fn start_server(config: &Config) {
                 return Ok(Response::with(status::BadRequest));
             }
 
-            let name_field = iexpect!(data.get("name"), status::BadRequest);
-            let data_field = iexpect!(data.get("data"), status::BadRequest);
+            let name_field = itry!(
+                data.get("name").ok_or(Error::from_str("Can't find required field 'name'")),
+                status::BadRequest
+            );
+            let data_field = itry!(
+                data.get("data").ok_or(Error::from_str("Can't find required field 'data'")),
+                status::BadRequest
+            );
 
             match (name_field, data_field) {
                 (&RequestData::Field(ref name), &RequestData::File(ref data)) => {
@@ -252,7 +282,7 @@ pub fn start_server(config: &Config) {
             if let Some(blob) = itry!(storage.get_file(id, &name)) {
                 Ok(Response::with((guess_mime_type(name), status::Ok, blob.0)))
             } else {
-                Ok(Response::with(status::NotFound))
+                Err(IronError::new(Error::from_str("Can't find file"), status::NotFound))
             }
         }, "get note file");
     }
@@ -268,13 +298,12 @@ pub fn start_server(config: &Config) {
             let name = itry!(get_url_param(req, "name"), status::BadRequest);
 
             // delete file
-            let status = if itry!(storage.remove_file(id, &name)) {
-                status::Ok
+            if itry!(storage.remove_file(id, &name)) {
+                Ok(Response::with(status::Ok))
             } else {
-                status::NotFound
-            };
+                Err(IronError::new(Error::from_str("Can't find file"), status::NotFound))
+            }
 
-            Ok(Response::with(status))
         }, "delete note file");
     }
 
@@ -300,5 +329,9 @@ pub fn start_server(config: &Config) {
 
     println!("running server on {}", &config.server_address);
 
-    Iron::new(LoggerHandler::new(router)).http(&config.server_address as &str).expect("failed to run server");
+    let mut chain = Chain::new(LoggerHandler::new(router));
+    chain.link_after(ErrorSerializer);
+    Iron::new(
+        chain
+    ).http(&config.server_address as &str).expect("failed to run server");
 }

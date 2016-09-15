@@ -17,7 +17,13 @@ function expectFailure(promise, status) {
     () => {
       throw new Error('must fail');
     },
-    (err) => expect(err.status).to.equal(status)
+    (err) => {
+      expect(err.status).to.equal(status);
+
+      const body = err.response.body;
+      expect(body).to.have.all.keys('error');
+      expect(body.error).to.be.a('string');
+    }
   );
 }
 
