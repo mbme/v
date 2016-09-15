@@ -7,6 +7,7 @@ use serde_json;
 use error::{Result};
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     pub server_address: String,
     pub db_file: String,

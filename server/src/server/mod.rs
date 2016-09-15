@@ -2,6 +2,7 @@ mod logger;
 mod dto;
 mod multipart;
 mod resources;
+pub use self::resources::UI_APP_VERSION;
 
 use std::collections::HashMap;
 

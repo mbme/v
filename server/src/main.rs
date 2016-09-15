@@ -23,6 +23,10 @@ use config::Config;
 use std::env;
 
 fn main() {
+    let version = option_env!("GIT_COMMIT_HASH").unwrap_or("");
+
+    assert_eq!(version, server::UI_APP_VERSION, "Server version doesn't match client version");
+
     let path = env::var("V_CONFIG").unwrap_or("~/.config/v/config.json".into());
 
     let config = Config::read(&path).expect("Failed to load config file");

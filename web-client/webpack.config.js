@@ -1,4 +1,7 @@
 const path = require('path');
+const fs = require('fs');
+const childProcess = require('child_process');
+
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -98,6 +101,11 @@ if (isProdMode) {
       sourceMap: true
     }
   };
+
+
+  // Write last git commit id to the file
+  const VERSION = childProcess.execSync('git rev-parse --short HEAD').toString().trim();
+  fs.writeFileSync(path.resolve(PATHS.prod_build, 'VERSION'), VERSION);
 
 } else {
   config.output.path = PATHS.build;

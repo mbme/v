@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+pub const UI_APP_VERSION: &'static str = include_str!("../../../web-client/prod/VERSION");
+
 const INDEX_HTML: &'static str = include_str!("../../../web-client/prod/index.html");
 const APP_JS:     &'static str = include_str!("../../../web-client/prod/app.js");
 const APP_JS_MAP: &'static str = include_str!("../../../web-client/prod/app.js.map");
