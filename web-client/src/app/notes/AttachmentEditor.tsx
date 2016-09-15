@@ -18,15 +18,13 @@ class AttachmentEditor extends React.Component<IProps, {}> {
     const { file, noteId } = this.props
 
     return (
-      <div className="Attachment">
-        <FileLink noteId={noteId} file={file} />
-
+      <FileLink noteId={noteId} file={file}>
         <LinkButton className="remove"
                     type="dangerous"
                     onClick={this.onClickRemove}>
           Remove
         </LinkButton>
-      </div>
+      </FileLink>
     )
   }
 

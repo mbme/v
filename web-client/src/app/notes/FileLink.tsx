@@ -13,12 +13,13 @@ interface IProps {
 @observer
 class FileLink extends React.Component<IProps, {}> {
   render (): JSX.Element {
-    const { file, noteId } = this.props
+    const { file, noteId, children } = this.props
 
     return (
       <div className="FileLink">
         <a href={noteFile(noteId, file.name)} target="_blank">{file.name}</a>
         <span className="size">{formatBytes(file.size)}</span>
+        {children}
       </div>
     )
   }

@@ -1,9 +1,40 @@
+interface IErrorDTO {
+  readonly error: string,
+}
+
+export class ServerError extends Error {
+  readonly status: number
+  readonly error: string
+
+  constructor(status: number, error: string) {
+    super()
+
+    this.status = status
+    this.error = error
+  }
+
+  static new(response: Response): Promise<ServerError> {
+    return response.json().then(
+      (dto: IErrorDTO) => {
+        throw new ServerError(response.status, dto.error)
+      },
+      () => {
+        throw new ServerError(response.status, "can't parse response body")
+      }
+    )
+  }
+
+  toString(): string {
+    return this.error || this.status.toString()
+  }
+}
+
 function fetchData<T>(request: Request): Promise<T> {
   return fetch(request).then((response) => {
     if (response.status === 200) {
       return response.json()
     } else {
-      throw new Error('bad status code: ' + response.status)
+      return ServerError.new(response)
     }
   })
 }
@@ -11,9 +42,9 @@ function fetchData<T>(request: Request): Promise<T> {
 function fetchExec(request: Request): Promise<void> {
   return fetch(request).then((response) => {
     if (response.status === 200) {
-      return response.json()
+      return Promise.resolve()
     } else {
-      throw new Error('bad status code: ' + response.status)
+      return ServerError.new(response)
     }
   })
 }
