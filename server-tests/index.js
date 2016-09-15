@@ -270,6 +270,23 @@ describe('GET /api/notes/:id/files/:name', () => {
       });
   });
 
+  it('should handle url encoded file name', () => {
+    const fileName = `some prefix with spaces ${genAttachmentName()}`;
+    let id;
+
+    return postRandomNote()
+      .then(({ body }) => {
+        id = body.id;
+        return postStandardFile(id, fileName);
+      })
+      .then(() => getFile(id, fileName))
+      .then((response) => {
+        const data = response.body;
+        const expectedData = utils.readBinaryFile(attachmentPath);
+        expect(expectedData.equals(data)).to.be.true;
+      });
+  });
+
   it('should fail if trying to get file from non-existing note', () => {
     return expectFailure(getFile(utils.randomInt(), genAttachmentName()), 404);
   });

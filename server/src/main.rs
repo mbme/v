@@ -11,6 +11,7 @@ extern crate serde_json;
 #[macro_use] extern crate iron;
 extern crate router;
 extern crate mime_guess;
+extern crate url;
 
 mod storage;
 mod utils;

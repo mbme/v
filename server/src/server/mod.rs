@@ -12,6 +12,7 @@ use iron::mime::Mime;
 use mime_guess::guess_mime_type;
 use serde::Serialize;
 use serde_json;
+use url::percent_encoding::percent_decode;
 
 use storage::types::{Id, RecordType};
 use utils::convert_all_into;
@@ -59,7 +60,11 @@ fn get_url_param (req: &Request, name: &str) -> Result<String> {
     let result = req.extensions.get::<Router>().expect("failed to load Iron Router").find(name);
 
     if let Some(value) = result {
-        Ok(value.into())
+        let string = value.to_string();
+
+        let decoded = percent_decode(string.as_bytes()).decode_utf8().map_err(into_err)?;
+
+        Ok(decoded.into_owned())
     } else {
         Err(Error::from_str(format!("can't find required url param :{}", name)))
     }
