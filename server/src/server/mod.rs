@@ -5,6 +5,8 @@ mod resources;
 pub use self::resources::UI_APP_VERSION;
 
 use std::collections::HashMap;
+use std::sync::Arc;
+use std::fs;
 
 use iron::prelude::*;
 use iron::status;
@@ -15,6 +17,7 @@ use serde::Serialize;
 use serde_json;
 use url::percent_encoding::percent_decode;
 
+use storage::Storage;
 use storage::types::{Id, RecordType};
 use utils::convert_all_into;
 use error::{Result, Error, into_err};
@@ -76,10 +79,14 @@ fn get_id (req: &Request) -> Result<Id> {
 }
 
 pub fn start_server(config: &Config) {
-    use storage::Storage;
-    use std::sync::Arc;
+
+    // print DB file size
+    if let Ok(metadata) = fs::metadata(&config.db_file) {
+        println!("db file size: {:.3} MB", metadata.len() as f64 / 1024.0 / 1024.0);
+    }
 
     let storage = Storage::new(&config.db_file).expect("failed to open db");
+
     storage.init().expect("failed to init DB");
 
     let storage = Arc::new(storage);
