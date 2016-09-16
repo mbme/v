@@ -119,6 +119,30 @@ img {
   }
 }
 
+.FileLink {
+  font-size: 0.85em;
+  margin: 0.5vr;
+
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+
+  a {
+    color: #00695c;
+    font-weight: 600;
+
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .size {
+    padding-left: 5px;
+    font-size: 0.75em;
+    @mixin like-secondary;
+  }
+}
+
 .ModalsContainer {
   position: fixed;
   top: 0;
@@ -215,30 +239,6 @@ img {
 
 /*       PAGES        */
 
-.FileLink {
-  font-size: 0.85em;
-  margin: 0.5vr;
-
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-
-  a {
-    color: #00695c;
-    font-weight: 600;
-
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .size {
-    padding-left: 5px;
-    font-size: 0.75em;
-    @mixin like-secondary;
-  }
-}
-
 .NotesPage {
   $left-width: 350px;
   $border: $light-border;
@@ -257,13 +257,13 @@ img {
   }
 
   &-center {
-    margin-top: 2vh;
     margin-left: $left-width;
+    padding-top: 2vr;
   }
 
   &-plus {
     position: fixed;
-    top: 2vr;
+    top: 0.5vr;
     right: 1vr;
   }
 
@@ -318,7 +318,7 @@ img {
     min-height: 300px;
 
     padding: 0 1vr 1vr;
-    margin: 1vr auto;
+    margin: 0 auto 1vr;
 
     @mixin paper-shadow;
 

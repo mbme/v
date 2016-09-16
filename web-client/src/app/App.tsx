@@ -9,7 +9,17 @@ import ToastsContainer from 'modals/ToastsContainer'
 
 export class App extends React.Component<{}, {}> {
   render (): JSX.Element {
-    const devTools = __DEV__ ? <DevTools /> : undefined
+    let devTools: JSX.Element | undefined
+
+    if (__DEV__) {
+      const devToolsPosition = {
+        'bottom': 10,
+        'right': 10,
+      }
+
+      devTools = <DevTools position={devToolsPosition} />
+    }
+
     return (
       <div className="App">
         <NotesPage />
