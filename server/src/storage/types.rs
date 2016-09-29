@@ -15,12 +15,14 @@ impl Blob {
 #[derive(Eq, PartialEq, Debug, Serialize, Copy, Clone)]
 pub enum RecordType {
     Note,
+    Todo,
 }
 
 impl RecordType {
     pub fn to_string(&self) -> String {
         match *self {
             RecordType::Note => "note".to_string(),
+            RecordType::Todo => "todo".to_string(),
         }
     }
 }
@@ -31,6 +33,7 @@ impl ::std::str::FromStr for RecordType {
     fn from_str(s: &str) -> Result<RecordType> {
         match s {
             "note" => Ok(RecordType::Note),
+            "todo" => Ok(RecordType::Todo),
             _ => Err(Error::from_str(format!("unknown record type {}", s))),
         }
     }
@@ -64,4 +67,13 @@ impl Note {
             files: files,
         }
     }
+}
+
+pub struct Project(Id, String);
+
+pub struct Todo {
+    pub record: Record,
+    pub project: Project,
+    pub start_ts: Option<Timespec>,
+    pub end_ts: Option<Timespec>,
 }
