@@ -1,5 +1,6 @@
 use time::Timespec;
 use error::{Result, Error};
+use std::str::FromStr;
 
 pub type Id = u64;
 
@@ -12,7 +13,7 @@ impl Blob {
     }
 }
 
-#[derive(Eq, PartialEq, Debug, Serialize, Copy, Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum RecordType {
     Note,
     Todo,
@@ -25,16 +26,31 @@ impl RecordType {
             RecordType::Todo => "todo".to_string(),
         }
     }
+
+    pub fn supports_attachments(&self) -> bool {
+        match *self {
+            RecordType::Note => true,
+            _ => false,
+        }
+    }
+
+    pub fn assert_supports_attachments(&self) -> Result<()> {
+        if self.supports_attachments() {
+            Ok(())
+        } else {
+            Error::err_from_str(format!("record type {:?} doesn't support attachments", self))
+        }
+    }
 }
 
-impl ::std::str::FromStr for RecordType {
+impl FromStr for RecordType {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<RecordType> {
         match s {
             "note" => Ok(RecordType::Note),
             "todo" => Ok(RecordType::Todo),
-            _ => Err(Error::from_str(format!("unknown record type {}", s))),
+            _ => Error::err_from_str(format!("unknown record type {}", s)),
         }
     }
 }
@@ -71,9 +87,50 @@ impl Note {
 
 pub struct Project(Id, String);
 
+pub enum TodoState {
+    Inbox,
+    Todo,
+    InProgress,
+    Blocked,
+    Done,
+    Canceled,
+}
+
+impl TodoState {
+    pub fn to_string(&self) -> String {
+        match *self {
+            TodoState::Inbox      => "inbox".to_string(),
+            TodoState::Todo       => "todo".to_string(),
+            TodoState::InProgress => "in-progress".to_string(),
+            TodoState::Blocked    => "blocked".to_string(),
+            TodoState::Done       => "done".to_string(),
+            TodoState::Canceled   => "canceled".to_string(),
+        }
+    }
+}
+
+impl FromStr for TodoState {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<TodoState> {
+        match s {
+            "inbox"       => Ok(TodoState::Inbox),
+            "todo"        => Ok(TodoState::Todo),
+            "in-progress" => Ok(TodoState::InProgress),
+            "blocked"     => Ok(TodoState::Blocked),
+            "done"        => Ok(TodoState::Done),
+            "canceled"    => Ok(TodoState::Canceled),
+            _ => Error::err_from_str(format!("unknown todo state {}", s)),
+        }
+    }
+}
+
 pub struct Todo {
     pub record: Record,
     pub project: Project,
+    pub details: String,
+    pub state: TodoState,
     pub start_ts: Option<Timespec>,
     pub end_ts: Option<Timespec>,
+    pub files: Vec<FileInfo>,
 }

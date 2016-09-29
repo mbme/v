@@ -40,7 +40,7 @@ fn get_request_body(req: &mut Request) -> Result<String> {
 fn parse_id (id_str: &str) -> Result<Id> {
     match id_str.parse() {
         Ok(id) => Ok(id),
-        Err(_) => Err(Error::from_str("can't parse id")),
+        Err(_) => Error::err_from_str("can't parse id"),
     }
 }
 
@@ -70,7 +70,7 @@ fn get_url_param (req: &Request, name: &str) -> Result<String> {
 
         Ok(decoded.into_owned())
     } else {
-        Err(Error::from_str(format!("can't find required url param :{}", name)))
+        Error::err_from_str(format!("can't find required url param :{}", name))
     }
 }
 
@@ -226,10 +226,10 @@ pub fn start_server(config: &Config) {
         }, "get note files");
     }
 
-    // POST /api/notes/:id/files
+    // POST /api/records/:id/files
     {
         let storage = storage.clone();
-        router.post("/api/notes/:id/files", move |req: &mut Request| {
+        router.post("/api/records/:id/files", move |req: &mut Request| {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
@@ -260,13 +260,13 @@ pub fn start_server(config: &Config) {
                 },
                 _ => Ok(Response::with(status::BadRequest)),
             }
-        }, "add note file");
+        }, "add record file");
     }
 
-    // GET /api/notes/:id/files/:name
+    // GET /api/records/:id/files/:name
     {
         let storage = storage.clone();
-        router.get("/api/notes/:id/files/:name", move |req: &mut Request| {
+        router.get("/api/records/:id/files/:name", move |req: &mut Request| {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
@@ -279,13 +279,13 @@ pub fn start_server(config: &Config) {
             } else {
                 Err(IronError::new(Error::from_str("Can't find file"), status::NotFound))
             }
-        }, "get note file");
+        }, "get record file");
     }
 
-    // DELETE /api/notes/:id/files/:name
+    // DELETE /api/records/:id/files/:name
     {
         let storage = storage.clone();
-        router.delete("/api/notes/:id/files/:name", move |req: &mut Request| {
+        router.delete("/api/records/:id/files/:name", move |req: &mut Request| {
             // extract :id
             let id = itry!(get_id(req), status::BadRequest);
 
@@ -299,7 +299,7 @@ pub fn start_server(config: &Config) {
                 Err(IronError::new(Error::from_str("Can't find file"), status::NotFound))
             }
 
-        }, "delete note file");
+        }, "delete record file");
     }
 
     // Serve static files

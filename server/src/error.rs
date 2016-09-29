@@ -25,12 +25,21 @@ impl Error {
         Error::new(err, "")
     }
 
+    pub fn err_from<T>(err: Box<SafeError>) -> Result<T> {
+        Err(Error::from(err))
+    }
+
     pub fn from_str<S>(desc: S) -> Self
         where S: Into<String> {
         Error {
             source: None,
             description: desc.into(),
         }
+    }
+
+    pub fn err_from_str<T, S>(desc: S) -> Result<T>
+        where S: Into<String> {
+        Err(Error::from_str(desc))
     }
 }
 

@@ -15,7 +15,7 @@ pub enum RequestData {
 fn read_file<B: Read>(file: &mut MultipartFile<B>) -> Result<Blob> {
     let mut bytes = vec![];
     if let Err(err) = file.read_to_end(&mut bytes) {
-        return Err(Error::from(box err));
+        return Error::err_from(box err);
     }
 
     Ok(Blob(bytes))
@@ -24,7 +24,7 @@ fn read_file<B: Read>(file: &mut MultipartFile<B>) -> Result<Blob> {
 pub fn parse_multipart(request: &mut Request) -> Result<HashMap<String, RequestData>> {
     let mut multipart = match Multipart::from_request(request) {
         Ok(multipart) => multipart,
-        Err(_) => return Err(Error::from_str("request is not multipart")),
+        Err(_) => return Error::err_from_str("request is not multipart"),
     };
 
     let mut values = HashMap::new();
@@ -44,7 +44,7 @@ pub fn parse_multipart(request: &mut Request) -> Result<HashMap<String, RequestD
             },
             Ok(None) => return Ok(values), // no more fields
 
-            Err(err) => return Err(Error::from(box err)), // error during parsing
+            Err(err) => return Error::err_from(box err), // error during parsing
         }
     }
 }

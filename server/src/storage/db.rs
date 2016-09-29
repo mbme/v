@@ -15,7 +15,7 @@ fn get_single_result<T, F> (rows: MappedRows<F>) -> Result<Option<T>>
         if result.is_none() {
             result = Some(row?);
         } else {
-            return Err(Error::from_str("too many results"));
+            return Error::err_from_str("too many results");
         }
     }
 
@@ -43,7 +43,7 @@ impl ::std::str::FromStr for RecordProp {
     fn from_str(s: &str) -> Result<RecordProp> {
         match s {
             "data" => Ok(RecordProp::Data),
-            _ => Err(Error::from_str(format!("unknown record property {}", s))),
+            _ => Error::err_from_str(format!("unknown record property {}", s)),
         }
     }
 }
@@ -115,15 +115,18 @@ impl<'a> DB<'a> {
         let rows = stmt.query_map(
             &[&(id as i64)],
             |row| {
-                let record_type: String = row.get(0);
+                let record_type_str: String = row.get(0);
                 let name: String = row.get(1);
                 let create_ts: Timespec = row.get(2);
                 let update_ts: Timespec = row.get(3);
 
+                let record_type: RecordType = record_type_str.parse()
+                    .expect(&format!("Unknown record type {}", record_type_str));
+
                 Record {
                     id: id,
                     name: name,
-                    record_type: record_type.parse().expect("Unknown record type"),
+                    record_type: record_type,
                     create_ts: create_ts,
                     update_ts: update_ts,
                 }
@@ -134,7 +137,9 @@ impl<'a> DB<'a> {
     }
 
     pub fn record_exists(&self, id: Id) -> Result<bool> {
-        self.get_record(id).map(|result| result.is_some())
+        self.prepare_stmt(
+            "SELECT 1 FROM records WHERE id = $1"
+        )?.exists(&[&(id as i64)]).map_err(into_err)
     }
 
     pub fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {

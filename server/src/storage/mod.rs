@@ -13,6 +13,17 @@ pub struct Storage {
     conn: Mutex<Connection>,
 }
 
+fn assert_record_type(record: &Record, record_type: RecordType) -> Result<()> {
+    if record.record_type == record_type {
+        Ok(())
+    } else {
+        Error::err_from_str(format!(
+            "record {}: expected type {:?}, actual is {:?}",
+            record.id, record_type, record.record_type
+        ))
+    }
+}
+
 impl Storage {
     pub fn new(path: &str) -> Result<Storage> {
         let conn = Connection::open(path).map_err(into_err);
@@ -88,10 +99,7 @@ impl Storage {
                 Some(record) => record,
                 None => return Ok(None),
             };
-
-            if record.record_type != RecordType::Note {
-                return Err(Error::from_str(format!("record {} is not a Note", id)));
-            }
+            assert_record_type(&record, RecordType::Note)?;
 
             let data = db.get_record_prop(id, RecordProp::Data)?.expect("can't find note data");
 
@@ -162,11 +170,14 @@ impl Storage {
         let result = {
             let db = DB::new(&tx);
 
-            if !db.record_exists(record_id)? {
-                return Err(Error::from_str(format!("record {} doesn't exists", record_id)));
-            }
+            let record = match db.get_record(record_id)? {
+                Some(record) => record,
+                None => return Error::err_from_str(format!("record {} doesn't exists", record_id)),
+            };
 
-            db.add_file(record_id, name, data).map_err(into_err)
+            record.record_type.assert_supports_attachments()?;
+
+            db.add_file(record_id, name, data)
         };
 
         tx.commit()?;
@@ -181,7 +192,7 @@ impl Storage {
         let result = {
             let db = DB::new(&tx);
 
-            db.get_file(record_id, name).map_err(into_err)
+            db.get_file(record_id, name)
         };
 
         tx.commit()?;

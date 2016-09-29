@@ -1,5 +1,6 @@
 target
 node_modules
 config.json
+TEMP.db
 npm-debug.log
 Cargo.lock

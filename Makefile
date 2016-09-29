@@ -19,7 +19,7 @@ integration-test:
 web-prod:
 	cd ./web-client && npm run prod
 
-web-dev:
+web-dev-run:
 	cd ./web-client && npm start
 
 .PHONY: clean dev-run test integration-test web-prod web-dev
