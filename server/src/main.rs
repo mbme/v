@@ -1,6 +1,7 @@
-#![feature(box_syntax, box_patterns, question_mark, custom_derive, plugin)]
+#![feature(box_syntax, box_patterns, question_mark, plugin, rustc_macro)]
 
-#![plugin(serde_macros)]
+#![feature(rustc_attrs, structural_match)] // FIXME remove this https://github.com/serde-rs/serde/issues/567
+
 #![plugin(clippy)]
 
 extern crate time;
@@ -8,6 +9,7 @@ extern crate rusqlite;
 extern crate multipart;
 extern crate serde;
 extern crate serde_json;
+#[macro_use] extern crate serde_derive;
 #[macro_use] extern crate iron;
 extern crate router;
 extern crate mime_guess;

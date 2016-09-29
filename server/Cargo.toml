@@ -12,9 +12,9 @@ router = "0.4"
 mime_guess = "1.8"
 serde = "0.8"
 serde_json = "0.8"
-serde_macros = "0.8"
+serde_derive = "0.8"
 url = "1.2"
 
 [dependencies.multipart]
-git = "https://github.com/mbme/multipart.git"
+version = "0.8"
 features = ["iron"]
