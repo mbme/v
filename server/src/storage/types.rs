@@ -13,48 +13,6 @@ impl Blob {
     }
 }
 
-#[derive(Eq, PartialEq, Debug, Copy, Clone)]
-pub enum RecordType {
-    Note,
-    Todo,
-}
-
-impl RecordType {
-    pub fn to_string(&self) -> String {
-        match *self {
-            RecordType::Note => "note".to_string(),
-            RecordType::Todo => "todo".to_string(),
-        }
-    }
-
-    pub fn supports_attachments(&self) -> bool {
-        match *self {
-            RecordType::Note => true,
-            _ => false,
-        }
-    }
-
-    pub fn assert_supports_attachments(&self) -> Result<()> {
-        if self.supports_attachments() {
-            Ok(())
-        } else {
-            Error::err_from_str(format!("record type {:?} doesn't support attachments", self))
-        }
-    }
-}
-
-impl FromStr for RecordType {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<RecordType> {
-        match s {
-            "note" => Ok(RecordType::Note),
-            "todo" => Ok(RecordType::Todo),
-            _ => Error::err_from_str(format!("unknown record type {}", s)),
-        }
-    }
-}
-
 pub struct FileInfo {
     pub name: String,
     pub size: usize,
@@ -64,7 +22,6 @@ pub struct FileInfo {
 pub struct Record {
     pub id: Id,
     pub name: String,
-    pub record_type: RecordType,
     pub create_ts: Timespec,
     pub update_ts: Timespec,
 }
@@ -75,22 +32,9 @@ pub struct Note {
     pub files: Vec<FileInfo>,
 }
 
-impl Note {
-    pub fn new(rec: Record, data: String, files: Vec<FileInfo>) -> Note {
-        Note {
-            record: rec,
-            data: data,
-            files: files,
-        }
-    }
-}
-
 pub struct Project {
-    pub id: Id,
-    pub name: String,
+    pub record: Record,
     pub description: String,
-    pub create_ts: Timespec,
-    pub update_ts: Timespec,
 }
 
 pub enum TodoState {
