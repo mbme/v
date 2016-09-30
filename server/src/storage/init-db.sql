@@ -23,3 +23,11 @@ CREATE TABLE IF NOT EXISTS files (
     CONSTRAINT unique_name UNIQUE (record_id, name),
     FOREIGN KEY(record_id) REFERENCES records(id)
 );
+
+CREATE TABLE IF NOT EXISTS projects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    create_ts INTEGER NOT NULL,
+    update_ts INTEGER NOT NULL
+);

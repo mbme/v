@@ -85,7 +85,13 @@ impl Note {
     }
 }
 
-pub struct Project(Id, String);
+pub struct Project {
+    pub id: Id,
+    pub name: String,
+    pub description: String,
+    pub create_ts: Timespec,
+    pub update_ts: Timespec,
+}
 
 pub enum TodoState {
     Inbox,

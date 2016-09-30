@@ -1,4 +1,4 @@
-use storage::types::{Blob, Id, RecordType, Record, FileInfo};
+use storage::types::*;
 use error::{Result, Error, into_err};
 
 use time::{self, Timespec};
@@ -20,6 +20,17 @@ fn get_single_result<T, F> (rows: MappedRows<F>) -> Result<Option<T>>
     }
 
     Ok(result)
+}
+
+fn extract_results<T, F> (rows: MappedRows<F>) -> Result<Vec<T>>
+    where F: FnMut(&Row) -> T {
+    let mut results = Vec::new();
+
+    for row in rows {
+        results.push(row?);
+    }
+
+    Ok(results)
 }
 
 #[derive(Debug)]
@@ -162,12 +173,7 @@ impl<'a> DB<'a> {
             }
         })?;
 
-        let mut records = Vec::new();
-        for result in results {
-            records.push(result?);
-        }
-
-        Ok(records)
+        extract_results(results)
     }
 
     pub fn get_record_prop(&self, id: Id, prop: RecordProp) -> Result<Option<String>> {
@@ -201,7 +207,7 @@ impl<'a> DB<'a> {
                 name: name.into(),
                 size: data.size(),
                 create_ts: create_ts,
-            }) // return nothing
+            })
             .map_err(into_err)
     }
 
@@ -259,5 +265,47 @@ impl<'a> DB<'a> {
         )
             .map(|_| ()) // return nothing
             .map_err(into_err)
+    }
+
+    pub fn list_projects(&self) -> Result<Vec<Project>> {
+        let mut stmt = self.prepare_stmt(
+            "SELECT id, name, description, create_ts, update_ts FROM projects ORDER BY id"
+        )?;
+
+        let results = stmt.query_map(&[], |row| {
+            let id: i64 = row.get(0);
+            let name: String = row.get(1);
+            let description: String = row.get(2);
+            let create_ts: Timespec = row.get(3);
+            let update_ts: Timespec = row.get(4);
+
+            Project {
+                id: id as Id,
+                name: name,
+                description: description,
+                create_ts: create_ts,
+                update_ts: update_ts,
+            }
+        })?;
+
+        extract_results(results)
+    }
+
+    pub fn add_project(&self, name: &str, description: &str) -> Result<Id> {
+        self.tx.execute(
+            "INSERT INTO projects (name, description, create_ts, update_ts) VALUES ($1, $2, $3, $3)",
+            &[&name, &description, &now()]
+        ).map(
+            |_| self.tx.last_insert_rowid() as Id
+        ).map_err(into_err)
+    }
+
+    pub fn update_project(&self, id: Id, name: &str, description: &str) -> Result<bool> {
+        let rows_count = self.tx.execute(
+            "UPDATE projects SET name = $1, description = $2, update_ts = $3 WHERE id = $4",
+            &[&name, &description, &now(), &(id as i64)]
+        )?;
+
+        Ok(rows_count > 0)
     }
 }
