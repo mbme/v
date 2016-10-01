@@ -1,7 +1,7 @@
 pub mod types;
 pub mod db;
 
-use std::sync::{Mutex, MutexGuard};
+use std::sync::Mutex;
 use rusqlite::Connection;
 
 use error::{Result, into_err};
@@ -20,107 +20,52 @@ impl Storage {
         Ok(Storage { conn: Mutex::new(conn?) })
     }
 
-    fn conn_mutex(&self) -> MutexGuard<Connection> {
-        self.conn.lock().unwrap()
-    }
-
-    pub fn init(&self) -> Result<()> {
-        let mut conn = self.conn_mutex();
+    fn with_db<F, T>(&self, f: F) -> Result<T> where F: FnOnce(DB) -> Result<T> {
+        let mut conn = self.conn.lock().expect("failed to get connection lock");
         let tx = conn.transaction()?;
 
-        DB::new(&tx).init_schema()?;
+        let result = f(DB::new(&tx));
 
         tx.commit()?;
 
-        Ok(())
+        result
+    }
+
+
+    pub fn init(&self) -> Result<()> {
+        self.with_db(|db| db.init_schema())
     }
 
     pub fn list_note_records(&self) -> Result<Vec<Record>> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let result = DB::new(&tx).list_note_records();
-
-        tx.commit()?;
-
-        result
+        self.with_db(|db| db.list_note_records())
     }
 
     pub fn add_note(&self, name: &str, data: &str) -> Result<Id> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let id = DB::new(&tx).add_note(name, data)?;
-
-        tx.commit()?;
-
-        Ok(id)
+        self.with_db(|db| db.add_note(name, data))
     }
 
     pub fn get_note(&self, id: Id) -> Result<Option<Note>> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let note = DB::new(&tx).get_note(id)?;
-
-        tx.commit()?;
-
-        Ok(note)
+        self.with_db(|db| db.get_note(id))
     }
 
     pub fn update_note(&self, id: Id, name: &str, data: &str) -> Result<bool> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let updated = DB::new(&tx).update_note(id, name, data)?;
-
-        tx.commit()?;
-
-        Ok(updated)
+        self.with_db(|db| db.update_note(id, name, data))
     }
 
     pub fn remove_note(&self, id: Id) -> Result<bool> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let removed = DB::new(&tx).remove_note(id)?;
-
-        tx.commit()?;
-
-        Ok(removed)
+        self.with_db(|db| db.remove_note(id))
     }
 
     pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<FileInfo> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let result = DB::new(&tx).add_file(record_id, name, data);
-
-        tx.commit()?;
-
-        result
+        self.with_db(|db| db.add_file(record_id, name, data))
     }
 
     pub fn get_file(&self, record_id: Id, name: &str) -> Result<Option<Blob>> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let result = DB::new(&tx).get_file(record_id, name);
-
-        tx.commit()?;
-
-        result
+        self.with_db(|db| db.get_file(record_id, name))
     }
 
     pub fn remove_file(&self, record_id: Id, name: &str) -> Result<bool> {
-        let mut conn = self.conn_mutex();
-        let tx = conn.transaction()?;
-
-        let result = DB::new(&tx).remove_file(record_id, name);
-
-        tx.commit()?;
-
-        result
+        self.with_db(|db| db.remove_file(record_id, name))
     }
 }
 
