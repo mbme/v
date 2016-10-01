@@ -22,7 +22,6 @@ pub struct UpdateNoteDTO {
 pub struct RecordDTO {
     pub id: Id,
     pub name: String,
-    pub record_type: String,
     pub create_ts: i64,
     pub update_ts: i64,
 }
@@ -49,7 +48,6 @@ impl From<Record> for RecordDTO {
         RecordDTO {
             id: rec.id,
             name: rec.name,
-            record_type: rec.record_type.to_string(),
             create_ts: rec.create_ts.sec,
             update_ts: rec.update_ts.sec,
         }

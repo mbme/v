@@ -18,7 +18,7 @@ use serde_json;
 use url::percent_encoding::percent_decode;
 
 use storage::Storage;
-use storage::types::{Id, RecordType};
+use storage::types::Id;
 use utils::convert_all_into;
 use error::{Result, Error, into_err};
 use config::Config;
@@ -99,7 +99,7 @@ pub fn start_server(config: &Config) {
         router.get("/api/records/notes", move |_: &mut Request| {
 
             let records = itry!(
-                storage.list_records(RecordType::Note),
+                storage.list_note_records(),
                 status::InternalServerError
             );
 

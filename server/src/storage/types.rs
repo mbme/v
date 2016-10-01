@@ -1,6 +1,7 @@
 use time::Timespec;
 use error::{Result, Error};
-use std::str::FromStr;
+use std::str;
+use std::fmt;
 
 pub type Id = u64;
 
@@ -46,20 +47,22 @@ pub enum TodoState {
     Canceled,
 }
 
-impl TodoState {
-    pub fn to_string(&self) -> String {
-        match *self {
-            TodoState::Inbox      => "inbox".to_string(),
-            TodoState::Todo       => "todo".to_string(),
-            TodoState::InProgress => "in-progress".to_string(),
-            TodoState::Blocked    => "blocked".to_string(),
-            TodoState::Done       => "done".to_string(),
-            TodoState::Canceled   => "canceled".to_string(),
-        }
+impl fmt::Display for TodoState {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let result = match *self {
+            TodoState::Inbox      => "inbox",
+            TodoState::Todo       => "todo",
+            TodoState::InProgress => "in-progress",
+            TodoState::Blocked    => "blocked",
+            TodoState::Done       => "done",
+            TodoState::Canceled   => "canceled",
+        };
+
+        write!(fmt, "{}", result)
     }
 }
 
-impl FromStr for TodoState {
+impl str::FromStr for TodoState {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<TodoState> {

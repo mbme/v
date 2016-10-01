@@ -4,24 +4,13 @@ pub mod db;
 use std::sync::{Mutex, MutexGuard};
 use rusqlite::Connection;
 
-use error::{Result, Error, into_err};
+use error::{Result, into_err};
 use storage::types::*;
 
-use storage::db::{RecordProp, DB};
+use storage::db::DB;
 
 pub struct Storage {
     conn: Mutex<Connection>,
-}
-
-fn assert_record_type(record: &Record, record_type: RecordType) -> Result<()> {
-    if record.record_type == record_type {
-        Ok(())
-    } else {
-        Error::err_from_str(format!(
-            "record {}: expected type {:?}, actual is {:?}",
-            record.id, record_type, record.record_type
-        ))
-    }
 }
 
 impl Storage {
@@ -39,26 +28,18 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        {
-            let db = DB::new(&tx);
-            db.init_schema()?;
-        }
+        DB::new(&tx).init_schema()?;
 
         tx.commit()?;
 
         Ok(())
     }
 
-    pub fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {
+    pub fn list_note_records(&self) -> Result<Vec<Record>> {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-
-        let result = {
-            let db = DB::new(&tx);
-
-            db.list_records(record_type)
-        };
+        let result = DB::new(&tx).list_note_records();
 
         tx.commit()?;
 
@@ -69,16 +50,7 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        // add new record
-        let id = {
-            let db = DB::new(&tx);
-            let id = db.add_record(name, RecordType::Note)?;
-
-            // add record props
-            db.add_record_props(id, &[(RecordProp::Data, data)])?;
-
-            id
-        };
+        let id = DB::new(&tx).add_note(name, data)?;
 
         tx.commit()?;
 
@@ -89,51 +61,18 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let note = {
-            let db = DB::new(&tx);
-
-            let result = db.get_record(id)?;
-
-            // extract results
-            let record = match result {
-                Some(record) => record,
-                None => return Ok(None),
-            };
-            assert_record_type(&record, RecordType::Note)?;
-
-            let data = db.get_record_prop(id, RecordProp::Data)?.expect("can't find note data");
-
-            let files = db.get_record_files(id)?;
-
-            Note::new(record, data, files)
-        };
+        let note = DB::new(&tx).get_note(id)?;
 
         tx.commit()?;
 
-        Ok(Some(note))
+        Ok(note)
     }
 
     pub fn update_note(&self, id: Id, name: &str, data: &str) -> Result<bool> {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let updated = {
-            let db = DB::new(&tx);
-
-            // update name
-            let updated = db.update_record(id, name)?;
-
-            // update props if note with specified id exists
-            if updated {
-                // delete old props
-                db.remove_record_props(id)?;
-
-                // add new record props
-                db.add_record_props(id, &[(RecordProp::Data, data)])?;
-            }
-
-            updated
-        };
+        let updated = DB::new(&tx).update_note(id, name, data)?;
 
         tx.commit()?;
 
@@ -144,19 +83,7 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let removed = {
-            let db = DB::new(&tx);
-
-            let removed = db.remove_record(id)?;
-
-            // remove props and files if note with specified id exists
-            if removed {
-                db.remove_record_props(id)?;
-                db.remove_record_files(id)?;
-            }
-
-            removed
-        };
+        let removed = DB::new(&tx).remove_note(id)?;
 
         tx.commit()?;
 
@@ -167,18 +94,7 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let result = {
-            let db = DB::new(&tx);
-
-            let record = match db.get_record(record_id)? {
-                Some(record) => record,
-                None => return Error::err_from_str(format!("record {} doesn't exists", record_id)),
-            };
-
-            record.record_type.assert_supports_attachments()?;
-
-            db.add_file(record_id, name, data)
-        };
+        let result = DB::new(&tx).add_file(record_id, name, data);
 
         tx.commit()?;
 
@@ -189,11 +105,7 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let result = {
-            let db = DB::new(&tx);
-
-            db.get_file(record_id, name)
-        };
+        let result = DB::new(&tx).get_file(record_id, name);
 
         tx.commit()?;
 
@@ -204,11 +116,7 @@ impl Storage {
         let mut conn = self.conn_mutex();
         let tx = conn.transaction()?;
 
-        let result = {
-            let db = DB::new(&tx);
-
-            db.remove_file(record_id, name)
-        };
+        let result = DB::new(&tx).remove_file(record_id, name);
 
         tx.commit()?;
 
@@ -219,7 +127,7 @@ impl Storage {
 #[cfg(test)]
 mod viter {
     use storage::*;
-    use storage::types::{Blob, RecordType};
+    use storage::types::Blob;
 
     fn new_storage() -> Storage {
         let storage = Storage::new(":memory:").expect("failed to open db");
@@ -354,6 +262,6 @@ mod viter {
         let s = new_storage();
         s.add_note("test", "data").unwrap();
 
-        assert!(s.list_records(RecordType::Note).unwrap().len() == 1);
+        assert!(s.list_note_records().unwrap().len() == 1);
     }
 }
