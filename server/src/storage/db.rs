@@ -2,7 +2,7 @@ use std::str;
 use std::fmt;
 
 use time::{self, Timespec};
-use rusqlite::{Statement, Transaction, MappedRows, Row};
+use rusqlite::{Statement, Transaction, MappedRows, Row, Error as SQLiteError};
 
 use storage::types::*;
 use error::{Result, Error, into_err};
@@ -25,8 +25,8 @@ fn get_single_result<T, F> (rows: MappedRows<F>) -> Result<Option<T>>
     Ok(result)
 }
 
-fn extract_results<T, F> (rows: MappedRows<F>) -> Result<Vec<T>>
-    where F: FnMut(&Row) -> T {
+fn extract_results<T, R> (rows: R) -> Result<Vec<T>>
+    where R: Iterator<Item=::std::result::Result<T, SQLiteError>> {
     let mut results = Vec::new();
 
     for row in rows {
@@ -81,6 +81,12 @@ impl<'a> DB<'a> {
         self.tx.execute_batch(include_str!("init-db.sql")).map_err(into_err)
     }
 
+    pub fn enable_foreign_keys_support(&self) -> Result<()> {
+        self.tx.execute("PRAGMA foreign_keys = ON", &[])?;
+
+        Ok(())
+    }
+
     fn prepare_stmt(&self, sql: &str) -> Result<Statement> {
         self.tx.prepare(sql).map_err(into_err)
     }
@@ -122,10 +128,14 @@ impl<'a> DB<'a> {
         get_single_result(rows)
     }
 
-    fn record_exists(&self, id: Id) -> Result<bool> {
-        self.prepare_stmt(
-            "SELECT 1 FROM records WHERE id = $1"
-        )?.exists(&[&(id as i64)]).map_err(into_err)
+    fn record_exists(&self, id: Id, record_type: Option<RecordType>) -> Result<bool> {
+        let mut stmt = self.prepare_stmt(
+            "SELECT 1 FROM records WHERE id = $1 AND (($2 IS NULL) OR (type = $2))"
+        )?;
+
+        stmt.exists(
+            &[&(id as i64), &record_type.map(|t| t.to_string())]
+        ).map_err(into_err)
     }
 
     fn remove_record(&self, id: Id, record_type: RecordType) -> Result<bool> {
@@ -137,8 +147,27 @@ impl<'a> DB<'a> {
         Ok(rows_count > 0)
     }
 
+    fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {
+        let mut stmt = self.prepare_stmt(
+            "SELECT id, name, create_ts, update_ts FROM records WHERE type = $1 ORDER BY id"
+        )?;
+
+        let results = stmt.query_map(&[&record_type.to_string()], |row| {
+            let id: i64 = row.get(0);
+
+            Record {
+                id: id as Id,
+                name: row.get(1),
+                create_ts: row.get(2),
+                update_ts: row.get(3),
+            }
+        })?;
+
+        extract_results(results)
+    }
+
     pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<FileInfo> {
-        if !self.record_exists(record_id)? {
+        if !self.record_exists(record_id, None)? {
             return Error::err_from_str(format!("record {} doesn't exists", record_id));
         }
 
@@ -194,45 +223,20 @@ impl<'a> DB<'a> {
             }
         })?;
 
-        let mut files = Vec::new();
-        for result in results {
-            files.push(result?);
-        }
-
-        Ok(files)
+        extract_results(results)
     }
 
     pub fn remove_record_files(&self, record_id: Id) -> Result<()> {
         self.tx.execute(
             "DELETE FROM files WHERE record_id = $1",
             &[&(record_id as i64)]
-        )
-            .map(|_| ()) // return nothing
-            .map_err(into_err)
+        )?;
+
+        Ok(())
     }
 
-    pub fn list_projects(&self) -> Result<Vec<Project>> {
-        let mut stmt = self.prepare_stmt("
-                SELECT id, name, description, create_ts, update_ts
-                FROM projects INNER JOIN records ON projects.record_id = records.id
-                ORDER BY id
-        ")?;
-
-        let results = stmt.query_map(&[], |row| {
-            let id: i64 = row.get(0);
-
-            Project {
-                record: Record {
-                    id: id as Id,
-                    name: row.get(1),
-                    create_ts: row.get(3),
-                    update_ts: row.get(4),
-                },
-                description: row.get(2),
-            }
-        })?;
-
-        extract_results(results)
+    pub fn list_project_records(&self) -> Result<Vec<Record>> {
+        self.list_records(RecordType::Project)
     }
 
     pub fn add_project(&self, name: &str, description: &str) -> Result<Id> {
@@ -246,13 +250,38 @@ impl<'a> DB<'a> {
         Ok(id)
     }
 
+    pub fn get_project(&self, id: Id) -> Result<Option<Project>> {
+        let record = match self.get_record(id, RecordType::Project)? {
+            Some(record) => record,
+            None => return Ok(None),
+        };
+
+        let files = self.get_record_files(id)?;
+
+        let mut stmt = self.prepare_stmt(
+            "SELECT description FROM projects WHERE record_id = $1"
+        )?;
+
+        let rows = stmt.query_map(&[&(id as i64)], |row| row.get(0))?;
+        let description = match get_single_result(rows)? {
+            Some(description) => description,
+            None => unreachable!(),
+        };
+
+        Ok(Some(Project {
+            record: record,
+            files: files,
+            description: description,
+        }))
+    }
+
     pub fn update_project(&self, id: Id, name: &str, description: &str) -> Result<bool> {
         if !self.update_record(id, RecordType::Project, name)? {
             return Ok(false);
         }
 
         let rows_count = self.tx.execute(
-            "UPDATE projects SET description = $1 WHERE id = $2",
+            "UPDATE projects SET description = $1 WHERE record_id = $2",
             &[&description, &(id as i64)]
         )?;
 
@@ -336,21 +365,89 @@ impl<'a> DB<'a> {
     }
 
     pub fn list_note_records(&self) -> Result<Vec<Record>> {
-        let mut stmt = self.prepare_stmt(
-            "SELECT id, name, create_ts, update_ts FROM records WHERE type = $1 ORDER BY id"
+        self.list_records(RecordType::Note)
+    }
+
+    pub fn list_todos(&self, project: &Project) -> Result<Vec<Todo>> {
+        let mut stmt = self.prepare_stmt("
+                SELECT id, name, create_ts, update_ts, details, state, start_ts, end_ts
+                FROM todos INNER JOIN records ON todos.record_id = records.id
+                WHERE project_id = $1
+                ORDER BY id
+        ")?;
+
+        let mut rows = stmt.query(&[&(project.record.id as i64)])?;
+        let mut todos = Vec::new();
+
+        while let Some(row_result) = rows.next() {
+            let row = row_result?;
+
+            let id: i64 = row.get(0);
+            let state_str: String = row.get(5);
+            let state = state_str.parse()?;
+
+            // TODO performance?
+            let files = self.get_record_files(id as Id)?;
+
+            todos.push(Todo {
+                record: Record {
+                    id: id as Id,
+                    name: row.get(1),
+                    create_ts: row.get(2),
+                    update_ts: row.get(3),
+                },
+                details: row.get(4),
+                state: state,
+                start_ts: row.get(6),
+                end_ts: row.get(7),
+                files: files,
+            });
+        };
+
+        Ok(todos)
+    }
+
+    pub fn add_todo(&self,
+                    project: &Project,
+                    name: &str,
+                    details: &str,
+                    start_ts: Option<Timespec>,
+                    end_ts: Option<Timespec>) -> Result<Id> {
+        let id = self.add_record(RecordType::Todo, name)?;
+
+        // if !self.record_exists(project.record.id, Some(RecordType::Project))? {
+        //     return Error::err_from_str("TEST");
+        // }
+
+        self.tx.execute(
+            "INSERT INTO todos (record_id, project_id, details, state, start_ts, end_ts) VALUES ($1, $2, $3, $4, $5, $6)",
+            &[&(id as i64), &(project.record.id as i64), &details, &TodoState::Inbox.to_string(), &start_ts, &end_ts]
         )?;
 
-        let results = stmt.query_map(&[&RecordType::Note.to_string()], |row| {
-            let id: i64 = row.get(0);
+        Ok(id)
+    }
 
-            Record {
-                id: id as Id,
-                name: row.get(1),
-                create_ts: row.get(2),
-                update_ts: row.get(3),
-            }
-        })?;
+    pub fn update_todo(&self,
+                       id: Id,
+                       name: &str,
+                       details: &str,
+                       state: TodoState,
+                       start_ts: Option<Timespec>,
+                       end_ts: Option<Timespec>) -> Result<bool> {
 
-        extract_results(results)
+        if !self.update_record(id, RecordType::Todo, name)? {
+            return Ok(false);
+        }
+
+        let rows_count = self.tx.execute(
+            "UPDATE todos SET details = $1, state = $2, start_ts = $3, end_ts = $4 WHERE record_id = $5",
+            &[&details, &state.to_string(), &start_ts, &end_ts, &(id as i64)]
+        )?;
+
+        if rows_count == 0 {
+            unreachable!();
+        }
+
+        Ok(true)
     }
 }

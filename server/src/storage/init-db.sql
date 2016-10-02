@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS todos (
     project_id INTEGER NOT NULL,
     details TEXT,
     state TEXT NOT NULL,
-    start_ts INTEGER NOT NULL,
-    end_ts INTEGER NOT NULL,
+    start_ts INTEGER,
+    end_ts INTEGER,
 
     FOREIGN KEY(record_id) REFERENCES records(id),
     FOREIGN KEY(project_id) REFERENCES projects(record_id)

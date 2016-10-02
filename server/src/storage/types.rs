@@ -36,6 +36,7 @@ pub struct Note {
 pub struct Project {
     pub record: Record,
     pub description: String,
+    pub files: Vec<FileInfo>,
 }
 
 pub enum TodoState {
@@ -80,7 +81,6 @@ impl str::FromStr for TodoState {
 
 pub struct Todo {
     pub record: Record,
-    pub project: Project,
     pub details: String,
     pub state: TodoState,
     pub start_ts: Option<Timespec>,
