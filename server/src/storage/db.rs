@@ -2,7 +2,7 @@ use std::str;
 use std::fmt;
 
 use time::{self, Timespec};
-use rusqlite::{Statement, Transaction, MappedRows, Row, Error as SQLiteError};
+use rusqlite::{Connection, MappedRows, Row, Error as SQLiteError};
 
 use storage::types::*;
 use error::{Result, Error, into_err};
@@ -69,39 +69,33 @@ impl str::FromStr for RecordType {
 }
 
 pub struct DB<'a> {
-    tx: &'a Transaction<'a>,
+    conn: &'a Connection,
 }
 
 impl<'a> DB<'a> {
-    pub fn new(tx: &'a Transaction) -> DB<'a> {
-        DB { tx: tx }
+    pub fn new(conn: &'a Connection) -> DB<'a> {
+        DB { conn: conn }
     }
 
     pub fn init_schema(&self) -> Result<()> {
-        self.tx.execute_batch(include_str!("init-db.sql")).map_err(into_err)
+        self.conn.execute_batch(include_str!("init-db.sql")).map_err(into_err)
     }
 
     pub fn enable_foreign_keys_support(&self) -> Result<()> {
-        self.tx.execute("PRAGMA foreign_keys = ON", &[])?;
-
-        Ok(())
-    }
-
-    fn prepare_stmt(&self, sql: &str) -> Result<Statement> {
-        self.tx.prepare(sql).map_err(into_err)
+        self.conn.execute_batch("PRAGMA foreign_keys = ON;").map_err(into_err)
     }
 
     fn add_record(&self, record_type: RecordType, name: &str) -> Result<Id> {
-        self.tx.execute(
+        self.conn.execute(
             "INSERT INTO records (name, type, create_ts, update_ts) VALUES ($1, $2, $3, $3)",
             &[&name, &record_type.to_string(), &now()]
         ).map(
-            |_| self.tx.last_insert_rowid() as Id
+            |_| self.conn.last_insert_rowid() as Id
         ).map_err(into_err)
     }
 
     fn update_record(&self, id: Id, record_type: RecordType, name: &str) -> Result<bool> {
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "UPDATE records SET name = $1, update_ts = $2 WHERE id = $3 AND type = $4",
             &[&name, &now(), &(id as i64), &record_type.to_string()]
         )?;
@@ -110,7 +104,7 @@ impl<'a> DB<'a> {
     }
 
     fn get_record(&self, id: Id, record_type: RecordType) -> Result<Option<Record>> {
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT name, create_ts, update_ts FROM records WHERE id = $1 AND type = $2"
         )?;
 
@@ -129,7 +123,7 @@ impl<'a> DB<'a> {
     }
 
     fn record_exists(&self, id: Id, record_type: Option<RecordType>) -> Result<bool> {
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT 1 FROM records WHERE id = $1 AND (($2 IS NULL) OR (type = $2))"
         )?;
 
@@ -139,7 +133,7 @@ impl<'a> DB<'a> {
     }
 
     fn remove_record(&self, id: Id, record_type: RecordType) -> Result<bool> {
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "DELETE FROM records WHERE id = $1 AND type = $2",
             &[&(id as i64), &record_type.to_string()]
         )?;
@@ -148,7 +142,7 @@ impl<'a> DB<'a> {
     }
 
     fn list_records(&self, record_type: RecordType) -> Result<Vec<Record>> {
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT id, name, create_ts, update_ts FROM records WHERE type = $1 ORDER BY id"
         )?;
 
@@ -172,7 +166,7 @@ impl<'a> DB<'a> {
         }
 
         let create_ts = now();
-        self.tx.execute(
+        self.conn.execute(
             "INSERT INTO files (record_id, name, data, size, create_ts) VALUES ($1, $2, $3, $4, $5)",
             &[&(record_id as i64), &name, &data.0, &(data.size() as i64), &create_ts]
         )?;
@@ -185,7 +179,7 @@ impl<'a> DB<'a> {
     }
 
     pub fn remove_file(&self, record_id: Id, name: &str) -> Result<bool> {
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "DELETE FROM files WHERE record_id = $1 AND name = $2",
             &[&(record_id as i64), &name]
         )?;
@@ -194,7 +188,7 @@ impl<'a> DB<'a> {
     }
 
     pub fn get_file(&self, record_id: Id, name: &str) -> Result<Option<Blob>> {
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT data FROM files WHERE record_id = $1 AND name = $2 ORDER BY name"
         )?;
 
@@ -207,7 +201,7 @@ impl<'a> DB<'a> {
     }
 
     pub fn get_record_files(&self, record_id: Id) -> Result<Vec<FileInfo>> {
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT name, size, create_ts FROM files WHERE record_id = $1 ORDER BY name",
         )?;
 
@@ -227,7 +221,7 @@ impl<'a> DB<'a> {
     }
 
     pub fn remove_record_files(&self, record_id: Id) -> Result<()> {
-        self.tx.execute(
+        self.conn.execute(
             "DELETE FROM files WHERE record_id = $1",
             &[&(record_id as i64)]
         )?;
@@ -242,7 +236,7 @@ impl<'a> DB<'a> {
     pub fn add_project(&self, name: &str, description: &str) -> Result<Id> {
         let id = self.add_record(RecordType::Project, name)?;
 
-        self.tx.execute(
+        self.conn.execute(
             "INSERT INTO projects (record_id, description) VALUES ($1, $2)",
             &[&(id as i64), &description]
         )?;
@@ -258,7 +252,7 @@ impl<'a> DB<'a> {
 
         let files = self.get_record_files(id)?;
 
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT description FROM projects WHERE record_id = $1"
         )?;
 
@@ -280,7 +274,7 @@ impl<'a> DB<'a> {
             return Ok(false);
         }
 
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "UPDATE projects SET description = $1 WHERE record_id = $2",
             &[&description, &(id as i64)]
         )?;
@@ -295,7 +289,7 @@ impl<'a> DB<'a> {
     pub fn add_note(&self, name: &str, data: &str) -> Result<Id> {
         let id = self.add_record(RecordType::Note, name)?;
 
-        self.tx.execute(
+        self.conn.execute(
             "INSERT INTO notes (record_id, data) VALUES ($1, $2)",
             &[&(id as i64), &data]
         )?;
@@ -311,7 +305,7 @@ impl<'a> DB<'a> {
 
         let files = self.get_record_files(id)?;
 
-        let mut stmt = self.prepare_stmt(
+        let mut stmt = self.conn.prepare(
             "SELECT data FROM notes WHERE record_id = $1"
         )?;
 
@@ -333,7 +327,7 @@ impl<'a> DB<'a> {
             return Ok(false);
         }
 
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "UPDATE notes SET data = $1 WHERE record_id = $2",
             &[&data, &(id as i64)]
         )?;
@@ -350,7 +344,7 @@ impl<'a> DB<'a> {
             return Ok(false);
         }
 
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "DELETE FROM notes WHERE record_id = $1",
             &[&(id as i64)]
         )?;
@@ -369,7 +363,7 @@ impl<'a> DB<'a> {
     }
 
     pub fn list_todos(&self, project: &Project) -> Result<Vec<Todo>> {
-        let mut stmt = self.prepare_stmt("
+        let mut stmt = self.conn.prepare("
                 SELECT id, name, create_ts, update_ts, details, state, start_ts, end_ts
                 FROM todos INNER JOIN records ON todos.record_id = records.id
                 WHERE project_id = $1
@@ -415,14 +409,12 @@ impl<'a> DB<'a> {
                     end_ts: Option<Timespec>) -> Result<Id> {
         let id = self.add_record(RecordType::Todo, name)?;
 
-        // if !self.record_exists(project.record.id, Some(RecordType::Project))? {
-        //     return Error::err_from_str("TEST");
-        // }
-
-        self.tx.execute(
+        let num = self.conn.execute(
             "INSERT INTO todos (record_id, project_id, details, state, start_ts, end_ts) VALUES ($1, $2, $3, $4, $5, $6)",
             &[&(id as i64), &(project.record.id as i64), &details, &TodoState::Inbox.to_string(), &start_ts, &end_ts]
         )?;
+
+        println!("HERE {}", num);
 
         Ok(id)
     }
@@ -439,7 +431,7 @@ impl<'a> DB<'a> {
             return Ok(false);
         }
 
-        let rows_count = self.tx.execute(
+        let rows_count = self.conn.execute(
             "UPDATE todos SET details = $1, state = $2, start_ts = $3, end_ts = $4 WHERE record_id = $5",
             &[&details, &state.to_string(), &start_ts, &end_ts, &(id as i64)]
         )?;

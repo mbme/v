@@ -17,12 +17,13 @@ pub struct Storage {
 
 impl Storage {
     pub fn new(path: &str) -> Result<Storage> {
-        let conn = Connection::open(path).map_err(into_err);
+        let conn = Connection::open(path).map_err(into_err)?;
 
-        Ok(Storage { conn: Mutex::new(conn?) })
+        Ok(Storage { conn: Mutex::new(conn) })
     }
 
-    fn with_db<F, T>(&self, f: F) -> Result<T> where F: FnOnce(DB) -> Result<T> {
+    fn in_tx<F, T>(&self, f: F) -> Result<T>
+        where F: FnOnce(DB) -> Result<T> {
         let mut conn = self.conn.lock().expect("failed to get connection lock");
         let tx = conn.transaction()?;
 
@@ -33,64 +34,66 @@ impl Storage {
         result
     }
 
-
     pub fn init(&self) -> Result<()> {
-        self.with_db(|db| {
-            db.init_schema()?;
-            db.enable_foreign_keys_support()
-        })
+        let conn = self.conn.lock().expect("failed to get connection lock");
+
+        let db = DB::new(&conn);
+        db.init_schema()?;
+        db.enable_foreign_keys_support()?;
+
+        Ok(())
     }
 
     pub fn list_note_records(&self) -> Result<Vec<Record>> {
-        self.with_db(|db| db.list_note_records())
+        self.in_tx(|db| db.list_note_records())
     }
 
     pub fn add_note(&self, name: &str, data: &str) -> Result<Id> {
-        self.with_db(|db| db.add_note(name, data))
+        self.in_tx(|db| db.add_note(name, data))
     }
 
     pub fn get_note(&self, id: Id) -> Result<Option<Note>> {
-        self.with_db(|db| db.get_note(id))
+        self.in_tx(|db| db.get_note(id))
     }
 
     pub fn update_note(&self, id: Id, name: &str, data: &str) -> Result<bool> {
-        self.with_db(|db| db.update_note(id, name, data))
+        self.in_tx(|db| db.update_note(id, name, data))
     }
 
     pub fn remove_note(&self, id: Id) -> Result<bool> {
-        self.with_db(|db| db.remove_note(id))
+        self.in_tx(|db| db.remove_note(id))
     }
 
     pub fn add_file(&self, record_id: Id, name: &str, data: &Blob) -> Result<FileInfo> {
-        self.with_db(|db| db.add_file(record_id, name, data))
+        self.in_tx(|db| db.add_file(record_id, name, data))
     }
 
     pub fn get_file(&self, record_id: Id, name: &str) -> Result<Option<Blob>> {
-        self.with_db(|db| db.get_file(record_id, name))
+        self.in_tx(|db| db.get_file(record_id, name))
     }
 
     pub fn remove_file(&self, record_id: Id, name: &str) -> Result<bool> {
-        self.with_db(|db| db.remove_file(record_id, name))
+        self.in_tx(|db| db.remove_file(record_id, name))
     }
 
     pub fn list_project_records(&self) -> Result<Vec<Record>> {
-        self.with_db(|db| db.list_project_records())
+        self.in_tx(|db| db.list_project_records())
     }
 
     pub fn add_project(&self, name: &str, description: &str) -> Result<Id> {
-        self.with_db(|db| db.add_project(name, description))
+        self.in_tx(|db| db.add_project(name, description))
     }
 
     pub fn get_project(&self, id: Id) -> Result<Option<Project>> {
-        self.with_db(|db| db.get_project(id))
+        self.in_tx(|db| db.get_project(id))
     }
 
     pub fn update_project(&self, id: Id, name: &str, description: &str) -> Result<bool> {
-        self.with_db(|db| db.update_project(id, name, description))
+        self.in_tx(|db| db.update_project(id, name, description))
     }
 
     pub fn list_todos(&self, project: &Project) -> Result<Vec<Todo>> {
-        self.with_db(|db| db.list_todos(project))
+        self.in_tx(|db| db.list_todos(project))
     }
 
     pub fn add_todo(&self,
@@ -99,7 +102,7 @@ impl Storage {
                     details: &str,
                     start_ts: Option<Timespec>,
                     end_ts: Option<Timespec>) -> Result<Id> {
-        self.with_db(|db| db.add_todo(project, name, details, start_ts, end_ts))
+        self.in_tx(|db| db.add_todo(project, name, details, start_ts, end_ts))
     }
 
     pub fn update_todo(&self,
@@ -109,7 +112,7 @@ impl Storage {
                        state: TodoState,
                        start_ts: Option<Timespec>,
                        end_ts: Option<Timespec>) -> Result<bool> {
-        self.with_db(|db| db.update_todo(id, name, details, state, start_ts, end_ts))
+        self.in_tx(|db| db.update_todo(id, name, details, state, start_ts, end_ts))
     }
 }
 
@@ -354,6 +357,7 @@ mod viter {
         // check with empty store
         let s = new_storage();
 
+        assert!(s.get_project(project.record.id).unwrap().is_none());
         assert!(s.add_todo(&project, "name", "", None, None).is_err());
     }
 }
