@@ -384,6 +384,7 @@ impl<'a> DB<'a> {
             let files = self.get_record_files(id as Id)?;
 
             todos.push(Todo {
+                project_id: project.record.id,
                 record: Record {
                     id: id as Id,
                     name: row.get(1),

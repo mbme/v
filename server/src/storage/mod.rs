@@ -120,6 +120,7 @@ impl Storage {
 mod viter {
     use storage::Storage;
     use storage::types::*;
+    use time::Timespec;
 
     fn new_storage() -> Storage {
         let storage = Storage::new(":memory:").expect("failed to open db");
@@ -359,5 +360,58 @@ mod viter {
 
         assert!(s.get_project(project.record.id).unwrap().is_none());
         assert!(s.add_todo(&project, "name", "", None, None).is_err());
+    }
+
+    #[test]
+    fn test_list_todos() {
+        let s = new_storage();
+        let project = create_project(&s);
+
+        s.add_todo(&project, "name", "", None, None).unwrap();
+
+        assert_eq!(s.list_todos(&project).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_list_todos_in_unknown_project() {
+        let s = new_storage();
+        let project = create_project(&s);
+
+        let s = new_storage();
+
+        assert_eq!(s.list_todos(&project).unwrap().len(), 0);
+    }
+
+    #[test]
+    fn test_update_todo() {
+        let s = new_storage();
+        let project = create_project(&s);
+
+        let details = "details";
+        let id = s.add_todo(&project, "name", details, None, None).unwrap();
+
+        let new_name = "test1";
+        let new_end_ts = Some(Timespec::new(11, 0)); // nsec must be 0
+        let new_state = TodoState::InProgress;
+        assert!(s.update_todo(id, new_name, details, new_state, None, new_end_ts).unwrap());
+
+        let todo = s.list_todos(&project).unwrap()
+            .into_iter().find(|todo| todo.record.id == id);
+
+        assert!(todo.is_some());
+
+        let todo = todo.unwrap();
+
+        assert_eq!(todo.record.name, new_name);
+        assert_eq!(todo.details, details);
+        assert_eq!(todo.state, new_state);
+        assert_eq!(todo.end_ts, new_end_ts);
+    }
+
+    #[test]
+    fn test_update_unknown_todo() {
+        let s = new_storage();
+
+        assert!(!s.update_todo(99, "", "", TodoState::InProgress, None, None).unwrap());
     }
 }

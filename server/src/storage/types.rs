@@ -39,6 +39,7 @@ pub struct Project {
     pub files: Vec<FileInfo>,
 }
 
+#[derive(Eq, PartialEq, Debug, Clone, Copy)]
 pub enum TodoState {
     Inbox,
     Todo,
@@ -80,6 +81,7 @@ impl str::FromStr for TodoState {
 }
 
 pub struct Todo {
+    pub project_id: Id,
     pub record: Record,
     pub details: String,
     pub state: TodoState,
