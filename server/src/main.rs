@@ -1,7 +1,5 @@
 #![feature(box_syntax, box_patterns, question_mark, plugin, rustc_macro)]
 
-#![feature(rustc_attrs, structural_match)] // FIXME remove this https://github.com/serde-rs/serde/issues/567
-
 #![plugin(clippy)]
 
 extern crate time;
