@@ -36,38 +36,6 @@ fn extract_results<T, R> (rows: R) -> Result<Vec<T>>
     Ok(results)
 }
 
-#[derive(Debug)]
-enum RecordType {
-    Note,
-    Todo,
-    Project,
-}
-
-impl fmt::Display for RecordType {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        let result = match *self {
-            RecordType::Note    => "note",
-            RecordType::Todo    => "todo",
-            RecordType::Project => "project",
-        };
-
-        write!(fmt, "{}", result)
-    }
-}
-
-impl str::FromStr for RecordType {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<RecordType> {
-        match s {
-            "note"    => Ok(RecordType::Note),
-            "todo"    => Ok(RecordType::Todo),
-            "project" => Ok(RecordType::Project),
-            _ => Error::err_from_str(format!("unknown record type {}", s)),
-        }
-    }
-}
-
 pub struct DB<'a> {
     conn: &'a Connection,
 }
