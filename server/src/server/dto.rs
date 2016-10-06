@@ -76,3 +76,38 @@ impl From<Note> for NoteDTO {
         }
     }
 }
+
+#[derive(Debug, Deserialize)]
+pub struct CreateProjectDTO {
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ProjectDTO {
+    pub id: Id,
+    pub name: String,
+    pub create_ts: i64,
+    pub update_ts: i64,
+    pub description: String,
+    pub files: Vec<FileInfoDTO>,
+}
+
+impl From<Project> for ProjectDTO {
+    fn from (note: Project) -> ProjectDTO {
+        ProjectDTO {
+            id: note.record.id,
+            name: note.record.name,
+            create_ts: note.record.create_ts.sec,
+            update_ts: note.record.update_ts.sec,
+            description: note.description,
+            files: convert_all_into(note.files),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateProjectDTO {
+    pub name: String,
+    pub description: String,
+}
