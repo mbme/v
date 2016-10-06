@@ -45,10 +45,11 @@ pub fn start_server(config: &Config) {
     router.get("/api/notes/:id", GetNoteHandler(storage.clone()), "get note");
     router.delete("/api/notes/:id", DeleteNoteHandler(storage.clone()), "delete note");
 
+    // NOTE FILES
     router.get("/api/notes/:id/files", ListFilesHandler::new(RecordType::Note, storage.clone()), "get note files");
-    router.post("/api/notes/:id/files", AddFileHandler::new(RecordType::Note, storage.clone()), "add record file");
-    router.get("/api/records/:id/files/:name", GetFileHandler::new(RecordType::Note, storage.clone()), "get record file");
-    router.delete("/api/records/:id/files/:name", RemoveFileHandler::new(RecordType::Note, storage.clone()), "delete record file");
+    router.post("/api/notes/:id/files", AddFileHandler::new(RecordType::Note, storage.clone()), "add note file");
+    router.get("/api/notes/:id/files/:name", GetFileHandler::new(RecordType::Note, storage.clone()), "get note file");
+    router.delete("/api/notes/:id/files/:name", RemoveFileHandler::new(RecordType::Note, storage.clone()), "delete note file");
 
     // Serve static files
     router.get("/", StaticIndexHandler, "static index handler");
