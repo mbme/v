@@ -44,6 +44,14 @@ impl Storage {
         Ok(())
     }
 
+    pub fn record_exists(&self, id: Id, record_type: RecordType) -> Result<bool> {
+        self.in_tx(|db| db.record_exists(id, Some(record_type)))
+    }
+
+    pub fn list_record_files(&self, id: Id) -> Result<Vec<FileInfo>> {
+        self.in_tx(|db| db.list_record_files(id))
+    }
+
     pub fn list_note_records(&self) -> Result<Vec<Record>> {
         self.in_tx(|db| db.list_note_records())
     }
@@ -143,7 +151,6 @@ mod viter {
         let s = new_storage();
         assert!(s.add_note("test", "data").is_ok());
     }
-
 
     #[test]
     fn test_get_note() {
@@ -413,5 +420,51 @@ mod viter {
         let s = new_storage();
 
         assert!(!s.update_todo(99, "", "", TodoState::InProgress, None, None).unwrap());
+    }
+
+    #[test]
+    fn test_record_exists() {
+        let s = new_storage();
+
+        let project_id = s.add_project("test", "data").unwrap();
+        let note_id = s.add_note("test", "data").unwrap();
+
+        let project = create_project(&s);
+        let todo_id = s.add_todo(&project, "name", "", None, None).unwrap();
+
+        assert!(s.record_exists(project_id, RecordType::Project).unwrap());
+        assert!(s.record_exists(note_id, RecordType::Note).unwrap());
+        assert!(s.record_exists(todo_id, RecordType::Todo).unwrap());
+    }
+
+    #[test]
+    fn test_unknown_record_exists() {
+        let s = new_storage();
+
+        assert!(!s.record_exists(1, RecordType::Project).unwrap());
+        assert!(!s.record_exists(1, RecordType::Note).unwrap());
+        assert!(!s.record_exists(1, RecordType::Todo).unwrap());
+    }
+
+    #[test]
+    fn test_list_record_files() {
+        let s = new_storage();
+
+        let id = s.add_note("test", "data").unwrap();
+        let blob = new_blob("test");
+        let name = "test";
+
+        assert_eq!(s.list_record_files(id).unwrap().len(), 0);
+
+        s.add_file(id, name, &blob).unwrap();
+
+        assert_eq!(s.list_record_files(id).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_list_unknown_record_files() {
+        let s = new_storage();
+
+        assert_eq!(s.list_record_files(1).unwrap().len(), 0);
     }
 }

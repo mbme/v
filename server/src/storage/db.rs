@@ -1,5 +1,4 @@
 use std::str;
-use std::fmt;
 
 use time::{self, Timespec};
 use rusqlite::{Connection, MappedRows, Row, Error as SQLiteError};
@@ -90,7 +89,7 @@ impl<'a> DB<'a> {
         get_single_result(rows)
     }
 
-    fn record_exists(&self, id: Id, record_type: Option<RecordType>) -> Result<bool> {
+    pub fn record_exists(&self, id: Id, record_type: Option<RecordType>) -> Result<bool> {
         let mut stmt = self.conn.prepare(
             "SELECT 1 FROM records WHERE id = $1 AND (($2 IS NULL) OR (type = $2))"
         )?;
@@ -168,7 +167,7 @@ impl<'a> DB<'a> {
         get_single_result(rows)
     }
 
-    pub fn get_record_files(&self, record_id: Id) -> Result<Vec<FileInfo>> {
+    pub fn list_record_files(&self, record_id: Id) -> Result<Vec<FileInfo>> {
         let mut stmt = self.conn.prepare(
             "SELECT name, size, create_ts FROM files WHERE record_id = $1 ORDER BY name",
         )?;
@@ -218,7 +217,7 @@ impl<'a> DB<'a> {
             None => return Ok(None),
         };
 
-        let files = self.get_record_files(id)?;
+        let files = self.list_record_files(id)?;
 
         let mut stmt = self.conn.prepare(
             "SELECT description FROM projects WHERE record_id = $1"
@@ -271,7 +270,7 @@ impl<'a> DB<'a> {
             None => return Ok(None),
         };
 
-        let files = self.get_record_files(id)?;
+        let files = self.list_record_files(id)?;
 
         let mut stmt = self.conn.prepare(
             "SELECT data FROM notes WHERE record_id = $1"
@@ -349,7 +348,7 @@ impl<'a> DB<'a> {
             let state = state_str.parse()?;
 
             // TODO performance?
-            let files = self.get_record_files(id as Id)?;
+            let files = self.list_record_files(id as Id)?;
 
             todos.push(Todo {
                 project_id: project.record.id,

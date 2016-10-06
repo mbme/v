@@ -20,7 +20,7 @@ pub struct FileInfo {
     pub create_ts: Timespec,
 }
 
-#[derive(Debug)]
+#[derive(Eq, PartialEq, Debug, Clone, Copy)]
 pub enum RecordType {
     Note,
     Todo,
