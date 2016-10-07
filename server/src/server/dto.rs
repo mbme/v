@@ -111,3 +111,51 @@ pub struct UpdateProjectDTO {
     pub name: String,
     pub description: String,
 }
+
+#[derive(Debug, Serialize)]
+pub struct TodoDTO {
+    pub id: Id,
+    pub name: String,
+    pub create_ts: i64,
+    pub update_ts: i64,
+    pub project_id: Id,
+    pub details: String,
+    pub state: String,
+    pub start_ts: Option<i64>,
+    pub end_ts: Option<i64>,
+    pub files: Vec<FileInfoDTO>,
+}
+
+impl From<Todo> for TodoDTO {
+    fn from (todo: Todo) -> TodoDTO {
+        TodoDTO {
+            id: todo.record.id,
+            name: todo.record.name,
+            create_ts: todo.record.create_ts.sec,
+            update_ts: todo.record.update_ts.sec,
+            project_id: todo.project_id,
+            details: todo.details,
+            state: todo.state.to_string(),
+            start_ts: todo.start_ts.map(|ts| ts.sec),
+            end_ts: todo.end_ts.map(|ts| ts.sec),
+            files: convert_all_into(todo.files),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateTodoDTO {
+    pub name: String,
+    pub details: String,
+    pub start_ts: Option<i64>,
+    pub end_ts: Option<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateTodoDTO {
+    pub name: String,
+    pub details: String,
+    pub state: String,
+    pub start_ts: Option<i64>,
+    pub end_ts: Option<i64>,
+}

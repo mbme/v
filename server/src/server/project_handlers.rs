@@ -1,4 +1,3 @@
-
 use std::sync::Arc;
 
 use utils::convert_all_into;
@@ -44,6 +43,7 @@ impl Handler for AddProjectHandler {
             status::InternalServerError
         );
 
+        // FIXME extract this pattern (project MUST exist at this point)
         let project_opt = itry!(self.0.get_project(id));
         let project = itry!(
             project_opt.ok_or(Error::from_str("Can't find project")),

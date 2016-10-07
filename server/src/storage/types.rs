@@ -113,8 +113,8 @@ impl str::FromStr for TodoState {
 }
 
 pub struct Todo {
-    pub project_id: Id,
     pub record: Record,
+    pub project_id: Id,
     pub details: String,
     pub state: TodoState,
     pub start_ts: Option<Timespec>,

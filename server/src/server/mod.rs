@@ -6,6 +6,7 @@ mod notes_handlers;
 mod project_handlers;
 mod static_handlers;
 mod files_handlers;
+mod todo_handlers;
 
 use std::sync::Arc;
 use std::fs;
@@ -22,6 +23,7 @@ use self::notes_handlers::*;
 use self::static_handlers::*;
 use self::files_handlers::*;
 use self::project_handlers::*;
+use self::todo_handlers::*;
 
 pub const UI_APP_VERSION: &'static str = include_str!("../../../web-client/prod/VERSION");
 
@@ -82,6 +84,14 @@ pub fn start_server(config: &Config) {
     router.get("/api/projects/:id", GetProjectHandler(storage.clone()), "get project");
 
     add_file_handlers(&mut router, "/api/projects", RecordType::Project, storage.clone());
+
+    // TODOS
+    router.get("/api/todos/project/:project_id", ListProjectTodosHandler(storage.clone()), "get project todos");
+    router.post("/api/todos/project/:project_id", AddProjectTodoHandler(storage.clone()), "add project todo");
+    router.put("/api/todos/:id", UpdateProjectTodoHandler(storage.clone()), "update project todo");
+    router.get("/api/todos/:id", GetProjectTodoHandler(storage.clone()), "get project todo");
+
+    add_file_handlers(&mut router, "/api/todos", RecordType::Project, storage.clone());
 
     // Serve static files
     router.get("/", StaticIndexHandler, "static index handler");

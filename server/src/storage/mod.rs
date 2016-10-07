@@ -122,6 +122,10 @@ impl Storage {
                        end_ts: Option<Timespec>) -> Result<bool> {
         self.in_tx(|db| db.update_todo(id, name, details, state, start_ts, end_ts))
     }
+
+    pub fn get_todo(&self, id: Id) -> Result<Option<Todo>> {
+        self.in_tx(|db| db.get_todo(id))
+    }
 }
 
 #[cfg(test)]
@@ -387,6 +391,25 @@ mod viter {
         let s = new_storage();
 
         assert_eq!(s.list_todos(&project).unwrap().len(), 0);
+    }
+
+    #[test]
+    fn test_get_todo() {
+        let s = new_storage();
+        let project = create_project(&s);
+        let name = "test";
+        let details = "details";
+        let id = s.add_todo(&project, name, details, None, None).unwrap();
+
+        let todo = s.get_todo(id).unwrap().unwrap();
+        assert_eq!(todo.record.name, name);
+        assert_eq!(todo.details, details);
+    }
+
+    #[test]
+    fn test_get_unknown_todo() {
+        let s = new_storage();
+        assert!(s.get_todo(1).unwrap().is_none());
     }
 
     #[test]

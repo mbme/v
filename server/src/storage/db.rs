@@ -410,4 +410,46 @@ impl<'a> DB<'a> {
 
         Ok(true)
     }
+
+    pub fn get_todo(&self, id: Id) -> Result<Option<Todo>> {
+        let record = match self.get_record(id, RecordType::Todo)? {
+            Some(record) => record,
+            None => return Ok(None),
+        };
+
+        let files = self.list_record_files(id)?;
+
+        let mut stmt = self.conn.prepare(
+            "SELECT project_id, details, state, start_ts, end_ts FROM todos WHERE record_id = $1"
+        )?;
+
+        let rows = stmt.query_map(&[&(id as i64)], move |row| {
+            let project_id: i64 = row.get(0);
+            let details: String = row.get(1);
+            let state: String = row.get(2);
+            let start_ts: Option<Timespec> = row.get(3);
+            let end_ts: Option<Timespec> = row.get(4);
+
+            (project_id as Id, details, state, start_ts, end_ts)
+        })?;
+
+        match get_single_result(rows)? {
+            Some((project_id, details, state_str, start_ts, end_ts)) => {
+                let state: TodoState = state_str.parse()?;
+
+                Ok(Some(
+                    Todo {
+                        record: record,
+                        files: files,
+                        project_id: project_id,
+                        details: details,
+                        state: state,
+                        start_ts: start_ts,
+                        end_ts: end_ts,
+                    }
+                ))
+            },
+            None => Ok(None)
+        }
+    }
 }

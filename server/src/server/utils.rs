@@ -43,7 +43,7 @@ pub fn get_url_param (req: &Request, name: &str) -> Result<String> {
     }
 }
 
-fn parse_id (id_str: &str) -> Result<Id> {
+pub fn parse_id (id_str: &str) -> Result<Id> {
     match id_str.parse() {
         Ok(id) => Ok(id),
         Err(_) => Error::err_from_str("can't parse id"),
