@@ -13,13 +13,17 @@ prod: web-prod
 test:
 	cd ./server && cargo test
 
-integration-test:
-	cd ./server-tests && npm test
+api-test:
+	npm run api-tests
 
-web-prod:
-	cd ./web-client && npm run prod
+web-client-prod:
+	npm run web-client-prod
 
-web-dev-run:
-	cd ./web-client && npm start
+web-client-dev-run:
+	npm run web-client-dev-run
 
-.PHONY: clean dev-run test integration-test web-prod web-dev
+lint:
+	npm run tslint
+	npm run eslint
+
+.PHONY: clean dev-run prod test api-test web-client-prod web-client-dev-run lint

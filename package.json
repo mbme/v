@@ -1,7 +1,10 @@
 {
-  "name": "web-client",
+  "name": "v",
   "version": "0.1.0",
   "description": "",
+  "author": "mbme",
+  "license": "GPL-3.0",
+  "private": true,
   "main": "index.js",
   "dependencies": {
     "@types/react": "0.14",
@@ -14,6 +17,8 @@
     "normalize.css": "5",
     "react": "15",
     "react-dom": "15",
+    "superagent": "2",
+    "chai": "3",
     "reflect-metadata": "0.1.8"
   },
   "devDependencies": {
@@ -29,19 +34,23 @@
     "postcss-vertical-rhythm": "1.1.5",
     "style-loader": "0.13.1",
     "ts-loader": "0.8.2",
-    "tslint": "3",
     "tslint-loader": "2.1.5",
-    "typescript": "2",
     "url-loader": "0.5.7",
+    "tslint": "3",
+    "typescript": "2",
     "webpack": "1",
-    "webpack-dev-server": "1"
+    "webpack-dev-server": "1",
+    "eslint": "3",
+    "eslint-config-airbnb-base": "8",
+    "eslint-plugin-import": "2",
+    "mocha": "3"
   },
   "scripts": {
-    "start": "webpack-dev-server --config ./webpack.config.js --hot --inline --progress",
-    "lint": "tslint --force \"src/**/*.tsx\" \"src/**/*.ts\"",
-    "prod": "NODE_ENV=production webpack --config ./webpack.config.js --progress",
-    "gen-stats": "webpack --config ./webpack.config.js --progress --json > ./stats.json"
-  },
-  "author": "",
-  "license": "ISC"
+    "tslint": "tslint --force \"./**/*.ts?(x)\" --exclude \"./**/node_modules/**/*.ts?(x)\" --exclude \"./**/*.d.ts\" ",
+    "eslint": "eslint .",
+    "api-tests": "cd api-tests && mocha index.js",
+    "web-client-dev-run": "cd web-client && webpack-dev-server --config ./webpack.config.js --hot --inline --progress",
+    "web-client-prod": "cd web-client && NODE_ENV=production webpack --config ./webpack.config.js --progress",
+    "web-client-gen-stats": "cd web-client && webpack --config ./webpack.config.js --progress --json > ./stats.json"
+  }
 }
