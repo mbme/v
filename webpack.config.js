@@ -1,27 +1,26 @@
-const path = require('path');
-const fs = require('fs');
-const childProcess = require('child_process');
+const path = require('path')
+const fs = require('fs')
+const childProcess = require('child_process')
 
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const postcssMixins = require('postcss-mixins');
-const postcssNested = require('postcss-nested');
-const postcssSimpleVars = require('postcss-simple-vars');
-const postcssVerticalRhythm = require('postcss-vertical-rhythm');
-const postcssAutoprefixer = require('autoprefixer');
+const postcssMixins = require('postcss-mixins')
+const postcssNested = require('postcss-nested')
+const postcssSimpleVars = require('postcss-simple-vars')
+const postcssVerticalRhythm = require('postcss-vertical-rhythm')
+const postcssAutoprefixer = require('autoprefixer')
 
-const isProdMode = process.env.NODE_ENV === 'production';
-const NODE_ENV = JSON.stringify(isProdMode ? 'production' : 'development');
+const isProdMode = process.env.NODE_ENV === 'production'
+const NODE_ENV = JSON.stringify(isProdMode ? 'production' : 'development')
 
 // App files location
 const PATHS = {
-  src: path.resolve(__dirname, './src'),
-  app: path.resolve(__dirname, './src/app'),
-  styles: path.resolve(__dirname, './src/styles'),
-  build: path.resolve(__dirname, './build/'),
-  prod_build: path.resolve(__dirname, './prod/'),
-};
+  src: path.resolve(__dirname, './web-client'),
+  app: path.resolve(__dirname, './web-client'),
+  build: path.resolve(__dirname, './web-client-build'),
+  prod_build: path.resolve(__dirname, './web-client-prod'),
+}
 
 const config = {
   env: NODE_ENV,
@@ -42,8 +41,8 @@ const config = {
     preLoaders: [
       {
         test: /\.tsx?$/,
-        loader: "tslint"
-      }
+        loader: 'tslint',
+      },
     ],
     loaders: [
       {
@@ -53,25 +52,25 @@ const config = {
       },
       { // CSS
         test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader'
+        loader: 'style-loader!css-loader!postcss-loader',
       },
       { // FONTS
         test: /\.woff|\.woff2/,
-        loader: 'url-loader?limit=100000'
+        loader: 'url-loader?limit=100000',
       },
     ],
   },
-  postcss: function (webpack) {
+  postcss() {
     return [
       postcssMixins,
       postcssNested,
       postcssSimpleVars(),
       postcssVerticalRhythm({ rootSelector: 'html' }),
       postcssAutoprefixer({ browsers: ['last 2 versions'] }),
-    ];
+    ]
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: 'src/index.html' }),
+    new HtmlWebpackPlugin({ template: 'web-client/index.html' }),
     // do not load moment locales
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
@@ -79,10 +78,10 @@ const config = {
       __DEV__: JSON.stringify(!isProdMode),
     }),
   ],
-};
+}
 
 if (isProdMode) {
-  config.output.path = PATHS.prod_build;
+  config.output.path = PATHS.prod_build
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
@@ -91,38 +90,38 @@ if (isProdMode) {
         screw_ie8: true,
       },
       output: {
-        comments: false
+        comments: false,
       },
     })
-  );
-  config.devtool = 'source-map';
+  )
+  config.devtool = 'source-map'
   config.ts = {
     compilerOptions: {
-      sourceMap: true
-    }
-  };
+      sourceMap: true,
+    },
+  }
 
 
   // Write last git commit id to the file
-  const VERSION = childProcess.execSync('git rev-parse --short HEAD').toString().trim();
-  fs.writeFileSync(path.resolve(PATHS.prod_build, 'VERSION'), VERSION);
+  const VERSION = childProcess.execSync('git rev-parse --short HEAD').toString().trim()
+  fs.writeFileSync(path.resolve(PATHS.prod_build, 'VERSION'), VERSION)
 
 } else {
-  config.output.path = PATHS.build;
+  config.output.path = PATHS.build
   config.plugins.push(
     new webpack.NoErrorsPlugin()
-  );
+  )
   config.devServer = {
     contentBase: PATHS.src,
     port: 8080,
     historyApiFallback: true,
     proxy: {
       '/api': {
-        target: 'http://' + require('../server/config.json').server_address,
+        target: 'http://' + require('./server/config.json').server_address,
       },
-    }
-  };
-  config.devtool = 'eval';
+    },
+  }
+  config.devtool = 'eval'
 }
 
-module.exports = config;
+module.exports = config

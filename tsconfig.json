@@ -10,9 +10,15 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "lib": ["dom", "es5", "es6"],
-    "types": ["whatwg-fetch", "reflect-metadata"],
-    "baseUrl": "./src/app"
+    "lib": [
+      "dom",
+      "es5",
+      "es6"
+    ],
+    "types": [
+      "reflect-metadata"
+    ],
+    "baseUrl": "."
   },
   "exclude": [
     "node_modules"

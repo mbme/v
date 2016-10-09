@@ -6,13 +6,6 @@ import {Id, Name, Timestamp, FileName, IFileInfo} from 'types'
 
 export type NoteData = string
 
-interface INoteRecordDTO {
-  readonly id: Id,
-  readonly name: Name,
-  readonly create_ts: Timestamp,
-  readonly update_ts: Timestamp,
-}
-
 export class NoteRecord {
   readonly id: Id
   readonly name: Name
