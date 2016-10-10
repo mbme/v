@@ -18,11 +18,13 @@
     "react": "15",
     "react-dom": "15",
     "superagent": "2",
-    "chai": "3",
-    "reflect-metadata": "0.1.8"
+    "reflect-metadata": "0.1"
   },
   "devDependencies": {
+    "@types/chai": "3",
+    "@types/mocha": "2",
     "autoprefixer": "6.5",
+    "chai": "3",
     "css-loader": "0.25",
     "eslint": "3",
     "file-loader": "0.9",
@@ -46,7 +48,7 @@
   "scripts": {
     "tslint": "tslint --force \"./**/*.ts?(x)\" --exclude \"./**/node_modules/**/*.ts?(x)\" --exclude \"./**/*.d.ts\" ",
     "eslint": "eslint .",
-    "api-tests": "cd api-tests && mocha index.js",
+    "api-tests": "mocha --compilers ts:ts-node/register api-tests/index.ts",
     "web-client-dev-run": "webpack-dev-server --config ./webpack.config.js --hot --inline --progress",
     "web-client-prod": "NODE_ENV=production webpack --config ./webpack.config.js --progress",
     "web-client-gen-stats": "webpack --config ./webpack.config.js --progress --json > ./stats.json"

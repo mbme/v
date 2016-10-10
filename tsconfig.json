@@ -15,8 +15,8 @@
       "es5",
       "es6"
     ],
-    "types": [
-      "reflect-metadata"
+    "typeRoots": [
+      "node_modules/@types"
     ],
     "baseUrl": "."
   },

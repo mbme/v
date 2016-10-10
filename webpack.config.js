@@ -1,31 +1,15 @@
 const path = require('path')
 const fs = require('fs')
-const childProcess = require('child_process')
 
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
-const postcssMixins = require('postcss-mixins')
-const postcssNested = require('postcss-nested')
-const postcssSimpleVars = require('postcss-simple-vars')
-const postcssVerticalRhythm = require('postcss-vertical-rhythm')
-const postcssAutoprefixer = require('autoprefixer')
+const { postcssConfig, PATHS, LOADERS, getCurrentCommitHash } = require('./webpack/parts')
 
 const isProdMode = process.env.NODE_ENV === 'production'
 const NODE_ENV = JSON.stringify(isProdMode ? 'production' : 'development')
 
-// App files location
-const PATHS = {
-  root: path.resolve(__dirname),
-  webClient: path.resolve(__dirname, './web-client'),
-  apiClient: path.resolve(__dirname, './api-client'),
-  build: path.resolve(__dirname, './web-client-build'),
-  prod_build: path.resolve(__dirname, './web-client-prod'),
-}
-
 const config = {
   env: NODE_ENV,
-  entry: path.resolve(PATHS.webClient, 'index.js'),
   output: {
     filename: 'app.js',
     publicPath: '/',
@@ -40,47 +24,27 @@ const config = {
   },
   module: {
     preLoaders: [
-      {
-        test: /\.tsx?$/,
-        loader: 'tslint',
-      },
+      LOADERS.tslint,
     ],
     loaders: [
-      {
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-      },
-      { // CSS
-        test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader',
-      },
-      { // FONTS
-        test: /\.woff|\.woff2/,
-        loader: 'url-loader?limit=100000',
-      },
+      LOADERS.ts,
+      LOADERS.styles,
+      LOADERS.fonts,
     ],
   },
-  postcss() {
-    return [
-      postcssMixins,
-      postcssNested,
-      postcssSimpleVars(),
-      postcssVerticalRhythm({ rootSelector: 'html' }),
-      postcssAutoprefixer({ browsers: ['last 2 versions'] }),
-    ]
-  },
+  postcss: postcssConfig,
   plugins: [
     new HtmlWebpackPlugin({ template: 'web-client/index.html' }),
     // do not load moment locales
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': NODE_ENV,
-      __DEV__: JSON.stringify(!isProdMode),
     }),
   ],
 }
 
 if (isProdMode) {
+  config.entry = path.resolve(PATHS.webClient, 'index.js'),
   config.output.path = PATHS.prod_build
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
@@ -101,15 +65,17 @@ if (isProdMode) {
     },
   }
 
-
   // Write last git commit id to the file
-  const VERSION = childProcess.execSync('git rev-parse --short HEAD').toString().trim()
-  fs.writeFileSync(path.resolve(PATHS.prod_build, 'VERSION'), VERSION)
+  fs.writeFileSync(path.resolve(PATHS.prod_build, 'VERSION'), getCurrentCommitHash())
 
 } else {
+  config.entry = path.resolve(PATHS.webClient, 'index.js'),
   config.output.path = PATHS.build
   config.plugins.push(
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    new webpack.DefinePlugin({
+      __DEV__: '"true"',
+    })
   )
   config.devServer = {
     contentBase: PATHS.root,
