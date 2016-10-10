@@ -2,10 +2,10 @@ import * as React from 'react'
 import {action, observable} from 'mobx'
 import {observer} from 'mobx-react'
 
-import Modal, { ModalTitle, ModalBody, ModalFooter } from 'modals/Modal'
-import LinkButton from 'common/LinkButton'
-import {formatBytes} from 'utils'
-import {FileName} from 'types'
+import Modal, { ModalTitle, ModalBody, ModalFooter } from 'web-client/modals/Modal'
+import LinkButton from 'web-client/common/LinkButton'
+import {formatBytes} from 'web-client/utils'
+import {FileName} from 'api-client/types'
 
 interface IProps {
   file: File,

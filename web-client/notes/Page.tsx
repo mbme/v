@@ -2,17 +2,17 @@ import * as React from 'react'
 import {observable, action, asReference} from 'mobx'
 import {observer} from 'mobx-react'
 
-import {Name} from 'types'
-import {InjectStore} from 'AppState'
+import {Name} from 'api-client/types'
+import {InjectStore} from 'web-client/AppState'
 
-import NotesStore from 'notes/store'
-import ModalsStore from 'modals/store'
+import NotesStore from 'web-client/notes/store'
+import ModalsStore from 'web-client/modals/store'
 
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
 import NotesList from './NotesList'
 import AddNoteModal from './AddNoteModal'
-import LinkButton from 'common/LinkButton'
+import LinkButton from 'web-client/common/LinkButton'
 
 @observer
 class NotesPage extends React.Component<{}, {}> {

@@ -1,6 +1,6 @@
 import {action, observable, computed, asReference} from 'mobx'
-import {toastExpirationMs} from 'config'
-import {BaseModel} from 'utils'
+import {toastExpirationMs} from 'web-client/config'
+import {BaseModel} from 'web-client/utils'
 
 export type Id = number
 

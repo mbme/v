@@ -1,9 +1,9 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {formatBytes} from 'utils'
-import {noteFile} from 'urls'
+import {formatBytes} from 'web-client/utils'
+import {noteFile} from 'api-client/urls'
 
-import {IFileInfo, Id} from 'types'
+import {IFileInfo, Id} from 'api-client/types'
 
 interface IProps {
   noteId: Id,

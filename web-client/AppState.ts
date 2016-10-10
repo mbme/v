@@ -1,7 +1,7 @@
 /* tslint:disable:no-any object-literal-key-quotes */
 
-import NotesStore from 'notes/store'
-import ModalsStore from 'modals/store'
+import NotesStore from 'web-client/notes/store'
+import ModalsStore from 'web-client/modals/store'
 
 export type AppState = Map<Function, any>
 

@@ -1,9 +1,5 @@
 import {Id, FileName} from 'api-client/types'
 
-export function noteRecords(): string {
-  return '/api/records/notes'
-}
-
 export function notes(): string {
   return '/api/notes'
 }

@@ -3,14 +3,14 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import * as config from 'config'
-import {IFileInfo, FileName} from 'types'
+import * as config from 'web-client/config'
+import {IFileInfo, FileName} from 'api-client/types'
 
-import {InjectStore} from 'AppState'
+import {InjectStore} from 'web-client/AppState'
 import NotesStore, {Note as NoteEntity} from './store'
-import ModalsStore from 'modals/store'
+import ModalsStore from 'web-client/modals/store'
 
-import LinkButton from 'common/LinkButton'
+import LinkButton from 'web-client/common/LinkButton'
 import FilePicker from './FilePicker'
 import AttachmentEditor from './AttachmentEditor'
 

@@ -4,7 +4,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {InjectStore} from 'AppState'
+import {InjectStore} from 'web-client/AppState'
 import ModalsStore, {Id} from './store'
 
 interface IProps {

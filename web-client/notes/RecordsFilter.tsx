@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 import {action, observable, reaction} from 'mobx'
-import {searchDelay} from 'config'
+import {searchDelay} from 'web-client/config'
 
 interface IProps {
   initialValue: string,

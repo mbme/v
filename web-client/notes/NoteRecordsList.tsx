@@ -1,8 +1,8 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Id} from 'types'
-import {InjectStore} from 'AppState'
+import {Id} from 'api-client/types'
+import {InjectStore} from 'web-client/AppState'
 
 import NotesStore from './store'
 import NoteRecord from './NoteRecord'

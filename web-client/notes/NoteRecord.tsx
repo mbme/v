@@ -1,6 +1,6 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {Id} from 'types'
+import {Id} from 'api-client/types'
 import {NoteRecord as NRecord} from './store'
 import * as moment from 'moment'
 import * as cx from 'classnames'

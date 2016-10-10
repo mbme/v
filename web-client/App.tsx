@@ -3,9 +3,9 @@ import * as ReactDOM from 'react-dom'
 
 import DevTools from 'mobx-react-devtools'
 
-import NotesPage from 'notes/Page'
-import ModalsContainer from 'modals/ModalsContainer'
-import ToastsContainer from 'modals/ToastsContainer'
+import NotesPage from 'web-client/notes/Page'
+import ModalsContainer from 'web-client/modals/ModalsContainer'
+import ToastsContainer from 'web-client/modals/ToastsContainer'
 
 export class App extends React.Component<{}, {}> {
   render (): JSX.Element {

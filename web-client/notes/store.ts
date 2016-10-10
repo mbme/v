@@ -1,10 +1,9 @@
 import {action, observable, computed} from 'mobx'
-import {http, fuzzySearch} from 'utils'
-import * as config from 'config'
-import * as urls from 'urls'
-import {Id, Name, Timestamp, FileName, IFileInfo} from 'types'
-
-export type NoteData = string
+import {fuzzySearch} from 'web-client/utils'
+import * as config from 'web-client/config'
+import {Id, Name, Timestamp, FileName, IFileInfo} from 'api-client/types'
+import { INoteRecord, INote, NoteData } from 'api-client/types'
+import * as api from 'api-client'
 
 export class NoteRecord {
   readonly id: Id
@@ -14,7 +13,7 @@ export class NoteRecord {
 
   private store: NotesStore
 
-  constructor(store: NotesStore, dto: INoteRecordDTO) {
+  constructor(store: NotesStore, dto: INoteRecord) {
     this.store = store
 
     this.id = dto.id
@@ -44,15 +43,6 @@ export class NoteRecord {
   }
 }
 
-export interface INoteDTO {
-  readonly id: Id,
-  readonly name: Name,
-  readonly create_ts: Timestamp,
-  readonly update_ts: Timestamp,
-  readonly data: NoteData,
-  readonly files: ReadonlyArray<IFileInfo>,
-}
-
 export class Note {
   readonly id: Id
   readonly name: Name
@@ -63,7 +53,7 @@ export class Note {
 
   @observable editMode: boolean
 
-  constructor (dto: INoteDTO, editMode: boolean = false) {
+  constructor (dto: INote, editMode: boolean = false) {
     this.id = dto.id
     this.name = dto.name
     this.createTs = dto.create_ts
@@ -87,7 +77,7 @@ export default class NotesStore {
 
   @action
   loadRecordsList(): Promise<void> {
-    return http.GET(urls.noteRecords()).then((data: INoteRecordDTO[]) => {
+    return api.listNotes().then((data: INoteRecord[]) => {
       this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
     })
   }
@@ -98,7 +88,7 @@ export default class NotesStore {
       return Promise.resolve()
     }
 
-    return http.GET(urls.note(id)).then((data: INoteDTO) => {
+    return api.readNote(id).then((data: INote) => {
       this.addOpenNote(new Note(data))
     })
   }
@@ -114,9 +104,7 @@ export default class NotesStore {
 
   @action
   createNote(name: Name): Promise<void> {
-    const body = JSON.stringify({ name, 'data': '' })
-
-    return http.POST(urls.notes(), body).then((data: INoteDTO) => {
+    return api.createNote(name).then((data: INote) => {
       this.addOpenNote(new Note(data, true))
       this.loadRecordsList()
     })
@@ -124,10 +112,8 @@ export default class NotesStore {
 
   @action
   updateNote(id: Id, name: Name, data: NoteData): Promise<void> {
-    const body = JSON.stringify({id, name, data})
-
-    return http.PUT(urls.note(id), body)
-      .then((note: INoteDTO) => {
+    return api.updateNote(id, name, data)
+      .then((note: INote) => {
         this.loadRecordsList()
 
         const oldNote = this.getOpenNote(id)
@@ -139,7 +125,7 @@ export default class NotesStore {
 
   @action
   deleteNote(id: Id): Promise<void> {
-    return http.DELETE(urls.note(id)).then(() => {
+    return api.deleteNote(id).then(() => {
       this.closeNote(id)
       this.loadRecordsList()
     })
@@ -147,11 +133,7 @@ export default class NotesStore {
 
   @action
   uploadFile(noteId: Id, name: FileName, file: File): Promise<void> {
-    const data = new FormData()
-    data.append('name', name)
-    data.append('data', file)
-
-    return http.POST(urls.noteFiles(noteId), data)
+    return api.uploadNoteFile(noteId, name, file)
       .then(() => this.loadNoteFiles(noteId))
       .then((files: IFileInfo[]) => {
         this.replaceNoteFiles(noteId, files)
@@ -160,7 +142,7 @@ export default class NotesStore {
 
   @action
   deleteFile(noteId: Id, file: IFileInfo): Promise<void> {
-    return http.DELETE(urls.noteFile(noteId, file.name))
+    return api.deleteNoteFile(noteId, file.name)
       .then(() => this.loadNoteFiles(noteId))
       .then((files: IFileInfo[]) => {
         this.replaceNoteFiles(noteId, files)
@@ -177,7 +159,7 @@ export default class NotesStore {
   }
 
   private loadNoteFiles(noteId: Id): Promise<IFileInfo[]> {
-    return http.GET(urls.noteFiles(noteId))
+    return api.listNoteFiles(noteId)
   }
 
   @action

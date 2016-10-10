@@ -16,15 +16,16 @@ const NODE_ENV = JSON.stringify(isProdMode ? 'production' : 'development')
 
 // App files location
 const PATHS = {
-  src: path.resolve(__dirname, './web-client'),
-  app: path.resolve(__dirname, './web-client'),
+  root: path.resolve(__dirname),
+  webClient: path.resolve(__dirname, './web-client'),
+  apiClient: path.resolve(__dirname, './api-client'),
   build: path.resolve(__dirname, './web-client-build'),
   prod_build: path.resolve(__dirname, './web-client-prod'),
 }
 
 const config = {
   env: NODE_ENV,
-  entry: path.resolve(PATHS.app, 'index.js'),
+  entry: path.resolve(PATHS.webClient, 'index.js'),
   output: {
     filename: 'app.js',
     publicPath: '/',
@@ -35,7 +36,7 @@ const config = {
   },
   resolve: {
     extensions: ['', '.js', '.ts', '.tsx'],
-    root: [PATHS.app],
+    root: [PATHS.root],
   },
   module: {
     preLoaders: [
@@ -48,7 +49,6 @@ const config = {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
-        include: PATHS.app,
       },
       { // CSS
         test: /\.css$/,
@@ -112,7 +112,7 @@ if (isProdMode) {
     new webpack.NoErrorsPlugin()
   )
   config.devServer = {
-    contentBase: PATHS.src,
+    contentBase: PATHS.root,
     port: 8080,
     historyApiFallback: true,
     proxy: {

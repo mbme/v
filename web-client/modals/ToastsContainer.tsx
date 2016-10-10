@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 
-import {InjectStore} from 'AppState'
+import {InjectStore} from 'web-client/AppState'
 import ModalsStore from './store'
 
 import Toast from './Toast'

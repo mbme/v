@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {InjectStore} from 'AppState'
+import {InjectStore} from 'web-client/AppState'
 import NotesStore from './store'
 
 import NoteView from './Note'
