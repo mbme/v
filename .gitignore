@@ -2,6 +2,7 @@ target
 node_modules
 config.json
 TEMP.db
-npm-debug.log
 Cargo.lock
+npm-debug.log
+/stats.json
 /web-build

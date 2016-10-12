@@ -49,7 +49,7 @@
   "scripts": {
     "tslint": "tslint --force \"./**/*.ts?(x)\" --exclude \"./**/node_modules/**/*.ts?(x)\" --exclude \"./**/*.d.ts\" ",
     "eslint": "eslint .",
-    "api-tests": "rm -rf web-build/tests && webpack --config ./webpack/api-tests.config.js --progress && mocha web-build/tests/tests.js",
+    "api-tests": "rm -rf web-build/tests && webpack --config ./webpack/api-tests.config.js && mocha web-build/tests/tests.js",
     "web-client-dev-run": "webpack-dev-server --config ./webpack/web-client.config.js --hot --inline --progress",
     "web-client-prod": "NODE_ENV=production webpack --config ./webpack/web-client.config.js --progress",
     "web-client-gen-stats": "webpack --config ./webpack/web-client.config.js --progress --json > ./stats.json"
