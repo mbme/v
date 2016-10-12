@@ -4,3 +4,4 @@ config.json
 TEMP.db
 npm-debug.log
 Cargo.lock
+/web-build

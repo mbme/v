@@ -25,7 +25,7 @@ use self::files_handlers::*;
 use self::project_handlers::*;
 use self::todo_handlers::*;
 
-pub const UI_APP_VERSION: &'static str = include_str!("../../../web-client/prod/VERSION");
+pub const UI_APP_VERSION: &'static str = include_str!("../../../web-build/VERSION");
 
 fn add_file_handlers(router: &mut Router, prefix: &str, record_type: RecordType, storage: Arc<Storage>) {
     router.get(

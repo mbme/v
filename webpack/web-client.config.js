@@ -3,6 +3,7 @@ const fs = require('fs')
 
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 const {
   postcssConfig,
   PATHS,
@@ -19,8 +20,9 @@ config.entry = path.resolve(PATHS.webClient, 'index.js'),
 config.output = {
   filename: 'app.js',
   publicPath: '/',
+  path: path.resolve(PATHS.build, 'app'),
 }
-config.loaders.push(
+config.module.loaders.push(
   LOADERS.styles,
   LOADERS.fonts
 )
@@ -30,28 +32,28 @@ config.plugins.push(
 )
 
 if (isDevMode) {
-  config.output.path = PATHS.build
-
   config.plugins.push(
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
       __DEV__: '"true"',
     })
   )
+
+  const { server_address } = require(PATHS.fromRoot('./server/config.json'))
+
   config.devServer = {
     contentBase: PATHS.root,
     port: 8080,
     historyApiFallback: true,
     proxy: {
       '/api': {
-        target: 'http://' + require('./server/config.json').server_address,
+        target: `http://${server_address}`,
       },
     },
   }
   config.devtool = 'eval'
 
 } else if (isProdMode) {
-  config.output.path = PATHS.prod_build
   config.ts = {
     compilerOptions: {
       sourceMap: true,
@@ -72,7 +74,7 @@ if (isDevMode) {
   config.devtool = 'source-map'
 
   // Write last git commit id to the file
-  fs.writeFileSync(path.resolve(PATHS.prod_build, 'VERSION'), getCurrentCommitHash())
+  fs.writeFileSync(path.resolve(PATHS.build, 'VERSION'), getCurrentCommitHash())
 
 } else {
   throw new Error('unknown mode')

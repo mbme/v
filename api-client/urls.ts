@@ -1,17 +1,19 @@
 import {Id, FileName} from 'api-client/types'
 
+const prefix = `${__SERVER__}/api`
+
 export function notes(): string {
-  return '/api/notes'
+  return `${prefix}/notes`
 }
 
 export function note(id: Id): string {
-  return `/api/notes/${id}`
+  return `${prefix}/notes/${id}`
 }
 
 export function noteFiles(id: Id): string {
-  return `/api/notes/${id}/files`
+  return `${prefix}/notes/${id}/files`
 }
 
 export function noteFile(id: Id, name: FileName): string {
-  return `/api/notes/${id}/files/${name}`
+  return `${prefix}/notes/${id}/files/${name}`
 }

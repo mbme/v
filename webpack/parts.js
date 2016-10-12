@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const childProcess = require('child_process')
 
@@ -26,8 +27,11 @@ const PATHS = {
   root: root,
   webClient: path.resolve(root, './web-client'),
   apiClient: path.resolve(root, './api-client'),
-  build: path.resolve(root, './web-client-build'),
-  prod_build: path.resolve(root, './web-client-prod'),
+  apiTests: path.resolve(root, './api-tests'),
+  build: path.resolve(root, './web-build'),
+  fromRoot(relPath) {
+    return path.resolve(root, relPath)
+  },
 }
 exports.PATHS = PATHS
 
@@ -39,6 +43,10 @@ const LOADERS = {
   ts: {
     test: /\.tsx?$/,
     loader: 'ts-loader',
+  },
+  json: {
+    test: /\.json$/,
+    loader: 'json-loader',
   },
   styles: {
     test: /\.css$/,
@@ -84,4 +92,9 @@ exports.baseConfig = {
       'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
     }),
   ],
+}
+
+// ensure that build dir exists
+if (!fs.existsSync(PATHS.build)){
+  fs.mkdirSync(PATHS.build)
 }

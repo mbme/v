@@ -6,9 +6,9 @@ use iron::Handler;
 
 use mime_guess::guess_mime_type;
 
-const INDEX_HTML: &'static str = include_str!("../../../web-client/prod/index.html");
-const APP_JS:     &'static str = include_str!("../../../web-client/prod/app.js");
-const APP_JS_MAP: &'static str = include_str!("../../../web-client/prod/app.js.map");
+const INDEX_HTML: &'static str = include_str!("../../../web-build/app/index.html");
+const APP_JS:     &'static str = include_str!("../../../web-build/app/app.js");
+const APP_JS_MAP: &'static str = include_str!("../../../web-build/app/app.js.map");
 
 pub fn get_static_files() -> HashMap<&'static str, &'static str> {
     let mut map = HashMap::new();
