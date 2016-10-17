@@ -23,7 +23,7 @@ export class ServerError extends Error {
 
   static new(err: any = {}): ServerError { // tslint:disable-line:no-any
     const status = err.status || 0
-    const msg = err.response ? err.response.text : ''
+    const msg = err.response ? err.response.body.error : ''
     return new ServerError(status, msg)
   }
 
@@ -88,8 +88,8 @@ export function readNote(id: Id): Promise<INote> {
   return GET(urls.note(id))
 }
 
-export function createNote(name: Name): Promise<INote> {
-  return POST(urls.notes(), { name, 'data': '' })
+export function createNote(name: Name, data?: NoteData): Promise<INote> {
+  return POST(urls.notes(), { name, data })
 }
 
 export function updateNote(id: Id, name: Name, data: NoteData): Promise<INote> {

@@ -12,3 +12,7 @@ export function uniq(str: string): string {
 export function readBinaryFile(name: string): Buffer {
   return fs.readFileSync(name)
 }
+
+export function forceTypeCast<T>(x: any): T { // tslint:disable-line:no-any
+  return x
+}
