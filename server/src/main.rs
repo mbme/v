@@ -1,4 +1,4 @@
-#![feature(box_syntax, box_patterns, question_mark, plugin, rustc_macro)]
+#![feature(box_syntax, plugin, proc_macro)]
 
 #![plugin(clippy)]
 
