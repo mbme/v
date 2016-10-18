@@ -44,8 +44,8 @@ impl Storage {
         Ok(())
     }
 
-    pub fn record_exists(&self, id: Id, record_type: RecordType) -> Result<bool> {
-        self.in_tx(|db| db.record_exists(id, Some(record_type)))
+    pub fn record_exists(&self, id: Id, record_type: Option<RecordType>) -> Result<bool> {
+        self.in_tx(|db| db.record_exists(id, record_type))
     }
 
     pub fn list_record_files(&self, id: Id) -> Result<Vec<FileInfo>> {
@@ -455,18 +455,24 @@ mod viter {
         let project = create_project(&s);
         let todo_id = s.add_todo(&project, "name", "", None, None).unwrap();
 
-        assert!(s.record_exists(project_id, RecordType::Project).unwrap());
-        assert!(s.record_exists(note_id, RecordType::Note).unwrap());
-        assert!(s.record_exists(todo_id, RecordType::Todo).unwrap());
+        assert!(s.record_exists(project_id, Some(RecordType::Project)).unwrap());
+        assert!(s.record_exists(project_id, None).unwrap());
+
+        assert!(s.record_exists(note_id, Some(RecordType::Note)).unwrap());
+        assert!(s.record_exists(note_id, None).unwrap());
+
+        assert!(s.record_exists(todo_id, Some(RecordType::Todo)).unwrap());
+        assert!(s.record_exists(todo_id, None).unwrap());
     }
 
     #[test]
     fn test_unknown_record_exists() {
         let s = new_storage();
 
-        assert!(!s.record_exists(1, RecordType::Project).unwrap());
-        assert!(!s.record_exists(1, RecordType::Note).unwrap());
-        assert!(!s.record_exists(1, RecordType::Todo).unwrap());
+        assert!(!s.record_exists(1, None).unwrap());
+        assert!(!s.record_exists(1, Some(RecordType::Project)).unwrap());
+        assert!(!s.record_exists(1, Some(RecordType::Note)).unwrap());
+        assert!(!s.record_exists(1, Some(RecordType::Todo)).unwrap());
     }
 
     #[test]

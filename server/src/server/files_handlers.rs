@@ -15,31 +15,23 @@ use error::Error;
 use storage::Storage;
 use storage::types::*;
 
-fn assert_record_exists (storage: &Storage, id: Id, record_type: RecordType) -> IronResult<()> {
-    if itry!(storage.record_exists(id, record_type)) {
+fn assert_record_exists (storage: &Storage, id: Id) -> IronResult<()> {
+    if itry!(storage.record_exists(id, None)) {
         Ok(())
     } else {
-        let msg = format!("Can't find {} with id {}", record_type, id);
+        let msg = format!("Can't find record with id {}", id);
         Err(IronError::new(Error::from_str(msg), status::NotFound))
     }
 }
 
 
-pub struct ListFilesHandler {
-    pub record_type: RecordType,
-    pub storage: Arc<Storage>,
-}
-impl ListFilesHandler {
-    pub fn new(record_type: RecordType, storage: Arc<Storage>) -> ListFilesHandler {
-        ListFilesHandler { record_type: record_type, storage: storage }
-    }
-}
+pub struct ListFilesHandler(pub Arc<Storage>);
 impl Handler for ListFilesHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         let id = itry!(get_id(req), status::BadRequest);
-        assert_record_exists(&self.storage, id, self.record_type)?;
+        assert_record_exists(&self.0, id)?;
 
-        let files = itry!(self.storage.list_record_files(id));
+        let files = itry!(self.0.list_record_files(id));
 
         let dtos: Vec<FileInfoDTO> = convert_all_into(files);
 
@@ -47,20 +39,12 @@ impl Handler for ListFilesHandler {
     }
 }
 
-pub struct AddFileHandler {
-    pub record_type: RecordType,
-    pub storage: Arc<Storage>,
-}
-impl AddFileHandler {
-    pub fn new(record_type: RecordType, storage: Arc<Storage>) -> AddFileHandler {
-        AddFileHandler { record_type: record_type, storage: storage }
-    }
-}
+pub struct AddFileHandler(pub Arc<Storage>);
 impl Handler for AddFileHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         // extract :id
         let id = itry!(get_id(req), status::BadRequest);
-        assert_record_exists(&self.storage, id, self.record_type)?;
+        assert_record_exists(&self.0, id)?;
 
         // parse form data
         let data = itry!(parse_multipart(req), status::BadRequest);
@@ -81,7 +65,7 @@ impl Handler for AddFileHandler {
         match (name_field, data_field) {
             (&RequestData::Field(ref name), &RequestData::File(ref data)) => {
 
-                let info = itry!(self.storage.add_file(id, name, data));
+                let info = itry!(self.0.add_file(id, name, data));
 
                 let info_dto: FileInfoDTO = info.into();
 
@@ -92,26 +76,18 @@ impl Handler for AddFileHandler {
     }
 }
 
-pub struct GetFileHandler {
-    pub record_type: RecordType,
-    pub storage: Arc<Storage>,
-}
-impl GetFileHandler {
-    pub fn new(record_type: RecordType, storage: Arc<Storage>) -> GetFileHandler {
-        GetFileHandler { record_type: record_type, storage: storage }
-    }
-}
+pub struct GetFileHandler(pub Arc<Storage>);
 impl Handler for GetFileHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         // extract :id
         let id = itry!(get_id(req), status::BadRequest);
-        assert_record_exists(&self.storage, id, self.record_type)?;
+        assert_record_exists(&self.0, id)?;
 
         // extract file :name
         let name = itry!(get_url_param(req, "name"), status::BadRequest);
 
         // read and send file
-        if let Some(blob) = itry!(self.storage.get_file(id, &name)) {
+        if let Some(blob) = itry!(self.0.get_file(id, &name)) {
             Ok(Response::with((guess_mime_type(name), status::Ok, blob.0)))
         } else {
             Err(IronError::new(Error::from_str("Can't find file"), status::NotFound))
@@ -119,26 +95,18 @@ impl Handler for GetFileHandler {
     }
 }
 
-pub struct RemoveFileHandler {
-    pub record_type: RecordType,
-    pub storage: Arc<Storage>,
-}
-impl RemoveFileHandler {
-    pub fn new(record_type: RecordType, storage: Arc<Storage>) -> RemoveFileHandler {
-        RemoveFileHandler { record_type: record_type, storage: storage }
-    }
-}
+pub struct RemoveFileHandler(pub Arc<Storage>);
 impl Handler for RemoveFileHandler {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         // extract :id
         let id = itry!(get_id(req), status::BadRequest);
-        assert_record_exists(&self.storage, id, self.record_type)?;
+        assert_record_exists(&self.0, id)?;
 
         // extract file :name
         let name = itry!(get_url_param(req, "name"), status::BadRequest);
 
         // delete file
-        if itry!(self.storage.remove_file(id, &name)) {
+        if itry!(self.0.remove_file(id, &name)) {
             Ok(Response::with(status::Ok))
         } else {
             Err(IronError::new(Error::from_str("Can't find file"), status::NotFound))

@@ -15,7 +15,6 @@ use iron::prelude::*;
 use router::Router;
 
 use storage::Storage;
-use storage::types::RecordType;
 use config::Config;
 
 use self::logger::Logger;
@@ -26,32 +25,6 @@ use self::project_handlers::*;
 use self::todo_handlers::*;
 
 pub const UI_APP_VERSION: &'static str = include_str!("../../../web-build/VERSION");
-
-fn add_file_handlers(router: &mut Router, prefix: &str, record_type: RecordType, storage: Arc<Storage>) {
-    router.get(
-        format!("{}/:id/files", prefix),
-        ListFilesHandler::new(record_type, storage.clone()),
-        format!("get files for {}", prefix)
-    );
-
-    router.post(
-        format!("{}/:id/files", prefix),
-        AddFileHandler::new(record_type, storage.clone()),
-        format!("add file for {}", prefix)
-    );
-
-    router.get(
-        format!("{}/:id/files/:name", prefix),
-        GetFileHandler::new(record_type, storage.clone()),
-        format!("get file for {}", prefix)
-    );
-
-    router.delete(
-        format!("{}/:id/files/:name", prefix),
-        RemoveFileHandler::new(record_type, storage.clone()),
-        format!("delete file for {}", prefix)
-    );
-}
 
 pub fn start_server(config: &Config) {
 
@@ -75,15 +48,11 @@ pub fn start_server(config: &Config) {
     router.get("/api/notes/:id", GetNoteHandler(storage.clone()), "get note");
     router.delete("/api/notes/:id", DeleteNoteHandler(storage.clone()), "delete note");
 
-    add_file_handlers(&mut router, "/api/notes", RecordType::Note, storage.clone());
-
     // PROJECTS
     router.get("/api/projects", ListProjectsHandler(storage.clone()), "get project records");
     router.post("/api/projects", AddProjectHandler(storage.clone()), "add project");
     router.put("/api/projects/:id", UpdateProjectHandler(storage.clone()), "update project");
     router.get("/api/projects/:id", GetProjectHandler(storage.clone()), "get project");
-
-    add_file_handlers(&mut router, "/api/projects", RecordType::Project, storage.clone());
 
     // TODOS
     router.get("/api/todos/project/:project_id", ListProjectTodosHandler(storage.clone()), "get project todos");
@@ -91,7 +60,11 @@ pub fn start_server(config: &Config) {
     router.put("/api/todos/:id", UpdateProjectTodoHandler(storage.clone()), "update project todo");
     router.get("/api/todos/:id", GetProjectTodoHandler(storage.clone()), "get project todo");
 
-    add_file_handlers(&mut router, "/api/todos", RecordType::Project, storage.clone());
+    // FILES
+    router.get("/api/files/:id", ListFilesHandler(storage.clone()), "list files");
+    router.post("/api/files/:id", AddFileHandler(storage.clone()), "add file");
+    router.get("/api/files/:id/:name", GetFileHandler(storage.clone()), "get file");
+    router.delete("/api/files/:id/:name", RemoveFileHandler(storage.clone()), "delete file");
 
     // Serve static files
     router.get("/", StaticIndexHandler, "static index handler");
