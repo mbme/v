@@ -13,7 +13,7 @@ prod: web-prod
 test:
 	cd ./server && cargo test
 
-api-test:
+api-tests:
 	npm run api-tests
 
 web-client-prod:
@@ -26,4 +26,4 @@ lint:
 	npm run tslint
 	npm run eslint
 
-.PHONY: clean dev-run prod test api-test web-client-prod web-client-dev-run lint
+.PHONY: clean dev-run prod test api-tests web-client-prod web-client-dev-run lint

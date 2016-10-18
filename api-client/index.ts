@@ -59,9 +59,12 @@ function GET<T>(url: string): Promise<T> {
   )
 }
 
-function POST<T>(url: string, data: Object): Promise<T> {
+function POST<T>(url: string, addData: (req: request.Request) => void): Promise<T> {
+  const req = request.post(url)
+  addData(req)
+
   return wrapRequest(
-    request.post(url).send(data),
+    req,
     (status) => maybeLog('  POST', url, status)
   )
 }
@@ -88,8 +91,8 @@ export function readNote(id: Id): Promise<INote> {
   return GET(urls.note(id))
 }
 
-export function createNote(name: Name, data?: NoteData): Promise<INote> {
-  return POST(urls.notes(), { name, data })
+export function createNote(name: Name, data: NoteData = ''): Promise<INote> {
+  return POST(urls.notes(), (req) => req.field('name', name).field('data', data))
 }
 
 export function updateNote(id: Id, name: Name, data: NoteData): Promise<INote> {
@@ -100,18 +103,17 @@ export function deleteNote(id: Id): Promise<void> {
   return DELETE(urls.note(id))
 }
 
-export function uploadNoteFile(noteId: Id, name: FileName, file: File): Promise<IFileInfo> {
-  const data = new FormData()
-  data.append('name', name)
-  data.append('data', file)
-
-  return POST(urls.noteFiles(noteId), data)
+export function uploadFile(recordId: Id, name: FileName, file: File | Buffer): Promise<IFileInfo> {
+  return POST(
+    urls.files(recordId),
+    (req) => req.field('name', name).attach('data', file)
+  )
 }
 
-export function deleteNoteFile(noteId: Id, name: FileName): Promise<void> {
-  return DELETE(urls.noteFile(noteId, name))
+export function deleteFile(recordId: Id, name: FileName): Promise<void> {
+  return DELETE(urls.file(recordId, name))
 }
 
-export function listNoteFiles(noteId: Id): Promise<IFileInfo[]> {
-  return GET(urls.noteFiles(noteId))
+export function listFiles(recordId: Id): Promise<IFileInfo[]> {
+  return GET(urls.files(recordId))
 }

@@ -10,10 +10,10 @@ export function note(id: Id): string {
   return `${prefix}/notes/${id}`
 }
 
-export function noteFiles(id: Id): string {
-  return `${prefix}/notes/${id}/files`
+export function files(recordId: Id): string {
+  return `${prefix}/files/${recordId}`
 }
 
-export function noteFile(id: Id, name: FileName): string {
-  return `${prefix}/notes/${id}/files/${name}`
+export function file(recordId: Id, name: FileName): string {
+  return `${prefix}/files/${recordId}/${name}`
 }

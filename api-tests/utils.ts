@@ -9,8 +9,8 @@ export function uniq(str: string): string {
   return `${str}_${randomInt()}`
 }
 
-export function readBinaryFile(name: string): Buffer {
-  return fs.readFileSync(name)
+export function readBinaryFile(path: string): Buffer {
+  return fs.readFileSync(path)
 }
 
 export function forceTypeCast<T>(x: any): T { // tslint:disable-line:no-any

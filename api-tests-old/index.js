@@ -50,17 +50,6 @@ function getNote(id) {
   )
 }
 
-function validateFileInfo(body, expected) {
-  expect(body).to.have.all.keys(
-    'name', 'size', 'create_ts'
-  )
-
-  expect(body.name).to.equal(expected.name)
-  expect(body.size).to.be.a('number')
-  expect(body.size).to.be.above(0)
-  expect(body.create_ts).to.be.a('number')
-}
-
 // ************* FILES
 
 const attachmentPath = './data/city-view.jpg'
@@ -98,24 +87,6 @@ function deleteFile(noteId, name) {
     request.delete(url(`/api/notes/${noteId}/files/${name}`))
   )
 }
-
-describe('POST /api/notes/:id/files', () => {
-  it('should create new file', () => {
-    const fileName = genAttachmentName()
-
-    return postRandomNote()
-      .then(({ body }) => postStandardFile(body.id, fileName))
-      .then(({ body }) => {
-        validateFileInfo(body, {
-          name: fileName,
-        })
-      })
-  })
-
-  it('should fail if trying to add file to non-existing note', () => {
-    return expectFailure(postStandardFile(utils.randomInt(), genAttachmentName()), 500)
-  })
-})
 
 describe('GET /api/notes/:id/files/:name', () => {
   it('should return file content', () => {

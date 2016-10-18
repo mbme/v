@@ -1,9 +1,10 @@
 import { expect } from 'chai'
-import { uniq, randomInt, forceTypeCast } from './utils'
+import { uniq, randomInt, forceTypeCast, readBinaryFile } from './utils'
 import * as api from 'api-client'
 import * as types from 'api-client/types'
 
 type NoteDTO = { name: string, data: string }
+type FileInfoDTO = { name: string }
 
 function randomNote(): NoteDTO {
   return {
@@ -12,10 +13,16 @@ function randomNote(): NoteDTO {
   }
 }
 
-// function postRandomNote(): Promise<types.INote> {
-//   const { name, data } = randomNote();
-//   return api.createNote(name, data);
-// }
+function postRandomNote(): Promise<types.INote> {
+  const { name, data } = randomNote()
+  return api.createNote(name, data)
+}
+
+const fileBuffer = readBinaryFile('./api-tests/data/city-view.jpg')
+
+function postStandardFile(recordId: types.Id, name: types.FileName): Promise<types.IFileInfo> {
+  return api.uploadFile(recordId, name, fileBuffer)
+}
 
 function validateNote(body: types.INote, expected: NoteDTO): void {
   expect(body).to.be.an('object')
@@ -30,6 +37,22 @@ function validateNote(body: types.INote, expected: NoteDTO): void {
   expect(body.files).to.be.an('array')
   expect(body.create_ts).to.be.a('number')
   expect(body.update_ts).to.be.a('number')
+}
+
+function validateFileInfo(body: types.IFileInfo, expected: FileInfoDTO): void {
+  expect(body).to.have.all.keys(
+    'name', 'size', 'create_ts'
+  )
+
+  expect(body.name).to.equal(expected.name)
+  expect(body.size).to.be.a('number')
+  expect(body.size).to.be.above(0)
+  expect(body.create_ts).to.be.a('number')
+}
+
+function genAttachmentName(): string {
+  const name = uniq('attachment')
+  return `${name}.jpg`
 }
 
 function expectFailure<T>(promise: Promise<T>, status: number): Promise<T> {
@@ -146,5 +169,23 @@ describe('deleteNote()', () => {
 
   it('should fail if trying to delete non-existing note', () => {
     return expectFailure(api.deleteNote(randomInt()), 404)
+  })
+})
+
+describe('uploadFile()', () => {
+  it('should create new file', () => {
+    const fileName = genAttachmentName()
+
+    return postRandomNote()
+      .then((resp) => postStandardFile(resp.id, fileName))
+      .then((resp) => {
+        validateFileInfo(resp, {
+          'name': fileName,
+        })
+      })
+  })
+
+  it('should fail if trying to add file to non-existing note', () => {
+    return expectFailure(postStandardFile(randomInt(), genAttachmentName()), 500)
   })
 })
