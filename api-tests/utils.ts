@@ -15,10 +15,6 @@ export function readBinaryFile(path: string): Buffer {
   return fs.readFileSync(path)
 }
 
-export function forceTypeCast<T>(x: any): T { // tslint:disable-line:no-any
-  return x
-}
-
 export function expectFailure<T>(promise: Promise<T>, status: number): Promise<T> {
   return promise.then(
     () => {

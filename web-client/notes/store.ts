@@ -1,19 +1,19 @@
 import {action, observable, computed} from 'mobx'
 import {fuzzySearch} from 'web-client/utils'
 import * as config from 'web-client/config'
-import {Id, Name, Timestamp, FileName, IFileInfo} from 'api-client/types'
-import { INoteRecord, INote, NoteData } from 'api-client/types'
+import {Id, Timestamp, FileName, IFileInfo} from 'api-client/types'
+import { IRecord, INote } from 'api-client/types'
 import * as api from 'api-client'
 
 export class NoteRecord {
   readonly id: Id
-  readonly name: Name
+  readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
 
   private store: NotesStore
 
-  constructor(store: NotesStore, dto: INoteRecord) {
+  constructor(store: NotesStore, dto: IRecord) {
     this.store = store
 
     this.id = dto.id
@@ -45,10 +45,10 @@ export class NoteRecord {
 
 export class Note {
   readonly id: Id
-  readonly name: Name
+  readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
-  readonly data: NoteData
+  readonly data: string
   files: ReadonlyArray<IFileInfo>
 
   @observable editMode: boolean
@@ -77,7 +77,7 @@ export default class NotesStore {
 
   @action
   loadRecordsList(): Promise<void> {
-    return api.listNotes().then((data: INoteRecord[]) => {
+    return api.listNotes().then((data: IRecord[]) => {
       this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
     })
   }
@@ -103,7 +103,7 @@ export default class NotesStore {
   }
 
   @action
-  createNote(name: Name): Promise<void> {
+  createNote(name: string): Promise<void> {
     return api.createNote(name).then((data: INote) => {
       this.addOpenNote(new Note(data, true))
       this.loadRecordsList()
@@ -111,7 +111,7 @@ export default class NotesStore {
   }
 
   @action
-  updateNote(id: Id, name: Name, data: NoteData): Promise<void> {
+  updateNote(id: Id, name: string, data: string): Promise<void> {
     return api.updateNote(id, name, data)
       .then((note: INote) => {
         this.loadRecordsList()

@@ -18,6 +18,14 @@ function file(recordId: Id, name: FileName): string {
   return `${prefix}/files/${recordId}/${name}`
 }
 
+function projects(): string {
+  return `${prefix}/projects`
+}
+
+function project(id: Id): string {
+  return `${prefix}/projects/${id}`
+}
+
 export default {
-  notes, note, files, file
+  notes, note, files, file, projects, project
 }

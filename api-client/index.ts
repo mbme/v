@@ -2,11 +2,10 @@ import * as request from 'superagent'
 import urls from 'api-client/urls'
 import {
   IFileInfo,
-  INoteRecord,
+  IRecord,
   INote,
+  IProject,
   Id,
-  Name,
-  NoteData,
   FileName,
 } from 'api-client/types'
 
@@ -83,7 +82,7 @@ function DELETE<T>(url: string): Promise<T> {
   )
 }
 
-export function listNotes(): Promise<INoteRecord[]> {
+export function listNotes(): Promise<IRecord[]> {
   return GET(urls.notes())
 }
 
@@ -91,11 +90,11 @@ export function readNote(id: Id): Promise<INote> {
   return GET(urls.note(id))
 }
 
-export function createNote(name: Name, data: NoteData = ''): Promise<INote> {
+export function createNote(name: string, data: string = ''): Promise<INote> {
   return POST(urls.notes(), (req) => req.send({ name, data }))
 }
 
-export function updateNote(id: Id, name: Name, data: NoteData): Promise<INote> {
+export function updateNote(id: Id, name: string, data: string): Promise<INote> {
   return PUT(urls.note(id), { name, data })
 }
 
@@ -120,4 +119,20 @@ export function deleteFile(recordId: Id, name: FileName): Promise<void> {
 
 export function listFiles(recordId: Id): Promise<IFileInfo[]> {
   return GET(urls.files(recordId))
+}
+
+export function listProjects(): Promise<IRecord[]> {
+  return GET(urls.projects())
+}
+
+export function createProject(name: string, description: string = ''): Promise<IProject> {
+  return POST(urls.projects(), (req) => req.send({ name, description }))
+}
+
+export function updateProject(id: Id, name: string, description: string): Promise<IProject> {
+  return PUT(urls.project(id), { name, description })
+}
+
+export function readProject(id: Id): Promise<IProject> {
+  return GET(urls.project(id))
 }

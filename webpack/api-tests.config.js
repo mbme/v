@@ -18,10 +18,6 @@ config.output = {
   path: path.resolve(PATHS.build, 'tests'),
 }
 
-config.ts = {
-  transpileOnly: true, // fasten compilation
-}
-
 config.target = 'node'
 
 config.module.loaders.push(

@@ -1,10 +1,5 @@
-// type RecordType = 'note'
-
 export type Id = number
-export type Name = string
 export type Timestamp = number
-
-export type NoteData = string
 
 export type FileName = string
 export type FileSize = number
@@ -15,18 +10,27 @@ export interface IFileInfo {
   readonly create_ts: Timestamp,
 }
 
-export interface INoteRecord {
+export interface IRecord {
   readonly id: Id,
-  readonly name: Name,
+  readonly name: string,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
 }
 
 export interface INote {
   readonly id: Id,
-  readonly name: Name,
+  readonly name: string,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
-  readonly data: NoteData,
+  readonly data: string,
+  readonly files: ReadonlyArray<IFileInfo>,
+}
+
+export interface IProject {
+  readonly id: Id,
+  readonly name: string,
+  readonly create_ts: Timestamp,
+  readonly update_ts: Timestamp,
+  readonly description: string,
   readonly files: ReadonlyArray<IFileInfo>,
 }

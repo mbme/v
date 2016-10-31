@@ -2,7 +2,6 @@ import * as React from 'react'
 import {observable, action, asReference} from 'mobx'
 import {observer} from 'mobx-react'
 
-import {Name} from 'api-client/types'
 import {InjectStore} from 'web-client/AppState'
 
 import NotesStore from 'web-client/notes/store'
@@ -61,7 +60,7 @@ class NotesPage extends React.Component<{}, {}> {
     this.showModal()
   }
 
-  onCreateNote = (name: Name) => {
+  onCreateNote = (name: string) => {
     this.notesStore.createNote(name).then(() => this.showModal())
   }
 }

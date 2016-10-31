@@ -3,7 +3,6 @@ import {
   randomNote,
   NoteDTO,
   randomInt,
-  forceTypeCast,
   expectFailure,
 } from './utils'
 import * as types from 'api-client/types'
@@ -75,7 +74,7 @@ describe('Notes API', () => {
 
     it('should return 400 BAD REQUEST for invalid ids', () => {
       return expectFailure(
-        api.readNote(forceTypeCast<number>('some-invalid-id')), 400
+        api.readNote('some-invalid-id' as any), 400 // tslint:disable-line:no-any
       )
     })
   })
