@@ -92,7 +92,7 @@ export function readNote(id: Id): Promise<INote> {
 }
 
 export function createNote(name: Name, data: NoteData = ''): Promise<INote> {
-  return POST(urls.notes(), (req) => req.field('name', name).field('data', data))
+  return POST(urls.notes(), (req) => req.send({ name, data }))
 }
 
 export function updateNote(id: Id, name: Name, data: NoteData): Promise<INote> {
@@ -103,10 +103,14 @@ export function deleteNote(id: Id): Promise<void> {
   return DELETE(urls.note(id))
 }
 
+export function readFile(recordId: Id, name: FileName): Promise<Buffer> {
+  return GET(urls.file(recordId, name))
+}
+
 export function uploadFile(recordId: Id, name: FileName, file: File | Buffer): Promise<IFileInfo> {
   return POST(
     urls.files(recordId),
-    (req) => req.field('name', name).attach('data', file)
+    (req) => req.field('name', name).attach('data', file as any) // tslint:disable-line:no-any
   )
 }
 

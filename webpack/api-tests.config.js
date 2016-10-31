@@ -31,7 +31,7 @@ config.module.loaders.push(
 config.plugins.push(
   new webpack.NoErrorsPlugin(),
   new webpack.DefinePlugin({
-    __DEV__: '"true"',
+    __DEV__: 'false',
     __SERVER__: `"http://${server_address}"`,
     'global.GENTLY': false, // fixes warnings from formidable(superagent) https://github.com/felixge/node-formidable/issues/295
   })

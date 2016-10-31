@@ -29,7 +29,7 @@
     "css-loader": "0.25",
     "eslint": "3",
     "file-loader": "0.9",
-    "html-webpack-plugin": "2.22",
+    "html-webpack-plugin": "2",
     "mobx-react-devtools": "4.2",
     "mocha": "3",
     "postcss-loader": "1",
