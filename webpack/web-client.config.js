@@ -35,7 +35,8 @@ if (isDevMode) {
   config.plugins.push(
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({
-      __DEV__: '"true"',
+      __DEV__: 'true',
+      __SERVER__: '""',
     })
   )
 

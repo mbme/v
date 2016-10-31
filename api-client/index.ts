@@ -1,5 +1,5 @@
 import * as request from 'superagent'
-import * as urls from 'api-client/urls'
+import urls from 'api-client/urls'
 import {
   IFileInfo,
   INoteRecord,

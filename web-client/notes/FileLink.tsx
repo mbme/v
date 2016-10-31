@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import {formatBytes} from 'web-client/utils'
-import {noteFile} from 'api-client/urls'
+import urls from 'api-client/urls'
 
 import {IFileInfo, Id} from 'api-client/types'
 
@@ -17,7 +17,7 @@ class FileLink extends React.Component<IProps, {}> {
 
     return (
       <div className="FileLink">
-        <a href={noteFile(noteId, file.name)} target="_blank">{file.name}</a>
+        <a href={urls.file(noteId, file.name)} target="_blank">{file.name}</a>
         <span className="size">{formatBytes(file.size)}</span>
         {children}
       </div>

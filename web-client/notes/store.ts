@@ -132,20 +132,20 @@ export default class NotesStore {
   }
 
   @action
-  uploadFile(noteId: Id, name: FileName, file: File): Promise<void> {
-    return api.uploadNoteFile(noteId, name, file)
-      .then(() => this.loadNoteFiles(noteId))
+  uploadFile(recordId: Id, name: FileName, file: File): Promise<void> {
+    return api.uploadFile(recordId, name, file)
+      .then(() => this.loadFiles(recordId))
       .then((files: IFileInfo[]) => {
-        this.replaceNoteFiles(noteId, files)
+        this.replaceNoteFiles(recordId, files)
       })
   }
 
   @action
-  deleteFile(noteId: Id, file: IFileInfo): Promise<void> {
-    return api.deleteNoteFile(noteId, file.name)
-      .then(() => this.loadNoteFiles(noteId))
+  deleteFile(recordId: Id, file: IFileInfo): Promise<void> {
+    return api.deleteFile(recordId, file.name)
+      .then(() => this.loadFiles(recordId))
       .then((files: IFileInfo[]) => {
-        this.replaceNoteFiles(noteId, files)
+        this.replaceNoteFiles(recordId, files)
       })
   }
 
@@ -158,8 +158,8 @@ export default class NotesStore {
     return this.indexOfNote(id) > -1
   }
 
-  private loadNoteFiles(noteId: Id): Promise<IFileInfo[]> {
-    return api.listNoteFiles(noteId)
+  private loadFiles(noteId: Id): Promise<IFileInfo[]> {
+    return api.listFiles(noteId)
   }
 
   @action
