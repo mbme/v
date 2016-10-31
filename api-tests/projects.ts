@@ -1,5 +1,9 @@
 import { expect } from 'chai'
-import { uniq, expectFailure, randomInt } from './utils'
+import {
+  createDataGenerator,
+  expectFailure,
+  randomInt,
+} from './utils'
 import * as api from 'api-client'
 import * as types from 'api-client/types'
 
@@ -18,90 +22,71 @@ function validateProject(body: types.IProject, name: string, description: string
   expect(body.update_ts).to.be.a('number')
 }
 
-function randomProject(): [string, string] {
-  return [uniq('name'), uniq('description')]
-}
+const randomProject = createDataGenerator('name', 'description')
 
 describe('Projects API', () => {
 
   describe('listProjects()', () => {
-    it('should return an array', () => {
-      return api.listProjects().then(
-        (list) => {
-          expect(list).to.be.an('array')
-        }
-      )
+    it('should return an array', async () => {
+      const list = await api.listProjects()
+
+      expect(list).to.be.an('array')
     })
   })
 
   describe('createProject()', () => {
-    it('should create new project', () => {
+    it('should create new project', async () => {
       const [name] = randomProject()
 
-      return api.createProject(
-        name
-      ).then((resp) => {
-        validateProject(resp, name)
+      const project = await api.createProject(name)
 
-        return api.listProjects()
-      }).then((projects) => { // check if new project is searchable
-        expect(projects.filter(project => project.name === name)).to.have.lengthOf(1)
-      })
+      validateProject(project, name)
+
+      const projects = await api.listProjects()
+      expect(projects.filter(p => p.name === name)).to.have.lengthOf(1)
     })
   })
 
   describe('readProject()', () => {
-    it('should return existing project', () => {
+    it('should return existing project', async () => {
       const [name, description] = randomProject()
 
-      let id: types.Id
+      const { id } = await api.createProject(name, description)
 
-      return api.createProject(
-        name, description
-      ).then((resp) => {
-        id = resp.id
-
-        return api.readProject(id)
-      }).then((resp) => {
-        validateProject(resp, name, description)
-        expect(resp.id).to.equal(id)
-      })
+      const project = await api.readProject(id)
+      validateProject(project, name, description)
+      expect(project.id).to.equal(id)
     })
 
-    it('should return 404 NOT FOUND for non-existing project', () => {
-      return expectFailure(api.readProject(randomInt()), 404)
+    it('should return 404 NOT FOUND for non-existing project', async () => {
+      await expectFailure(api.readProject(randomInt()), 404)
     })
 
-    it('should return 400 BAD REQUEST for invalid ids', () => {
-      return expectFailure(
+    it('should return 400 BAD REQUEST for invalid ids', async () => {
+      await expectFailure(
         api.readProject('some-invalid-id' as any), 400 // tslint:disable-line:no-any
       )
     })
   })
 
   describe('updateProject()', () => {
-    it('should update project', () => {
+    it('should update project', async () => {
       const [name, description] = randomProject()
       const [name1, description1] = randomProject()
 
-      let id: types.Id
-      return api.createProject(name, description)
-        .then((resp) => {
-          id = resp.id
+      const { id } = await api.createProject(name, description)
 
-          return api.updateProject(id, name1, description1)
-        })
-        .then(() => api.readProject(id))
-        .then((resp) => {
-          validateProject(resp, name1, description1)
-          expect(resp.id).to.equal(id)
-        })
+      await api.updateProject(id, name1, description1)
+
+      const project = await api.readProject(id)
+      validateProject(project, name1, description1)
+      expect(project.id).to.equal(id)
     })
 
-    it('should fail if trying to update non-existing project', () => {
+    it('should fail if trying to update non-existing project', async () => {
       const [name, description] = randomProject()
 
-      return expectFailure(api.updateProject(randomInt(), name, description), 404)
+      await expectFailure(api.updateProject(randomInt(), name, description), 404)
     })
   })
 })

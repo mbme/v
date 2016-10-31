@@ -28,11 +28,8 @@ export function expectFailure<T>(promise: Promise<T>, status: number): Promise<T
   )
 }
 
-export type NoteDTO = { name: string, data: string }
-
-export function randomNote(): NoteDTO {
-  return {
-    'name': uniq('name'),
-    'data': uniq('data'),
+export function createDataGenerator (...fields: string[]): () => string[] {
+  return function (): string[] {
+    return fields.map(uniq)
   }
 }

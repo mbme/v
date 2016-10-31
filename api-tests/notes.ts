@@ -1,14 +1,15 @@
 import { expect } from 'chai'
 import {
-  randomNote,
-  NoteDTO,
+  createDataGenerator,
   randomInt,
   expectFailure,
 } from './utils'
 import * as types from 'api-client/types'
 import * as api from 'api-client'
 
-function validateNote(body: types.INote, expected: NoteDTO): void {
+const randomNote = createDataGenerator('name', 'data')
+
+function validateNote(body: types.INote, name: string, data: string = ''): void {
   expect(body).to.be.an('object')
 
   expect(body).to.have.all.keys(
@@ -16,8 +17,8 @@ function validateNote(body: types.INote, expected: NoteDTO): void {
   )
 
   expect(body.id).to.be.a('number')
-  expect(body.name).to.equal(expected.name)
-  expect(body.data).to.equal(expected.data)
+  expect(body.name).to.equal(name)
+  expect(body.data).to.equal(data)
   expect(body.files).to.be.an('array')
   expect(body.create_ts).to.be.a('number')
   expect(body.update_ts).to.be.a('number')
@@ -25,106 +26,79 @@ function validateNote(body: types.INote, expected: NoteDTO): void {
 
 describe('Notes API', () => {
   describe('listNotes()', () => {
-    it('should return an array', () => {
-      return api.listNotes().then(
-        (list) => {
-          expect(list).to.be.an('array')
-        }
-      )
+    it('should return an array', async () => {
+      const list = await api.listNotes()
+      expect(list).to.be.an('array')
     })
   })
 
   describe('createNote()', () => {
-    it('should create new note', () => {
-      const note = randomNote()
+    it('should create new note', async () => {
+      const [ name, data ] = randomNote()
 
-      return api.createNote(
-        note.name, note.data
-      ).then((resp) => {
-        validateNote(resp, note)
+      const note = await api.createNote(name, data)
+      validateNote(note, name, data)
 
-        return api.listNotes()
-      }).then((notes) => { // check if new note is searchable
-        expect(notes.filter(rec => rec.name === note.name)).to.have.lengthOf(1)
-      })
+      const notes = await api.listNotes()
+      expect(notes.filter(rec => rec.name === name)).to.have.lengthOf(1)
     })
   })
 
   describe('readNote()', () => {
-    it('should return existing note', () => {
-      const note = randomNote()
+    it('should return existing note', async () => {
+      const [ name, data ] = randomNote()
 
-      let noteId: types.Id
+      const { id } = await api.createNote(name, data)
 
-      return api.createNote(
-        note.name, note.data
-      ).then((resp) => {
-        noteId = resp.id
-
-        return api.readNote(noteId)
-      }).then((resp) => {
-        validateNote(resp, note)
-        expect(resp.id).to.equal(noteId)
-      })
+      const note = await api.readNote(id)
+      validateNote(note, name, data)
+      expect(note.id).to.equal(id)
     })
 
-    it('should return 404 NOT FOUND for non-existing note', () => {
-      return expectFailure(api.readNote(randomInt()), 404)
+    it('should return 404 NOT FOUND for non-existing note', async () => {
+      await expectFailure(api.readNote(randomInt()), 404)
     })
 
-    it('should return 400 BAD REQUEST for invalid ids', () => {
-      return expectFailure(
+    it('should return 400 BAD REQUEST for invalid ids', async () => {
+      await expectFailure(
         api.readNote('some-invalid-id' as any), 400 // tslint:disable-line:no-any
       )
     })
   })
 
   describe('updateNote()', () => {
-    it('should update note', () => {
-      const note = randomNote()
-      const note1 = randomNote()
+    it('should update note', async () => {
+      const [ name, data ] = randomNote()
+      const [ name1, data1 ] = randomNote()
 
-      let id: types.Id
-      return api.createNote(note.name, note.data)
-        .then((resp) => {
-          id = resp.id
+      const { id } = await api.createNote(name, data)
 
-          // update note
-          return api.updateNote(id, note1.name, note1.data)
-        })
-        .then(() => api.readNote(id))
-        .then((resp) => {
-          validateNote(resp, note1)
-          expect(resp.id).to.equal(id)
-        })
+      await api.updateNote(id, name1, data1)
+
+      const note = await api.readNote(id)
+      validateNote(note, name1, data1)
+      expect(note.id).to.equal(id)
     })
 
-    it('should fail if trying to update non-existing note', () => {
-      const note = randomNote()
+    it('should fail if trying to update non-existing note', async () => {
+      const [ name, data ] = randomNote()
 
-      return expectFailure(api.updateNote(randomInt(), note.name, note.data), 404)
+      await expectFailure(api.updateNote(randomInt(), name, data), 404)
     })
   })
 
   describe('deleteNote()', () => {
-    it('should remove note', () => {
-      const note = randomNote()
+    it('should remove note', async () => {
+      const [ name, data ] = randomNote()
 
-      let id: types.Id
-      return expectFailure(
-        api.createNote(note.name, note.data)
-          .then((resp) => {
-            id = resp.id
+      const { id } = await api.createNote(name, data)
+      await api.deleteNote(id)
 
-            return api.deleteNote(id)
-          })
-          .then(() => api.readNote(id)),
-        404
-      )
+      await expectFailure(api.readNote(id), 404)
     })
 
-    it('should fail if trying to delete non-existing note', () => {
-      return expectFailure(api.deleteNote(randomInt()), 404)
+    it('should fail if trying to delete non-existing note', async () => {
+      await expectFailure(api.deleteNote(randomInt()), 404)
     })
   })
 
