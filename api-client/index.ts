@@ -5,8 +5,11 @@ import {
   IRecord,
   INote,
   IProject,
+  ITodo,
+  TodoState,
   Id,
   FileName,
+  Timestamp,
 } from 'api-client/types'
 
 export class ServerError extends Error {
@@ -135,4 +138,50 @@ export function updateProject(id: Id, name: string, description: string): Promis
 
 export function readProject(id: Id): Promise<IProject> {
   return GET(urls.project(id))
+}
+
+export function listProjectTodos(projectId: Id): Promise<ITodo[]> {
+  return GET(urls.todos(projectId))
+}
+
+export function createProjectTodo(
+  projectId: Id,
+  name: string,
+  details: string,
+  startTs?: Timestamp,
+  endTs?: Timestamp
+): Promise<ITodo> {
+  return POST(
+    urls.todos(projectId),
+    (req) => req.send({
+      name,
+      details,
+      start_ts: startTs,
+      end_ts: endTs,
+    })
+  )
+}
+
+export function updateProjectTodo(
+  id: Id,
+  name: string,
+  details: string,
+  state: TodoState,
+  startTs?: Timestamp,
+  endTs?: Timestamp
+): Promise<ITodo> {
+  return PUT(
+    urls.todo(id),
+    {
+      name,
+      details,
+      state,
+      start_ts: startTs,
+      end_ts: endTs,
+    }
+  )
+}
+
+export function getProjectTodo(todoId: Id): Promise<ITodo> {
+  return GET(urls.todo(todoId))
 }

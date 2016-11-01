@@ -86,7 +86,7 @@
     "no-var-requires": true,
     "object-literal-key-quotes": [
       true,
-      "always"
+      "as-needed"
     ],
     "object-literal-shorthand": true,
     "one-line": [

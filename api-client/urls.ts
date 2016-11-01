@@ -26,6 +26,21 @@ function project(id: Id): string {
   return `${prefix}/projects/${id}`
 }
 
+function todos(projectId: Id): string {
+  return `${prefix}/todos/project/${projectId}`
+}
+
+function todo(id: Id): string {
+  return `${prefix}/todos/${id}`
+}
+
 export default {
-  notes, note, files, file, projects, project
+  notes,
+  note,
+  files,
+  file,
+  projects,
+  project,
+  todos,
+  todo,
 }
