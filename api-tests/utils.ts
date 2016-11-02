@@ -28,8 +28,14 @@ export function expectFailure<T>(promise: Promise<T>, status: number): Promise<T
   )
 }
 
-export function createDataGenerator (...fields: string[]): () => string[] {
+function createDataGenerator (...fields: string[]): () => string[] {
   return function (): string[] {
     return fields.map(uniq)
   }
 }
+
+export const randomProject = createDataGenerator('name', 'description')
+
+export const randomNote = createDataGenerator('name', 'data')
+
+export const randomTodo = createDataGenerator('name', 'details')

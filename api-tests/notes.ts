@@ -1,13 +1,11 @@
 import { expect } from 'chai'
 import {
-  createDataGenerator,
+  randomNote,
   randomInt,
   expectFailure,
 } from './utils'
 import * as types from 'api-client/types'
 import * as api from 'api-client'
-
-const randomNote = createDataGenerator('name', 'data')
 
 function validateNote(body: types.INote, name: string, data: string = ''): void {
   expect(body).to.be.an('object')

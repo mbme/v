@@ -382,8 +382,6 @@ impl<'a> DB<'a> {
             &[&(id as i64), &(project.record.id as i64), &details, &TodoState::Inbox.to_string(), &start_ts, &end_ts]
         )?;
 
-        println!("HERE {}", num);
-
         Ok(id)
     }
 

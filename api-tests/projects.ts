@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import {
-  createDataGenerator,
+  randomProject,
   expectFailure,
   randomInt,
 } from './utils'
@@ -21,8 +21,6 @@ function validateProject(body: types.IProject, name: string, description: string
   expect(body.create_ts).to.be.a('number')
   expect(body.update_ts).to.be.a('number')
 }
-
-const randomProject = createDataGenerator('name', 'description')
 
 describe('Projects API', () => {
 
