@@ -43,6 +43,7 @@ if (isDevMode) {
   const { server_address } = require(PATHS.fromRoot('./server/config.json'))
 
   config.devServer = {
+    stats: 'minimal',
     contentBase: PATHS.root,
     port: 8080,
     historyApiFallback: true,

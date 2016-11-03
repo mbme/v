@@ -13,8 +13,8 @@ export class App extends React.Component<{}, {}> {
 
     if (__DEV__) {
       const devToolsPosition = {
-        'bottom': 10,
-        'right': 10,
+        bottom: 10,
+        right: 10,
       }
 
       devTools = <DevTools position={devToolsPosition} />
