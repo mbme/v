@@ -20,7 +20,7 @@ async function createRandomTodo(projectId?: types.Id): Promise<types.ITodo> {
   }
 
   const [name, details] = randomTodo()
-  const todo = await api.createProjectTodo(projectId, name, details)
+  const todo = await api.createTodo(projectId, name, details)
 
   validateTodo(todo, name, details, 'inbox')
 
@@ -74,7 +74,7 @@ describe('Todos API', () => {
     })
   })
 
-  describe('createProjectTodo()', () => {
+  describe('createTodo()', () => {
     it('should create new todo', async () => {
       const todo = await createRandomTodo()
 
@@ -87,11 +87,54 @@ describe('Todos API', () => {
     })
   })
 
-  describe('updateProjectTodo()', () => {
+  describe('updateTodo()', () => {
+    it('should update todo', async () => {
+      const todo = await createRandomTodo()
+
+      const [ name, details ] = randomTodo()
+      const state: types.TodoState = 'done'
+      const startTs = 99
+      const endTs = 101
+
+      const updatedTodo = await api.updateTodo(
+        todo.id,
+        name,
+        details,
+        state,
+        startTs,
+        endTs
+      )
+
+      validateTodo(updatedTodo, name, details, state, startTs, endTs)
+      expect(updatedTodo.id).to.equal(todo.id)
+    })
+
+    it('should fail if trying to update non-existing todo', async () => {
+      const [ name, details ] = randomTodo()
+
+      await expectFailure(api.updateTodo(randomInt(), name, details, 'done'), 404)
+    })
 
   })
 
-  describe('getProjectTodo()', () => {
+  describe('getTodo()', () => {
+    it('should return existing todo', async () => {
+      const todo = await createRandomTodo()
 
+      const todo1 = await api.readTodo(todo.id)
+      validateTodo(todo1, todo.name, todo.details, todo.state)
+
+      expect(todo1.id).to.equal(todo.id)
+    })
+
+    it('should return 404 NOT FOUND for non-existing todo', async () => {
+      await expectFailure(api.readTodo(randomInt()), 404)
+    })
+
+    it('should return 400 BAD REQUEST for invalid ids', async () => {
+      await expectFailure(
+        api.readTodo('some-invalid-id' as any), 400 // tslint:disable-line:no-any
+      )
+    })
   })
 })

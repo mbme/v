@@ -377,7 +377,7 @@ impl<'a> DB<'a> {
                     end_ts: Option<Timespec>) -> Result<Id> {
         let id = self.add_record(RecordType::Todo, name)?;
 
-        let num = self.conn.execute(
+        self.conn.execute(
             "INSERT INTO todos (record_id, project_id, details, state, start_ts, end_ts) VALUES ($1, $2, $3, $4, $5, $6)",
             &[&(id as i64), &(project.record.id as i64), &details, &TodoState::Inbox.to_string(), &start_ts, &end_ts]
         )?;

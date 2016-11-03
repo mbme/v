@@ -144,7 +144,7 @@ export function listProjectTodos(projectId: Id): Promise<ITodo[]> {
   return GET(urls.todos(projectId))
 }
 
-export function createProjectTodo(
+export function createTodo(
   projectId: Id,
   name: string,
   details: string,
@@ -162,7 +162,7 @@ export function createProjectTodo(
   )
 }
 
-export function updateProjectTodo(
+export function updateTodo(
   id: Id,
   name: string,
   details: string,
@@ -182,6 +182,6 @@ export function updateProjectTodo(
   )
 }
 
-export function getProjectTodo(todoId: Id): Promise<ITodo> {
+export function readTodo(todoId: Id): Promise<ITodo> {
   return GET(urls.todo(todoId))
 }
