@@ -2,13 +2,11 @@ import {action, observable, computed, asReference} from 'mobx'
 import {toastExpirationMs} from 'web-client/config'
 import {BaseModel} from 'web-client/utils'
 
-export type Id = number
-
 class Modal extends BaseModel {
-  readonly id: Id
+  readonly id: number
   @observable readonly el: JSX.Element
 
-  constructor(id: Id, el: JSX.Element) {
+  constructor(id: number, el: JSX.Element) {
     super('Modal')
 
     this.id = id
@@ -20,11 +18,11 @@ export type ToastType = 'normal' | 'error'
 type ToastContent = JSX.Element | string
 
 export class Toast extends BaseModel {
-  readonly id: Id
+  readonly id: number
   readonly type: ToastType
   @observable readonly content: ToastContent
 
-  constructor(id: Id, type: ToastType, content: ToastContent) {
+  constructor(id: number, type: ToastType, content: ToastContent) {
     super('Toast')
 
     this.id = id
@@ -45,14 +43,14 @@ export default class ModalsStore {
     }
   }
 
-  @action openModal(el: JSX.Element): Id {
+  @action openModal(el: JSX.Element): number {
     const id = this.genId()
     this.modals.unshift(new Modal(id, el))
 
     return id
   }
 
-  @action updateModal(id: Id, el: JSX.Element): void {
+  @action updateModal(id: number, el: JSX.Element): void {
     const pos = this.findModalPos(id)
 
     if (pos > -1) {
@@ -62,7 +60,7 @@ export default class ModalsStore {
     }
   }
 
-  @action closeModal(id: Id): void {
+  @action closeModal(id: number): void {
     const pos = this.findModalPos(id)
     if (pos > -1) {
       this.modals.splice(pos, 1)
@@ -81,22 +79,22 @@ export default class ModalsStore {
   }
 
   @action
-  private hideToast(id: Id): void {
+  private hideToast(id: number): void {
     const pos = this.findToastPos(id)
     if (pos > -1) {
       this.toasts.splice(pos, 1)
     }
   }
 
-  private genId(): Id {
+  private genId(): number {
     return ModalsStore._counter += 1
   }
 
-  private findModalPos(id: Id): number {
+  private findModalPos(id: number): number {
     return this.modals.findIndex(modal => modal.id === id)
   }
 
-  private findToastPos(id: Id): number {
+  private findToastPos(id: number): number {
     return this.toasts.findIndex(toast => toast.id === id)
   }
 }

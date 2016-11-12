@@ -5,7 +5,7 @@ import * as React from 'react'
 import * as cx from 'classnames'
 
 import {InjectStore} from 'web-client/AppState'
-import ModalsStore, {Id} from './store'
+import ModalsStore from './store'
 
 interface IProps {
   className?: string,
@@ -27,7 +27,7 @@ function renderModal (props: ReactProps): JSX.Element {
 class Modal extends React.Component<IProps, {}> {
   @InjectStore store: ModalsStore
 
-  id: Id
+  id: number
 
   componentWillMount(): void {
     this.id = this.store.openModal(

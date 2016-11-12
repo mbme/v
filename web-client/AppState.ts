@@ -2,19 +2,21 @@
 
 import NotesStore from 'web-client/notes/store'
 import ModalsStore from 'web-client/modals/store'
+import RoutingStore from 'web-client/routingStore'
 
-export type AppState = Map<Function, any>
+type AppState = Map<Function, any>
 
 function newState(): AppState {
   const map: AppState = new Map()
 
   map.set(NotesStore, new NotesStore())
   map.set(ModalsStore, new ModalsStore())
+  map.set(RoutingStore, new RoutingStore())
 
   return map
 }
 
-const STATE = newState()
+export const STATE = newState()
 
 /**
  * Property decorator.
@@ -29,13 +31,9 @@ export function InjectStore(target: Object, key: string): void {
     )
   }
 
-  function getter(): AppState {
-    return STATE.get(typeInfo)
-  }
-
   // inject store getter
   Object.defineProperty(target, key, {
-    get: getter,
+    get: () => STATE.get(typeInfo),
     enumerable: true,
     configurable: true
   })

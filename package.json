@@ -11,6 +11,7 @@
     "@types/react-dom": "0.14",
     "@types/superagent": "2",
     "classnames": "2.2.5",
+    "director": "^1.2.8",
     "mobx": "2.6",
     "mobx-react": "3.5",
     "moment": "2.15",
