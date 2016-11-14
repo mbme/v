@@ -5,7 +5,7 @@ import {observer} from 'mobx-react'
 
 import DevTools from 'mobx-react-devtools'
 
-import {InjectStore} from 'web-client/AppState'
+import {InjectStore} from 'web-client/injector'
 import RoutingStore from 'web-client/routingStore'
 
 import ModalsContainer from 'web-client/modals/ModalsContainer'
@@ -19,7 +19,21 @@ class App extends React.Component<{}, {}> {
   @InjectStore routingStore: RoutingStore
 
   renderPage(): JSX.Element {
-    const { page } = this.routingStore
+    const { page, isLoading, error } = this.routingStore
+
+    if (isLoading) {
+      return (
+        <div>
+          Loading...
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div>Something is not good!</div>
+      )
+    }
 
     switch (page.name) {
       case 'notes':

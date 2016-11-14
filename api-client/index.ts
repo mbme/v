@@ -102,7 +102,7 @@ export function updateNote(id: Id, name: string, data: string): Promise<INote> {
 }
 
 export function deleteNote(id: Id): Promise<void> {
-  return DELETE(urls.note(id))
+  return DELETE<void>(urls.note(id))
 }
 
 export function readFile(recordId: Id, name: FileName): Promise<Buffer> {
@@ -117,7 +117,7 @@ export function uploadFile(recordId: Id, name: FileName, file: File | Buffer): P
 }
 
 export function deleteFile(recordId: Id, name: FileName): Promise<void> {
-  return DELETE(urls.file(recordId, name))
+  return DELETE<void>(urls.file(recordId, name))
 }
 
 export function listFiles(recordId: Id): Promise<IFileInfo[]> {

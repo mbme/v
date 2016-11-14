@@ -6,7 +6,7 @@ import * as cx from 'classnames'
 import * as config from 'web-client/config'
 import {IFileInfo, FileName} from 'api-client/types'
 
-import {InjectStore} from 'web-client/AppState'
+import {InjectStore} from 'web-client/injector'
 import NotesStore, {Note as NoteEntity} from './store'
 import ModalsStore from 'web-client/modals/store'
 

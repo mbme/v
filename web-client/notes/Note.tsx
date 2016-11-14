@@ -2,7 +2,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {InjectStore} from 'web-client/AppState'
+import {InjectStore} from 'web-client/injector'
 import NotesStore, {Note as NoteEntity} from './store'
 
 import LinkButton from 'web-client/common/LinkButton'
