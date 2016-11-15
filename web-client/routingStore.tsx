@@ -4,8 +4,11 @@ import {InjectStore} from 'web-client/injector'
 import ModalsStore from 'web-client/modals/store'
 import NotesStore from 'web-client/notes/store'
 
+export type IPageName = 'main' | 'notes' | 'not-found'
+
 interface IPage {
-  readonly name: string,
+  readonly name: IPageName,
+  readonly url: string,
   readonly [propName: string]: any, // tslint:disable-line:no-any
 }
 
@@ -23,13 +26,13 @@ export default class RoutingStore {
 
   showNotes(): void {
     this.showPage(
-      { name: 'notes' },
+      { name: 'notes', url: '/notes' },
       this.notesStore.loadRecordsList()
     )
   }
 
   showMainPage(): void {
-    this.showPage({ name: 'main' })
+    this.showPage({ name: 'main', url: '/' })
   }
 
   showNotFound(url: string): void {

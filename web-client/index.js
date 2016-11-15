@@ -43,26 +43,10 @@ Router({
 
 // update url based on the routingStore changes
 mobx.autorun(() => {
-  const { page } = routingStore
+  const { url } = routingStore.page
 
-  let path = ''
-
-  switch (page.name) {
-    case 'notes':
-      path = '/notes'
-      break
-
-    case 'main':
-      path = '/'
-      break
-
-    case 'not-found':
-      path = page.url
-      break
-  }
-
-  if (path !== window.location.pathname) {
-    window.history.pushState(null, null, path)
+  if (url !== window.location.pathname) {
+    window.history.pushState(null, null, url)
   }
 })
 

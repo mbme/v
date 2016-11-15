@@ -65,7 +65,9 @@ class App extends React.Component<{}, {}> {
 
     return (
       <div className="App">
-        {this.renderPage()}
+        <div className="PageContainer">
+          {this.renderPage()}
+        </div>
         <ModalsContainer />
         <ToastsContainer />
         {devTools}
