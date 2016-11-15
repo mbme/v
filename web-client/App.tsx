@@ -11,9 +11,9 @@ import RoutingStore from 'web-client/routingStore'
 import ModalsContainer from 'web-client/modals/ModalsContainer'
 import ToastsContainer from 'web-client/modals/ToastsContainer'
 
+import MainPage from 'web-client/main/Page'
+import PageNotFound from 'web-client/not-found/Page'
 import NotesPage from 'web-client/notes/Page'
-import PageNotFound from 'web-client/PageNotFound'
-import MainPage from 'web-client/MainPage'
 
 @observer
 class App extends React.Component<{}, {}> {

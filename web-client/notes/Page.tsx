@@ -6,11 +6,13 @@ import {InjectStore} from 'web-client/injector'
 
 import NotesStore from 'web-client/notes/store'
 
+import LinkButton from 'web-client/common/LinkButton'
+import Header from 'web-client/common/Header'
+
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
 import NotesList from './NotesList'
 import AddNoteModal from './AddNoteModal'
-import LinkButton from 'web-client/common/LinkButton'
 
 @observer
 class NotesPage extends React.Component<{}, {}> {
@@ -26,17 +28,18 @@ class NotesPage extends React.Component<{}, {}> {
     return (
       <div className="NotesPage">
         {this.modal}
+        <Header>
+          <LinkButton className="NotesPage-plus"
+                      onClick={this.onClickPlus} >
+            Add Note
+          </LinkButton>
+        </Header>
         <div className="NotesPage-left">
           <SearchBox />
           <NoteRecordsList />
         </div>
         <div className="NotesPage-center">
           <NotesList />
-
-          <LinkButton className="NotesPage-plus"
-                      onClick={this.onClickPlus} >
-            Add Note
-          </LinkButton>
         </div>
       </div>
     )

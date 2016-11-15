@@ -236,8 +236,53 @@ img {
   }
 }
 
+.Link {
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 
 /*       PAGES        */
+
+$header-h: 45px;
+
+.Header {
+  position: fixed;
+  top: 0;
+  z-index: 10;
+
+  width: 100%;
+  height: $header-h;
+
+  background-color: #fafafa;
+  border-bottom: $light-border;
+
+  text-align: center;
+
+  .Link {
+    color: #5c5c5c;
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    padding: 10px;
+
+    &.is-active {
+      border-bottom: 2px solid $color-primary;
+    }
+  }
+
+  &-right {
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    height: 100%;
+  }
+}
+
+.PageContainer {
+  margin-top: $header-h;
+}
 
 .NotesPage {
   $left-width: 350px;
@@ -247,7 +292,7 @@ img {
 
   &-left {
     position: fixed;
-    top: 0;
+    top: $header-h;
     left: 0;
 
     width: $left-width;
@@ -262,9 +307,8 @@ img {
   }
 
   &-plus {
-    position: fixed;
-    top: 0.5vr;
-    right: 1vr;
+    vertical-align: middle;
+    height: 100%;
   }
 
   $filter-height: 60px;

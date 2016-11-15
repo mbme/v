@@ -39,6 +39,20 @@ export default class RoutingStore {
     this.showPage({ name: 'not-found', url })
   }
 
+  openPage(name: IPageName): void {
+    switch (name) {
+      case 'main':
+        this.showMainPage()
+        break
+      case 'notes':
+        this.showNotes()
+        break
+      default:
+        this.showNotFound('404')
+        break
+    }
+  }
+
   @action
   private setIsLoading(isLoading: boolean): void {
     this.isLoading = false
