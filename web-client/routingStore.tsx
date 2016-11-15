@@ -18,7 +18,7 @@ export default class RoutingStore {
   @observable error: undefined | Error = undefined
 
   constructor() {
-    this.showNotFound('/')
+    this.showMainPage()
   }
 
   showNotes(): void {
@@ -26,6 +26,10 @@ export default class RoutingStore {
       { name: 'notes' },
       this.notesStore.loadRecordsList()
     )
+  }
+
+  showMainPage(): void {
+    this.showPage({ name: 'main' })
   }
 
   showNotFound(url: string): void {

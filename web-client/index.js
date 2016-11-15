@@ -34,6 +34,7 @@ require('web-client/injector').setState(STATE)
 // update state based on initial url
 const { Router } = require('director')
 Router({
+  '/': () => routingStore.showMainPage(),
   '/notes': () => routingStore.showNotes(),
 }).configure({
   notfound: () => routingStore.showNotFound(window.location.pathname),
@@ -49,6 +50,10 @@ mobx.autorun(() => {
   switch (page.name) {
     case 'notes':
       path = '/notes'
+      break
+
+    case 'main':
+      path = '/'
       break
 
     case 'not-found':

@@ -13,6 +13,7 @@ import ToastsContainer from 'web-client/modals/ToastsContainer'
 
 import NotesPage from 'web-client/notes/Page'
 import PageNotFound from 'web-client/PageNotFound'
+import MainPage from 'web-client/MainPage'
 
 @observer
 class App extends React.Component<{}, {}> {
@@ -36,6 +37,9 @@ class App extends React.Component<{}, {}> {
     }
 
     switch (page.name) {
+      case 'main':
+        return <MainPage />
+
       case 'notes':
         return <NotesPage />
 
