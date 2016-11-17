@@ -81,9 +81,6 @@ exports.baseConfig = {
     preLoaders: [
       LOADERS.tslint,
     ],
-    loaders: [
-      LOADERS.ts,
-    ],
   },
   plugins: [
     // do not load moment locales

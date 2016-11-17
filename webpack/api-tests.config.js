@@ -20,9 +20,10 @@ config.output = {
 
 config.target = 'node'
 
-config.module.loaders.push(
-  LOADERS.json
-)
+config.module.loaders = [
+  LOADERS.ts,
+  LOADERS.json,
+]
 
 config.plugins.push(
   new webpack.NoErrorsPlugin(),

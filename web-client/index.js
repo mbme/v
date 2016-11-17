@@ -51,13 +51,22 @@ mobx.autorun(() => {
 })
 
 
+const React = require('react')
+const ReactDOM = require('react-dom')
+
+const renderApp = function() {
+  const App = require('web-client/App').default
+
+  ReactDOM.render(
+    React.createElement(App),
+    document.getElementById('app')
+  )
+}
 
 // initial render
-require('web-client/App').renderApp()
+renderApp()
 
 // hot reloading
 if (__DEV__ && module.hot) {
-  module.hot.accept('./App', function () {
-    require('web-client/App').renderApp()
-  })
+  module.hot.accept('./App', renderApp)
 }

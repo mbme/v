@@ -16,16 +16,17 @@ const {
 
 const config = baseConfig
 
-config.entry = path.resolve(PATHS.webClient, 'index.js'),
+config.entry = path.resolve(PATHS.webClient, 'index.js')
 config.output = {
   filename: 'app.js',
   publicPath: '/',
   path: path.resolve(PATHS.build, 'app'),
 }
-config.module.loaders.push(
+config.module.loaders = [
+  LOADERS.ts,
   LOADERS.styles,
-  LOADERS.fonts
-)
+  LOADERS.fonts,
+]
 config.postcss = postcssConfig
 config.plugins.push(
   new HtmlWebpackPlugin({ template: 'web-client/index.html' })

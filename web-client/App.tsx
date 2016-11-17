@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
 
 import {observer} from 'mobx-react'
 
@@ -16,7 +15,7 @@ import PageNotFound from 'web-client/not-found/Page'
 import NotesPage from 'web-client/notes/Page'
 
 @observer
-class App extends React.Component<{}, {}> {
+export default class App extends React.Component<{}, {}> {
   @InjectStore routingStore: RoutingStore
 
   renderPage(): JSX.Element {
@@ -74,11 +73,4 @@ class App extends React.Component<{}, {}> {
       </div>
     )
   }
-}
-
-export function renderApp(): void {
-  ReactDOM.render(
-    <App />,
-    document.getElementById('app')
-  )
 }
