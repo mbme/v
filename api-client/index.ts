@@ -16,21 +16,15 @@ export class ServerError extends Error {
   readonly status: number
   readonly error: string
 
-  constructor(status: number, error: string) {
+  constructor(status: number = 0, error: string = '') {
     super()
 
     this.status = status
     this.error = error
   }
 
-  static new(err: any = {}): ServerError { // tslint:disable-line:no-any
-    const status = err.status || 0
-    const msg = err.response ? err.response.body.error : ''
-    return new ServerError(status, msg)
-  }
-
   toString(): string {
-    return this.error || this.status.toString()
+    return this.error || `status code ${this.status}`
   }
 }
 

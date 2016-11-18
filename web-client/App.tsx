@@ -19,21 +19,7 @@ export default class App extends React.Component<{}, {}> {
   @InjectStore routingStore: RoutingStore
 
   renderPage(): JSX.Element {
-    const { page, isLoading, error } = this.routingStore
-
-    if (isLoading) {
-      return (
-        <div>
-          Loading...
-        </div>
-      )
-    }
-
-    if (error) {
-      return (
-        <div>Something is not good!</div>
-      )
-    }
+    const { page } = this.routingStore
 
     switch (page.name) {
       case 'main':

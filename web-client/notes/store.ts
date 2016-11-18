@@ -1,5 +1,5 @@
 import {action, observable, computed} from 'mobx'
-import {fuzzySearch} from 'web-client/utils'
+import {fuzzySearch, ApiErrorHandler} from 'web-client/utils'
 import * as config from 'web-client/config'
 import {Id, Timestamp, FileName, IFileInfo} from 'api-client/types'
 import { IRecord, INote } from 'api-client/types'
@@ -75,9 +75,11 @@ export default class NotesStore {
   @observable recordsFilter: string = ''
   @observable openNotes: Note[] = []
 
+  constructor(private errorHandler: ApiErrorHandler) {}
+
   @action
-  async loadRecordsList(): Promise<void> {
-    const data = await api.listNotes()
+  async loadNotesList(): Promise<void> {
+    const data = await this.errorHandler(api.listNotes(), 'failed to load notes list')
     this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
   }
 
@@ -87,7 +89,7 @@ export default class NotesStore {
       return
     }
 
-    const data = await api.readNote(id)
+    const data = await this.errorHandler(api.readNote(id), `failed to read note ${id}`)
     this.addOpenNote(new Note(data))
   }
 
@@ -102,44 +104,60 @@ export default class NotesStore {
 
   @action
   async createNote(name: string): Promise<void> {
-    const data = await api.createNote(name)
+    const data = await this.errorHandler(api.createNote(name), 'failed to create note')
 
     this.addOpenNote(new Note(data, true))
-    this.loadRecordsList()
+    this.loadNotesList()
   }
 
   @action
   async updateNote(id: Id, name: string, data: string): Promise<void> {
-    const note = await api.updateNote(id, name, data)
-    this.loadRecordsList()
+    const note = await this.errorHandler(
+      api.updateNote(id, name, data),
+      `failed to update note ${id}`
+    )
 
     const oldNote = this.getOpenNote(id)
     if (oldNote) {
       this.replaceOpenNote(new Note(note, oldNote.editMode))
     }
+
+    this.loadNotesList()
   }
 
   @action
   async deleteNote(id: Id): Promise<void> {
-    await api.deleteNote(id)
+    await this.errorHandler(api.deleteNote(id), `failed to delete note ${id}`)
 
     this.closeNote(id)
-    this.loadRecordsList()
+    this.loadNotesList()
   }
 
   @action
   async uploadFile(recordId: Id, name: FileName, file: File): Promise<void> {
-    await api.uploadFile(recordId, name, file)
+    await this.errorHandler(
+      api.uploadFile(recordId, name, file),
+      `failed to upload file for record ${recordId}`
+    )
 
-    const files = await api.listFiles(recordId)
+    const files = await this.errorHandler(
+      api.listFiles(recordId),
+      `failed to list files of record ${recordId}`
+    )
     this.replaceNoteFiles(recordId, files)
   }
 
   @action
   async deleteFile(recordId: Id, file: IFileInfo): Promise<void> {
-    await api.deleteFile(recordId, file.name)
+    await this.errorHandler(
+      api.deleteFile(recordId, file.name),
+      `failed to delete file of record ${recordId}`
+    )
 
-    const files = await api.listFiles(recordId)
+    const files = await this.errorHandler(
+      api.listFiles(recordId),
+      `failed to list files of record ${recordId}`
+    )
     this.replaceNoteFiles(recordId, files)
   }
 

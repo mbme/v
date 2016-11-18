@@ -20,6 +20,10 @@ export default class NotesPage extends React.Component<{}, {}> {
 
   @observable showModal: boolean = false
 
+  componentWillMount(): void {
+    this.notesStore.loadNotesList()
+  }
+
   @action
   setShowModal(show: boolean): void {
     this.showModal = show

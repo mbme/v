@@ -23,11 +23,19 @@ const ProjectsStore = require('web-client/projects/store').default
 
 // init state
 const STATE = new Map()
-STATE.set(NotesStore, new NotesStore())
-STATE.set(ModalsStore, new ModalsStore())
+const modalsStore = new ModalsStore()
 const routingStore = new RoutingStore()
+const apiErrorHandler = function (promise, errorMsg) {
+  return promise.catch(e => {
+    modalsStore.showErrorToast(errorMsg, e)
+    throw e
+  })
+}
+
 STATE.set(RoutingStore, routingStore)
-STATE.set(ProjectsStore, new ProjectsStore())
+STATE.set(ModalsStore, modalsStore)
+STATE.set(NotesStore, new NotesStore(apiErrorHandler))
+STATE.set(ProjectsStore, new ProjectsStore(apiErrorHandler))
 
 // init store injector
 require('web-client/injector').setState(STATE)
