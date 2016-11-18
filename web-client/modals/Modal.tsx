@@ -1,5 +1,3 @@
-/* tslint:disable:no-null-keyword */
-
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'

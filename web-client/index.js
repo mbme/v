@@ -19,6 +19,7 @@ if (__DEV__) {
 const RoutingStore = require('web-client/routingStore').default
 const NotesStore = require('web-client/notes/store').default
 const ModalsStore = require('web-client/modals/store').default
+const ProjectsStore = require('web-client/projects/store').default
 
 // init state
 const STATE = new Map()
@@ -26,6 +27,7 @@ STATE.set(NotesStore, new NotesStore())
 STATE.set(ModalsStore, new ModalsStore())
 const routingStore = new RoutingStore()
 STATE.set(RoutingStore, routingStore)
+STATE.set(ProjectsStore, new ProjectsStore())
 
 // init store injector
 require('web-client/injector').setState(STATE)
