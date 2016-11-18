@@ -76,21 +76,19 @@ export default class NotesStore {
   @observable openNotes: Note[] = []
 
   @action
-  loadRecordsList(): Promise<void> {
-    return api.listNotes().then((data: IRecord[]) => {
-      this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
-    })
+  async loadRecordsList(): Promise<void> {
+    const data = await api.listNotes()
+    this.setRecordsList(data.map(dto => new NoteRecord(this, dto)))
   }
 
   @action
-  openNote(id: Id): Promise<void> {
+  async openNote(id: Id): Promise<void> {
     if (this.isOpen(id)) {
-      return Promise.resolve()
+      return
     }
 
-    return api.readNote(id).then((data: INote) => {
-      this.addOpenNote(new Note(data))
-    })
+    const data = await api.readNote(id)
+    this.addOpenNote(new Note(data))
   }
 
   @action
@@ -103,50 +101,46 @@ export default class NotesStore {
   }
 
   @action
-  createNote(name: string): Promise<void> {
-    return api.createNote(name).then((data: INote) => {
-      this.addOpenNote(new Note(data, true))
-      this.loadRecordsList()
-    })
+  async createNote(name: string): Promise<void> {
+    const data = await api.createNote(name)
+
+    this.addOpenNote(new Note(data, true))
+    this.loadRecordsList()
   }
 
   @action
-  updateNote(id: Id, name: string, data: string): Promise<void> {
-    return api.updateNote(id, name, data)
-      .then((note: INote) => {
-        this.loadRecordsList()
+  async updateNote(id: Id, name: string, data: string): Promise<void> {
+    const note = await api.updateNote(id, name, data)
+    this.loadRecordsList()
 
-        const oldNote = this.getOpenNote(id)
-        if (oldNote) {
-          this.replaceOpenNote(new Note(note, oldNote.editMode))
-        }
-      })
+    const oldNote = this.getOpenNote(id)
+    if (oldNote) {
+      this.replaceOpenNote(new Note(note, oldNote.editMode))
+    }
   }
 
   @action
-  deleteNote(id: Id): Promise<void> {
-    return api.deleteNote(id).then(() => {
-      this.closeNote(id)
-      this.loadRecordsList()
-    })
+  async deleteNote(id: Id): Promise<void> {
+    await api.deleteNote(id)
+
+    this.closeNote(id)
+    this.loadRecordsList()
   }
 
   @action
-  uploadFile(recordId: Id, name: FileName, file: File): Promise<void> {
-    return api.uploadFile(recordId, name, file)
-      .then(() => this.loadFiles(recordId))
-      .then((files: IFileInfo[]) => {
-        this.replaceNoteFiles(recordId, files)
-      })
+  async uploadFile(recordId: Id, name: FileName, file: File): Promise<void> {
+    await api.uploadFile(recordId, name, file)
+
+    const files = await api.listFiles(recordId)
+    this.replaceNoteFiles(recordId, files)
   }
 
   @action
-  deleteFile(recordId: Id, file: IFileInfo): Promise<void> {
-    return api.deleteFile(recordId, file.name)
-      .then(() => this.loadFiles(recordId))
-      .then((files: IFileInfo[]) => {
-        this.replaceNoteFiles(recordId, files)
-      })
+  async deleteFile(recordId: Id, file: IFileInfo): Promise<void> {
+    await api.deleteFile(recordId, file.name)
+
+    const files = await api.listFiles(recordId)
+    this.replaceNoteFiles(recordId, files)
   }
 
   @action
@@ -156,10 +150,6 @@ export default class NotesStore {
 
   isOpen(id: Id): boolean {
     return this.indexOfNote(id) > -1
-  }
-
-  private loadFiles(noteId: Id): Promise<IFileInfo[]> {
-    return api.listFiles(noteId)
   }
 
   @action

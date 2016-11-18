@@ -21,10 +21,9 @@ export default class ProjectsStore {
   @observable projects: ProjectRecord[] = []
 
   @action
-  loadProjectsList(): Promise<void> {
-    return api.listProjects().then((data: IRecord[]) => {
-      this.setProjectsList(data.map(dto => new ProjectRecord(dto)))
-    })
+  async loadProjectsList(): Promise<void> {
+    const data = await api.listProjects()
+    this.setProjectsList(data.map(dto => new ProjectRecord(dto)))
   }
 
   @action
