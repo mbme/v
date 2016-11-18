@@ -5,13 +5,18 @@ import Modal, { ModalTitle, ModalBody, ModalFooter } from 'web-client/modals/Mod
 import LinkButton from 'web-client/common/LinkButton'
 
 interface IProps {
+  show: boolean,
   onCancel: () => void,
   onCreate: (name: string) => void,
 }
 
 @observer
-class AddNoteModal extends React.Component<IProps, {}> {
-  render (): JSX.Element {
+export default class AddNoteModal extends React.Component<IProps, {}> {
+  render (): JSX.Element | null {
+    if (!this.props.show) {
+      return null
+    }
+
     return (
       <Modal className="AddNoteModal">
         <ModalTitle>Create new note</ModalTitle>
@@ -37,5 +42,3 @@ class AddNoteModal extends React.Component<IProps, {}> {
     this.props.onCreate(name)
   }
 }
-
-export default AddNoteModal

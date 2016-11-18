@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {observable, action, asReference} from 'mobx'
+import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 
 import {InjectStore} from 'web-client/injector'
@@ -15,19 +15,23 @@ import NotesList from './NotesList'
 import AddNoteModal from './AddNoteModal'
 
 @observer
-class NotesPage extends React.Component<{}, {}> {
+export default class NotesPage extends React.Component<{}, {}> {
   @InjectStore notesStore: NotesStore
 
-  @observable modal: JSX.Element | undefined = asReference(undefined)
+  @observable showModal: boolean = false
 
-  @action showModal(modal?: JSX.Element): void {
-    this.modal = modal
+  @action
+  setShowModal(show: boolean): void {
+    this.showModal = show
   }
 
   render (): JSX.Element {
     return (
       <div className="NotesPage">
-        {this.modal}
+        <AddNoteModal
+            show={this.showModal}
+            onCreate={this.onCreateNote}
+            onCancel={this.onModalCancel} />
         <Header>
           <LinkButton className="NotesPage-plus"
                       onClick={this.onClickPlus} >
@@ -46,19 +50,14 @@ class NotesPage extends React.Component<{}, {}> {
   }
 
   onClickPlus = () => {
-    this.showModal(
-      <AddNoteModal onCreate={this.onCreateNote}
-                    onCancel={this.onModalCancel} />
-    )
+    this.setShowModal(true)
   }
 
   onModalCancel = () => {
-    this.showModal()
+    this.setShowModal(false)
   }
 
   onCreateNote = (name: string) => {
-    this.notesStore.createNote(name).then(() => this.showModal())
+    this.notesStore.createNote(name).then(() => this.setShowModal(false))
   }
 }
-
-export default NotesPage
