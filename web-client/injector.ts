@@ -1,35 +1,33 @@
 /* tslint:disable:no-any object-literal-key-quotes */
+import Store from 'web-client/store'
 
-type AppState = Map<Function, any>
 
-let STATE: AppState | undefined
+let STORE: Store | undefined
 
-export function setState(newState: AppState): void {
-  STATE = newState
+export function setStore(store: Store): void {
+  STORE = store
 }
 
 /**
  * Property decorator.
  */
-export function InjectStore(target: Object, key: string): void {
-  const typeInfo = Reflect.getMetadata('design:type', target, key)
-
+export function Inject(target: Object, key: string): void {
   const componentName = target.constructor.name
 
   if ((target as any)[key]) {
     throw new Error(
-      `InjectStore: ${componentName}[${key}] must be empty to inject a store`
+      `Inject: ${componentName}[${key}] must be empty to inject a store`
     )
   }
 
   // inject store getter
   Object.defineProperty(target, key, {
     get: () => {
-      if (STATE) {
-        return STATE.get(typeInfo)
+      if (STORE) {
+        return STORE
       } else {
         throw new Error(
-          `InjectStore: failed to set${componentName}[${key}]: no STATE yet`
+          `Inject: failed to set${componentName}[${key}]: no STORE yet`
         )
       }
     },

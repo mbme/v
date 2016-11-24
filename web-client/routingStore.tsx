@@ -1,5 +1,4 @@
 import {action, observable} from 'mobx'
-import {InjectStore} from 'web-client/injector'
 
 import ModalsStore from 'web-client/modals/store'
 import NotesStore from 'web-client/notes/store'

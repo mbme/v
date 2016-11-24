@@ -1,5 +1,3 @@
-require('reflect-metadata')
-
 // STYLES
 require('normalize.css')
 require('web-client/styles.css')
@@ -16,44 +14,26 @@ if (__DEV__) {
   document.title += ' -> DEV'
 }
 
-const RoutingStore = require('web-client/routingStore').default
-const NotesStore = require('web-client/notes/store').default
-const ModalsStore = require('web-client/modals/store').default
-const ProjectsStore = require('web-client/projects/store').default
-
-// init state
-const STATE = new Map()
-const modalsStore = new ModalsStore()
-const routingStore = new RoutingStore()
-const apiErrorHandler = function (promise, errorMsg) {
-  return promise.catch(e => {
-    modalsStore.showErrorToast(errorMsg, e)
-    throw e
-  })
-}
-
-STATE.set(RoutingStore, routingStore)
-STATE.set(ModalsStore, modalsStore)
-STATE.set(NotesStore, new NotesStore(apiErrorHandler))
-STATE.set(ProjectsStore, new ProjectsStore(apiErrorHandler))
+const Store = require('web-client/store').default
+const store = new Store()
 
 // init store injector
-require('web-client/injector').setState(STATE)
+require('web-client/injector').setStore(store)
 
 
 // update state based on initial url
 const { Router } = require('director')
 Router({
-  '/': () => routingStore.showMainPage(),
-  '/notes': () => routingStore.showNotes(),
+  '/': () => store.showMainPage(),
+  '/notes': () => store.showNotes(),
 }).configure({
-  notfound: () => routingStore.showNotFound(window.location.pathname),
+  notfound: () => store.showNotFound(window.location.pathname),
   html5history: true,
 }).init()
 
 // update url based on the routingStore changes
 mobx.autorun(() => {
-  const { url } = routingStore.page
+  const { url } = store.page
 
   if (url !== window.location.pathname) {
     window.history.pushState(null, null, url)

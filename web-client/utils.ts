@@ -62,5 +62,3 @@ export class BaseModel {
     this.s = Symbol(name)
   }
 }
-
-export type ApiErrorHandler = <T>(promise: Promise<T>, errorMsg: string) => Promise<T>

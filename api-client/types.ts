@@ -1,12 +1,9 @@
 export type Id = number
 export type Timestamp = number
 
-export type FileName = string
-export type FileSize = number
-
 export interface IFileInfo {
-  readonly name: FileName,
-  readonly size: FileSize,
+  readonly name: string,
+  readonly size: number,
   readonly create_ts: Timestamp,
 }
 
