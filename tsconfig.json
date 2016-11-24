@@ -24,6 +24,9 @@
     ],
     "baseUrl": "."
   },
+  "include": [
+    "simple-client/**/*"
+  ],
   "exclude": [
     "node_modules"
   ]

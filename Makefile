@@ -22,6 +22,9 @@ web-client-prod:
 web-client-dev-run:
 	npm run web-client-dev-run
 
+simple-client-dev-run:
+	npm run simple-client-dev-run
+
 lint:
 	npm run tslint
 	npm run eslint

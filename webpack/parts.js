@@ -26,6 +26,7 @@ const root = path.resolve(__dirname, '..')
 const PATHS = {
   root: root,
   webClient: path.resolve(root, './web-client'),
+  simpleClient: path.resolve(root, './simple-client'),
   apiClient: path.resolve(root, './api-client'),
   apiTests: path.resolve(root, './api-tests'),
   build: path.resolve(root, './web-build'),
