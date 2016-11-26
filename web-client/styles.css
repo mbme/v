@@ -1,17 +1,14 @@
-$base-bg-color: #fff;
-$base-font-color: #333;
+$color1: #263238;
+$color2: #BAE5D9;
+
+$base-bg-color: $color1;
+$base-font-color: $color2;
 $base-font-size: 16px;
 $base-line-height: 1.4;
 
-$light-border: 1px solid #E6E0E6;
+$link-color: $color2;
 
-$color-primary: #4078c0;
-$color-secondary: #bdbdbd;
-$color-dangerous: #dd2c00;
-$color-error: #dd2c00;
-$color-progress: #388e3c;
-
-$link-color: $color-primary;
+$border: 2px solid $color2;
 
 $font-monospace: Menlo, Monaco, "Courier New", monospace;
 $font-common: Open Sans, Helvetica, Arial, sans-serif;
@@ -25,15 +22,10 @@ $font-common: Open Sans, Helvetica, Arial, sans-serif;
 
 @define-mixin like-secondary {
   font-weight: 400;
-  color: rgba(0,0,0,.44);
-}
-
-@define-mixin paper-shadow {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 @define-mixin lite-shadow {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 4px $color2;
 }
 
 @define-mixin like-pre {
@@ -72,7 +64,7 @@ ul {
 }
 
 input[type=text], textarea {
-  border: $light-border;
+  border: $border;
   padding: 5px 10px;
 }
 
@@ -97,3 +89,12 @@ img {
 
 
 /*       COMMON        */
+
+.List {
+  display: inline-block;
+  padding: 1vr;
+  margin: 1vr;
+
+  border: 2px solid $color2;
+  box-shadow: 0 0 10px $color2;
+}

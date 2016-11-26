@@ -1,11 +1,13 @@
 import * as React from 'react'
 
+import {autorun} from 'mobx'
 import {observer} from 'mobx-react'
-
 import DevTools from 'mobx-react-devtools'
 
-import { Store, NoteRecord } from 'web-client/store'
+import { Store } from 'web-client/store'
 import UIStore from 'web-client/ui-store'
+
+import { List } from 'web-client/components'
 
 interface IProps {
   store: UIStore,
@@ -28,19 +30,10 @@ class App extends React.Component<IProps, {}> {
     return (
       <div className="App">
         <div className="AppContainer">
-          {this.props.store.pieces}
+          {this.props.store.pieces.values()}
         </div>
         {devTools}
       </div>
-    )
-  }
-}
-
-@observer
-class TestComponent extends React.Component<{ records: NoteRecord[] }, {}> {
-  render (): JSX.Element {
-    return (
-      <h1>TEST {this.props.records.length}</h1>
     )
   }
 }
@@ -49,9 +42,13 @@ export function createApp(store: Store): JSX.Element {
   const uiStore = new UIStore()
 
   store.loadNoteRecords()
-  uiStore.addPiece(
-    <TestComponent records={store.noteRecords} />
-  )
+
+  autorun(() => {
+    uiStore.addPiece(
+      'noteRecords',
+      <List items={store.noteRecords.map(item => `${item.id} ${item.name}`)} />
+    )
+  })
 
   return (
     <App store={uiStore} />

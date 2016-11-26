@@ -1,11 +1,11 @@
-import {action, observable} from 'mobx'
+import {action, observable, asMap, ObservableMap} from 'mobx'
 import 'react'
 
 export default class UIStore {
-  @observable pieces: JSX.Element[] = []
+  @observable pieces: ObservableMap<JSX.Element> = asMap<JSX.Element>({})
 
   @action
-  addPiece(el: JSX.Element): void {
-    this.pieces.push(el)
+  addPiece(key: string, el: JSX.Element): void {
+    this.pieces.set(key, el)
   }
 }
