@@ -4,38 +4,15 @@ import {observer} from 'mobx-react'
 
 import DevTools from 'mobx-react-devtools'
 
-import {InjectStore} from 'web-client/injector'
-import RoutingStore from 'web-client/routingStore'
+import { Store, NoteRecord } from 'web-client/store'
+import UIStore from 'web-client/ui-store'
 
-import ModalsContainer from 'web-client/modals/ModalsContainer'
-import ToastsContainer from 'web-client/modals/ToastsContainer'
-
-import MainPage from 'web-client/main/Page'
-import PageNotFound from 'web-client/not-found/Page'
-import NotesPage from 'web-client/notes/Page'
+interface IProps {
+  store: UIStore,
+}
 
 @observer
-export default class App extends React.Component<{}, {}> {
-  @InjectStore routingStore: RoutingStore
-
-  renderPage(): JSX.Element {
-    const { page } = this.routingStore
-
-    switch (page.name) {
-      case 'main':
-        return <MainPage />
-
-      case 'notes':
-        return <NotesPage />
-
-      case 'not-found':
-        return <PageNotFound />
-
-      default:
-        throw new Error(`unexpected page ${page.name}`)
-    }
-  }
-
+class App extends React.Component<IProps, {}> {
   render (): JSX.Element {
     let devTools: JSX.Element | undefined
 
@@ -50,13 +27,33 @@ export default class App extends React.Component<{}, {}> {
 
     return (
       <div className="App">
-        <div className="PageContainer">
-          {this.renderPage()}
+        <div className="AppContainer">
+          {this.props.store.pieces}
         </div>
-        <ModalsContainer />
-        <ToastsContainer />
         {devTools}
       </div>
     )
   }
+}
+
+@observer
+class TestComponent extends React.Component<{ records: NoteRecord[] }, {}> {
+  render (): JSX.Element {
+    return (
+      <h1>TEST {this.props.records.length}</h1>
+    )
+  }
+}
+
+export function createApp(store: Store): JSX.Element {
+  const uiStore = new UIStore()
+
+  store.loadNoteRecords()
+  uiStore.addPiece(
+    <TestComponent records={store.noteRecords} />
+  )
+
+  return (
+    <App store={uiStore} />
+  )
 }

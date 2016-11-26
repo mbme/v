@@ -2,55 +2,20 @@
 require('normalize.css')
 require('web-client/styles.css')
 
-const mobx = require('mobx')
-mobx.useStrict(true) // do not allow to modify state out of actions
+require('mobx').useStrict(true) // do not allow to modify state out of actions
 
 // prevent default drag-n-drop behavior in Chrome
 // (it just opens the file in the current tab)
 document.addEventListener('dragover', e => e.preventDefault())
 document.addEventListener('drop', e => e.preventDefault())
 
-if (__DEV__) {
-  document.title += ' -> DEV'
-}
-
-const Store = require('web-client/store').default
+const { Store } = require('web-client/store')
 const store = new Store()
 
-// init store injector
-require('web-client/injector').setStore(store)
-
-
-// update state based on initial url
-const { Router } = require('director')
-Router({
-  '/': () => store.showMainPage(),
-  '/notes': () => store.showNotes(),
-}).configure({
-  notfound: () => store.showNotFound(window.location.pathname),
-  html5history: true,
-}).init()
-
-// update url based on the routingStore changes
-mobx.autorun(() => {
-  const { url } = store.page
-
-  if (url !== window.location.pathname) {
-    window.history.pushState(null, null, url)
-  }
-})
-
-
-const React = require('react')
-const ReactDOM = require('react-dom')
-
 const renderApp = function() {
-  const App = require('web-client/App').default
+  const { createApp } = require('web-client/App')
 
-  ReactDOM.render(
-    React.createElement(App),
-    document.getElementById('app')
-  )
+  require('react-dom').render(createApp(store), document.getElementById('app'))
 }
 
 // initial render

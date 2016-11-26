@@ -8,7 +8,6 @@ import {
   ITodo,
   TodoState,
   Id,
-  FileName,
   Timestamp,
 } from 'api-client/types'
 
@@ -99,18 +98,18 @@ export function deleteNote(id: Id): Promise<void> {
   return DELETE<void>(urls.note(id))
 }
 
-export function readFile(recordId: Id, name: FileName): Promise<Buffer> {
+export function readFile(recordId: Id, name: string): Promise<Buffer> {
   return GET(urls.file(recordId, name))
 }
 
-export function uploadFile(recordId: Id, name: FileName, file: File | Buffer): Promise<IFileInfo> {
+export function uploadFile(recordId: Id, name: string, file: File | Buffer): Promise<IFileInfo> {
   return POST(
     urls.files(recordId),
     (req) => req.field('name', name).attach('data', file as any) // tslint:disable-line:no-any
   )
 }
 
-export function deleteFile(recordId: Id, name: FileName): Promise<void> {
+export function deleteFile(recordId: Id, name: string): Promise<void> {
   return DELETE<void>(urls.file(recordId, name))
 }
 

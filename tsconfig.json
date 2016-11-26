@@ -19,8 +19,7 @@
       "node_modules/@types"
     ],
     "types": [
-      "mocha",
-      "reflect-metadata"
+      "mocha"
     ],
     "baseUrl": "."
   },
