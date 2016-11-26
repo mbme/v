@@ -16,7 +16,7 @@ const {
 
 const config = baseConfig
 
-config.entry = path.resolve(PATHS.simpleClient, 'index.ts')
+config.entry = path.resolve(PATHS.simpleClient, 'index.js')
 config.output = {
   filename: 'app.js',
   publicPath: '/',
@@ -24,7 +24,7 @@ config.output = {
 }
 config.module.loaders = [
   {
-    test: /\.ts$/,
+    test: /\.tsx?$/,
     loader: 'ts-loader',
   },
   LOADERS.styles,
