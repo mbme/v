@@ -7,7 +7,6 @@ import {
 import * as api from 'api-client'
 
 import {
-  Id,
   Timestamp,
   IRecord,
   INote,
@@ -15,7 +14,7 @@ import {
 } from 'api-client/types'
 
 export class ProjectRecord {
-  readonly id: Id
+  readonly id: number
   readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
@@ -29,7 +28,7 @@ export class ProjectRecord {
 }
 
 export class NoteRecord {
-  readonly id: Id
+  readonly id: number
   readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
@@ -43,7 +42,7 @@ export class NoteRecord {
 }
 
 export class Note {
-  readonly id: Id
+  readonly id: number
   readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
@@ -78,7 +77,7 @@ export class Store {
   }
 
   @action
-  async openNote(id: Id): Promise<void> {
+  async openNote(id: number): Promise<void> {
     if (this.indexOfNote(id) > -1) { // already open
       return
     }
@@ -88,7 +87,7 @@ export class Store {
   }
 
   @action
-  closeNote(id: Id): void {
+  closeNote(id: number): void {
     const pos = this.indexOfNote(id)
 
     if (pos > -1) {
@@ -105,7 +104,7 @@ export class Store {
   }
 
   @action
-  async updateNote(id: Id, name: string, data: string): Promise<void> {
+  async updateNote(id: number, name: string, data: string): Promise<void> {
     const note = await this.errorHandler(
       api.updateNote(id, name, data),
       `failed to update note ${id}`
@@ -120,7 +119,7 @@ export class Store {
   }
 
   @action
-  async deleteNote(id: Id): Promise<void> {
+  async deleteNote(id: number): Promise<void> {
     await this.errorHandler(api.deleteNote(id), `failed to delete note ${id}`)
 
     this.closeNote(id)
@@ -128,7 +127,7 @@ export class Store {
   }
 
   @action
-  async uploadFile(recordId: Id, name: string, file: File): Promise<void> {
+  async uploadFile(recordId: number, name: string, file: File): Promise<void> {
     await this.errorHandler(
       api.uploadFile(recordId, name, file),
       `failed to upload file for record ${recordId}`
@@ -142,7 +141,7 @@ export class Store {
   }
 
   @action
-  async deleteFile(recordId: Id, file: IFileInfo): Promise<void> {
+  async deleteFile(recordId: number, file: IFileInfo): Promise<void> {
     await this.errorHandler(
       api.deleteFile(recordId, file.name),
       `failed to delete file of record ${recordId}`
@@ -160,12 +159,13 @@ export class Store {
     this.noteRecords.splice(0, this.noteRecords.length, ...records)
   }
 
+  @action
   private addOpenNote(note: Note): void {
     this.openNotes.push(note)
   }
 
   @action
-  private replaceNoteFiles(id: Id, files: IFileInfo[]): void {
+  private replaceNoteFiles(id: number, files: IFileInfo[]): void {
     const pos = this.indexOfNote(id)
     if (pos === -1) {
       return
@@ -184,7 +184,7 @@ export class Store {
     }
   }
 
-  private indexOfNote(id: Id): number {
+  private indexOfNote(id: number): number {
     return this.openNotes.findIndex(note => note.id === id)
   }
 

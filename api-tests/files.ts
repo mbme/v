@@ -10,7 +10,7 @@ import * as types from 'api-client/types'
 
 const fileBuffer = readBinaryFile('./api-tests/data/city-view.jpg')
 
-function postStandardFile(recordId: types.Id, name: string): Promise<types.IFileInfo> {
+function postStandardFile(recordId: number, name: string): Promise<types.IFileInfo> {
   return api.uploadFile(recordId, name, fileBuffer)
 }
 

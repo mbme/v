@@ -13,7 +13,7 @@ function createRandomProject(): Promise<types.IProject> {
   return api.createProject(name, description)
 }
 
-async function createRandomTodo(projectId?: types.Id): Promise<types.ITodo> {
+async function createRandomTodo(projectId?: number): Promise<types.ITodo> {
   if (!projectId) {
     const { id } = await createRandomProject()
     projectId = id
