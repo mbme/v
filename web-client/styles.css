@@ -130,3 +130,8 @@ img {
     }
   }
 }
+
+.Note {
+  @mixin container;
+  display: inline-block;
+}

@@ -9,6 +9,7 @@ import UIStore from 'web-client/ui-store'
 import {
   MainMenu,
   NotesList,
+  Note,
 } from 'web-client/containers'
 
 interface IProps {
@@ -47,7 +48,7 @@ export function createApp(store: Store): JSX.Element {
     store.openNote(id)
     uiStore.addPiece(
       `note-${id}`,
-      <div>HERE! {id}</div>
+      <Note id={id} openNotes={store.openNotes} />
     )
   }
 
