@@ -119,3 +119,14 @@ img {
     cursor: pointer;
   }
 }
+
+.NotesList {
+  li {
+    padding: 1vr;
+    cursor: pointer;
+
+    &:hover {
+      font-weight: bold;
+    }
+  }
+}

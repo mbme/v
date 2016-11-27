@@ -43,10 +43,18 @@ class App extends React.Component<IProps, {}> {
 export function createApp(store: Store): JSX.Element {
   const uiStore = new UIStore()
 
+  function showNote(id: number): void {
+    store.openNote(id)
+    uiStore.addPiece(
+      `note-${id}`,
+      <div>HERE! {id}</div>
+    )
+  }
+
   function showNotes(): void {
     uiStore.addPiece(
       'noteRecords',
-      <NotesList store={store} />
+      <NotesList store={store} onClick={showNote} />
     )
   }
 

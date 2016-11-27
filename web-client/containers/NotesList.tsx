@@ -5,6 +5,7 @@ import { List } from 'web-client/components'
 
 interface IProps {
   store: Store,
+  onClick: (id: number) => void,
 }
 
 @observer
@@ -15,11 +16,15 @@ export class NotesList extends React.Component<IProps, {}> {
 
   render(): JSX.Element {
     const items = this.props.store.noteRecords.map(
-      ({ id, name }) => ({ key: id.toString(), el: name})
+      ({ id, name }) => ({
+        key: id.toString(),
+        el: name,
+        onClick: () => this.props.onClick(id)
+      })
     )
 
     return (
-      <List items={items} />
+      <List className="NotesList" items={items} />
     )
   }
 }
