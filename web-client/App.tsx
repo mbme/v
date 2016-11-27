@@ -1,13 +1,15 @@
 import * as React from 'react'
 
-import {autorun} from 'mobx'
 import {observer} from 'mobx-react'
 import DevTools from 'mobx-react-devtools'
 
 import { Store } from 'web-client/store'
 import UIStore from 'web-client/ui-store'
 
-import { List } from 'web-client/components'
+import {
+  MainMenu,
+  NotesList,
+} from 'web-client/containers'
 
 interface IProps {
   store: UIStore,
@@ -41,14 +43,29 @@ class App extends React.Component<IProps, {}> {
 export function createApp(store: Store): JSX.Element {
   const uiStore = new UIStore()
 
-  store.loadNoteRecords()
-
-  autorun(() => {
+  function showNotes(): void {
     uiStore.addPiece(
       'noteRecords',
-      <List items={store.noteRecords.map(item => `${item.id} ${item.name}`)} />
+      <NotesList store={store} />
     )
-  })
+  }
+
+  const menuItems = [
+    {
+      key: 'notes',
+      el: 'Notes',
+      onClick: showNotes,
+    }, {
+      key: 'projects',
+      el: 'Projects',
+    }
+  ]
+
+  // ALWAYS VISIBLE ITEMS
+  uiStore.addPiece(
+    'mainMenu',
+    <MainMenu items={menuItems} />
+  )
 
   return (
     <App store={uiStore} />

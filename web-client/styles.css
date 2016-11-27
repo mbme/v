@@ -1,5 +1,13 @@
+
+/* COMMON VARIABLES */
+
 $color1: #263238;
 $color2: #BAE5D9;
+
+$font-common: Open Sans, Helvetica, Arial, sans-serif;
+$font-monospace: Menlo, Monaco, "Courier New", monospace;
+
+/* APP VARIABLES */
 
 $base-bg-color: $color1;
 $base-font-color: $color2;
@@ -8,10 +16,7 @@ $base-line-height: 1.4;
 
 $link-color: $color2;
 
-$border: 2px solid $color2;
-
-$font-monospace: Menlo, Monaco, "Courier New", monospace;
-$font-common: Open Sans, Helvetica, Arial, sans-serif;
+$font-main: $font-monospace;
 
 /*       MIXINS        */
 
@@ -29,13 +34,21 @@ $font-common: Open Sans, Helvetica, Arial, sans-serif;
 }
 
 @define-mixin like-pre {
-  font-family: $font-common;
+  font-family: $font-main;
 
   white-space: pre;
   white-space: pre-wrap;
 
   word-break: break-all;
   word-wrap: break-word;
+}
+
+@define-mixin container {
+  border: 2px solid $color2;
+  box-shadow: 0 0 10px $color2;
+
+  padding: 1vr;
+  margin: 1vr;
 }
 
 /*       BASIC STYLES        */
@@ -48,7 +61,7 @@ html {
   background: $base-bg-color;
   color: $base-font-color;
   /* for postcss-vertical-rhythm */
-  font: $base-font-size/$base-line-height $font-common;
+  font: $base-font-size/$base-line-height $font-main;
   overflow-y: scroll;
 }
 
@@ -64,7 +77,7 @@ ul {
 }
 
 input[type=text], textarea {
-  border: $border;
+  @mixin container;
   padding: 5px 10px;
 }
 
@@ -91,10 +104,18 @@ img {
 /*       COMMON        */
 
 .List {
-  display: inline-block;
-  padding: 1vr;
-  margin: 1vr;
+  @mixin container;
 
-  border: 2px solid $color2;
-  box-shadow: 0 0 10px $color2;
+  display: inline-block;
+}
+
+.MainMenu {
+  text-align: center;
+  display: block;
+
+  li {
+    display: inline-block;
+    padding: 0 1vr;
+    cursor: pointer;
+  }
 }
