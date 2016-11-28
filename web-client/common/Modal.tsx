@@ -2,8 +2,8 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {InjectStore} from 'web-client/injector'
-import ModalsStore from './store'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
 
 interface IProps {
   className?: string,
@@ -13,34 +13,34 @@ type ReactProps = IProps & {
   children?: {} | undefined
 }
 
-function renderModal (props: ReactProps): JSX.Element {
-  return (
-    <div className={cx('Modal', props.className)} >
-      {props.children}
-    </div>
-  )
-}
-
 @observer
-class Modal extends React.Component<IProps, {}> {
-  @InjectStore store: ModalsStore
+export class Modal extends React.Component<IProps, {}> {
+  @Inject store: Store
 
   id: number
 
   componentWillMount(): void {
     this.id = this.store.openModal(
-      renderModal(this.props)
+      this.renderModal(this.props)
     )
   }
 
   componentWillUpdate(nextProps: ReactProps): void {
     this.store.updateModal(
-      this.id, renderModal(nextProps)
+      this.id, this.renderModal(nextProps)
     )
   }
 
   componentWillUnmount(): void {
     this.store.closeModal(this.id)
+  }
+
+  renderModal(props: ReactProps): JSX.Element {
+    return (
+      <div className={cx('Modal', props.className)} >
+        {props.children}
+      </div>
+    )
   }
 
   render (): null {
@@ -81,5 +81,3 @@ export class ModalFooter extends React.Component<IModalProps, {}> {
     )
   }
 }
-
-export default Modal

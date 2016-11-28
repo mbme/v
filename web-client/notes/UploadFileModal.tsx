@@ -2,16 +2,15 @@ import * as React from 'react'
 import {action, observable} from 'mobx'
 import {observer} from 'mobx-react'
 
-import Modal, { ModalTitle, ModalBody, ModalFooter } from 'web-client/modals/Modal'
+import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
 import LinkButton from 'web-client/common/LinkButton'
 import {formatBytes} from 'web-client/utils'
-import {FileName} from 'api-client/types'
 
 interface IProps {
   file: File,
   noteName: string,
   onCancel: () => void,
-  onUpload: (name: FileName, file: File) => Promise<void>,
+  onUpload: (name: string, file: File) => Promise<void>,
 }
 
 class StateEdit {

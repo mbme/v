@@ -22,25 +22,6 @@ require('web-client/injector').setStore(store)
 
 
 // update state based on initial url
-const { Router } = require('director')
-Router({
-  '/': () => store.showMainPage(),
-  '/notes': () => store.showNotes(),
-}).configure({
-  notfound: () => store.showNotFound(window.location.pathname),
-  html5history: true,
-}).init()
-
-// update url based on the routingStore changes
-mobx.autorun(() => {
-  const { url } = store.page
-
-  if (url !== window.location.pathname) {
-    window.history.pushState(null, null, url)
-  }
-})
-
-
 const React = require('react')
 const ReactDOM = require('react-dom')
 

@@ -3,7 +3,7 @@ import {observer} from 'mobx-react'
 
 import {IFileInfo} from 'api-client/types'
 
-import Modal, { ModalTitle, ModalBody, ModalFooter } from 'web-client/modals/Modal'
+import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
 import LinkButton from 'web-client/common/LinkButton'
 
 interface IProps {

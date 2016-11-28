@@ -1,14 +1,14 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {InjectStore} from 'web-client/injector'
-import NotesStore from './store'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
 
 import RecordsFilter from './RecordsFilter'
 
 @observer
 class SearchBox extends React.Component<{}, {}> {
-  @InjectStore store: NotesStore
+  @Inject store: Store
 
   render (): JSX.Element {
     return (

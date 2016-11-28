@@ -236,13 +236,6 @@ img {
   }
 }
 
-.Link {
-  &:hover {
-    text-decoration: none;
-  }
-}
-
-
 /*       PAGES        */
 
 $header-h: 45px;
@@ -280,11 +273,11 @@ $header-h: 45px;
   }
 }
 
-.PageContainer {
+.ViewContainer {
   margin-top: $header-h;
 }
 
-.NotesPage {
+.NotesView {
   $left-width: 350px;
   $border: $light-border;
 

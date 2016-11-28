@@ -1,4 +1,3 @@
-export type Id = number
 export type Timestamp = number
 
 export interface IFileInfo {
@@ -8,14 +7,14 @@ export interface IFileInfo {
 }
 
 export interface IRecord {
-  readonly id: Id,
+  readonly id: number,
   readonly name: string,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
 }
 
 export interface INote {
-  readonly id: Id,
+  readonly id: number,
   readonly name: string,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
@@ -24,7 +23,7 @@ export interface INote {
 }
 
 export interface IProject {
-  readonly id: Id,
+  readonly id: number,
   readonly name: string,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
@@ -35,11 +34,11 @@ export interface IProject {
 export type TodoState = 'inbox' | 'todo' | 'in-progress' | 'blocked' | 'done' | 'canceled'
 
 export interface ITodo {
-  readonly id: Id,
+  readonly id: number,
   readonly name: string,
   readonly create_ts: Timestamp,
   readonly update_ts: Timestamp,
-  readonly project_id: Id,
+  readonly project_id: number,
   readonly details: string,
   readonly state: TodoState,
   readonly start_ts: Timestamp,

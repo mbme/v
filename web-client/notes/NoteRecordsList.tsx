@@ -1,15 +1,14 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Id} from 'api-client/types'
-import {InjectStore} from 'web-client/injector'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
 
-import NotesStore from './store'
 import NoteRecord from './NoteRecord'
 
 @observer
 class NoteRecordsList extends React.Component<{}, {}> {
-  @InjectStore store: NotesStore
+  @Inject store: Store
 
   render (): JSX.Element {
     const records = this.store.records.map(
@@ -23,7 +22,7 @@ class NoteRecordsList extends React.Component<{}, {}> {
     )
   }
 
-  onItemClick = (id: Id) => {
+  onItemClick = (id: number) => {
     this.store.openNote(id)
   }
 

@@ -2,7 +2,6 @@ import {action, observable, computed} from 'mobx'
 
 import * as api from 'api-client'
 import {
-  Id,
   IFileInfo,
 } from 'api-client/types'
 import {
@@ -12,13 +11,17 @@ import {
   Modal,
   Toast,
   ToastType,
+  ViewTypes,
 } from 'web-client/types'
 import {fuzzySearch} from 'web-client/utils'
 import * as config from 'web-client/config'
 
-export default class Store {
-  private static _counter: number = 0
+let _counter = 0
+function genId(): number {
+  return _counter += 1
+}
 
+export default class Store {
   @observable projects: ProjectRecord[] = []
 
   @observable records: NoteRecord[] = []
@@ -27,6 +30,12 @@ export default class Store {
 
   @observable modals: Modal[] = []
   @observable toasts: Toast[] = []
+
+  @observable view: ViewTypes = 'notes'
+
+  @action setView(view: ViewTypes): void {
+    this.view = view
+  }
 
   @computed get visibleRecords(): NoteRecord[] {
     return this.records.filter(record => {
@@ -59,8 +68,8 @@ export default class Store {
   }
 
   @action
-  async openNote(id: Id): Promise<void> {
-    if (this.isNoteOpen(id)) {
+  async openNote(id: number): Promise<void> {
+    if (this.indexOfNote(id) > -1) {
       return
     }
 
@@ -69,7 +78,7 @@ export default class Store {
   }
 
   @action
-  closeNote(id: Id): void {
+  closeNote(id: number): void {
     const pos = this.indexOfNote(id)
 
     if (pos > -1) {
@@ -86,7 +95,7 @@ export default class Store {
   }
 
   @action
-  async updateNote(id: Id, name: string, data: string): Promise<void> {
+  async updateNote(id: number, name: string, data: string): Promise<void> {
     const note = await this.errorHandler(
       api.updateNote(id, name, data),
       `failed to update note ${id}`
@@ -101,15 +110,19 @@ export default class Store {
   }
 
   @action
-  async deleteNote(id: Id): Promise<void> {
+  async deleteNote(id: number): Promise<void> {
     await this.errorHandler(api.deleteNote(id), `failed to delete note ${id}`)
 
     this.closeNote(id)
     this.loadNotesList()
   }
 
+  indexOfNote(id: number): number {
+    return this.openNotes.findIndex(note => note.id === id)
+  }
+
   @action
-  async uploadFile(recordId: Id, name: string, file: File): Promise<void> {
+  async uploadFile(recordId: number, name: string, file: File): Promise<void> {
     await this.errorHandler(
       api.uploadFile(recordId, name, file),
       `failed to upload file for record ${recordId}`
@@ -123,7 +136,7 @@ export default class Store {
   }
 
   @action
-  async deleteFile(recordId: Id, file: IFileInfo): Promise<void> {
+  async deleteFile(recordId: number, file: IFileInfo): Promise<void> {
     await this.errorHandler(
       api.deleteFile(recordId, file.name),
       `failed to delete file of record ${recordId}`
@@ -141,10 +154,6 @@ export default class Store {
     this.recordsFilter = filter
   }
 
-  isNoteOpen(id: Id): boolean {
-    return this.indexOfNote(id) > -1
-  }
-
   @computed get visibleModal(): Modal | undefined {
     if (this.modals.length > 0) {
       return this.modals[0]
@@ -153,7 +162,7 @@ export default class Store {
 
   @action
   openModal(el: JSX.Element): number {
-    const id = this.genId()
+    const id = genId()
     this.modals.unshift(new Modal(id, el))
 
     return id
@@ -180,7 +189,7 @@ export default class Store {
 
   @action
   showToast(content: JSX.Element | string, type: ToastType = 'normal'): void {
-    const id = this.genId()
+    const id = genId()
     this.toasts.unshift(new Toast(id, type, content))
 
     setTimeout(() => this.hideToast(id), config.toastExpirationMs)
@@ -198,10 +207,6 @@ export default class Store {
     }
   }
 
-  private genId(): number {
-    return Store._counter += 1
-  }
-
   private findModalPos(id: number): number {
     return this.modals.findIndex(modal => modal.id === id)
   }
@@ -215,12 +220,13 @@ export default class Store {
     this.records = records
   }
 
+  @action
   private addOpenNote(note: Note): void {
     this.openNotes.unshift(note)
   }
 
   @action
-  private replaceNoteFiles(id: Id, files: IFileInfo[]): void {
+  private replaceNoteFiles(id: number, files: IFileInfo[]): void {
     const pos = this.indexOfNote(id)
     if (pos === -1) {
       return
@@ -239,11 +245,7 @@ export default class Store {
     }
   }
 
-  private indexOfNote(id: Id): number {
-    return this.openNotes.findIndex(note => note.id === id)
-  }
-
-  private getOpenNote(id: Id): Note | undefined {
+  private getOpenNote(id: number): Note | undefined {
     const pos = this.indexOfNote(id)
     if (pos > -1) {
       return this.openNotes[pos]

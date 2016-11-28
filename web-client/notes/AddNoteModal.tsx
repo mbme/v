@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import Modal, { ModalTitle, ModalBody, ModalFooter } from 'web-client/modals/Modal'
+import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
 import LinkButton from 'web-client/common/LinkButton'
 
 interface IProps {

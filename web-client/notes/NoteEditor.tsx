@@ -4,11 +4,11 @@ import * as React from 'react'
 import * as cx from 'classnames'
 
 import * as config from 'web-client/config'
-import {IFileInfo, FileName} from 'api-client/types'
+import {IFileInfo} from 'api-client/types'
 
-import {InjectStore} from 'web-client/injector'
-import NotesStore, {Note as NoteEntity} from './store'
-import ModalsStore from 'web-client/modals/store'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
+import {Note as NoteEntity} from 'web-client/types'
 
 import LinkButton from 'web-client/common/LinkButton'
 import FilePicker from './FilePicker'
@@ -25,8 +25,7 @@ interface IProps {
 
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
-  @InjectStore notesStore: NotesStore
-  @InjectStore modalsStore: ModalsStore
+  @Inject store: Store
 
   @observable modal: JSX.Element | undefined = asReference(undefined)
 
@@ -110,7 +109,7 @@ class NoteEditor extends React.Component<IProps, {}> {
       return
     }
 
-    this.notesStore.updateNote(this.props.note.id, name, data)
+    this.store.updateNote(this.props.note.id, name, data)
         .then(this.maybeCloseEditor)
   }
 
@@ -124,9 +123,7 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   deleteNote = () => {
     const { note } = this.props
-    this.notesStore.deleteNote(note.id).catch(
-      err => this.modalsStore.showErrorToast(`can't delete note ${note.name}`, err)
-    )
+    this.store.deleteNote(note.id)
   }
 
   hideModal = () => {
@@ -177,14 +174,11 @@ class NoteEditor extends React.Component<IProps, {}> {
   }
 
   deleteFile = (file: IFileInfo) => {
-    this.notesStore.deleteFile(this.props.note.id, file)
-        .catch(err => this.modalsStore.showErrorToast(`failed to delete file ${file.name}`, err))
-        .then(this.hideModal)
+    this.store.deleteFile(this.props.note.id, file).then(this.hideModal)
   }
 
-  uploadFile = (name: FileName, file: File): Promise<void> => {
-    return this.notesStore.uploadFile(this.props.note.id, name, file)
-               .then(this.hideModal)
+  uploadFile = (name: string, file: File): Promise<void> => {
+    return this.store.uploadFile(this.props.note.id, name, file).then(this.hideModal)
   }
 }
 

@@ -1,13 +1,13 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 
-import {IFileInfo, Id} from 'api-client/types'
+import {IFileInfo} from 'api-client/types'
 
 import LinkButton from 'web-client/common/LinkButton'
 import FileLink from './FileLink'
 
 interface IProps {
-  noteId: Id,
+  noteId: number,
   file: IFileInfo,
   onRemove: (file: IFileInfo) => void,
 }

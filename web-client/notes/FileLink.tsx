@@ -3,10 +3,10 @@ import * as React from 'react'
 import {formatBytes} from 'web-client/utils'
 import urls from 'api-client/urls'
 
-import {IFileInfo, Id} from 'api-client/types'
+import {IFileInfo} from 'api-client/types'
 
 interface IProps {
-  noteId: Id,
+  noteId: number,
   file: IFileInfo,
 }
 

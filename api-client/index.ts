@@ -7,8 +7,6 @@ import {
   IProject,
   ITodo,
   TodoState,
-  Id,
-  FileName,
   Timestamp,
 } from 'api-client/types'
 
@@ -83,7 +81,7 @@ export function listNotes(): Promise<IRecord[]> {
   return GET(urls.notes())
 }
 
-export function readNote(id: Id): Promise<INote> {
+export function readNote(id: number): Promise<INote> {
   return GET(urls.note(id))
 }
 
@@ -91,30 +89,34 @@ export function createNote(name: string, data: string = ''): Promise<INote> {
   return POST(urls.notes(), (req) => req.send({ name, data }))
 }
 
-export function updateNote(id: Id, name: string, data: string): Promise<INote> {
+export function updateNote(id: number, name: string, data: string): Promise<INote> {
   return PUT(urls.note(id), { name, data })
 }
 
-export function deleteNote(id: Id): Promise<void> {
+export function deleteNote(id: number): Promise<void> {
   return DELETE<void>(urls.note(id))
 }
 
-export function readFile(recordId: Id, name: FileName): Promise<Buffer> {
+export function readFile(recordId: number, name: string): Promise<Buffer> {
   return GET(urls.file(recordId, name))
 }
 
-export function uploadFile(recordId: Id, name: FileName, file: File | Buffer): Promise<IFileInfo> {
+export function uploadFile(
+  recordId: number,
+  name: string,
+  file: File | Buffer
+): Promise<IFileInfo> {
   return POST(
     urls.files(recordId),
     (req) => req.field('name', name).attach('data', file as any) // tslint:disable-line:no-any
   )
 }
 
-export function deleteFile(recordId: Id, name: FileName): Promise<void> {
+export function deleteFile(recordId: number, name: string): Promise<void> {
   return DELETE<void>(urls.file(recordId, name))
 }
 
-export function listFiles(recordId: Id): Promise<IFileInfo[]> {
+export function listFiles(recordId: number): Promise<IFileInfo[]> {
   return GET(urls.files(recordId))
 }
 
@@ -126,20 +128,20 @@ export function createProject(name: string, description: string = ''): Promise<I
   return POST(urls.projects(), (req) => req.send({ name, description }))
 }
 
-export function updateProject(id: Id, name: string, description: string): Promise<IProject> {
+export function updateProject(id: number, name: string, description: string): Promise<IProject> {
   return PUT(urls.project(id), { name, description })
 }
 
-export function readProject(id: Id): Promise<IProject> {
+export function readProject(id: number): Promise<IProject> {
   return GET(urls.project(id))
 }
 
-export function listProjectTodos(projectId: Id): Promise<ITodo[]> {
+export function listProjectTodos(projectId: number): Promise<ITodo[]> {
   return GET(urls.todos(projectId))
 }
 
 export function createTodo(
-  projectId: Id,
+  projectId: number,
   name: string,
   details: string,
   startTs?: Timestamp,
@@ -157,7 +159,7 @@ export function createTodo(
 }
 
 export function updateTodo(
-  id: Id,
+  id: number,
   name: string,
   details: string,
   state: TodoState,
@@ -176,6 +178,6 @@ export function updateTodo(
   )
 }
 
-export function readTodo(todoId: Id): Promise<ITodo> {
+export function readTodo(todoId: number): Promise<ITodo> {
   return GET(urls.todo(todoId))
 }

@@ -1,7 +1,6 @@
 /* tslint:disable:no-any object-literal-key-quotes */
 import Store from 'web-client/store'
 
-
 let STORE: Store | undefined
 
 export function setStore(store: Store): void {

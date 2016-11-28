@@ -1,39 +1,53 @@
 import * as React from 'react'
+import * as cx from 'classnames'
 
+import {computed} from 'mobx'
 import {observer} from 'mobx-react'
 
 import DevTools from 'mobx-react-devtools'
 
-import {InjectStore} from 'web-client/injector'
-import RoutingStore from 'web-client/routingStore'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
 
-import ModalsContainer from 'web-client/modals/ModalsContainer'
-import ToastsContainer from 'web-client/modals/ToastsContainer'
+import { Toast } from 'web-client/common'
 
-import MainPage from 'web-client/main/Page'
-import PageNotFound from 'web-client/not-found/Page'
-import NotesPage from 'web-client/notes/Page'
+import NotesView from 'web-client/notes/View'
 
 @observer
 export default class App extends React.Component<{}, {}> {
-  @InjectStore routingStore: RoutingStore
+  @Inject store: Store
 
-  renderPage(): JSX.Element {
-    const { page } = this.routingStore
-
-    switch (page.name) {
-      case 'main':
-        return <MainPage />
-
+  @computed get currentView(): JSX.Element {
+    switch (this.store.view) {
       case 'notes':
-        return <NotesPage />
-
-      case 'not-found':
-        return <PageNotFound />
+        return <NotesView />
 
       default:
-        throw new Error(`unexpected page ${page.name}`)
+        throw new Error(`unexpected view ${this.store.view}`)
     }
+  }
+
+  @computed get modalsContainer(): JSX.Element {
+    const modal = this.store.visibleModal
+
+    return (
+      <div className={cx('ModalsContainer', { 'is-hidden': !modal })}>
+        <div className="ModalsContainer-backdrop"></div>
+        {modal ? modal.el : undefined}
+      </div>
+    )
+  }
+
+  @computed get toastsContainer(): JSX.Element {
+    const toasts = this.store.toasts.map(
+      toast => <Toast key={toast.id} toast={toast} />
+    )
+
+    return (
+      <div className="ToastsContainer">
+        {toasts}
+      </div>
+    )
   }
 
   render (): JSX.Element {
@@ -50,11 +64,11 @@ export default class App extends React.Component<{}, {}> {
 
     return (
       <div className="App">
-        <div className="PageContainer">
-          {this.renderPage()}
+        <div className="ViewContainer">
+          {this.currentView}
         </div>
-        <ModalsContainer />
-        <ToastsContainer />
+        {this.modalsContainer}
+        {this.toastsContainer}
         {devTools}
       </div>
     )

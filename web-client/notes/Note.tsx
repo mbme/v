@@ -2,8 +2,9 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {InjectStore} from 'web-client/injector'
-import NotesStore, {Note as NoteEntity} from './store'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
+import {Note as NoteEntity} from 'web-client/types'
 
 import LinkButton from 'web-client/common/LinkButton'
 import FileLink from './FileLink'
@@ -14,7 +15,7 @@ interface IProps {
 
 @observer
 class Note extends React.Component<IProps, {}> {
-  @InjectStore store: NotesStore
+  @Inject store: Store
 
   render (): JSX.Element {
     const { note } = this.props

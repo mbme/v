@@ -5,7 +5,6 @@ import {
 } from 'mobx'
 
 import {
-  Id,
   Timestamp,
   IRecord,
   INote,
@@ -14,7 +13,7 @@ import {
 import {BaseModel} from 'web-client/utils'
 
 export class ProjectRecord {
-  readonly id: Id
+  readonly id: number
   readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
@@ -28,7 +27,7 @@ export class ProjectRecord {
 }
 
 export class NoteRecord {
-  readonly id: Id
+  readonly id: number
   readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
@@ -42,7 +41,7 @@ export class NoteRecord {
 }
 
 export class Note {
-  readonly id: Id
+  readonly id: number
   readonly name: string
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
@@ -70,7 +69,7 @@ export class Note {
 
 export class Modal extends BaseModel {
   readonly id: number
-  @observable readonly el: JSX.Element
+  @observable readonly el: JSX.Element // FIXME wtf?? observable readonly?
 
   constructor(id: number, el: JSX.Element) {
     super('Modal')
@@ -96,3 +95,5 @@ export class Toast extends BaseModel {
     this.content = asReference(content)
   }
 }
+
+export type ViewTypes = 'notes' | 'todos'

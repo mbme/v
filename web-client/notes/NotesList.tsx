@@ -1,15 +1,15 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {InjectStore} from 'web-client/injector'
-import NotesStore from './store'
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
 
 import NoteView from './Note'
 import NoteEditor from './NoteEditor'
 
 @observer
 class NotesList extends React.Component<{}, {}> {
-  @InjectStore store: NotesStore
+  @Inject store: Store
 
   render (): JSX.Element {
     const notes = this.store.openNotes.map(

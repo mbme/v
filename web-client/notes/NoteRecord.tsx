@@ -1,13 +1,16 @@
+import {computed} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {Id} from 'api-client/types'
-import {NoteRecord as NRecord} from './store'
+import {NoteRecord as NRecord} from 'web-client/types'
 import * as moment from 'moment'
 import * as cx from 'classnames'
 
+import {Inject} from 'web-client/injector'
+import Store from 'web-client/store'
+
 interface IProps {
   record: NRecord,
-  onClick: (id: Id) => void,
+  onClick: (id: number) => void,
 }
 
 function formatTime(ts: number): string {
@@ -16,12 +19,22 @@ function formatTime(ts: number): string {
 
 @observer
 class NoteRecord extends React.Component<IProps, {}> {
+  @Inject store: Store
+
+  @computed get isOpen(): boolean {
+    return this.store.indexOfNote(this.props.record.id) > -1
+  }
+
+  @computed get isVisible(): boolean {
+    return this.store.visibleRecords.indexOf(this.props.record) > -1
+  }
+
   render (): JSX.Element {
     const { record } = this.props
     const className = cx(
       'NoteRecord', {
-        'is-open': record.isOpen,
-        'is-hidden': !record.isVisible
+        'is-open': this.isOpen,
+        'is-hidden': !this.isVisible
       }
     )
     return (

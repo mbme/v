@@ -1,13 +1,13 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {Toast as ToastClass} from './store'
+import {Toast as ToastClass} from 'web-client/types'
 
 interface IProps {
   toast: ToastClass,
 }
 
 @observer
-class Toast extends React.Component<IProps, {}> {
+export class Toast extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { toast } = this.props
     return (
@@ -17,5 +17,3 @@ class Toast extends React.Component<IProps, {}> {
     )
   }
 }
-
-export default Toast
