@@ -11,11 +11,11 @@ interface IProps {
 }
 
 @observer
-class LinkButton extends React.Component<IProps, {}> {
+export class Button extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { type } = this.props
     return (
-      <button className={cx('LinkButton', this.props.className, { [`is-${type}`]: !!type })}
+      <button className={cx('Button', this.props.className, { [`is-${type}`]: !!type })}
               onClick={this.onClick}>
         [{this.props.children}]
       </button>
@@ -27,5 +27,3 @@ class LinkButton extends React.Component<IProps, {}> {
     this.props.onClick()
   }
 }
-
-export default LinkButton

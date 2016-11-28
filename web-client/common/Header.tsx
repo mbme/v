@@ -3,7 +3,7 @@ import * as React from 'react'
 import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 
-class Header extends React.Component<{}, {}> {
+export class Header extends React.Component<{}, {}> {
   @Inject store: Store
 
   render (): JSX.Element {
@@ -16,5 +16,3 @@ class Header extends React.Component<{}, {}> {
     )
   }
 }
-
-export default Header

@@ -3,8 +3,13 @@ import {observer} from 'mobx-react'
 
 import {IFileInfo} from 'api-client/types'
 
-import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
-import LinkButton from 'web-client/common/LinkButton'
+import {
+  Modal,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'web-client/common'
 
 interface IProps {
   file: IFileInfo,
@@ -24,12 +29,12 @@ class DeleteFileModal extends React.Component<IProps, {}> {
         </ModalBody>
 
         <ModalFooter>
-          <LinkButton type="secondary" onClick={this.props.onCancel}>
+          <Button type="secondary" onClick={this.props.onCancel}>
             Cancel
-          </LinkButton>
-          <LinkButton type="dangerous" onClick={this.onClickDelete}>
+          </Button>
+          <Button type="dangerous" onClick={this.onClickDelete}>
             Delete
-          </LinkButton>
+          </Button>
         </ModalFooter>
       </Modal>
     )

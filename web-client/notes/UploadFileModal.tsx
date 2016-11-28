@@ -2,8 +2,13 @@ import * as React from 'react'
 import {action, observable} from 'mobx'
 import {observer} from 'mobx-react'
 
-import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
-import LinkButton from 'web-client/common/LinkButton'
+import {
+  Modal,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'web-client/common'
 import {formatBytes} from 'web-client/utils'
 
 interface IProps {
@@ -40,12 +45,12 @@ class UploadFileModal extends React.Component<IProps, {}> {
       error = this.modalState.error
       footer = (
         <ModalFooter>
-          <LinkButton type="secondary" onClick={this.props.onCancel}>
+          <Button type="secondary" onClick={this.props.onCancel}>
             Cancel
-          </LinkButton>
-          <LinkButton onClick={this.onClickCreate}>
+          </Button>
+          <Button onClick={this.onClickCreate}>
             Upload
-          </LinkButton>
+          </Button>
         </ModalFooter>
       )
     } else {

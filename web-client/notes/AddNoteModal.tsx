@@ -1,8 +1,13 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
-import LinkButton from 'web-client/common/LinkButton'
+import {
+  Modal,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'web-client/common'
 
 interface IProps {
   show: boolean,
@@ -26,12 +31,12 @@ export default class AddNoteModal extends React.Component<IProps, {}> {
         </ModalBody>
 
         <ModalFooter>
-          <LinkButton type="secondary" onClick={this.props.onCancel}>
+          <Button type="secondary" onClick={this.props.onCancel}>
             Cancel
-          </LinkButton>
-          <LinkButton onClick={this.onClickCreate}>
+          </Button>
+          <Button onClick={this.onClickCreate}>
             Create
-          </LinkButton>
+          </Button>
         </ModalFooter>
       </Modal>
     )

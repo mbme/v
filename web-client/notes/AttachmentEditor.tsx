@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import {IFileInfo} from 'api-client/types'
 
-import LinkButton from 'web-client/common/LinkButton'
+import { Button } from 'web-client/common'
 import FileLink from './FileLink'
 
 interface IProps {
@@ -19,11 +19,11 @@ class AttachmentEditor extends React.Component<IProps, {}> {
 
     return (
       <FileLink noteId={noteId} file={file}>
-        <LinkButton className="remove"
+        <Button className="remove"
                     type="dangerous"
                     onClick={this.onClickRemove}>
           Remove
-        </LinkButton>
+        </Button>
       </FileLink>
     )
   }

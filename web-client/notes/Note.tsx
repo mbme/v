@@ -6,7 +6,7 @@ import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/types'
 
-import LinkButton from 'web-client/common/LinkButton'
+import { Button } from 'web-client/common'
 import FileLink from './FileLink'
 
 interface IProps {
@@ -27,8 +27,8 @@ class Note extends React.Component<IProps, {}> {
     return (
       <div className="Note">
         <div className="Note-toolbar">
-          <LinkButton onClick={this.onClickEdit}>Edit</LinkButton>
-          <LinkButton onClick={this.onClickClose}>Close</LinkButton>
+          <Button onClick={this.onClickEdit}>Edit</Button>
+          <Button onClick={this.onClickClose}>Close</Button>
         </div>
         <h1 className="Note-name">{note.name}</h1>
         <div className="Note-data">{note.data}</div>

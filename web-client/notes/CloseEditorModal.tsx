@@ -1,8 +1,13 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import { Modal, ModalTitle, ModalBody, ModalFooter } from 'web-client/common'
-import LinkButton from 'web-client/common/LinkButton'
+import {
+  Modal,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'web-client/common'
 
 interface IProps {
   name: string,
@@ -23,12 +28,12 @@ class CloseEditorModal extends React.Component<IProps, {}> {
         </ModalBody>
 
         <ModalFooter>
-          <LinkButton type="secondary" onClick={this.props.onCancel}>
+          <Button type="secondary" onClick={this.props.onCancel}>
             Cancel
-          </LinkButton>
-          <LinkButton type="dangerous" onClick={this.props.onClose}>
+          </Button>
+          <Button type="dangerous" onClick={this.props.onClose}>
             Close
-          </LinkButton>
+          </Button>
         </ModalFooter>
       </Modal>
     )

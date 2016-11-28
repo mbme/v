@@ -5,8 +5,7 @@ import {observer} from 'mobx-react'
 import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 
-import LinkButton from 'web-client/common/LinkButton'
-import Header from 'web-client/common/Header'
+import { Button, Header } from 'web-client/common'
 
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'
@@ -36,10 +35,10 @@ export default class NotesView extends React.Component<{}, {}> {
             onCreate={this.onCreateNote}
             onCancel={this.onModalCancel} />
         <Header>
-          <LinkButton className="NotesView-plus"
+          <Button className="NotesView-plus"
                       onClick={this.onClickPlus} >
             Add Note
-          </LinkButton>
+          </Button>
         </Header>
         <div className="NotesView-left">
           <SearchBox />

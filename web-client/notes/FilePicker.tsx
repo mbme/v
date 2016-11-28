@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import LinkButton from 'web-client/common/LinkButton'
+import { Button } from 'web-client/common'
 
 interface IProps {
   label: string,
@@ -16,7 +16,7 @@ class FilePicker extends React.Component<IProps, {}> {
           <form ref="form">
             <input ref="fileInput" type="file" onChange={this.onFileSelected} />
           </form>
-          <LinkButton onClick={this.onClickSelect}>{this.props.label}</LinkButton>
+          <Button onClick={this.onClickSelect}>{this.props.label}</Button>
       </div>
     )
   }

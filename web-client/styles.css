@@ -98,7 +98,7 @@ img {
 
 /*       COMMON        */
 
-.LinkButton {
+.Button {
   border: 0 none;
   background-color: inherit;
   padding: 0;
@@ -196,7 +196,7 @@ img {
       padding: 0.5vr 0;
       text-align: center;
 
-      .LinkButton {
+      .Button {
         margin: 0 1vr;
       }
     }
@@ -253,8 +253,9 @@ $header-h: 45px;
 
   text-align: center;
 
-  .Link {
+  &-link {
     color: #5c5c5c;
+    cursor: pointer;
     display: inline-block;
     vertical-align: middle;
     height: 100%;
@@ -363,7 +364,7 @@ $header-h: 45px;
       padding-top: 0.5vr;
       text-align: right;
 
-      .LinkButton {
+      .Button {
         margin-left: 0.5vr;
       }
     }

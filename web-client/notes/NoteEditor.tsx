@@ -10,7 +10,7 @@ import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/types'
 
-import LinkButton from 'web-client/common/LinkButton'
+import { Button } from 'web-client/common'
 import FilePicker from './FilePicker'
 import AttachmentEditor from './AttachmentEditor'
 
@@ -55,9 +55,9 @@ class NoteEditor extends React.Component<IProps, {}> {
       <div className="NoteEditor" onDrop={this.onDrop}>
         {this.modal}
         <div className="NoteEditor-toolbar">
-          <LinkButton onClick={this.onClickSave}>Save</LinkButton>
-          <LinkButton type="dangerous" onClick={this.onClickDelete}>Delete</LinkButton>
-          <LinkButton type="secondary" onClick={this.onClickCloseEditor}>Close editor</LinkButton>
+          <Button onClick={this.onClickSave}>Save</Button>
+          <Button type="dangerous" onClick={this.onClickDelete}>Delete</Button>
+          <Button type="secondary" onClick={this.onClickCloseEditor}>Close editor</Button>
         </div>
 
         <input className="NoteEditor-name"
