@@ -107,6 +107,7 @@ img {
   @mixin container;
 
   display: inline-block;
+  max-height: 600px;
 }
 
 .MainMenu {
@@ -134,4 +135,7 @@ img {
 .Note {
   @mixin container;
   display: inline-block;
+  width: 500px;
+
+  word-wrap: break-word;
 }

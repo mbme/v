@@ -18,6 +18,40 @@ interface IProps {
 
 @observer
 class App extends React.Component<IProps, {}> {
+  container?: HTMLDivElement
+
+  getPiecees(): HTMLElement[] {
+    if (!this.container) {
+      return []
+    }
+
+    return Array.from(this.container.childNodes) as Array<HTMLElement>
+  }
+
+  updatePiecesPos(): void {
+    const pieces = this.getPiecees()
+
+    // width of the screen or the widest element
+    const maxWidth = pieces.reduce(
+      (acc, el) => Math.max(acc, el.offsetWidth),
+      window.innerWidth
+    )
+
+    //TODO
+  }
+
+  componentDidMount(): void {
+    this.updatePiecesPos()
+  }
+
+  componentDidUpdate(): void {
+    this.updatePiecesPos()
+  }
+
+  setContainer = (container?: HTMLDivElement) => {
+    this.container = container
+  }
+
   render (): JSX.Element {
     let devTools: JSX.Element | undefined
 
@@ -32,7 +66,7 @@ class App extends React.Component<IProps, {}> {
 
     return (
       <div className="App">
-        <div className="AppContainer">
+        <div className="AppContainer" ref={this.setContainer}>
           {this.props.store.pieces.values()}
         </div>
         {devTools}
