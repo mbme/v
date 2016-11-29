@@ -10,13 +10,10 @@ import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/types'
 
-import { Button } from 'web-client/common'
+import { Button, confirmationModal } from 'web-client/common'
 import FilePicker from './FilePicker'
 import AttachmentEditor from './AttachmentEditor'
 
-import DeleteNoteModal from './DeleteNoteModal'
-import DeleteFileModal from './DeleteFileModal'
-import CloseEditorModal from './CloseEditorModal'
 import UploadFileModal from './UploadFileModal'
 
 interface IProps {
@@ -109,21 +106,19 @@ class NoteEditor extends React.Component<IProps, {}> {
       return
     }
 
-    this.store.updateNote(this.props.note.id, name, data)
-        .then(this.maybeCloseEditor)
+    this.store.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
   }
 
   onClickDelete = () => {
-    this.changeModal(
-      <DeleteNoteModal name={this.props.note.name}
-                       onCancel={this.hideModal}
-                       onDelete={this.deleteNote} />
-    )
-  }
-
-  deleteNote = () => {
     const { note } = this.props
-    this.store.deleteNote(note.id)
+    const modalConfig = {
+      title: 'Delete note',
+      body: (<span>Do you really want to delete note <b>{note.name}</b></span>),
+      onCancel: this.hideModal,
+      onAction: () => this.store.deleteNote(note.id),
+      actionBtnText: 'Delete',
+    }
+    this.changeModal(confirmationModal(modalConfig))
   }
 
   hideModal = () => {
@@ -141,11 +136,19 @@ class NoteEditor extends React.Component<IProps, {}> {
       return
     }
 
-    this.changeModal(
-      <CloseEditorModal name={note.name}
-                        onCancel={this.hideModal}
-                        onClose={this.closeEditor} />
-    )
+    const modalConfig = {
+      title: 'Close editor',
+      body: (
+        <span>
+          There are unsaved changes in <b>{note.name}</b>. <br />
+          Do you really want to close editor?
+        </span>
+      ),
+      onCancel: this.hideModal,
+      onAction: this.closeEditor,
+      actionBtnText: 'Close',
+    }
+    this.changeModal(confirmationModal(modalConfig))
   }
 
   showFileUploadModal(files: FileList): void {
@@ -166,15 +169,14 @@ class NoteEditor extends React.Component<IProps, {}> {
   }
 
   onClickDeleteFile = (file: IFileInfo) => {
-    this.changeModal(
-      <DeleteFileModal file={file}
-                       onCancel={this.hideModal}
-                       onDelete={this.deleteFile} />
-    )
-  }
-
-  deleteFile = (file: IFileInfo) => {
-    this.store.deleteFile(this.props.note.id, file).then(this.hideModal)
+    const modalConfig = {
+      title: 'Delete file',
+      body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
+      onCancel: this.hideModal,
+      onAction: () => this.store.deleteFile(this.props.note.id, file).then(this.hideModal),
+      actionBtnText: 'Delete',
+    }
+    this.changeModal(confirmationModal(modalConfig))
   }
 
   uploadFile = (name: string, file: File): Promise<void> => {

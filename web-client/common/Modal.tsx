@@ -4,6 +4,7 @@ import * as cx from 'classnames'
 
 import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
+import { Button, ButtonType } from './Button'
 
 interface IProps {
   className?: string,
@@ -80,4 +81,40 @@ export class ModalFooter extends React.Component<IModalProps, {}> {
       </div>
     )
   }
+}
+
+type ConfirmationModalConfig = {
+  title: string,
+  body: string | JSX.Element,
+  onCancel: () => void,
+  onAction: () => void,
+  actionBtnType?: ButtonType,
+  actionBtnText: string,
+  cancelBtnText?: string,
+}
+export function confirmationModal({
+  title,
+  body,
+  onCancel,
+  onAction,
+  actionBtnType = 'dangerous',
+  actionBtnText,
+  cancelBtnText = 'Cancel',
+}: ConfirmationModalConfig): JSX.Element {
+  return (
+    <Modal>
+      <ModalTitle>{title}</ModalTitle>
+
+      <ModalBody>{body}</ModalBody>
+
+      <ModalFooter>
+        <Button type="secondary" onClick={onCancel}>
+          {cancelBtnText}
+        </Button>
+        <Button type={actionBtnType} onClick={onAction}>
+          {actionBtnText}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  )
 }

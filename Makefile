@@ -4,7 +4,7 @@ export GIT_COMMIT_HASH
 server-clean:
 	rm -f ./server/target/debug/viter
 
-server-dev-run: server-clean
+server-dev-run:
 	cd ./server && V_CONFIG="./config.json" cargo run
 
 server-prod: web-client-prod

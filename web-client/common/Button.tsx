@@ -2,7 +2,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-type ButtonType = 'dangerous' | 'secondary'
+export type ButtonType = 'dangerous' | 'secondary'
 
 interface IProps {
   className?: string,
