@@ -305,7 +305,7 @@ $header-h: 45px;
     height: 100%;
   }
 
-  $filter-height: 60px;
+  $filter-height: 70px;
 
   .SearchBox {
     height: $filter-height;
@@ -316,6 +316,11 @@ $header-h: 45px;
     .RecordsFilter {
       margin-top: 10px;
       width: 100%;
+    }
+
+    &-count {
+      padding-top: 5px;
+      text-align: center;
     }
   }
 
