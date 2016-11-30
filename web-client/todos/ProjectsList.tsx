@@ -11,17 +11,21 @@ export default class ProjectsList extends React.Component<{}, {}> {
   renderProjects(): JSX.Element[] {
     return this.store.projects.map(
       ({ id, name }) => (
-        <div key={id} className="Project" onClick={() => this.store.openProject(id)}>{name}</div>
+        <div key={id}
+             className="ProjectList-item"
+             onClick={() => this.store.openProject(id)}>
+          {name}
+        </div>
       )
     )
   }
 
   render(): JSX.Element {
     return (
-      <div className="ProjectsList">
-        <div className="Project">Inbox</div>
-        <div className="Project">Today</div>
-        <div className="Project">Upcoming</div>
+      <div className="ProjectList">
+        <div className="ProjectList-item is-disabled">Inbox</div>
+        <div className="ProjectList-item is-disabled">Today</div>
+        <div className="ProjectList-item is-disabled">Upcoming</div>
         {this.renderProjects()}
       </div>
     )
