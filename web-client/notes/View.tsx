@@ -35,10 +35,7 @@ export default class NotesView extends React.Component<{}, {}> {
             onCreate={this.onCreateNote}
             onCancel={this.onModalCancel} />
         <Header>
-          <Button className="NotesView-plus"
-                      onClick={this.onClickPlus} >
-            Add Note
-          </Button>
+          <Button onClick={this.onClickPlus}>Add Note</Button>
         </Header>
         <div className="NotesView-left">
           <SearchBox />

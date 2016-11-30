@@ -11,7 +11,7 @@ export class Header extends React.Component<{}, {}> {
   renderLink(view: ViewTypes, text: string): JSX.Element {
     const classes = cx('Header-link', { 'is-active': this.store.view === view })
     return (
-      <div className={classes} onClick={() => this.store.setView('notes')}>{text}</div>
+      <div className={classes} onClick={() => this.store.setView(view)}>{text}</div>
     )
   }
 

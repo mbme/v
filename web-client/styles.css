@@ -236,9 +236,14 @@ img {
   }
 }
 
-/*       PAGES        */
+/*       VIEWS        */
 
 $header-h: 45px;
+
+.ViewContainer {
+  margin-top: $header-h;
+  position: relative;
+}
 
 .Header {
   position: fixed;
@@ -271,18 +276,17 @@ $header-h: 45px;
     position: absolute;
     right: 10px;
     height: 100%;
-  }
-}
 
-.ViewContainer {
-  margin-top: $header-h;
+    .Button {
+      vertical-align: middle;
+      height: 100%;
+    }
+  }
 }
 
 .NotesView {
   $left-width: 350px;
   $border: $light-border;
-
-  position: relative;
 
   &-left {
     position: fixed;
@@ -298,11 +302,6 @@ $header-h: 45px;
   &-center {
     margin-left: $left-width;
     padding-top: 2vr;
-  }
-
-  &-plus {
-    vertical-align: middle;
-    height: 100%;
   }
 
   $filter-height: 70px;
@@ -480,5 +479,23 @@ $header-h: 45px;
 
   .uploading {
     color: $color-progress;
+  }
+}
+
+.TodosView {
+  $left-width: 34%;
+
+  &-left {
+    position: fixed;
+    top: $header-h;
+    left: 0;
+
+    width: $left-width;
+    height: 100%;
+  }
+
+  &-center {
+    margin-left: $left-width;
+    padding-top: 2vr;
   }
 }

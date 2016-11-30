@@ -1,4 +1,4 @@
-import {action, observable, computed} from 'mobx'
+import {action, observable, computed, asMap, ObservableMap} from 'mobx'
 
 import * as api from 'api-client'
 import {
@@ -8,6 +8,7 @@ import {
   ProjectRecord,
   NoteRecord,
   Note,
+  Todo,
   Modal,
   Toast,
   ToastType,
@@ -23,6 +24,8 @@ function genId(): number {
 
 export default class Store {
   @observable projects: ProjectRecord[] = []
+  @observable todos: ObservableMap<Todo[] | undefined> = asMap() // FIXME remove this when mobx@3
+  @observable openProjectId?: number
 
   @observable records: NoteRecord[] = []
   @observable recordsFilter: string = ''
@@ -31,7 +34,7 @@ export default class Store {
   @observable modals: Modal[] = []
   @observable toasts: Toast[] = []
 
-  @observable view: ViewTypes = 'notes'
+  @observable view: ViewTypes = 'todos'
 
   @action setView(view: ViewTypes): void {
     this.view = view
@@ -65,6 +68,21 @@ export default class Store {
   async loadNotesList(): Promise<void> {
     const data = await this.errorHandler(api.listNotes(), 'failed to load notes list')
     this.setRecordsList(data.map(dto => new NoteRecord(dto)))
+  }
+
+  @action openProject(projectId: number): void {
+    this.openProjectId = projectId
+    this.loadProjectTodos(projectId)
+   }
+
+  @action
+  async loadProjectTodos(projectId: number): Promise<void> {
+    const data = await this.errorHandler(
+      api.listProjectTodos(projectId),
+      `failed to load todos of project ${projectId}`
+    )
+
+    this.setProjectTodos(projectId, data.map(dto => new Todo(dto)))
   }
 
   @action
@@ -218,6 +236,11 @@ export default class Store {
   @action
   private setRecordsList(records: NoteRecord[]): void {
     this.records = records
+  }
+
+  @action
+  private setProjectTodos(projectId: number, todos: Todo[]): void {
+    this.todos.set(projectId.toString(), todos)
   }
 
   @action

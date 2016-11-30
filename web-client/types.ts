@@ -8,6 +8,8 @@ import {
   Timestamp,
   IRecord,
   INote,
+  ITodo,
+  TodoState,
   IFileInfo,
 } from 'api-client/types'
 import {BaseModel} from 'web-client/utils'
@@ -23,6 +25,32 @@ export class ProjectRecord {
     this.name = dto.name
     this.createTs = dto.create_ts
     this.updateTs = dto.update_ts
+  }
+}
+
+export class Todo {
+  readonly id: number
+  readonly name: string
+  readonly createTs: Timestamp
+  readonly updateTs: Timestamp
+  readonly projectId: number
+  readonly details: string
+  readonly state: TodoState
+  readonly startTs: Timestamp
+  readonly endTs: Timestamp
+  files: ReadonlyArray<IFileInfo>
+
+  constructor(todo: ITodo) {
+    this.id = todo.id
+    this.name = todo.name
+    this.createTs = todo.create_ts
+    this.updateTs = todo.update_ts
+    this.projectId = todo.project_id
+    this.details = todo.details
+    this.state = todo.state
+    this.startTs = todo.start_ts
+    this.endTs = todo.end_ts
+    this.files = todo.files
   }
 }
 
@@ -48,7 +76,7 @@ export class Note {
   readonly data: string
   files: ReadonlyArray<IFileInfo>
 
-  @observable editMode: boolean
+  @observable editMode: boolean // FIXME use states: 'loading' | 'edit' | 'view'
 
   constructor (dto: INote, editMode: boolean = false) {
     this.id = dto.id

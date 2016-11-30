@@ -12,6 +12,7 @@ import Store from 'web-client/store'
 import { Toast } from 'web-client/common'
 
 import NotesView from 'web-client/notes/View'
+import TodosView from 'web-client/todos/View'
 
 @observer
 export default class App extends React.Component<{}, {}> {
@@ -21,6 +22,9 @@ export default class App extends React.Component<{}, {}> {
     switch (this.store.view) {
       case 'notes':
         return <NotesView />
+
+      case 'todos':
+        return <TodosView />
 
       default:
         throw new Error(`unexpected view ${this.store.view}`)

@@ -4,5 +4,6 @@ config.json
 TEMP.db
 Cargo.lock
 npm-debug.log
+yarn-error.log
 /stats.json
 /web-build
