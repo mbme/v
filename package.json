@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "@types/chai": "3",
-    "@types/mocha": "2",
     "@types/classnames": "^0.0.32",
+    "@types/mocha": "2",
     "@types/react": "0.14",
     "@types/superagent": "2",
     "autoprefixer": "6.5",
