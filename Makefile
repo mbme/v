@@ -26,4 +26,8 @@ lint:
 	npm run tslint
 	npm run eslint
 
-.PHONY: server-clean server-dev-run server-prod server-test api-tests web-client-prod web-client-dev-run lint
+# requires https://github.com/AlDanial/cloc
+cloc:
+	cloc . --exclude-dir=node_modules,web-build,target,.git --force-lang=TypeScript,ts
+
+.PHONY: server-clean server-dev-run server-prod server-test api-tests web-client-prod web-client-dev-run lint cloc
