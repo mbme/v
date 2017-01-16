@@ -1,3 +1,2 @@
 **/node_modules/**
-web-client/build/**
-web-client/prod/**
+web-build/**

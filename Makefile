@@ -14,17 +14,17 @@ server-test:
 	cd ./server && cargo test
 
 api-tests:
-	npm run api-tests
+	yarn run api-tests
 
 web-client-prod:
-	npm run web-client-prod
+	yarn run web-client-prod
 
 web-client-dev-run:
-	npm run web-client-dev-run
+	yarn run web-client-dev-run
 
 lint:
-	npm run tslint
-	npm run eslint
+	yarn run tslint
+	yarn run eslint
 
 # requires https://github.com/AlDanial/cloc
 cloc:

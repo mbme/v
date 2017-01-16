@@ -13,10 +13,10 @@ class FilePicker extends React.Component<IProps, {}> {
   render (): JSX.Element {
     return (
       <div className="FilePicker">
-          <form ref="form">
-            <input ref="fileInput" type="file" onChange={this.onFileSelected} />
-          </form>
-          <Button onClick={this.onClickSelect}>{this.props.label}</Button>
+        <form ref="form">
+          <input ref="fileInput" type="file" onChange={this.onFileSelected} />
+        </form>
+        <Button onClick={this.onClickSelect}>{this.props.label}</Button>
       </div>
     )
   }

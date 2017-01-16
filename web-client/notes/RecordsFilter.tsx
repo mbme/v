@@ -18,8 +18,7 @@ class RecordsFilter extends React.Component<IProps, {}> {
     reaction(
       () => this.inputValue,
       this.props.onChange,
-      false,
-      searchDelay
+      { delay: searchDelay }
     )
   }
 

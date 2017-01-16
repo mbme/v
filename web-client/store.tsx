@@ -1,4 +1,4 @@
-import {action, observable, computed, asMap, ObservableMap} from 'mobx'
+import {action, observable, computed, ObservableMap} from 'mobx'
 
 import * as api from 'api-client'
 import {
@@ -24,7 +24,7 @@ function genId(): number {
 
 export default class Store {
   @observable projects: ProjectRecord[] = []
-  @observable todos: ObservableMap<Todo[] | undefined> = asMap() // FIXME remove this when mobx@3
+  @observable todos: ObservableMap<Todo[]> = observable.map<Todo[]>()
   @observable openProjectId?: number
 
   @observable records: NoteRecord[] = []
