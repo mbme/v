@@ -30,33 +30,21 @@ export default class NotesView extends React.Component<{}, {}> {
   render (): JSX.Element {
     return (
       <div className="NotesView">
-        <AddNoteModal
-            show={this.showModal}
-            onCreate={this.onCreateNote}
-            onCancel={this.onModalCancel} />
+        <AddNoteModal show={this.showModal} onClose={() => this.setShowModal(false)} />
+
         <Header>
-          <Button onClick={this.onClickPlus}>Add Note</Button>
+          <Button onClick={() => this.setShowModal(true)}>Add Note</Button>
         </Header>
+
         <div className="NotesView-left">
           <SearchBox />
           <NoteRecordsList />
         </div>
+
         <div className="NotesView-center">
           <NotesList />
         </div>
       </div>
     )
-  }
-
-  onClickPlus = () => {
-    this.setShowModal(true)
-  }
-
-  onModalCancel = () => {
-    this.setShowModal(false)
-  }
-
-  onCreateNote = (name: string) => {
-    this.store.createNote(name).then(() => this.setShowModal(false))
   }
 }
