@@ -1,7 +1,6 @@
 import {
   observable,
   action,
-  asReference,
 } from 'mobx'
 
 import {
@@ -97,13 +96,13 @@ export class Note {
 
 export class Modal extends BaseModel {
   readonly id: number
-  @observable readonly el: JSX.Element // FIXME wtf?? observable readonly?
+  @observable.ref readonly el: JSX.Element // FIXME wtf?? observable readonly?
 
   constructor(id: number, el: JSX.Element) {
     super('Modal')
 
     this.id = id
-    this.el = asReference(el)
+    this.el = el
   }
 }
 
@@ -113,14 +112,14 @@ type ToastContent = JSX.Element | string
 export class Toast extends BaseModel {
   readonly id: number
   readonly type: ToastType
-  @observable readonly content: ToastContent
+  @observable.ref readonly content: ToastContent
 
   constructor(id: number, type: ToastType, content: ToastContent) {
     super('Toast')
 
     this.id = id
     this.type = type
-    this.content = asReference(content)
+    this.content = content
   }
 }
 
