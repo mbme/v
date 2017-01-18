@@ -13,6 +13,14 @@ server-prod: web-client-prod
 server-test:
 	cd ./server && cargo test
 
+# requires `cargo install cargo-outdated`
+server-outdated:
+	cd ./server && cargo outdated
+
+# requires `cargo install clippy`
+server-lint:
+	cd ./server && cargo lint
+
 api-tests:
 	yarn run api-tests
 
@@ -22,7 +30,7 @@ web-client-prod:
 web-client-dev-run:
 	yarn run web-client-dev-run
 
-lint:
+web-lint:
 	yarn run tslint
 	yarn run eslint
 
@@ -30,4 +38,4 @@ lint:
 cloc:
 	cloc . --exclude-dir=node_modules,web-build,target,.git --force-lang=TypeScript,ts
 
-.PHONY: server-clean server-dev-run server-prod server-test api-tests web-client-prod web-client-dev-run lint cloc
+.PHONY: server-clean server-dev-run server-prod server-test api-tests web-client-prod web-client-dev-run web-lint cloc server-outdated server-lint

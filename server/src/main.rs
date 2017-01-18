@@ -1,6 +1,4 @@
-#![feature(box_syntax, plugin, proc_macro)]
-
-#![plugin(clippy)]
+#![feature(box_syntax)]
 
 extern crate time;
 extern crate rusqlite;
