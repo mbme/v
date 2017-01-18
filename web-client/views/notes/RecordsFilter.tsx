@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 import {action, observable, reaction} from 'mobx'
-import {searchDelay} from 'web-client/config'
+import { config } from 'web-client/utils'
 
 interface IProps {
   initialValue: string,
@@ -18,7 +18,7 @@ class RecordsFilter extends React.Component<IProps, {}> {
     reaction(
       () => this.inputValue,
       this.props.onChange,
-      { delay: searchDelay }
+      { delay: config.searchDelay }
     )
   }
 

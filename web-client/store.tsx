@@ -13,9 +13,8 @@ import {
   Toast,
   ToastType,
   ViewTypes,
-} from 'web-client/types'
-import {fuzzySearch} from 'web-client/utils'
-import * as config from 'web-client/config'
+} from 'web-client/utils/types'
+import { fuzzySearch, config } from 'web-client/utils'
 
 let _counter = 0
 function genId(): number {

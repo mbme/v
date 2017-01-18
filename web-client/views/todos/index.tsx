@@ -2,7 +2,7 @@ import * as React from 'react'
 import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 
-import {Inject} from 'web-client/injector'
+import {Inject} from 'web-client/utils'
 import Store from 'web-client/store'
 
 import ProjectsList from './ProjectsList'

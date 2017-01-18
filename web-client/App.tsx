@@ -6,7 +6,7 @@ import {observer} from 'mobx-react'
 
 import DevTools from 'mobx-react-devtools'
 
-import {Inject} from 'web-client/injector'
+import {Inject} from 'web-client/utils'
 import Store from 'web-client/store'
 
 import { Toast } from 'web-client/components'

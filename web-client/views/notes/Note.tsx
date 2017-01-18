@@ -2,9 +2,9 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/injector'
+import {Inject} from 'web-client/utils'
 import Store from 'web-client/store'
-import {Note as NoteEntity} from 'web-client/types'
+import {Note as NoteEntity} from 'web-client/utils/types'
 
 import { Button } from 'web-client/components'
 import FileLink from './FileLink'

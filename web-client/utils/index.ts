@@ -1,3 +1,13 @@
+export { Inject } from './injector'
+
+export const config = {
+  searchDelay:        200,
+  searchIgnoreCase:   true,
+  searchIgnoreSpaces: true,
+  closeEditorOnSave:  false,
+  toastExpirationMs:  5000,
+}
+
 /**
  * Check if needle fuzzy matches haystack.
  * @see https://github.com/bevacqua/fuzzysearch

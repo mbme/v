@@ -1,11 +1,11 @@
 import {computed} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {NoteRecord as NRecord} from 'web-client/types'
+import {NoteRecord as NRecord} from 'web-client/utils/types'
 import * as moment from 'moment'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/injector'
+import {Inject} from 'web-client/utils'
 import Store from 'web-client/store'
 
 interface IProps {

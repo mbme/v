@@ -1,6 +1,6 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import {Toast as ToastClass} from 'web-client/types'
+import {Toast as ToastClass} from 'web-client/utils/types'
 
 interface IProps {
   toast: ToastClass,

@@ -3,12 +3,11 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import * as config from 'web-client/config'
 import {IFileInfo} from 'api-client/types'
 
-import {Inject} from 'web-client/injector'
+import { Inject, config } from 'web-client/utils'
 import Store from 'web-client/store'
-import {Note as NoteEntity} from 'web-client/types'
+import {Note as NoteEntity} from 'web-client/utils/types'
 
 import { Button, confirmationModal } from 'web-client/components'
 import FilePicker from './FilePicker'

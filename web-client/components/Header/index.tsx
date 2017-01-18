@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/injector'
+import {Inject} from 'web-client/utils'
 import Store from 'web-client/store'
-import { ViewTypes } from 'web-client/types'
+import { ViewTypes } from 'web-client/utils/types'
 
 export class Header extends React.Component<{}, {}> {
   @Inject store: Store

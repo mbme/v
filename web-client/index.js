@@ -18,7 +18,7 @@ const Store = require('web-client/store').default
 const store = new Store()
 
 // init store injector
-require('web-client/injector').setStore(store)
+require('web-client/utils/injector').setStore(store)
 
 
 // update state based on initial url
