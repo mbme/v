@@ -14,7 +14,7 @@ import {
   ToastType,
   ViewTypes,
 } from 'web-client/utils/types'
-import { fuzzySearch, config } from 'web-client/utils'
+import { config } from 'web-client/utils'
 
 let _counter = 0
 function genId(): number {
@@ -27,7 +27,6 @@ export default class Store {
   @observable openProjectId?: number
 
   @observable records: NoteRecord[] = []
-  @observable recordsFilter: string = ''
   @observable openNotes: Note[] = []
 
   @observable modals: Modal[] = []
@@ -37,24 +36,6 @@ export default class Store {
 
   @action setView(view: ViewTypes): void {
     this.view = view
-  }
-
-  @computed get visibleRecords(): NoteRecord[] {
-    return this.records.filter(record => {
-      let filter = this.recordsFilter
-      let name = record.name
-
-      if (config.searchIgnoreCase) {
-        filter = filter.toLowerCase()
-        name = name.toLowerCase()
-      }
-
-      if (config.searchIgnoreSpaces) {
-        filter = filter.replace(/\s/g, '') // remove spaces from the string
-      }
-
-      return fuzzySearch(filter, name)
-    })
   }
 
   @action
@@ -164,11 +145,6 @@ export default class Store {
       `failed to list files of record ${recordId}`
     )
     this.replaceNoteFiles(recordId, files)
-  }
-
-  @action
-  setRecordsFilter(filter: string): void {
-    this.recordsFilter = filter
   }
 
   @computed get visibleModal(): Modal | undefined {
