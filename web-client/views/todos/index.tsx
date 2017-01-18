@@ -8,7 +8,7 @@ import Store from 'web-client/store'
 import ProjectsList from './ProjectsList'
 import ProjectTodosList from './ProjectTodosList'
 
-import { Button, Header } from 'web-client/common'
+import { Button, Header } from 'web-client/components'
 
 @observer
 export default class TodosView extends React.Component<{}, {}> {

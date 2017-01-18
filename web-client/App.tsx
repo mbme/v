@@ -9,10 +9,10 @@ import DevTools from 'mobx-react-devtools'
 import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 
-import { Toast } from 'web-client/common'
+import { Toast } from 'web-client/components'
 
-import NotesView from 'web-client/notes/View'
-import TodosView from 'web-client/todos/View'
+import NotesView from 'web-client/views/notes'
+import TodosView from 'web-client/views/todos'
 
 @observer
 export default class App extends React.Component<{}, {}> {

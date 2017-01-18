@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import { Button } from 'web-client/common'
+import { Button } from 'web-client/components'
 
 interface IProps {
   label: string,

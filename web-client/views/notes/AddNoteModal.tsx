@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from 'web-client/common'
+} from 'web-client/components'
 
 interface IProps {
   show: boolean,

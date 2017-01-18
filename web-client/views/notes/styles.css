@@ -1,0 +1,221 @@
+.NotesView {
+  $left-width: 350px;
+  $border: $light-border;
+
+  &-left {
+    position: fixed;
+    top: $header-h;
+    left: 0;
+
+    width: $left-width;
+    height: 100%;
+
+    border-right: $border;
+  }
+
+  &-center {
+    margin-left: $left-width;
+    padding-top: 2vr;
+  }
+
+  $filter-height: 70px;
+
+  .SearchBox {
+    height: $filter-height;
+    padding: 0 1vr;
+
+    border-bottom: $border;
+
+    .RecordsFilter {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    &-count {
+      padding-top: 5px;
+      text-align: center;
+    }
+  }
+
+  .NoteRecordsList {
+    height: calc(100% - $filter-height);
+    overflow-y: auto;
+  }
+
+  .NoteRecord {
+    color: $base-font-color;
+    border-bottom: $border;
+    padding: 0.5vr 1vr;
+    cursor: pointer;
+
+    &-title {
+      @mixin like-a-h;
+    }
+
+    &-time {
+      @mixin like-secondary;
+    }
+
+    &:hover {
+      background-color: #E6E0E6;
+    }
+
+    &.is-open {
+      background-color: yellow;
+    }
+
+    &.is-hidden {
+      display: none;
+    }
+  }
+
+  @define-mixin NoteContainer {
+    width: 600px;
+    min-height: 300px;
+
+    padding: 0 1vr 1vr;
+    margin: 0 auto 1vr;
+
+    @mixin paper-shadow;
+
+    &-toolbar {
+      padding-top: 0.5vr;
+      text-align: right;
+
+      .Button {
+        margin-left: 0.5vr;
+      }
+    }
+
+    &-files {
+      display: flex;
+      flex-wrap: wrap;
+
+      border-top: $border;
+      margin-top: 1vr;
+      padding: 0.5vr 0;
+
+      &.is-hidden {
+        display: none;
+      }
+    }
+  }
+
+  .Note {
+    @mixin NoteContainer;
+    display: flex;
+    flex-direction: column;
+
+    &-name {
+      margin-top: 0;
+    }
+
+    &-data {
+      @mixin like-pre;
+      flex: 1;
+    }
+  }
+
+  .NoteEditor {
+    @mixin NoteContainer;
+
+    &-name,
+    &-data,
+    .FilePicker,
+    &-files {
+      margin-top: 0.5vr;
+    }
+
+    &-name, &-data {
+      display: block;
+      width: 100%;
+    }
+
+    &-name {
+      @mixin like-a-h;
+    }
+
+    &-data {
+      height: 190px;
+    }
+
+    .FilePicker {
+      text-align: right;
+    }
+
+    &-files {
+      .FileLink {
+        .remove {
+          font-size: 0.85em;
+          padding-left: 5px;
+        }
+      }
+    }
+  }
+}
+
+.AddNoteModal.Modal {
+  width: 400px;
+
+  .ModalTitle {
+    text-align: center;
+  }
+
+  input {
+    width: 100%;
+  }
+}
+
+.FilePicker {
+  form {
+    display: none;
+  }
+}
+
+.UploadFileModal.Modal {
+  width: 500px;
+
+  .fileName {
+    width: 100%;
+  }
+
+  .fileType, .fileSize {
+    display: inline-block;
+    margin-top: 0.5vr;
+    margin-left: 0.5vr;
+    @mixin like-secondary;
+  }
+
+  .error-msg {
+    margin-top: 1vr;
+    color: $color-error;
+  }
+
+  .uploading {
+    color: $color-progress;
+  }
+}
+
+.FileLink {
+  font-size: 0.85em;
+  margin: 0.5vr;
+
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+
+  a {
+    color: #00695c;
+    font-weight: 600;
+
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .size {
+    padding-left: 5px;
+    font-size: 0.75em;
+    @mixin like-secondary;
+  }
+}

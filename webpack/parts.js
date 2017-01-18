@@ -4,6 +4,7 @@ const childProcess = require('child_process')
 
 const webpack = require('webpack')
 
+const postcssEasyImport = require('postcss-easy-import')
 const postcssMixins = require('postcss-mixins')
 const postcssNested = require('postcss-nested')
 const postcssSimpleVars = require('postcss-simple-vars')
@@ -12,6 +13,7 @@ const postcssAutoprefixer = require('autoprefixer')
 
 exports.postcssConfig = function () {
   return [
+    postcssEasyImport,
     postcssMixins,
     postcssNested,
     postcssSimpleVars(),

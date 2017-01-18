@@ -5,7 +5,7 @@ import {observer} from 'mobx-react'
 import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 
-import { Button, Header } from 'web-client/common'
+import { Button, Header } from 'web-client/components'
 
 import SearchBox from './SearchBox'
 import NoteRecordsList from './NoteRecordsList'

@@ -6,7 +6,7 @@ import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/types'
 
-import { Button } from 'web-client/common'
+import { Button } from 'web-client/components'
 import FileLink from './FileLink'
 
 interface IProps {

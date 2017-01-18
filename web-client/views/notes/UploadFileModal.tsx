@@ -8,7 +8,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from 'web-client/common'
+} from 'web-client/components'
 import {formatBytes} from 'web-client/utils'
 
 interface IProps {

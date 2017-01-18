@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import {IFileInfo} from 'api-client/types'
 
-import { Button } from 'web-client/common'
+import { Button } from 'web-client/components'
 import FileLink from './FileLink'
 
 interface IProps {

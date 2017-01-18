@@ -1,0 +1,46 @@
+.TodosView {
+  $left-width: 42%;
+
+  &-left {
+    position: fixed;
+    top: $header-h;
+    left: 0;
+
+    width: $left-width;
+    height: 100%;
+
+    text-align: right;
+  }
+
+  &-center {
+    margin-left: $left-width;
+    padding-top: 1vr;
+  }
+
+  .ProjectList {
+    display: inline-block;
+    text-align: left;
+
+    padding: 1vr;
+
+    &-item {
+      padding: 0.5vr;
+      cursor: pointer;
+
+      &.is-disabled {
+        cursor: default;
+        color: $color-secondary;
+      }
+    }
+  }
+
+  .ProjectTodosList {
+    width: 600px;
+    min-height: 800px;
+
+    background-color: white;
+    border: $light-border;
+
+    padding: 2vr;
+  }
+}

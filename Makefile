@@ -1,11 +1,11 @@
 GIT_COMMIT_HASH := $(shell git rev-parse --short HEAD)
 export GIT_COMMIT_HASH
 
-server-clean:
-	rm -f ./server/target/debug/viter
-
 server-dev-run:
 	cd ./server && V_CONFIG="./config.json" cargo run
+
+server-clean:
+	rm -f ./server/target/debug/viter
 
 server-prod: web-client-prod
 	cd ./server && cargo build --release

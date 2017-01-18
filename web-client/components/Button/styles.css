@@ -1,0 +1,21 @@
+
+.Button {
+  border: 0 none;
+  background-color: inherit;
+  padding: 0;
+  &:focus {
+    outline: none;
+  }
+
+  cursor: pointer;
+  color: $color-primary;
+  font-weight: 600;
+
+  &.is-dangerous {
+    color: $color-dangerous;
+  }
+
+  &.is-secondary {
+    color: $color-secondary;
+  }
+}

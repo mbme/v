@@ -4,7 +4,7 @@ import * as cx from 'classnames'
 
 import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
-import { Button, ButtonType } from './Button'
+import { Button, ButtonType } from '../Button'
 
 interface IProps {
   className?: string,

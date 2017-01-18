@@ -10,7 +10,7 @@ import {Inject} from 'web-client/injector'
 import Store from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/types'
 
-import { Button, confirmationModal } from 'web-client/common'
+import { Button, confirmationModal } from 'web-client/components'
 import FilePicker from './FilePicker'
 import AttachmentEditor from './AttachmentEditor'
 
