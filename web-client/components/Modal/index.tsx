@@ -2,8 +2,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { STORE } from 'web-client/store'
 import { Button, ButtonType } from '../Button'
 
 interface IProps {
@@ -16,24 +15,22 @@ type ReactProps = IProps & {
 
 @observer
 export class Modal extends React.Component<IProps, {}> {
-  @Inject store: Store
-
   id: number
 
   componentWillMount(): void {
-    this.id = this.store.openModal(
+    this.id = STORE.openModal(
       this.renderModal(this.props)
     )
   }
 
   componentWillUpdate(nextProps: ReactProps): void {
-    this.store.updateModal(
+    STORE.updateModal(
       this.id, this.renderModal(nextProps)
     )
   }
 
   componentWillUnmount(): void {
-    this.store.closeModal(this.id)
+    STORE.closeModal(this.id)
   }
 
   renderModal(props: ReactProps): JSX.Element {

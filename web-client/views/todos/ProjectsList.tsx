@@ -1,19 +1,16 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { STORE } from 'web-client/store'
 
 @observer
 export default class ProjectsList extends React.Component<{}, {}> {
-  @Inject store: Store
-
   renderProjects(): JSX.Element[] {
-    return this.store.projects.map(
+    return STORE.projects.map(
       ({ id, name }) => (
         <div key={id}
              className="ProjectList-item"
-             onClick={() => this.store.openProject(id)}>
+             onClick={() => STORE.openProject(id)}>
           {name}
         </div>
       )

@@ -1,19 +1,16 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { STORE } from 'web-client/store'
 
 @observer
 export default class ProjectTodosList extends React.Component<{}, {}> {
-  @Inject store: Store
-
   renderList(): JSX.Element[] | string {
-    if (!this.store.openProjectId) {
+    if (!STORE.openProjectId) {
       return ''
     }
 
-    const todos = this.store.todos.get(this.store.openProjectId.toString()) || []
+    const todos = STORE.todos.get(STORE.openProjectId.toString()) || []
 
     if (!todos.length) {
       return 'No todos :)'

@@ -2,8 +2,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { STORE } from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/utils/types'
 
 import { Button } from 'web-client/components'
@@ -15,8 +14,6 @@ interface IProps {
 
 @observer
 class Note extends React.Component<IProps, {}> {
-  @Inject store: Store
-
   render (): JSX.Element {
     const { note } = this.props
 
@@ -38,7 +35,7 @@ class Note extends React.Component<IProps, {}> {
   }
 
   onClickClose = () => {
-    this.store.closeNote(this.props.note.id)
+    STORE.closeNote(this.props.note.id)
   }
 
   onClickEdit = () => {

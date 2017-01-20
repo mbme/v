@@ -2,8 +2,8 @@ import * as React from 'react'
 import {observable, action, computed} from 'mobx'
 import {observer} from 'mobx-react'
 
-import {config, fuzzySearch, Inject} from 'web-client/utils' // FIXME join
-import Store from 'web-client/store' // FIXME join
+import {config, fuzzySearch} from 'web-client/utils'
+import { STORE } from 'web-client/store'
 import { NoteRecord } from 'web-client/utils/types'
 
 import { Button, Header } from 'web-client/components'
@@ -15,8 +15,6 @@ import AddNoteModal from './AddNoteModal'
 
 @observer
 export default class NotesView extends React.Component<{}, {}> {
-  @Inject store: Store
-
   @observable showModal: boolean = false
   @observable filter: string = ''
 
@@ -29,7 +27,7 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   @computed get visibleRecords(): NoteRecord[] {
-    return this.store.noteRecords.filter(record => {
+    return STORE.noteRecords.filter(record => {
       let filter = this.filter
       let name = record.name
 
@@ -47,11 +45,11 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   componentWillMount(): void {
-    this.store.loadNoteRecordsList()
+    STORE.loadNoteRecordsList()
   }
 
   renderRecordsCount(): string {
-    const recordsCount = this.store.noteRecords.length
+    const recordsCount = STORE.noteRecords.length
     const visibleRecordsCount = this.visibleRecords.length
 
     if (!recordsCount) {
@@ -66,13 +64,13 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   render (): JSX.Element {
-    const records = this.store.noteRecords.map(
+    const records = STORE.noteRecords.map(
       record => <NoteRecordView
                     key={record.id}
                     record={record}
-                    isOpen={this.store.isOpenNote(record.id)}
+                    isOpen={STORE.isOpenNote(record.id)}
                     isVisible={this.visibleRecords.indexOf(record) > -1}
-                    onClick={this.store.openNote} />
+                    onClick={STORE.openNote} />
     )
 
     return (
@@ -94,7 +92,7 @@ export default class NotesView extends React.Component<{}, {}> {
         </div>
 
         <div className="NotesView-center">
-          <NotesList note={this.store.note} />
+          <NotesList note={STORE.note} />
         </div>
       </div>
     )

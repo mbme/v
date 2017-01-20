@@ -1,17 +1,14 @@
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { STORE } from 'web-client/store'
 import { ViewTypes } from 'web-client/utils/types'
 
 export class Header extends React.Component<{}, {}> {
-  @Inject store: Store
-
   renderLink(view: ViewTypes, text: string): JSX.Element {
-    const classes = cx('Header-link', { 'is-active': this.store.view === view })
+    const classes = cx('Header-link', { 'is-active': STORE.view === view })
     return (
-      <div className={classes} onClick={() => this.store.setView(view)}>{text}</div>
+      <div className={classes} onClick={() => STORE.setView(view)}>{text}</div>
     )
   }
 

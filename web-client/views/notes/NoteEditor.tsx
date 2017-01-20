@@ -5,8 +5,8 @@ import * as cx from 'classnames'
 
 import {IFileInfo} from 'api-client/types'
 
-import { Inject, config } from 'web-client/utils'
-import Store from 'web-client/store'
+import { config } from 'web-client/utils'
+import { STORE } from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/utils/types'
 
 import { Button, confirmationModal } from 'web-client/components'
@@ -21,8 +21,6 @@ interface IProps {
 
 @observer
 class NoteEditor extends React.Component<IProps, {}> {
-  @Inject store: Store
-
   @observable.ref modal?: JSX.Element
 
   @action changeModal(modal?: JSX.Element): void {
@@ -105,7 +103,7 @@ class NoteEditor extends React.Component<IProps, {}> {
       return
     }
 
-    this.store.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
+    STORE.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
   }
 
   onClickDelete = () => {
@@ -114,7 +112,7 @@ class NoteEditor extends React.Component<IProps, {}> {
       title: 'Delete note',
       body: (<span>Do you really want to delete note <b>{note.name}</b></span>),
       onCancel: this.hideModal,
-      onAction: () => this.store.deleteNote(note.id),
+      onAction: () => STORE.deleteNote(note.id),
       actionBtnText: 'Delete',
     }
     this.changeModal(confirmationModal(modalConfig))
@@ -172,14 +170,14 @@ class NoteEditor extends React.Component<IProps, {}> {
       title: 'Delete file',
       body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
       onCancel: this.hideModal,
-      onAction: () => this.store.deleteFile(this.props.note.id, file).then(this.hideModal),
+      onAction: () => STORE.deleteFile(this.props.note.id, file).then(this.hideModal),
       actionBtnText: 'Delete',
     }
     this.changeModal(confirmationModal(modalConfig))
   }
 
   uploadFile = (name: string, file: File): Promise<void> => {
-    return this.store.uploadFile(this.props.note.id, name, file).then(this.hideModal)
+    return STORE.uploadFile(this.props.note.id, name, file).then(this.hideModal)
   }
 }
 

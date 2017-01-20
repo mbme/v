@@ -2,8 +2,7 @@ import * as React from 'react'
 import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { STORE } from 'web-client/store'
 
 import ProjectsList from './ProjectsList'
 import ProjectTodosList from './ProjectTodosList'
@@ -12,12 +11,10 @@ import { Button, Header } from 'web-client/components'
 
 @observer
 export default class TodosView extends React.Component<{}, {}> {
-  @Inject store: Store
-
   @observable showModal: boolean = false
 
   componentWillMount(): void {
-    this.store.loadProjectsList()
+    STORE.loadProjectsList()
   }
 
   @action

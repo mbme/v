@@ -14,13 +14,6 @@ if (__DEV__) {
   document.title += ' -> DEV'
 }
 
-const Store = require('web-client/store').default
-const store = new Store()
-
-// init store injector
-require('web-client/utils/injector').setStore(store)
-
-
 // update state based on initial url
 const React = require('react')
 const ReactDOM = require('react-dom')

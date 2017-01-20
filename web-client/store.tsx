@@ -21,7 +21,7 @@ function genId(): number {
   return _counter += 1
 }
 
-export default class Store {
+class Store {
   @observable projects: ProjectRecord[] = []
   @observable todos: ObservableMap<Todo[]> = observable.map<Todo[]>()
   @observable openProjectId?: number
@@ -247,5 +247,6 @@ export default class Store {
       throw e
     })
   }
-
 }
+
+export const STORE = new Store()

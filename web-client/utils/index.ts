@@ -1,5 +1,3 @@
-export { Inject } from './injector'
-
 export const config = {
   searchDelay:        200,
   searchIgnoreCase:   true,
