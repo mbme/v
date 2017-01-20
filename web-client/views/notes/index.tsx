@@ -29,7 +29,7 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   @computed get visibleRecords(): NoteRecord[] {
-    return this.store.records.filter(record => {
+    return this.store.noteRecords.filter(record => {
       let filter = this.filter
       let name = record.name
 
@@ -47,11 +47,11 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   componentWillMount(): void {
-    this.store.loadNotesList()
+    this.store.loadNoteRecordsList()
   }
 
   renderRecordsCount(): string {
-    const recordsCount = this.store.records.length
+    const recordsCount = this.store.noteRecords.length
     const visibleRecordsCount = this.visibleRecords.length
 
     if (!recordsCount) {
@@ -66,11 +66,11 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   render (): JSX.Element {
-    const records = this.store.records.map(
+    const records = this.store.noteRecords.map(
       record => <NoteRecordView
                     key={record.id}
                     record={record}
-                    isOpen={this.store.indexOfNote(record.id) > -1}
+                    isOpen={this.store.isOpenNote(record.id)}
                     isVisible={this.visibleRecords.indexOf(record) > -1}
                     onClick={this.store.openNote} />
     )
@@ -94,7 +94,7 @@ export default class NotesView extends React.Component<{}, {}> {
         </div>
 
         <div className="NotesView-center">
-          <NotesList />
+          <NotesList note={this.store.note} />
         </div>
       </div>
     )

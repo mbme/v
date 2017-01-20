@@ -26,8 +26,8 @@ export default class Store {
   @observable todos: ObservableMap<Todo[]> = observable.map<Todo[]>()
   @observable openProjectId?: number
 
-  @observable records: NoteRecord[] = []
-  @observable openNotes: Note[] = []
+  @observable noteRecords: NoteRecord[] = []
+  @observable note?: Note
 
   @observable modals: Modal[] = []
   @observable toasts: Toast[] = []
@@ -45,9 +45,9 @@ export default class Store {
   }
 
   @action
-  async loadNotesList(): Promise<void> {
+  async loadNoteRecordsList(): Promise<void> {
     const data = await this.errorHandler(api.listNotes(), 'failed to load notes list')
-    this.setRecordsList(data.map(dto => new NoteRecord(dto)))
+    this.setNoteRecordsList(data.map(dto => new NoteRecord(dto)))
   }
 
   @action openProject(projectId: number): void {
@@ -65,31 +65,31 @@ export default class Store {
     this.setProjectTodos(projectId, data.map(dto => new Todo(dto)))
   }
 
+  isOpenNote(id: number): boolean {
+    return !!this.note && this.note.id === id
+  }
+
   @action
   openNote = async (id: number): Promise<void> => {
-    if (this.indexOfNote(id) > -1) {
+    if (this.isOpenNote(id)) {
       return
     }
 
     const data = await this.errorHandler(api.readNote(id), `failed to read note ${id}`)
-    this.addOpenNote(new Note(data))
+    this.setNote(new Note(data))
   }
 
   @action
   closeNote(id: number): void {
-    const pos = this.indexOfNote(id)
-
-    if (pos > -1) {
-      this.openNotes.splice(pos, 1)
-    }
+    this.setNote(undefined, id)
   }
 
   @action
   async createNote(name: string): Promise<void> {
     const data = await this.errorHandler(api.createNote(name), 'failed to create note')
 
-    this.addOpenNote(new Note(data, true))
-    this.loadNotesList()
+    this.setNote(new Note(data, true))
+    this.loadNoteRecordsList()
   }
 
   @action
@@ -99,12 +99,12 @@ export default class Store {
       `failed to update note ${id}`
     )
 
-    const oldNote = this.getOpenNote(id)
-    if (oldNote) {
-      this.replaceOpenNote(new Note(note, oldNote.editMode))
+    if (!this.note) {
+      return
     }
 
-    this.loadNotesList()
+    this.setNote(new Note(note, this.note.editMode), id)
+    this.loadNoteRecordsList()
   }
 
   @action
@@ -112,11 +112,7 @@ export default class Store {
     await this.errorHandler(api.deleteNote(id), `failed to delete note ${id}`)
 
     this.closeNote(id)
-    this.loadNotesList()
-  }
-
-  indexOfNote(id: number): number {
-    return this.openNotes.findIndex(note => note.id === id)
+    this.loadNoteRecordsList()
   }
 
   @action
@@ -209,45 +205,35 @@ export default class Store {
   }
 
   @action
-  private setRecordsList(records: NoteRecord[]): void {
-    this.records = records
+  private setNoteRecordsList(records: NoteRecord[]): void {
+    this.noteRecords = records
+  }
+
+  @action
+  private setNote(note?: Note, id?: number): void {
+    if (!this.note && id) {
+      return
+    }
+
+    if (this.note && id && this.note.id !== id) {
+      return
+    }
+
+    this.note = note
+  }
+
+  @action
+  private replaceNoteFiles(id: number, files: IFileInfo[]): void {
+    if (!this.note || this.note.id !== id) {
+      return
+    }
+
+    this.note.files = files
   }
 
   @action
   private setProjectTodos(projectId: number, todos: Todo[]): void {
     this.todos.set(projectId.toString(), todos)
-  }
-
-  @action
-  private addOpenNote(note: Note): void {
-    this.openNotes.unshift(note)
-  }
-
-  @action
-  private replaceNoteFiles(id: number, files: IFileInfo[]): void {
-    const pos = this.indexOfNote(id)
-    if (pos === -1) {
-      return
-    }
-
-    const note = this.openNotes[pos]
-
-    note.files = files
-  }
-
-  @action
-  private replaceOpenNote(note: Note): void {
-    const pos = this.indexOfNote(note.id)
-    if (pos > -1) {
-      this.openNotes.splice(pos, 1, note)
-    }
-  }
-
-  private getOpenNote(id: number): Note | undefined {
-    const pos = this.indexOfNote(id)
-    if (pos > -1) {
-      return this.openNotes[pos]
-    }
   }
 
   @action

@@ -1,28 +1,29 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
+import { Note } from 'web-client/utils/types'
 
 import NoteView from './Note'
 import NoteEditor from './NoteEditor'
 
+interface IProps {
+  note?: Note,
+}
+
 @observer
-class NotesList extends React.Component<{}, {}> {
-  @Inject store: Store
+class NotesList extends React.Component<IProps, {}> {
+  render (): JSX.Element | null {
+    const { note } = this.props
 
-  render (): JSX.Element {
-    const notes = this.store.openNotes.map(
-      (note) => note.editMode
-            ? <NoteEditor key={note.id} note={note} />
-            : <NoteView key={note.id} note={note} />
-    )
+    if (!note) {
+      return null
+    }
 
-    return (
-      <div className="NotesList">
-        {notes}
-      </div>
-    )
+    if (note.editMode) { // FIXME remove edit mode
+      return <NoteEditor key={note.id} note={note} />
+    } else {
+      return <NoteView key={note.id} note={note} />
+    }
   }
 }
 
