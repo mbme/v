@@ -66,7 +66,7 @@ export default class Store {
   }
 
   @action
-  async openNote(id: number): Promise<void> {
+  openNote = async (id: number): Promise<void> => {
     if (this.indexOfNote(id) > -1) {
       return
     }

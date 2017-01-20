@@ -1,15 +1,13 @@
-import {computed} from 'mobx'
-import {observer} from 'mobx-react'
 import * as React from 'react'
+import {observer} from 'mobx-react'
 import {NoteRecord as NRecord} from 'web-client/utils/types'
 import * as moment from 'moment'
 import * as cx from 'classnames'
 
-import {Inject} from 'web-client/utils'
-import Store from 'web-client/store'
-
 interface IProps {
   record: NRecord,
+  isOpen: boolean,
+  isVisible: boolean,
   onClick: (id: number) => void,
 }
 
@@ -19,22 +17,17 @@ function formatTime(ts: number): string {
 
 @observer
 class NoteRecord extends React.Component<IProps, {}> {
-  @Inject store: Store
 
-  @computed get isOpen(): boolean {
-    return this.store.indexOfNote(this.props.record.id) > -1
-  }
-
-  @computed get isVisible(): boolean {
-    return this.store.visibleRecords.indexOf(this.props.record) > -1
+  onClick = () => {
+    this.props.onClick(this.props.record.id)
   }
 
   render (): JSX.Element {
-    const { record } = this.props
+    const { record, isOpen, isVisible } = this.props
     const className = cx(
       'NoteRecord', {
-        'is-open': this.isOpen,
-        'is-hidden': !this.isVisible
+        'is-open': isOpen,
+        'is-hidden': !isVisible,
       }
     )
     return (
@@ -43,10 +36,6 @@ class NoteRecord extends React.Component<IProps, {}> {
         <small className="NoteRecord-time">{formatTime(record.updateTs)}</small>
       </li>
     )
-  }
-
-  onClick = () => {
-    this.props.onClick(this.props.record.id)
   }
 }
 

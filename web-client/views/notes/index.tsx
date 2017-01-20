@@ -9,7 +9,7 @@ import { NoteRecord } from 'web-client/utils/types'
 import { Button, Header } from 'web-client/components'
 
 import RecordsFilter from './RecordsFilter'
-import NoteRecordsList from './NoteRecordsList'
+import NoteRecordView from './NoteRecord'
 import NotesList from './NotesList'
 import AddNoteModal from './AddNoteModal'
 
@@ -20,17 +20,11 @@ export default class NotesView extends React.Component<{}, {}> {
   @observable showModal: boolean = false
   @observable filter: string = ''
 
-  componentWillMount(): void {
-    this.store.loadNotesList()
-  }
-
-  @action
-  setShowModal(show: boolean): void {
+  @action setShowModal(show: boolean): void {
     this.showModal = show
   }
 
-  @action
-  updateFilter = (filter: string) => {
+  @action updateFilter = (filter: string) => {
     this.filter = filter
   }
 
@@ -52,6 +46,10 @@ export default class NotesView extends React.Component<{}, {}> {
     })
   }
 
+  componentWillMount(): void {
+    this.store.loadNotesList()
+  }
+
   renderRecordsCount(): string {
     const recordsCount = this.store.records.length
     const visibleRecordsCount = this.visibleRecords.length
@@ -68,6 +66,15 @@ export default class NotesView extends React.Component<{}, {}> {
   }
 
   render (): JSX.Element {
+    const records = this.store.records.map(
+      record => <NoteRecordView
+                    key={record.id}
+                    record={record}
+                    isOpen={this.store.indexOfNote(record.id) > -1}
+                    isVisible={this.visibleRecords.indexOf(record) > -1}
+                    onClick={this.store.openNote} />
+    )
+
     return (
       <div className="NotesView">
         <AddNoteModal show={this.showModal} onClose={() => this.setShowModal(false)} />
@@ -81,7 +88,9 @@ export default class NotesView extends React.Component<{}, {}> {
 
           <div className="NotesView-recordsCount">{this.renderRecordsCount()}</div>
 
-          <NoteRecordsList />
+          <ul className="NoteRecordsList">
+            {records}
+          </ul>
         </div>
 
         <div className="NotesView-center">
