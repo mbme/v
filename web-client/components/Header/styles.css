@@ -1,0 +1,38 @@
+.Header {
+  position: fixed;
+  top: 0;
+  z-index: 10;
+
+  width: 100%;
+  height: $header-h;
+
+  background-color: #fafafa;
+  border-bottom: $light-border;
+
+  text-align: center;
+
+  &-link {
+    color: #5c5c5c;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    padding: 10px;
+
+    &.is-active {
+      border-bottom: 2px solid $color-primary;
+    }
+  }
+
+  &-right {
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    height: 100%;
+
+    .Button {
+      vertical-align: middle;
+      height: 100%;
+    }
+  }
+}

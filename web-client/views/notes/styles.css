@@ -1,21 +1,29 @@
 .NotesView {
-  $left-width: 350px;
-  $border: $light-border;
+  margin-top: $header-h;
+  position: relative;
+
+  $left-width: 320px;
+  $right-width: 550px;
 
   &-left {
     position: fixed;
-    top: $header-h;
-    left: 0;
+    right: 58%;
 
     width: $left-width;
-    height: 100%;
+    height: calc(100% - $header-h);
 
-    border-right: $border;
+    display: flex;
+    flex-direction: column;
   }
 
   &-center {
-    margin-left: $left-width;
-    padding-top: 2vr;
+    width: 58%;
+    margin-left: 42%;
+    padding-top: 1vr;
+  }
+
+  &-list {
+    overflow-y: auto;
   }
 
   &-recordsCount {
@@ -23,28 +31,14 @@
     text-align: center;
   }
 
-  $filter-height: 70px;
-
-  .SearchBox { // FIXME there is no SearchBox
-    height: $filter-height;
-    padding: 0 1vr;
-
-    border-bottom: $border;
-
-    .RecordsFilter {
-      margin-top: 10px;
-      width: 100%;
-    }
-  }
-
-  .NoteRecordsList {
-    height: calc(100% - $filter-height);
-    overflow-y: auto;
+  .RecordsFilter {
+    margin-top: 10px;
+    width: 100%;
   }
 
   .NoteRecord {
     color: $base-font-color;
-    border-bottom: $border;
+    border-bottom: $light-border;
     padding: 0.5vr 1vr;
     cursor: pointer;
 
@@ -70,12 +64,13 @@
   }
 
   @define-mixin NoteContainer {
-    width: 600px;
+    width: $right-width;
     min-height: 300px;
 
     padding: 0 1vr 1vr;
-    margin: 0 auto 1vr;
+    margin: 0 1vr 1vr;
 
+    background-color: white;
     @mixin paper-shadow;
 
     &-toolbar {
@@ -91,7 +86,7 @@
       display: flex;
       flex-wrap: wrap;
 
-      border-top: $border;
+      border-top: $light-border;
       margin-top: 1vr;
       padding: 0.5vr 0;
 

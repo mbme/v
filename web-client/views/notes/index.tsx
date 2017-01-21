@@ -54,14 +54,14 @@ export default class NotesView extends React.Component<{}, {}> {
     const visibleRecordsCount = this.visibleRecords.length
 
     if (!recordsCount) {
-      return 'no records :('
+      return 'no notes :('
     }
 
     if (visibleRecordsCount < recordsCount) {
-      return `${visibleRecordsCount} out of ${recordsCount} records`
+      return `${visibleRecordsCount} out of ${recordsCount} notes`
     }
 
-    return `${recordsCount} records`
+    return `${recordsCount} notes`
   }
 
   render (): JSX.Element {
@@ -98,7 +98,7 @@ export default class NotesView extends React.Component<{}, {}> {
 
           <div className="NotesView-recordsCount">{this.renderRecordsCount()}</div>
 
-          <ul className="NoteRecordsList">
+          <ul className="NotesView-list">
             {records}
           </ul>
         </div>

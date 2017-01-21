@@ -65,9 +65,7 @@ export default class App extends React.Component<{}, {}> {
 
     return (
       <div className="App">
-        <div className="ViewContainer">
-          {this.currentView}
-        </div>
+        {this.currentView}
         {this.modalsContainer}
         {this.toastsContainer}
         {devTools}
