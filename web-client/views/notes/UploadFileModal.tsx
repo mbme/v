@@ -10,60 +10,53 @@ import {
   Button,
 } from 'web-client/components'
 import {formatBytes} from 'web-client/utils'
+import {Note} from 'web-client/utils/types'
+import { STORE } from 'web-client/store'
 
 interface IProps {
   file: File,
-  noteName: string,
-  onCancel: () => void,
-  onUpload: (name: string, file: File) => Promise<void>,
+  note: Note,
+  onClose: () => void,
 }
 
-class StateEdit {
-  readonly error?: string
-
-  constructor (error?: string) {
-    this.error = error
-  }
-}
-
-type ModalState = StateEdit | 'uploading'
+type ModalState = 'ready' | 'uploading' | { error: string }
 
 @observer
-class UploadFileModal extends React.Component<IProps, {}> {
-  @observable modalState: ModalState = new StateEdit()
+export default class UploadFileModal extends React.Component<IProps, {}> {
+  @observable modalState: ModalState = 'ready'
 
   @action switchModalState(state: ModalState): void {
     this.modalState = state
   }
 
   render (): JSX.Element {
-    const { file, noteName } = this.props
+    const { file, note, onClose } = this.props
 
     let error: string | undefined
     let footer: JSX.Element
-    if (this.modalState instanceof StateEdit) {
-      error = this.modalState.error
-      footer = (
-        <ModalFooter>
-          <Button type="secondary" onClick={this.props.onCancel}>
-            Cancel
-          </Button>
-          <Button onClick={this.onClickCreate}>
-            Upload
-          </Button>
-        </ModalFooter>
-      )
-    } else {
+
+    if (this.modalState === 'uploading') {
       footer = (
         <ModalFooter>
           <div className="uploading">Uploading...</div>
+        </ModalFooter>
+      )
+    } else {
+      if (this.modalState !== 'ready') {
+        error = this.modalState.error
+      }
+
+      footer = (
+        <ModalFooter>
+          <Button type="secondary" onClick={onClose}>Cancel</Button>
+          <Button onClick={this.onClickCreate}>Upload</Button>
         </ModalFooter>
       )
     }
 
     return (
       <Modal className="UploadFileModal">
-        <ModalTitle>Upload file for "{noteName}"</ModalTitle>
+        <ModalTitle>Upload file for "{note.name}"</ModalTitle>
 
         <ModalBody>
           <input className="fileName"
@@ -85,10 +78,9 @@ class UploadFileModal extends React.Component<IProps, {}> {
 
     const name = (this.refs['fileName'] as HTMLInputElement).value
 
-    this.props.onUpload(name, this.props.file).catch(
-      (err: Error) => this.switchModalState(new StateEdit(err.toString()))
+    STORE.uploadFile(this.props.note.id, name, this.props.file).then(
+      this.props.onClose,
+      (err: Error) => this.switchModalState({ error: err.toString() })
     )
   }
 }
-
-export default UploadFileModal

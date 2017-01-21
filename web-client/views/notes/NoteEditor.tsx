@@ -20,30 +20,23 @@ interface IProps {
 }
 
 @observer
-class NoteEditor extends React.Component<IProps, {}> {
+export default class NoteEditor extends React.Component<IProps, {}> {
   @observable.ref modal?: JSX.Element
 
   @action changeModal(modal?: JSX.Element): void {
     this.modal = modal
   }
 
-  renderFiles(): JSX.Element[] {
-    const { note } = this.props
-
-    return note.files.map(
-      file => (
-        <AttachmentEditor key={file.name}
-                          noteId={note.id}
-                          file={file}
-                          onRemove={this.onClickDeleteFile} />
-      )
-    )
-  }
-
   render (): JSX.Element {
     const { note } = this.props
 
-    const files = this.renderFiles()
+    const files = note.files.map(
+      file => <AttachmentEditor
+                  key={file.name}
+                  noteId={note.id}
+                  file={file}
+                  onRemove={this.onClickDeleteFile} />
+    )
 
     return (
       <div className="NoteEditor" onDrop={this.onDrop}>
@@ -150,10 +143,9 @@ class NoteEditor extends React.Component<IProps, {}> {
 
   showFileUploadModal(files: FileList): void {
     this.changeModal(
-      <UploadFileModal noteName={this.props.note.name}
+      <UploadFileModal note={this.props.note}
                        file={files[0]}
-                       onCancel={this.hideModal}
-                       onUpload={this.uploadFile} />
+                       onClose={this.hideModal} />
     )
   }
 
@@ -180,5 +172,3 @@ class NoteEditor extends React.Component<IProps, {}> {
     return STORE.uploadFile(this.props.note.id, name, file).then(this.hideModal)
   }
 }
-
-export default NoteEditor

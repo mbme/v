@@ -13,7 +13,7 @@ interface IProps {
 }
 
 @observer
-class Note extends React.Component<IProps, {}> {
+export default class Note extends React.Component<IProps, {}> {
   render (): JSX.Element {
     const { note } = this.props
 
@@ -24,8 +24,8 @@ class Note extends React.Component<IProps, {}> {
     return (
       <div className="Note">
         <div className="Note-toolbar">
-          <Button onClick={this.onClickEdit}>Edit</Button>
-          <Button onClick={this.onClickClose}>Close</Button>
+          <Button onClick={() => note.edit(true)}>Edit</Button>
+          <Button onClick={() => STORE.closeNote(note.id)}>Close</Button>
         </div>
         <h1 className="Note-name">{note.name}</h1>
         <div className="Note-data">{note.data}</div>
@@ -33,14 +33,4 @@ class Note extends React.Component<IProps, {}> {
       </div>
     )
   }
-
-  onClickClose = () => {
-    STORE.closeNote(this.props.note.id)
-  }
-
-  onClickEdit = () => {
-    this.props.note.edit(true)
-  }
 }
-
-export default Note

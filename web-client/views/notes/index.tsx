@@ -10,7 +10,8 @@ import { Button, Header } from 'web-client/components'
 
 import RecordsFilter from './RecordsFilter'
 import NoteRecordView from './NoteRecord'
-import NotesList from './NotesList'
+import NoteView from './Note'
+import NoteEditorView from './NoteEditor'
 import AddNoteModal from './AddNoteModal'
 
 @observer
@@ -73,6 +74,17 @@ export default class NotesView extends React.Component<{}, {}> {
                     onClick={STORE.openNote} />
     )
 
+    const { note } = STORE
+    let noteView
+
+    if (note) {
+      if (note.editMode) { // FIXME remove edit mode
+        noteView = <NoteEditorView key={note.id} note={note} />
+      } else {
+        noteView = <NoteView key={note.id} note={note} />
+      }
+    }
+
     return (
       <div className="NotesView">
         <AddNoteModal show={this.showModal} onClose={() => this.setShowModal(false)} />
@@ -92,7 +104,7 @@ export default class NotesView extends React.Component<{}, {}> {
         </div>
 
         <div className="NotesView-center">
-          <NotesList note={STORE.note} />
+          {noteView}
         </div>
       </div>
     )
