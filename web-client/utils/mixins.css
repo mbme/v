@@ -25,3 +25,7 @@
   word-break: break-all;
   word-wrap: break-word;
 }
+
+.u-like-secondary {
+  @mixin like-secondary;
+}

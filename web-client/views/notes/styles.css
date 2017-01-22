@@ -3,7 +3,7 @@
   position: relative;
 
   $left-width: 320px;
-  $right-width: 550px;
+  $right-width: 650px;
 
   &-left {
     position: fixed;
@@ -63,44 +63,51 @@
     }
   }
 
-  @define-mixin NoteContainer {
-    width: $right-width;
-    min-height: 300px;
+  .NoteContainer {
+    display: flex;
 
-    padding: 0 1vr 1vr;
-    margin: 0 1vr 1vr;
+    .Toolbar {
+      position: fixed;
+      margin-left: calc($right-width + 2vr + 10px);
 
-    background-color: white;
-    @mixin paper-shadow;
-
-    &-toolbar {
-      padding-top: 0.5vr;
-      text-align: right;
-
-      .Button {
-        margin-left: 0.5vr;
-      }
-    }
-
-    &-files {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
 
-      border-top: $light-border;
-      margin-top: 1vr;
-      padding: 0.5vr 0;
+      .title {
+        text-transform: uppercase;
+        margin: 0.5vr 0;
 
-      &.is-hidden {
-        display: none;
+        @mixin like-a-h;
+
+        &:first-child {
+          margin-top: 0;
+        }
+      }
+
+      &-action {
+        margin: 0 0 0.5vr;
+        text-align: left;
+      }
+
+      .FileLink {
+        margin: 0 0 0.5vr;
+        max-width: 320px;
       }
     }
   }
 
-  .Note {
-    @mixin NoteContainer;
-    display: flex;
-    flex-direction: column;
+  .Note, .NoteEditor {
+    width: $right-width;
+    min-height: 300px;
 
+    padding: 1vr 2vr;
+    margin: 0 1vr;
+
+    background-color: white;
+    @mixin paper-shadow;
+  }
+
+  .Note {
     &-name {
       margin-top: 0;
     }
@@ -112,18 +119,10 @@
   }
 
   .NoteEditor {
-    @mixin NoteContainer;
-
-    &-name,
-    &-data,
-    .FilePicker,
-    &-files {
-      margin-top: 0.5vr;
-    }
-
     &-name, &-data {
       display: block;
       width: 100%;
+      margin-top: 0.5vr;
     }
 
     &-name {
@@ -132,19 +131,6 @@
 
     &-data {
       height: 190px;
-    }
-
-    .FilePicker {
-      text-align: right;
-    }
-
-    &-files {
-      .FileLink {
-        .remove {
-          font-size: 0.85em;
-          padding-left: 5px;
-        }
-      }
     }
   }
 }
@@ -212,5 +198,10 @@
     padding-left: 5px;
     font-size: 0.75em;
     @mixin like-secondary;
+  }
+
+  .Button {
+    font-size: 0.85em;
+    padding-left: 5px;
   }
 }

@@ -6,7 +6,7 @@ import {config, fuzzySearch} from 'web-client/utils'
 import { STORE } from 'web-client/store'
 import { NoteRecord } from 'web-client/utils/types'
 
-import { Button, Header } from 'web-client/components'
+import { Button, Header, WithModals } from 'web-client/components'
 
 import RecordsFilter from './RecordsFilter'
 import NoteRecordView from './NoteRecord'
@@ -15,13 +15,8 @@ import NoteEditorView from './NoteEditor'
 import AddNoteModal from './AddNoteModal'
 
 @observer
-export default class NotesView extends React.Component<{}, {}> {
-  @observable showModal: boolean = false
+export default class NotesView extends WithModals<{}, {}> {
   @observable filter: string = ''
-
-  @action setShowModal(show: boolean): void {
-    this.showModal = show
-  }
 
   @action updateFilter = (filter: string) => {
     this.filter = filter
@@ -64,6 +59,12 @@ export default class NotesView extends React.Component<{}, {}> {
     return `${recordsCount} notes`
   }
 
+  showModal = () => {
+    this.setModal(
+        <AddNoteModal onClose={this.hideModal} />
+    )
+  }
+
   render (): JSX.Element {
     const records = STORE.noteRecords.map(
       record => <NoteRecordView
@@ -79,18 +80,17 @@ export default class NotesView extends React.Component<{}, {}> {
 
     if (note) {
       if (note.editMode) { // FIXME remove edit mode
-        noteView = <NoteEditorView key={note.id} note={note} />
+        noteView = <NoteEditorView note={note} />
       } else {
-        noteView = <NoteView key={note.id} note={note} />
+        noteView = <NoteView note={note} />
       }
     }
 
     return (
       <div className="NotesView">
-        <AddNoteModal show={this.showModal} onClose={() => this.setShowModal(false)} />
 
         <Header>
-          <Button onClick={() => this.setShowModal(true)}>Add Note</Button>
+          <Button onClick={this.showModal}>Add Note</Button>
         </Header>
 
         <div className="NotesView-left">

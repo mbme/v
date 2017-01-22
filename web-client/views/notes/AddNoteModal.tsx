@@ -12,17 +12,12 @@ import {
 } from 'web-client/components'
 
 interface IProps {
-  show: boolean,
   onClose: () => void,
 }
 
 @observer
 export default class AddNoteModal extends React.Component<IProps, {}> {
-  render (): JSX.Element | null {
-    if (!this.props.show) {
-      return null
-    }
-
+  render (): JSX.Element {
     return (
       <Modal className="AddNoteModal">
         <ModalTitle>Create new note</ModalTitle>

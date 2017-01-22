@@ -1,3 +1,4 @@
+import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
@@ -80,7 +81,7 @@ export class ModalFooter extends React.Component<IModalProps, {}> {
   }
 }
 
-type ConfirmationModalConfig = {
+interface IConfirmationModalConfig {
   title: string,
   body: string | JSX.Element,
   onCancel: () => void,
@@ -97,7 +98,7 @@ export function confirmationModal({
   actionBtnType = 'dangerous',
   actionBtnText,
   cancelBtnText = 'Cancel',
-}: ConfirmationModalConfig): JSX.Element {
+}: IConfirmationModalConfig): JSX.Element {
   return (
     <Modal>
       <ModalTitle>{title}</ModalTitle>
@@ -114,4 +115,14 @@ export function confirmationModal({
       </ModalFooter>
     </Modal>
   )
+}
+
+export class WithModals<T, S> extends React.Component<T, S> {
+  @observable.ref modal?: JSX.Element
+
+  @action setModal(modal?: JSX.Element): void {
+    this.modal = modal
+  }
+
+  hideModal = () => this.setModal()
 }

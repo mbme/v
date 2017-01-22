@@ -1,69 +1,48 @@
-import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
-import * as cx from 'classnames'
-
-import {IFileInfo} from 'api-client/types'
 
 import { config } from 'web-client/utils'
 import { STORE } from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/utils/types'
 
-import { Button, confirmationModal } from 'web-client/components'
-import FilePicker from './FilePicker'
-import AttachmentEditor from './AttachmentEditor'
-
-import UploadFileModal from './UploadFileModal'
+import { confirmationModal, WithModals } from 'web-client/components'
+import Toolbar, { IAction } from './Toolbar'
 
 interface IProps {
   note: NoteEntity,
 }
 
 @observer
-export default class NoteEditor extends React.Component<IProps, {}> {
-  @observable.ref modal?: JSX.Element
-
-  @action changeModal(modal?: JSX.Element): void {
-    this.modal = modal
-  }
+export default class NoteEditor extends WithModals<IProps, {}> {
 
   render (): JSX.Element {
     const { note } = this.props
 
-    const files = note.files.map(
-      file => <AttachmentEditor
-                  key={file.name}
-                  noteId={note.id}
-                  file={file}
-                  onRemove={this.onClickDeleteFile} />
-    )
+    const actions: IAction[] = [
+      { label: 'Save', action: this.onClickSave },
+      { label: 'Delete', type: 'dangerous', action: this.onClickDelete },
+      { label: 'Close editor', type: 'secondary', action: this.onClickCloseEditor }
+    ]
 
     return (
-      <div className="NoteEditor" onDrop={this.onDrop}>
+      <div className="NoteContainer">
         {this.modal}
-        <div className="NoteEditor-toolbar">
-          <Button onClick={this.onClickSave}>Save</Button>
-          <Button type="dangerous" onClick={this.onClickDelete}>Delete</Button>
-          <Button type="secondary" onClick={this.onClickCloseEditor}>Close editor</Button>
+
+        <div className="NoteEditor">
+          <input className="NoteEditor-name"
+                 ref="name"
+                 type="text"
+                 placeholder="Name"
+                 defaultValue={note.name} />
+
+          <textarea className="NoteEditor-data"
+                    ref="data"
+                    placeholder="Type something here"
+                    defaultValue={note.data} />
+
         </div>
 
-        <input className="NoteEditor-name"
-               ref="name"
-               type="text"
-               placeholder="Name"
-               defaultValue={note.name} />
-
-        <textarea className="NoteEditor-data"
-                  ref="data"
-                  placeholder="Type something here"
-                  defaultValue={note.data} />
-
-        <FilePicker label="Attach file"
-                    onFilesPicked={this.onFilesPicked} />
-
-        <div className={cx('NoteEditor-files', { 'is-hidden': !files.length })}>
-          {files}
-        </div>
+        <Toolbar note={note} actions={actions} />
       </div>
     )
   }
@@ -108,11 +87,7 @@ export default class NoteEditor extends React.Component<IProps, {}> {
       onAction: () => STORE.deleteNote(note.id),
       actionBtnText: 'Delete',
     }
-    this.changeModal(confirmationModal(modalConfig))
-  }
-
-  hideModal = () => {
-    this.changeModal()
+    this.setModal(confirmationModal(modalConfig))
   }
 
   onClickCloseEditor = () => {
@@ -138,37 +113,6 @@ export default class NoteEditor extends React.Component<IProps, {}> {
       onAction: this.closeEditor,
       actionBtnText: 'Close',
     }
-    this.changeModal(confirmationModal(modalConfig))
-  }
-
-  showFileUploadModal(files: FileList): void {
-    this.changeModal(
-      <UploadFileModal note={this.props.note}
-                       file={files[0]}
-                       onClose={this.hideModal} />
-    )
-  }
-
-  onFilesPicked = (files: FileList) => {
-    this.showFileUploadModal(files)
-  }
-
-  onDrop = (e: React.DragEvent<HTMLElement>) => {
-    this.showFileUploadModal(e.dataTransfer.files)
-  }
-
-  onClickDeleteFile = (file: IFileInfo) => {
-    const modalConfig = {
-      title: 'Delete file',
-      body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
-      onCancel: this.hideModal,
-      onAction: () => STORE.deleteFile(this.props.note.id, file).then(this.hideModal),
-      actionBtnText: 'Delete',
-    }
-    this.changeModal(confirmationModal(modalConfig))
-  }
-
-  uploadFile = (name: string, file: File): Promise<void> => {
-    return STORE.uploadFile(this.props.note.id, name, file).then(this.hideModal)
+    this.setModal(confirmationModal(modalConfig))
   }
 }

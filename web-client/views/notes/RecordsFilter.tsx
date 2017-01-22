@@ -9,9 +9,13 @@ interface IProps {
 }
 
 @observer
-class RecordsFilter extends React.Component<IProps, {}> {
+export default class RecordsFilter extends React.Component<IProps, {}> {
 
   @observable inputValue: string = ''
+
+  @action updateInputValue(newValue: string): void {
+    this.inputValue = newValue
+  }
 
   componentWillMount(): void {
     // debounce search input
@@ -22,13 +26,8 @@ class RecordsFilter extends React.Component<IProps, {}> {
     )
   }
 
-  @action
-  updateInputValue(newValue: string): void {
-    this.inputValue = newValue
-  }
-
-  onInputChange = (e: any) => { // tslint:disable-line:no-any
-    this.updateInputValue(e.target.value)
+  onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+    this.updateInputValue(e.currentTarget.value)
   }
 
   render (): JSX.Element {
@@ -42,7 +41,4 @@ class RecordsFilter extends React.Component<IProps, {}> {
       />
     )
   }
-
 }
-
-export default RecordsFilter

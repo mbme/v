@@ -73,7 +73,8 @@ export class Note {
   readonly createTs: Timestamp
   readonly updateTs: Timestamp
   readonly data: string
-  files: ReadonlyArray<IFileInfo>
+
+  @observable files: ReadonlyArray<IFileInfo>
 
   @observable editMode: boolean // FIXME use states: 'loading' | 'edit' | 'view'
 
@@ -88,8 +89,7 @@ export class Note {
     this.editMode = editMode
   }
 
-  @action
-  edit(edit: boolean): void {
+  @action edit(edit: boolean): void {
     this.editMode = edit
   }
 }

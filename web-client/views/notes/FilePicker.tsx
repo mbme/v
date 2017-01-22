@@ -1,21 +1,35 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import { Button } from 'web-client/components'
+import { Button, WithModals } from 'web-client/components'
+import {Note} from 'web-client/utils/types'
+
+import UploadFileModal from './UploadFileModal'
 
 interface IProps {
   label: string,
-  onFilesPicked: (files: FileList) => void,
+  note: Note,
 }
 
 @observer
-class FilePicker extends React.Component<IProps, {}> {
+export default class FilePicker extends WithModals<IProps, {}> {
+  componentWillMount(): void {
+    document.addEventListener('drop', this.onDrop)
+  }
+
+  componentWillUnmount(): void {
+    document.removeEventListener('drop', this.onDrop)
+  }
+
   render (): JSX.Element {
     return (
       <div className="FilePicker">
+        {this.modal}
+
         <form ref="form">
           <input ref="fileInput" type="file" onChange={this.onFileSelected} />
         </form>
+
         <Button onClick={this.onClickSelect}>{this.props.label}</Button>
       </div>
     )
@@ -28,11 +42,21 @@ class FilePicker extends React.Component<IProps, {}> {
 
   onFileSelected = (e: React.FormEvent<HTMLInputElement>) => {
     const fileInput = e.target as HTMLInputElement
-    this.props.onFilesPicked(fileInput.files!)
+    this.showFileUploadModal(fileInput.files!)
 
     const form = this.refs['form'] as HTMLFormElement
     form.reset()
   }
-}
 
-export default FilePicker
+  onDrop = (e: DragEvent) => {
+    this.showFileUploadModal(e.dataTransfer.files)
+  }
+
+  showFileUploadModal(files: FileList): void {
+    this.setModal(
+      <UploadFileModal note={this.props.note}
+                       file={files[0]}
+                       onClose={this.hideModal} />
+    )
+  }
+}
