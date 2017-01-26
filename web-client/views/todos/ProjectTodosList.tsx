@@ -17,13 +17,19 @@ export default class ProjectTodosList extends React.Component<{}, {}> {
     }
 
     return todos.map(
-      ({ id, name }) => <div key={id} className="Todo">{name}</div>
+      ({ id, name }) => (
+        <div key={id} className="Todo">
+          <input type="checkbox" />
+          <span className="Todo-name">{name}</span>
+        </div>
+      )
     )
   }
 
   render(): JSX.Element {
     return (
       <div className="ProjectTodosList">
+        <input className="ProjectTodosList-task-input" type="text" value="" placeholder="Add task"/>
         {this.renderList()}
       </div>
     )

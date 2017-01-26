@@ -1,48 +1,48 @@
 import * as React from 'react'
-import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 
+import * as cx from 'classnames'
 import { STORE } from 'web-client/store'
 
-import ProjectsList from './ProjectsList'
 import ProjectTodosList from './ProjectTodosList'
 
-import { Button, Header } from 'web-client/components'
+import { Button, Header, WithModals } from 'web-client/components'
 
 @observer
-export default class TodosView extends React.Component<{}, {}> {
-  @observable showModal: boolean = false
+export default class TodosView extends WithModals<{}, {}> {
 
   componentWillMount(): void {
     STORE.loadProjectsList()
   }
 
-  @action
-  setShowModal(show: boolean): void {
-    this.showModal = show
+  renderProjects(): JSX.Element[] {
+    return STORE.projects.map(
+      ({ id, name }) => (
+        <div key={id}
+             className={cx('ProjectList-item', { 'is-open': STORE.openProjectId === id })}
+             onClick={() => STORE.openProject(id)}>
+          <div className="u-like-a-h">{name}</div>
+        </div>
+      )
+    )
   }
 
   render (): JSX.Element {
     return (
       <div className="TodosView">
         <Header>
-          <Button onClick={this.onClickPlus}>Add Todo</Button>
+          <Button onClick={() => {}}>Add Todo</Button>
         </Header>
         <div className="TodosView-left">
-          <ProjectsList />
+          <div className="ProjectList-item is-disabled">Inbox</div>
+          <div className="ProjectList-item is-disabled">Today</div>
+          <div className="ProjectList-item is-disabled">Upcoming</div>
+          <div className="ProjectList-projects">{this.renderProjects()}</div>
         </div>
         <div className="TodosView-center">
           <ProjectTodosList />
         </div>
       </div>
     )
-  }
-
-  onClickPlus = () => {
-    this.setShowModal(true)
-  }
-
-  onModalCancel = () => {
-    this.setShowModal(false)
   }
 }
