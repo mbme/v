@@ -3,7 +3,8 @@
 
   .ProjectList {
     &-projects {
-      overflow-y: scroll;
+      overflow-y: auto;
+      flex-grow: 1;
     }
 
     &-item {
@@ -19,6 +20,10 @@
       &.is-open {
         background-color: yellow;
       }
+    }
+
+    &-add-project {
+      height: 80px;
     }
   }
 

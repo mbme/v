@@ -29,9 +29,20 @@ export default class ProjectTodosList extends React.Component<{}, {}> {
   render(): JSX.Element {
     return (
       <div className="ProjectTodosList">
-        <input className="ProjectTodosList-task-input" type="text" value="" placeholder="Add task"/>
+        <input className="ProjectTodosList-task-input"
+               type="text"
+               placeholder="Add task"
+               onKeyPress={this.onKeyPress} />
         {this.renderList()}
       </div>
     )
+  }
+
+  onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') {
+      return
+    }
+
+    console.error(e.currentTarget.value);
   }
 }

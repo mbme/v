@@ -16,7 +16,7 @@ import TodosView from 'web-client/views/todos'
 @observer
 export default class App extends React.Component<{}, {}> {
   @computed get currentView(): JSX.Element {
-    switch (STORE.view) {
+    switch (STORE.uiStore.view) {
       case 'notes':
         return <NotesView />
 
@@ -24,12 +24,12 @@ export default class App extends React.Component<{}, {}> {
         return <TodosView />
 
       default:
-        throw new Error(`unexpected view ${STORE.view}`)
+        throw new Error(`unexpected view ${STORE.uiStore.view}`)
     }
   }
 
   @computed get modalsContainer(): JSX.Element {
-    const modal = STORE.visibleModal
+    const modal = STORE.uiStore.visibleModal
 
     return (
       <div className={cx('ModalsContainer', { 'is-hidden': !modal })}>
@@ -40,7 +40,7 @@ export default class App extends React.Component<{}, {}> {
   }
 
   @computed get toastsContainer(): JSX.Element {
-    const toasts = STORE.toasts.map(
+    const toasts = STORE.uiStore.toasts.map(
       toast => <Toast key={toast.id} toast={toast} />
     )
 

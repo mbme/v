@@ -23,7 +23,7 @@ export default class NotesView extends WithModals<{}, {}> {
   }
 
   @computed get visibleRecords(): NoteRecord[] {
-    return STORE.noteRecords.filter(record => {
+    return STORE.notesStore.noteRecords.filter(record => {
       let filter = this.filter
       let name = record.name
 
@@ -41,11 +41,11 @@ export default class NotesView extends WithModals<{}, {}> {
   }
 
   componentWillMount(): void {
-    STORE.loadNoteRecordsList()
+    STORE.notesStore.loadNoteRecords()
   }
 
   renderRecordsCount(): string {
-    const recordsCount = STORE.noteRecords.length
+    const recordsCount = STORE.notesStore.noteRecords.length
     const visibleRecordsCount = this.visibleRecords.length
 
     if (!recordsCount) {
@@ -66,16 +66,16 @@ export default class NotesView extends WithModals<{}, {}> {
   }
 
   render (): JSX.Element {
-    const records = STORE.noteRecords.map(
+    const records = STORE.notesStore.noteRecords.map(
       record => <NoteRecordView
                     key={record.id}
                     record={record}
-                    isOpen={STORE.isOpenNote(record.id)}
+                    isOpen={STORE.notesStore.isOpenNote(record.id)}
                     isVisible={this.visibleRecords.indexOf(record) > -1}
-                    onClick={STORE.openNote} />
+                    onClick={STORE.notesStore.openNote} />
     )
 
-    const { note } = STORE
+    const { note } = STORE.notesStore
     let noteView
 
     if (note) {

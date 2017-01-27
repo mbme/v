@@ -19,19 +19,19 @@ export class Modal extends React.Component<IProps, {}> {
   id: number
 
   componentWillMount(): void {
-    this.id = STORE.openModal(
+    this.id = STORE.uiStore.openModal(
       this.renderModal(this.props)
     )
   }
 
   componentWillUpdate(nextProps: ReactProps): void {
-    STORE.updateModal(
+    STORE.uiStore.updateModal(
       this.id, this.renderModal(nextProps)
     )
   }
 
   componentWillUnmount(): void {
-    STORE.closeModal(this.id)
+    STORE.uiStore.closeModal(this.id)
   }
 
   renderModal(props: ReactProps): JSX.Element {

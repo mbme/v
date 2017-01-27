@@ -9,6 +9,7 @@ import UploadFileModal from './UploadFileModal'
 interface IProps {
   label: string,
   note: Note,
+  onNewFile: () => void, // FIXME use this!
 }
 
 @observer

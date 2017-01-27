@@ -75,7 +75,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
       return
     }
 
-    STORE.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
+    STORE.notesStore.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
   }
 
   onClickDelete = () => {
@@ -84,7 +84,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
       title: 'Delete note',
       body: (<span>Do you really want to delete note <b>{note.name}</b></span>),
       onCancel: this.hideModal,
-      onAction: () => STORE.deleteNote(note.id),
+      onAction: () => STORE.notesStore.deleteNote(note.id),
       actionBtnText: 'Delete',
     }
     this.setModal(confirmationModal(modalConfig))

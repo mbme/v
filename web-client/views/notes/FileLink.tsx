@@ -1,4 +1,3 @@
-import {observable, action} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 
@@ -7,44 +6,45 @@ import {IFileInfo} from 'api-client/types'
 
 import { STORE } from 'web-client/store'
 import {formatBytes} from 'web-client/utils'
-import { Button, confirmationModal } from 'web-client/components'
+import { Button, confirmationModal, WithModals } from 'web-client/components'
 
 interface IProps {
   recordId: number,
   file: IFileInfo,
   editMode?: boolean,
+  onRemove?: () => void,
 }
 
 @observer
-export default class FileLink extends React.Component<IProps, {}> {
-  @observable showModal: boolean = false
+export default class FileLink extends WithModals<IProps, {}> {
+  onClickRemove = () => {
+    const { file, recordId, onRemove } = this.props
 
-  @action setShowModal(show: boolean): void {
-    this.showModal = show
+    this.setModal(confirmationModal({
+      title: 'Delete file',
+      body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
+      onCancel: this.hideModal,
+      onAction: () => STORE.filesStore.deleteFile(recordId, file).then(() => {
+        this.hideModal()
+        if (onRemove) {
+          onRemove()
+        }
+      }),
+      actionBtnText: 'Delete',
+    }))
   }
 
   render (): JSX.Element {
     const { file, recordId, editMode = false } = this.props
 
-    let modal
-    if (this.showModal) {
-      modal = confirmationModal({
-        title: 'Delete file',
-        body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
-        onCancel: () => this.setShowModal(false),
-        onAction: () => STORE.deleteFile(recordId, file).then(() => this.setShowModal(false)),
-        actionBtnText: 'Delete',
-      })
-    }
-
     let button
     if (editMode) {
-      button = (<Button type="dangerous" onClick={() => this.setShowModal(true)}>Remove</Button>)
+      button = (<Button type="dangerous" onClick={this.onClickRemove}>Remove</Button>)
     }
 
     return (
       <div className="FileLink">
-        {modal}
+        {this.modal}
         <a href={urls.file(recordId, file.name)} target="_blank">{file.name}</a>
         <span className="size">{formatBytes(file.size)}</span>
         {button}

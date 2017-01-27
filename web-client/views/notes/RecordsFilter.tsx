@@ -19,7 +19,7 @@ export default class RecordsFilter extends React.Component<IProps, {}> {
 
   componentWillMount(): void {
     // debounce search input
-    reaction(
+    reaction( // FIXME dispose this?
       () => this.inputValue,
       this.props.onChange,
       { delay: config.searchDelay }
