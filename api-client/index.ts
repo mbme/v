@@ -143,7 +143,7 @@ export function listProjectTodos(projectId: number): Promise<ITodo[]> {
 export function createTodo(
   projectId: number,
   name: string,
-  details: string,
+  details: string = '',
   startTs?: Timestamp,
   endTs?: Timestamp
 ): Promise<ITodo> {

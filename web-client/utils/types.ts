@@ -37,7 +37,7 @@ export class Todo {
   readonly state: TodoState
   readonly startTs: Timestamp
   readonly endTs: Timestamp
-  files: ReadonlyArray<IFileInfo>
+  readonly files: ReadonlyArray<IFileInfo>
 
   constructor(todo: ITodo) {
     this.id = todo.id

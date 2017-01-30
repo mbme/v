@@ -147,6 +147,14 @@ class TodosStore {
     this.setProjectTodos(projectId, data.map(dto => new Todo(dto)))
   }
 
+  @action async addTodo(projectId: number, name: string): Promise<void> {
+    await this.uiStore.errorHandler(
+      api.createTodo(projectId, name), 'failed to create todo'
+    )
+
+    this.loadProjectTodos(projectId)
+  }
+
   @action private setProjectTodos(projectId: number, todos: Todo[]): void {
     this.todos.set(projectId.toString(), todos)
   }

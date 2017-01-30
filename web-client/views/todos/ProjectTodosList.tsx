@@ -3,14 +3,14 @@ import {observer} from 'mobx-react'
 
 import { todosStore } from 'web-client/store'
 
-@observer
-export default class ProjectTodosList extends React.Component<{}, {}> {
-  renderList(): JSX.Element[] | string {
-    if (!todosStore.openProjectId) {
-      return ''
-    }
+interface IProps {
+  projectId: number,
+}
 
-    const todos = todosStore.todos.get(todosStore.openProjectId.toString()) || []
+@observer
+export default class ProjectTodosList extends React.Component<IProps, {}> {
+  renderList(): JSX.Element[] | string {
+    const todos = todosStore.todos.get(this.props.projectId.toString()) || []
 
     if (!todos.length) {
       return 'No todos :)'
@@ -38,11 +38,14 @@ export default class ProjectTodosList extends React.Component<{}, {}> {
     )
   }
 
-  onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  onKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== 'Enter') {
       return
     }
 
-    console.error(e.currentTarget.value);
+    const el = e.currentTarget
+    await todosStore.addTodo(this.props.projectId!, el.value)
+
+    el.value = ''
   }
 }

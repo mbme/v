@@ -28,6 +28,11 @@ export default class TodosView extends WithModals<{}, {}> {
   }
 
   render (): JSX.Element {
+    let list
+    if (todosStore.openProjectId) {
+      list = <ProjectTodosList projectId={todosStore.openProjectId} />
+    }
+
     return (
       <div className="TodosView">
         <Header />
@@ -38,9 +43,7 @@ export default class TodosView extends WithModals<{}, {}> {
           <div className="ProjectList-projects">{this.renderProjects()}</div>
           <Button className="ProjectList-add-project" onClick={() => {}}>Add Project</Button>
         </div>
-        <div className="TodosView-center">
-          <ProjectTodosList />
-        </div>
+        <div className="TodosView-center">{list}</div>
       </div>
     )
   }
