@@ -2,14 +2,12 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 
 import { Button, WithModals } from 'web-client/components'
-import {Note} from 'web-client/utils/types'
-
 import UploadFileModal from './UploadFileModal'
 
 interface IProps {
   label: string,
-  note: Note,
-  onNewFile: () => void, // FIXME use this!
+  recordId: number,
+  onFileUploaded: () => void,
 }
 
 @observer
@@ -55,8 +53,9 @@ export default class FilePicker extends WithModals<IProps, {}> {
 
   showFileUploadModal(files: FileList): void {
     this.setModal(
-      <UploadFileModal note={this.props.note}
+      <UploadFileModal recordId={this.props.recordId}
                        file={files[0]}
+                       onFileUploaded={this.props.onFileUploaded}
                        onClose={this.hideModal} />
     )
   }

@@ -1,9 +1,10 @@
 import * as React from 'react'
+import {action, observable} from 'mobx'
 import {observer} from 'mobx-react'
 
-import {Note} from 'web-client/utils/types'
-
 import { Button, ButtonType } from 'web-client/components'
+import { filesStore } from 'web-client/store'
+import {IFileInfo} from 'api-client/types'
 
 import FileLink from './FileLink'
 import FilePicker from './FilePicker'
@@ -15,24 +16,50 @@ export interface IAction {
 }
 
 interface IProps {
-  note: Note,
+  recordId: number,
+  edit: boolean,
   actions: IAction[]
 }
 
 @observer
 export default class Toolbar extends React.Component<IProps, {}> {
-  render(): JSX.Element {
-    const { note, actions } = this.props
+  @observable files: IFileInfo[] = []
+  @action setFiles(files: IFileInfo[]): void {
+    this.files = files
+  }
 
-    const links = note.files.map(
-      file => <FileLink key={file.name} editMode={note.editMode} recordId={note.id} file={file} />
+  reloadFiles = async () => {
+    const files = await filesStore.loadFiles(this.props.recordId)
+    this.setFiles(files)
+  }
+
+  componentDidMount(): void {
+    this.reloadFiles()
+  }
+
+  render(): JSX.Element {
+    const { recordId, edit, actions } = this.props
+
+    const links = this.files.map(
+      file => (
+        <FileLink key={file.name}
+                  editMode={edit}
+                  recordId={recordId}
+                  file={file}
+                  onRemove={this.reloadFiles} />
+      )
     )
 
     if (!links.length) {
       links.push(<label key="no-files-label" className="u-like-secondary">No files</label>)
     }
-    if (note.editMode) {
-      links.push(<FilePicker key="file-picker" label="Attach file" note={note} />)
+    if (edit) {
+      links.push(
+        <FilePicker key="file-picker"
+                    label="Attach file"
+                    recordId={recordId}
+                    onFileUploaded={this.reloadFiles} />
+      )
     }
 
     const buttons = actions.map(

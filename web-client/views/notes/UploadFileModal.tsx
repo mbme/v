@@ -10,12 +10,12 @@ import {
   Button,
 } from 'web-client/components'
 import {formatBytes} from 'web-client/utils'
-import {Note} from 'web-client/utils/types'
 import { filesStore } from 'web-client/store'
 
 interface IProps {
   file: File,
-  note: Note,
+  recordId: number,
+  onFileUploaded: () => void,
   onClose: () => void,
 }
 
@@ -30,7 +30,7 @@ export default class UploadFileModal extends React.Component<IProps, {}> {
   }
 
   render (): JSX.Element {
-    const { file, note, onClose } = this.props
+    const { file, onClose } = this.props
 
     let error: string | undefined
     let footer: JSX.Element
@@ -56,7 +56,7 @@ export default class UploadFileModal extends React.Component<IProps, {}> {
 
     return (
       <Modal className="UploadFileModal">
-        <ModalTitle>Upload file for "{note.name}"</ModalTitle>
+        <ModalTitle>Upload file</ModalTitle>
 
         <ModalBody>
           <input className="fileName"
@@ -76,10 +76,14 @@ export default class UploadFileModal extends React.Component<IProps, {}> {
   onClickCreate = () => {
     this.switchModalState('uploading')
 
+    const { file, onClose, onFileUploaded } = this.props
     const name = (this.refs['fileName'] as HTMLInputElement).value
 
-    filesStore.uploadFile(this.props.note.id, name, this.props.file).then(
-      this.props.onClose,
+    filesStore.uploadFile(this.props.recordId, name, file).then(
+      () => {
+        onFileUploaded()
+        onClose()
+      },
       (err: Error) => this.switchModalState({ error: err.toString() })
     )
   }

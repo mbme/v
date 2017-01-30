@@ -1,9 +1,7 @@
 import {action, observable, computed, ObservableMap} from 'mobx'
 
 import * as api from 'api-client'
-import {
-  IFileInfo,
-} from 'api-client/types'
+import {IFileInfo} from 'api-client/types'
 import {
   ProjectRecord,
   NoteRecord,
@@ -19,24 +17,21 @@ import { config } from 'web-client/utils'
 class FilesStore {
   constructor(protected uiStore: UIStore) {}
 
-  @action async uploadFile(recordId: number, name: string, file: File): Promise<IFileInfo[]> {
+  @action async uploadFile(recordId: number, name: string, file: File): Promise<void> {
     await this.uiStore.errorHandler(
       api.uploadFile(recordId, name, file),
       `failed to upload file for record ${recordId}`
     )
-
-    return this.uiStore.errorHandler(
-      api.listFiles(recordId),
-      `failed to list files of record ${recordId}`
-    )
   }
 
-  @action async deleteFile(recordId: number, file: IFileInfo): Promise<IFileInfo[]> {
-    await this.uiStore.errorHandler(
+  @action deleteFile(recordId: number, file: IFileInfo): Promise<void> {
+    return this.uiStore.errorHandler(
       api.deleteFile(recordId, file.name),
       `failed to delete file of record ${recordId}`
     )
+  }
 
+  @action loadFiles(recordId: number): Promise<IFileInfo[]> {
     return this.uiStore.errorHandler(
       api.listFiles(recordId),
       `failed to list files of record ${recordId}`

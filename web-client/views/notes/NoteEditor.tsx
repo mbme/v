@@ -42,7 +42,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
 
         </div>
 
-        <Toolbar note={note} actions={actions} />
+        <Toolbar recordId={note.id} edit={true} actions={actions} />
       </div>
     )
   }

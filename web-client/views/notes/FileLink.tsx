@@ -12,7 +12,7 @@ interface IProps {
   recordId: number,
   file: IFileInfo,
   editMode?: boolean,
-  onRemove?: () => void,
+  onRemove: () => void,
 }
 
 @observer
@@ -26,9 +26,7 @@ export default class FileLink extends WithModals<IProps, {}> {
       onCancel: this.hideModal,
       onAction: () => filesStore.deleteFile(recordId, file).then(() => {
         this.hideModal()
-        if (onRemove) {
-          onRemove()
-        }
+        onRemove()
       }),
       actionBtnText: 'Delete',
     }))

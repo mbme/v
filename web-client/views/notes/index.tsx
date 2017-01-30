@@ -80,9 +80,9 @@ export default class NotesView extends WithModals<{}, {}> {
 
     if (note) {
       if (note.editMode) { // FIXME remove edit mode
-        noteView = <NoteEditorView note={note} />
+        noteView = <NoteEditorView key={note.id} note={note} />
       } else {
-        noteView = <NoteView note={note} />
+        noteView = <NoteView key={note.id} note={note} />
       }
     }
 

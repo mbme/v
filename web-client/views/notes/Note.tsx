@@ -27,7 +27,7 @@ export default class Note extends React.Component<IProps, {}> {
           <div className="Note-data">{note.data}</div>
         </div>
 
-        <Toolbar note={note} actions={actions} />
+        <Toolbar recordId={note.id} edit={false} actions={actions} />
       </div>
     )
   }
