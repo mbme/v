@@ -2,7 +2,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 
 import { config } from 'web-client/utils'
-import { STORE } from 'web-client/store'
+import { notesStore } from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/utils/types'
 
 import { confirmationModal, WithModals } from 'web-client/components'
@@ -75,7 +75,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
       return
     }
 
-    STORE.notesStore.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
+    notesStore.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
   }
 
   onClickDelete = () => {
@@ -84,7 +84,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
       title: 'Delete note',
       body: (<span>Do you really want to delete note <b>{note.name}</b></span>),
       onCancel: this.hideModal,
-      onAction: () => STORE.notesStore.deleteNote(note.id),
+      onAction: () => notesStore.deleteNote(note.id),
       actionBtnText: 'Delete',
     }
     this.setModal(confirmationModal(modalConfig))

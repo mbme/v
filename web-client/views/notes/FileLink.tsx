@@ -4,7 +4,7 @@ import * as React from 'react'
 import urls from 'api-client/urls'
 import {IFileInfo} from 'api-client/types'
 
-import { STORE } from 'web-client/store'
+import { filesStore } from 'web-client/store'
 import {formatBytes} from 'web-client/utils'
 import { Button, confirmationModal, WithModals } from 'web-client/components'
 
@@ -24,7 +24,7 @@ export default class FileLink extends WithModals<IProps, {}> {
       title: 'Delete file',
       body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
       onCancel: this.hideModal,
-      onAction: () => STORE.filesStore.deleteFile(recordId, file).then(() => {
+      onAction: () => filesStore.deleteFile(recordId, file).then(() => {
         this.hideModal()
         if (onRemove) {
           onRemove()

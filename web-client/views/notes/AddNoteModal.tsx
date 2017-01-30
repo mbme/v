@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import { STORE } from 'web-client/store'
+import { notesStore } from 'web-client/store'
 
 import {
   Modal,
@@ -40,6 +40,6 @@ export default class AddNoteModal extends React.Component<IProps, {}> {
 
   onClickCreate = () => {
     const name = (this.refs['name'] as HTMLInputElement).value
-    STORE.createNote(name).then(this.props.onClose)
+    notesStore.createNote(name).then(this.props.onClose)
   }
 }

@@ -6,7 +6,7 @@ import {observer} from 'mobx-react'
 
 import DevTools from 'mobx-react-devtools'
 
-import { STORE } from 'web-client/store'
+import { uiStore } from 'web-client/store'
 
 import { Toast } from 'web-client/components'
 
@@ -16,7 +16,7 @@ import TodosView from 'web-client/views/todos'
 @observer
 export default class App extends React.Component<{}, {}> {
   @computed get currentView(): JSX.Element {
-    switch (STORE.uiStore.view) {
+    switch (uiStore.view) {
       case 'notes':
         return <NotesView />
 
@@ -24,12 +24,12 @@ export default class App extends React.Component<{}, {}> {
         return <TodosView />
 
       default:
-        throw new Error(`unexpected view ${STORE.uiStore.view}`)
+        throw new Error(`unexpected view ${uiStore.view}`)
     }
   }
 
   @computed get modalsContainer(): JSX.Element {
-    const modal = STORE.uiStore.visibleModal
+    const modal = uiStore.visibleModal
 
     return (
       <div className={cx('ModalsContainer', { 'is-hidden': !modal })}>
@@ -40,7 +40,7 @@ export default class App extends React.Component<{}, {}> {
   }
 
   @computed get toastsContainer(): JSX.Element {
-    const toasts = STORE.uiStore.toasts.map(
+    const toasts = uiStore.toasts.map(
       toast => <Toast key={toast.id} toast={toast} />
     )
 

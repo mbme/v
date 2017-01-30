@@ -11,7 +11,7 @@ import {
 } from 'web-client/components'
 import {formatBytes} from 'web-client/utils'
 import {Note} from 'web-client/utils/types'
-import { STORE } from 'web-client/store'
+import { filesStore } from 'web-client/store'
 
 interface IProps {
   file: File,
@@ -78,7 +78,7 @@ export default class UploadFileModal extends React.Component<IProps, {}> {
 
     const name = (this.refs['fileName'] as HTMLInputElement).value
 
-    STORE.uploadFile(this.props.note.id, name, this.props.file).then(
+    filesStore.uploadFile(this.props.note.id, name, this.props.file).then(
       this.props.onClose,
       (err: Error) => this.switchModalState({ error: err.toString() })
     )

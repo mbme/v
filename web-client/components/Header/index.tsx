@@ -1,14 +1,14 @@
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import { STORE } from 'web-client/store'
+import { uiStore } from 'web-client/store'
 import { ViewTypes } from 'web-client/utils/types'
 
 export class Header extends React.Component<{}, {}> {
   renderLink(view: ViewTypes, text: string): JSX.Element {
-    const classes = cx('Header-link', { 'is-active': STORE.view === view })
+    const classes = cx('Header-link', { 'is-active': uiStore.view === view })
     return (
-      <div className={classes} onClick={() => STORE.setView(view)}>{text}</div>
+      <div className={classes} onClick={() => uiStore.setView(view)}>{text}</div>
     )
   }
 

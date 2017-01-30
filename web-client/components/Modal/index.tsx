@@ -3,7 +3,7 @@ import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
 
-import { STORE } from 'web-client/store'
+import { uiStore } from 'web-client/store'
 import { Button, ButtonType } from '../Button'
 
 interface IProps {
@@ -19,19 +19,19 @@ export class Modal extends React.Component<IProps, {}> {
   id: number
 
   componentWillMount(): void {
-    this.id = STORE.uiStore.openModal(
+    this.id = uiStore.openModal(
       this.renderModal(this.props)
     )
   }
 
   componentWillUpdate(nextProps: ReactProps): void {
-    STORE.uiStore.updateModal(
+    uiStore.updateModal(
       this.id, this.renderModal(nextProps)
     )
   }
 
   componentWillUnmount(): void {
-    STORE.uiStore.closeModal(this.id)
+    uiStore.closeModal(this.id)
   }
 
   renderModal(props: ReactProps): JSX.Element {

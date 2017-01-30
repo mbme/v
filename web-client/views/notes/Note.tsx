@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 
-import { STORE } from 'web-client/store'
+import { notesStore } from 'web-client/store'
 import {Note as NoteEntity} from 'web-client/utils/types'
 
 import Toolbar, { IAction } from './Toolbar'
@@ -16,7 +16,7 @@ export default class Note extends React.Component<IProps, {}> {
     const { note } = this.props
 
     const actions: IAction[] = [
-      { label: 'Close', action: () => STORE.closeNote(note.id)},
+      { label: 'Close', action: () => notesStore.closeNote(note.id)},
       { label: 'Edit', action: () => note.edit(true)},
     ]
 

@@ -3,7 +3,7 @@ import {observable, action, computed} from 'mobx'
 import {observer} from 'mobx-react'
 
 import {config, fuzzySearch} from 'web-client/utils'
-import { STORE } from 'web-client/store'
+import { notesStore } from 'web-client/store'
 import { NoteRecord } from 'web-client/utils/types'
 
 import { Button, Header, WithModals } from 'web-client/components'
@@ -23,7 +23,7 @@ export default class NotesView extends WithModals<{}, {}> {
   }
 
   @computed get visibleRecords(): NoteRecord[] {
-    return STORE.notesStore.noteRecords.filter(record => {
+    return notesStore.noteRecords.filter(record => {
       let filter = this.filter
       let name = record.name
 
@@ -41,11 +41,11 @@ export default class NotesView extends WithModals<{}, {}> {
   }
 
   componentWillMount(): void {
-    STORE.notesStore.loadNoteRecords()
+    notesStore.loadNoteRecords()
   }
 
   renderRecordsCount(): string {
-    const recordsCount = STORE.notesStore.noteRecords.length
+    const recordsCount = notesStore.noteRecords.length
     const visibleRecordsCount = this.visibleRecords.length
 
     if (!recordsCount) {
@@ -66,16 +66,16 @@ export default class NotesView extends WithModals<{}, {}> {
   }
 
   render (): JSX.Element {
-    const records = STORE.notesStore.noteRecords.map(
+    const records = notesStore.noteRecords.map(
       record => <NoteRecordView
                     key={record.id}
                     record={record}
-                    isOpen={STORE.notesStore.isOpenNote(record.id)}
+                    isOpen={notesStore.isOpenNote(record.id)}
                     isVisible={this.visibleRecords.indexOf(record) > -1}
-                    onClick={STORE.notesStore.openNote} />
+                    onClick={notesStore.openNote} />
     )
 
-    const { note } = STORE.notesStore
+    const { note } = notesStore
     let noteView
 
     if (note) {

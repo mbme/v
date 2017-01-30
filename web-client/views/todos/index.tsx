@@ -2,7 +2,7 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 
 import * as cx from 'classnames'
-import { STORE } from 'web-client/store'
+import { todosStore } from 'web-client/store'
 
 import ProjectTodosList from './ProjectTodosList'
 
@@ -12,15 +12,15 @@ import { Button, Header, WithModals } from 'web-client/components'
 export default class TodosView extends WithModals<{}, {}> {
 
   componentWillMount(): void {
-    STORE.todosStore.loadProjectsList()
+    todosStore.loadProjectsList()
   }
 
   renderProjects(): JSX.Element[] {
-    return STORE.todosStore.projects.map(
+    return todosStore.projects.map(
       ({ id, name }) => (
         <div key={id}
-             className={cx('ProjectList-item', { 'is-open': STORE.todosStore.openProjectId === id })}
-             onClick={() => STORE.openProject(id)}>
+             className={cx('ProjectList-item', { 'is-open': todosStore.openProjectId === id })}
+             onClick={() => todosStore.openProject(id)}>
           <div className="u-like-a-h">{name}</div>
         </div>
       )
