@@ -1,23 +1,21 @@
-export type Timestamp = number
-
 export interface IFileInfo {
   readonly name: string,
   readonly size: number,
-  readonly create_ts: Timestamp,
+  readonly createTs: number,
 }
 
 export interface IRecord {
   readonly id: number,
   readonly name: string,
-  readonly create_ts: Timestamp,
-  readonly update_ts: Timestamp,
+  readonly createTs: number,
+  readonly updateTs: number,
 }
 
 export interface INote {
   readonly id: number,
   readonly name: string,
-  readonly create_ts: Timestamp,
-  readonly update_ts: Timestamp,
+  readonly createTs: number,
+  readonly updateTs: number,
   readonly data: string,
   readonly files: ReadonlyArray<IFileInfo>,
 }
@@ -25,23 +23,26 @@ export interface INote {
 export interface IProject {
   readonly id: number,
   readonly name: string,
-  readonly create_ts: Timestamp,
-  readonly update_ts: Timestamp,
+  readonly createTs: number,
+  readonly updateTs: number,
   readonly description: string,
   readonly files: ReadonlyArray<IFileInfo>,
 }
 
 export type TodoState = 'inbox' | 'todo' | 'in-progress' | 'blocked' | 'done' | 'canceled'
 
-export interface ITodo {
-  readonly id: number,
+export interface ITodoData {
   readonly name: string,
-  readonly create_ts: Timestamp,
-  readonly update_ts: Timestamp,
-  readonly project_id: number,
   readonly details: string,
+  readonly startTs?: number,
+  readonly endTs?: number,
+}
+
+export interface ITodo extends ITodoData {
+  readonly id: number,
+  readonly createTs: number,
+  readonly updateTs: number,
+  readonly projectId: number,
   readonly state: TodoState,
-  readonly start_ts: Timestamp,
-  readonly end_ts: Timestamp,
   readonly files: ReadonlyArray<IFileInfo>,
 }

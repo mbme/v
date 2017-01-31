@@ -11,15 +11,15 @@ function validateProject(body: types.IProject, name: string, description: string
   expect(body).to.be.an('object')
 
   expect(body).to.have.all.keys(
-    'id', 'name', 'description', 'create_ts', 'update_ts', 'files'
+    'id', 'name', 'description', 'createTs', 'updateTs', 'files'
   )
 
   expect(body.id).to.be.a('number')
   expect(body.name).to.equal(name)
   expect(body.description).to.equal(description)
   expect(body.files).to.be.an('array')
-  expect(body.create_ts).to.be.a('number')
-  expect(body.update_ts).to.be.a('number')
+  expect(body.createTs).to.be.a('number')
+  expect(body.updateTs).to.be.a('number')
 }
 
 describe('Projects API', () => {

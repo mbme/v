@@ -6,19 +6,13 @@ import {
   INote,
   IProject,
   ITodo,
+  ITodoData,
   TodoState,
-  Timestamp,
 } from 'api-client/types'
 
 export class ServerError extends Error {
-  readonly status: number
-  readonly error: string
-
-  constructor(status: number = 0, error: string = '') {
+  constructor(readonly status: number = 0, readonly error: string = '') {
     super()
-
-    this.status = status
-    this.error = error
   }
 
   toString(): string {
@@ -40,41 +34,63 @@ function wrapRequest<T>(r: request.SuperAgentRequest, onResponse: (status: numbe
         reject(new ServerError(err.status, err.response ? err.response.text : ''))
       } else {
         onResponse(res.status)
-        resolve(res.body)
+        resolve(renameProps(res.body, toCamelCase))
       }
     })
   })
 }
 
-function GET<T>(url: string): Promise<T> {
-  return wrapRequest(
-    request.get(url),
-    (status) => maybeLog('  GET', url, status)
-  )
+function toCamelCase(s: string): string {
+  return s.replace(/(_[a-z])/g, c => c.charAt(1).toUpperCase())
 }
 
-function POST<T>(url: string, addData: (req: request.Request) => void): Promise<T> {
+function toSnakeCase(s: string): string {
+  return s.replace(/([a-z][A-Z])/g, c => c.charAt(0) + '_' + c.charAt(1).toLowerCase())
+}
+
+function renameProps(data: any, convert: (s: string) => string): any {
+  const type = Object.prototype.toString.call(data)
+
+  if (type === '[object Array]') {
+    return data.map((item: any) => renameProps(item, convert))
+  }
+
+  if (type === '[object Object]') {
+    const result: any = {}
+
+    Object.keys(data).forEach(prop => result[convert(prop)] = renameProps(data[prop], convert))
+
+    return result
+  }
+
+  return data
+}
+
+function GET<T>(url: string): Promise<T> {
+  return wrapRequest(request.get(url), status => maybeLog('  GET', url, status))
+}
+
+function POST_FILE<T>(url: string, addData: (req: request.Request) => void): Promise<T> {
   const req = request.post(url)
   addData(req)
 
-  return wrapRequest(
-    req,
-    (status) => maybeLog('  POST', url, status)
-  )
+  return wrapRequest(req, status => maybeLog('  POST', url, status))
 }
+
+function POST<T>(url: string, data: Object): Promise<T> {
+  return POST_FILE(url, req => req.send(renameProps(data, toSnakeCase)))
+}
+
 
 function PUT<T>(url: string, data: Object): Promise<T> {
   return wrapRequest(
-    request.put(url).send(data),
-    (status) => maybeLog('   PUT', url, status)
+    request.put(url).send(renameProps(data, toSnakeCase)),
+    status => maybeLog('   PUT', url, status)
   )
 }
 
 function DELETE<T>(url: string): Promise<T> {
-  return wrapRequest(
-    request.delete(url),
-    (status) => maybeLog('DELETE', url, status)
-  )
+  return wrapRequest(request.delete(url), status => maybeLog('DELETE', url, status))
 }
 
 export function listNotes(): Promise<IRecord[]> {
@@ -86,7 +102,7 @@ export function readNote(id: number): Promise<INote> {
 }
 
 export function createNote(name: string, data: string = ''): Promise<INote> {
-  return POST(urls.notes(), (req) => req.send({ name, data }))
+  return POST(urls.notes(), { name, data })
 }
 
 export function updateNote(id: number, name: string, data: string): Promise<INote> {
@@ -106,7 +122,7 @@ export function uploadFile(
   name: string,
   file: File | Buffer
 ): Promise<IFileInfo> {
-  return POST(
+  return POST_FILE(
     urls.files(recordId),
     (req) => req.field('name', name).attach('data', file as any) // tslint:disable-line:no-any
   )
@@ -125,7 +141,7 @@ export function listProjects(): Promise<IRecord[]> {
 }
 
 export function createProject(name: string, description: string = ''): Promise<IProject> {
-  return POST(urls.projects(), (req) => req.send({ name, description }))
+  return POST(urls.projects(), { name, description })
 }
 
 export function updateProject(id: number, name: string, description: string): Promise<IProject> {
@@ -140,42 +156,12 @@ export function listProjectTodos(projectId: number): Promise<ITodo[]> {
   return GET(urls.todos(projectId))
 }
 
-export function createTodo(
-  projectId: number,
-  name: string,
-  details: string = '',
-  startTs?: Timestamp,
-  endTs?: Timestamp
-): Promise<ITodo> {
-  return POST(
-    urls.todos(projectId),
-    (req) => req.send({
-      name,
-      details,
-      start_ts: startTs,
-      end_ts: endTs,
-    })
-  )
+export function createTodo(projectId: number, data: ITodoData): Promise<ITodo> {
+  return POST(urls.todos(projectId), data)
 }
 
-export function updateTodo(
-  id: number,
-  name: string,
-  details: string,
-  state: TodoState,
-  startTs?: Timestamp,
-  endTs?: Timestamp
-): Promise<ITodo> {
-  return PUT(
-    urls.todo(id),
-    {
-      name,
-      details,
-      state,
-      start_ts: startTs,
-      end_ts: endTs,
-    }
-  )
+export function updateTodo(id: number, data: ITodoData, state: TodoState): Promise<ITodo> {
+  return PUT(urls.todo(id), { ...data, state })
 }
 
 export function readTodo(todoId: number): Promise<ITodo> {

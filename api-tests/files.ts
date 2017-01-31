@@ -20,13 +20,13 @@ function postRandomNote(): Promise<types.INote> {
 
 function validateFileInfo(body: types.IFileInfo, name: string, size: number): void {
   expect(body).to.have.all.keys(
-    'name', 'size', 'create_ts'
+    'name', 'size', 'createTs'
   )
 
   expect(body.name).to.equal(name)
   expect(body.size).to.be.a('number')
   expect(body.size).to.equal(size)
-  expect(body.create_ts).to.be.a('number')
+  expect(body.createTs).to.be.a('number')
 }
 
 function genAttachmentName(): string {

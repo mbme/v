@@ -11,15 +11,15 @@ function validateNote(body: types.INote, name: string, data: string = ''): void 
   expect(body).to.be.an('object')
 
   expect(body).to.have.all.keys(
-    'id', 'name', 'data', 'create_ts', 'update_ts', 'files'
+    'id', 'name', 'data', 'createTs', 'updateTs', 'files'
   )
 
   expect(body.id).to.be.a('number')
   expect(body.name).to.equal(name)
   expect(body.data).to.equal(data)
   expect(body.files).to.be.an('array')
-  expect(body.create_ts).to.be.a('number')
-  expect(body.update_ts).to.be.a('number')
+  expect(body.createTs).to.be.a('number')
+  expect(body.updateTs).to.be.a('number')
 }
 
 describe('Notes API', () => {

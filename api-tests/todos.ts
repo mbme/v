@@ -20,47 +20,40 @@ async function createRandomTodo(projectId?: number): Promise<types.ITodo> {
   }
 
   const [name, details] = randomTodo()
-  const todo = await api.createTodo(projectId, name, details)
+  const todo = await api.createTodo(projectId, { name, details })
 
-  validateTodo(todo, name, details, 'inbox')
+  validateTodo(todo, { name, details }, 'inbox')
 
   return todo
 }
 
-function validateTodo(
-  body: types.ITodo,
-  name: string,
-  details: string,
-  state: types.TodoState,
-  startTs?: types.Timestamp,
-  endTs?: types.Timestamp
-): void {
+function validateTodo(body: types.ITodo, data: types.ITodoData, state: types.TodoState): void {
   expect(body).to.be.an('object')
 
   expect(body).to.have.all.keys(
     'id',
     'name',
-    'create_ts',
-    'update_ts',
-    'project_id',
+    'createTs',
+    'updateTs',
+    'projectId',
     'details',
     'state',
-    'start_ts',
-    'end_ts',
+    'startTs',
+    'endTs',
     'files'
   )
 
   expect(body.id).to.be.a('number')
-  expect(body.name).to.equal(name)
-  expect(body.details).to.equal(details)
+  expect(body.name).to.equal(data.name)
+  expect(body.details).to.equal(data.details)
   expect(body.state).to.equal(state)
-  expect(body.create_ts).to.be.a('number')
-  expect(body.update_ts).to.be.a('number')
-  if (startTs) {
-    expect(body.start_ts).to.equal(startTs)
+  expect(body.createTs).to.be.a('number')
+  expect(body.updateTs).to.be.a('number')
+  if (data.startTs) {
+    expect(body.startTs).to.equal(data.startTs)
   }
-  if (endTs) {
-    expect(body.end_ts).to.equal(endTs)
+  if (data.endTs) {
+    expect(body.endTs).to.equal(data.endTs)
   }
   expect(body.files).to.be.an('array')
 }
@@ -78,7 +71,7 @@ describe('Todos API', () => {
     it('should create new todo', async () => {
       const todo = await createRandomTodo()
 
-      const todos = await api.listProjectTodos(todo.project_id)
+      const todos = await api.listProjectTodos(todo.projectId)
       expect(todos.filter(item => item.id === todo.id)).to.have.lengthOf(1)
     })
 
@@ -97,22 +90,17 @@ describe('Todos API', () => {
       const endTs = 101
 
       const updatedTodo = await api.updateTodo(
-        todo.id,
-        name,
-        details,
-        state,
-        startTs,
-        endTs
+        todo.id, { name, details, startTs, endTs }, state
       )
 
-      validateTodo(updatedTodo, name, details, state, startTs, endTs)
+      validateTodo(updatedTodo, { name, details, startTs, endTs }, state)
       expect(updatedTodo.id).to.equal(todo.id)
     })
 
     it('should fail if trying to update non-existing todo', async () => {
       const [ name, details ] = randomTodo()
 
-      await expectFailure(api.updateTodo(randomInt(), name, details, 'done'), 404)
+      await expectFailure(api.updateTodo(randomInt(), { name, details }, 'done'), 404)
     })
 
   })
@@ -122,7 +110,7 @@ describe('Todos API', () => {
       const todo = await createRandomTodo()
 
       const todo1 = await api.readTodo(todo.id)
-      validateTodo(todo1, todo.name, todo.details, todo.state)
+      validateTodo(todo1, { name: todo.name, details: todo.details }, todo.state)
 
       expect(todo1.id).to.equal(todo.id)
     })
