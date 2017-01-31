@@ -4,74 +4,16 @@ import {
 } from 'mobx'
 
 import {
-  Timestamp,
-  IRecord,
   INote,
-  ITodo,
-  TodoState,
   IFileInfo,
 } from 'api-client/types'
 import {BaseModel} from 'web-client/utils'
 
-export class ProjectRecord {
-  readonly id: number
-  readonly name: string
-  readonly createTs: Timestamp
-  readonly updateTs: Timestamp
-
-  constructor(dto: IRecord) {
-    this.id = dto.id
-    this.name = dto.name
-    this.createTs = dto.create_ts
-    this.updateTs = dto.update_ts
-  }
-}
-
-export class Todo {
-  readonly id: number
-  readonly name: string
-  readonly createTs: Timestamp
-  readonly updateTs: Timestamp
-  readonly projectId: number
-  readonly details: string
-  readonly state: TodoState
-  readonly startTs: Timestamp
-  readonly endTs: Timestamp
-  readonly files: ReadonlyArray<IFileInfo>
-
-  constructor(todo: ITodo) {
-    this.id = todo.id
-    this.name = todo.name
-    this.createTs = todo.create_ts
-    this.updateTs = todo.update_ts
-    this.projectId = todo.project_id
-    this.details = todo.details
-    this.state = todo.state
-    this.startTs = todo.start_ts
-    this.endTs = todo.end_ts
-    this.files = todo.files
-  }
-}
-
-export class NoteRecord {
-  readonly id: number
-  readonly name: string
-  readonly createTs: Timestamp
-  readonly updateTs: Timestamp
-
-  constructor(dto: IRecord) {
-    this.id = dto.id
-    this.name = dto.name
-    this.createTs = dto.create_ts
-    this.updateTs = dto.update_ts
-  }
-}
-
 export class Note {
   readonly id: number
   readonly name: string
-  readonly createTs: Timestamp
-  readonly updateTs: Timestamp
+  readonly createTs: number
+  readonly updateTs: number
   readonly data: string
 
   @observable files: ReadonlyArray<IFileInfo>
