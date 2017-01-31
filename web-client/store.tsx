@@ -1,7 +1,7 @@
 import {action, observable, computed, ObservableMap} from 'mobx'
 
 import * as api from 'api-client'
-import {IFileInfo} from 'api-client/types'
+import {IFileInfo, TodoState, Timestamp} from 'api-client/types'
 import {
   ProjectRecord,
   NoteRecord,
@@ -149,7 +149,23 @@ class TodosStore {
 
   @action async addTodo(projectId: number, name: string): Promise<void> {
     await this.uiStore.errorHandler(
-      api.createTodo(projectId, name), 'failed to create todo'
+      api.createTodo(projectId, name), `failed to create todo in project ${projectId}'`
+    )
+
+    this.loadProjectTodos(projectId)
+  }
+
+  @action async updateTodo(
+    projectId: number,
+    name: string,
+    details: string,
+    state: TodoState,
+    startTs?: Timestamp,
+    endTs?: Timestamp
+  ): Promise<void> {
+    await this.uiStore.errorHandler(
+      api.updateTodo(projectId, name, details, state, startTs, endTs),
+      `failed to update todo in project ${projectId}'`
     )
 
     this.loadProjectTodos(projectId)

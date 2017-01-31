@@ -24,6 +24,12 @@ interface IProps {
 @observer
 export default class Toolbar extends React.Component<IProps, {}> {
   @observable files: IFileInfo[] = []
+
+  constructor(props: IProps) {
+    super(props)
+    this.reloadFiles()
+  }
+
   @action setFiles(files: IFileInfo[]): void {
     this.files = files
   }
@@ -31,10 +37,6 @@ export default class Toolbar extends React.Component<IProps, {}> {
   reloadFiles = async () => {
     const files = await filesStore.loadFiles(this.props.recordId)
     this.setFiles(files)
-  }
-
-  componentDidMount(): void {
-    this.reloadFiles()
   }
 
   render(): JSX.Element {
