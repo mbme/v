@@ -1,12 +1,8 @@
-import {action, observable, computed, ObservableMap} from 'mobx'
+import {action, observable, computed} from 'mobx'
 
 import * as api from 'api-client'
-import {IFileInfo, TodoState, Timestamp} from 'api-client/types'
+import * as types from 'api-client/types'
 import {
-  ProjectRecord,
-  NoteRecord,
-  Note,
-  Todo,
   Modal,
   Toast,
   ToastType,
@@ -24,14 +20,14 @@ class FilesStore {
     )
   }
 
-  @action deleteFile(recordId: number, file: IFileInfo): Promise<void> {
+  @action deleteFile(recordId: number, file: types.IFileInfo): Promise<void> {
     return this.uiStore.errorHandler(
       api.deleteFile(recordId, file.name),
       `failed to delete file of record ${recordId}`
     )
   }
 
-  @action loadFiles(recordId: number): Promise<IFileInfo[]> {
+  @action loadFiles(recordId: number): Promise<types.IFileInfo[]> {
     return this.uiStore.errorHandler(
       api.listFiles(recordId),
       `failed to list files of record ${recordId}`
@@ -39,16 +35,21 @@ class FilesStore {
   }
 }
 
+interface IOpenNote {
+  note: types.INote,
+  edit: boolean,
+}
+
 class NotesStore {
-  @observable noteRecords: NoteRecord[] = []
-  @observable note?: Note
+  @observable noteRecords: types.IRecord[] = []
+  @observable openNote?: IOpenNote
 
   constructor(private uiStore: UIStore) {}
 
   @action async loadNoteRecords(): Promise<void> {
     const data = await this.uiStore.errorHandler(api.listNotes(), 'failed to load notes list')
 
-    this.setNoteRecords(data.map(dto => new NoteRecord(dto)))
+    this.setNoteRecords(data)
   }
 
   isOpenNote(id: number): boolean {
@@ -61,7 +62,7 @@ class NotesStore {
     }
 
     const data = await this.uiStore.errorHandler(api.readNote(id), `failed to read note ${id}`)
-    this.setNote(new Note(data))
+    this.setNote(data)
   }
 
   @action closeNote(id: number): void {
@@ -71,7 +72,7 @@ class NotesStore {
   @action async createNote(name: string): Promise<void> {
     const data = await this.uiStore.errorHandler(api.createNote(name), 'failed to create note')
 
-    this.setNote(new Note(data, true))
+    this.setNote(data, true)
     this.loadNoteRecords()
   }
 
@@ -85,7 +86,7 @@ class NotesStore {
       return
     }
 
-    this.setNote(new Note(note, this.note.editMode), id)
+    this.setNote(note, this.note.editMode, id)
     this.loadNoteRecords()
   }
 
@@ -108,29 +109,29 @@ class NotesStore {
     this.noteRecords = records
   }
 
-  @action private setNote(note?: Note, id?: number): void {
-    if (!this.note && id) {
+  @action private setNote(note?: types.INote, edit?: boolean = false, id?: number): void {
+    if (!this.openNote && id) {
       return
     }
 
-    if (this.note && id && this.note.id !== id) {
+    if (this.openNote && id && this.openNote.id !== id) {
       return
     }
 
-    this.note = note
+    this.openNote = note
   }
 }
 
 class TodosStore {
-  @observable projects: ProjectRecord[] = []
-  @observable todos: ObservableMap<Todo[]> = observable.map<Todo[]>()
+  @observable projects: ReadonlyArray<types.IProject> = []
+  @observable todos?: ReadonlyArray<types.ITodo>
   @observable openProjectId?: number
 
   constructor(private uiStore: UIStore) {}
 
   @action async loadProjectsList(): Promise<void> {
     const data = await this.uiStore.errorHandler(api.listProjects(), 'failed to load projects list')
-    this.setProjectsList(data.map(dto => new ProjectRecord(dto)))
+    this.setProjectsList(data)
   }
 
   @action openProject(projectId: number): void {
@@ -144,7 +145,7 @@ class TodosStore {
       `failed to load todos of project ${projectId}`
     )
 
-    this.setProjectTodos(projectId, data.map(dto => new Todo(dto)))
+    this.setProjectTodos(projectId, data)
   }
 
   @action async addTodo(projectId: number, name: string): Promise<void> {
@@ -160,8 +161,8 @@ class TodosStore {
     name: string,
     details: string,
     state: TodoState,
-    startTs?: Timestamp,
-    endTs?: Timestamp
+    startTs?: number,
+    endTs?: number
   ): Promise<void> {
     await this.uiStore.errorHandler(
       api.updateTodo(projectId, name, details, state, startTs, endTs),
@@ -171,11 +172,11 @@ class TodosStore {
     this.loadProjectTodos(projectId)
   }
 
-  @action private setProjectTodos(projectId: number, todos: Todo[]): void {
+  @action private setProjectTodos(projectId: number, todos: types.ITodo[]): void {
     this.todos.set(projectId.toString(), todos)
   }
 
-  @action private setProjectsList(projects: ProjectRecord[]): void {
+  @action private setProjectsList(projects: types.IProject[]): void {
     this.projects = projects
   }
 }

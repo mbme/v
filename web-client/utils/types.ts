@@ -1,40 +1,5 @@
-import {
-  observable,
-  action,
-} from 'mobx'
-
-import {
-  INote,
-  IFileInfo,
-} from 'api-client/types'
+import {observable} from 'mobx'
 import {BaseModel} from 'web-client/utils'
-
-export class Note {
-  readonly id: number
-  readonly name: string
-  readonly createTs: number
-  readonly updateTs: number
-  readonly data: string
-
-  @observable files: ReadonlyArray<IFileInfo>
-
-  @observable editMode: boolean // FIXME use states: 'loading' | 'edit' | 'view'
-
-  constructor (dto: INote, editMode: boolean = false) {
-    this.id = dto.id
-    this.name = dto.name
-    this.createTs = dto.create_ts
-    this.updateTs = dto.update_ts
-    this.data = dto.data
-    this.files = dto.files
-
-    this.editMode = editMode
-  }
-
-  @action edit(edit: boolean): void {
-    this.editMode = edit
-  }
-}
 
 export class Modal extends BaseModel {
   readonly id: number
