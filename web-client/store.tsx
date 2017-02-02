@@ -123,7 +123,7 @@ class NotesStore {
 }
 
 class TodosStore {
-  @observable projects: ReadonlyArray<types.IProject> = []
+  @observable projects: ReadonlyArray<types.IRecord> = []
   @observable todos?: ReadonlyArray<types.ITodo>
   @observable openProjectId?: number
 
@@ -131,7 +131,7 @@ class TodosStore {
 
   @action async loadProjectsList(): Promise<void> {
     const data = await this.uiStore.errorHandler(api.listProjects(), 'failed to load projects list')
-    this.setProjectsList(data)
+    this.projects = data
   }
 
   @action openProject(projectId: number): void {
@@ -145,39 +145,26 @@ class TodosStore {
       `failed to load todos of project ${projectId}`
     )
 
-    this.setProjectTodos(projectId, data)
+    if (this.openProjectId === projectId) {
+      this.todos = data
+    }
   }
 
   @action async addTodo(projectId: number, name: string): Promise<void> {
     await this.uiStore.errorHandler(
-      api.createTodo(projectId, name), `failed to create todo in project ${projectId}'`
+      api.createTodo(projectId, { name, details: '' }), `failed to create todo in project ${projectId}'`
     )
 
     this.loadProjectTodos(projectId)
   }
 
-  @action async updateTodo(
-    projectId: number,
-    name: string,
-    details: string,
-    state: TodoState,
-    startTs?: number,
-    endTs?: number
-  ): Promise<void> {
+  @action async updateTodo(projectId: number, data: types.ITodoData, state: types.TodoState): Promise<void> {
     await this.uiStore.errorHandler(
-      api.updateTodo(projectId, name, details, state, startTs, endTs),
+      api.updateTodo(projectId, data, state),
       `failed to update todo in project ${projectId}'`
     )
 
     this.loadProjectTodos(projectId)
-  }
-
-  @action private setProjectTodos(projectId: number, todos: types.ITodo[]): void {
-    this.todos.set(projectId.toString(), todos)
-  }
-
-  @action private setProjectsList(projects: types.IProject[]): void {
-    this.projects = projects
   }
 }
 
