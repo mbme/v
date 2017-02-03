@@ -2,15 +2,17 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 
 import { todosStore } from 'web-client/store'
+import { ITodo } from 'api-client/types'
 
 interface IProps {
   projectId: number,
+  todos: ReadonlyArray<ITodo>,
 }
 
 @observer
 export default class ProjectTodosList extends React.Component<IProps, {}> {
   renderList(): JSX.Element[] | string {
-    const todos = todosStore.todos.get(this.props.projectId.toString()) || []
+    const { todos } = this.props
 
     if (!todos.length) {
       return 'No todos :)'
@@ -44,7 +46,7 @@ export default class ProjectTodosList extends React.Component<IProps, {}> {
     }
 
     const el = e.currentTarget
-    await todosStore.addTodo(this.props.projectId!, el.value)
+    await todosStore.addTodo(this.props.projectId, el.value)
 
     el.value = ''
   }

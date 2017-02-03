@@ -1,11 +1,11 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import {NoteRecord as NRecord} from 'web-client/utils/types'
+import { IRecord } from 'api-client/types'
 import * as moment from 'moment'
 import * as cx from 'classnames'
 
 interface IProps {
-  record: NRecord,
+  record: IRecord,
   isOpen: boolean,
   isVisible: boolean,
   onClick: (id: number) => void,

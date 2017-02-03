@@ -4,7 +4,7 @@ import {observer} from 'mobx-react'
 
 import {config, fuzzySearch} from 'web-client/utils'
 import { notesStore } from 'web-client/store'
-import { NoteRecord } from 'web-client/utils/types'
+import { IRecord } from 'api-client/types'
 
 import { Button, Header, WithModals } from 'web-client/components'
 
@@ -22,7 +22,7 @@ export default class NotesView extends WithModals<{}, {}> {
     this.filter = filter
   }
 
-  @computed get visibleRecords(): NoteRecord[] {
+  @computed get visibleRecords(): IRecord[] {
     return notesStore.noteRecords.filter(record => {
       let filter = this.filter
       let name = record.name
@@ -70,7 +70,7 @@ export default class NotesView extends WithModals<{}, {}> {
       record => <NoteRecordView
                     key={record.id}
                     record={record}
-                    isOpen={notesStore.isOpenNote(record.id)}
+                    isOpen={notesStore.noteId === record.id}
                     isVisible={this.visibleRecords.indexOf(record) > -1}
                     onClick={notesStore.openNote} />
     )
@@ -79,10 +79,13 @@ export default class NotesView extends WithModals<{}, {}> {
     let noteView
 
     if (note) {
-      if (note.editMode) { // FIXME remove edit mode
+      if (notesStore.edit) {
         noteView = <NoteEditorView key={note.id} note={note} />
       } else {
-        noteView = <NoteView key={note.id} note={note} />
+        noteView = <NoteView key={note.id}
+                             note={note}
+                             onEdit={() => notesStore.editNote(note.id)}
+                             onClose={() => notesStore.closeNote(note.id)} />
       }
     }
 

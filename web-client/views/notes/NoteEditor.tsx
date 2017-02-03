@@ -3,13 +3,13 @@ import * as React from 'react'
 
 import { config } from 'web-client/utils'
 import { notesStore } from 'web-client/store'
-import {Note as NoteEntity} from 'web-client/utils/types'
+import { INote } from 'api-client/types'
 
 import { confirmationModal, WithModals } from 'web-client/components'
 import Toolbar, { IAction } from './Toolbar'
 
 interface IProps {
-  note: NoteEntity,
+  note: INote,
 }
 
 @observer
@@ -62,7 +62,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
   }
 
   closeEditor = () => {
-    this.props.note.edit(false)
+    notesStore.editNote(this.props.note.id, false)
   }
 
   onClickSave = () => {

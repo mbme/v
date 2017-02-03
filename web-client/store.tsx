@@ -1,13 +1,8 @@
 import {action, observable, computed} from 'mobx'
 
 import * as api from 'api-client'
-import * as types from 'api-client/types'
-import {
-  Modal,
-  Toast,
-  ToastType,
-  ViewTypes,
-} from 'web-client/utils/types'
+import { IFileInfo, IRecord, INote, ITodo, ITodoData, TodoState, } from 'api-client/types'
+import { Modal, Toast, ToastType, ViewTypes, } from 'web-client/utils/types'
 import { config } from 'web-client/utils'
 
 class FilesStore {
@@ -20,14 +15,14 @@ class FilesStore {
     )
   }
 
-  @action deleteFile(recordId: number, file: types.IFileInfo): Promise<void> {
+  @action deleteFile(recordId: number, file: IFileInfo): Promise<void> {
     return this.uiStore.errorHandler(
       api.deleteFile(recordId, file.name),
       `failed to delete file of record ${recordId}`
     )
   }
 
-  @action loadFiles(recordId: number): Promise<types.IFileInfo[]> {
+  @action loadFiles(recordId: number): Promise<IFileInfo[]> {
     return this.uiStore.errorHandler(
       api.listFiles(recordId),
       `failed to list files of record ${recordId}`
@@ -35,44 +30,50 @@ class FilesStore {
   }
 }
 
-interface IOpenNote {
-  note: types.INote,
-  edit: boolean,
-}
-
 class NotesStore {
-  @observable noteRecords: types.IRecord[] = []
-  @observable openNote?: IOpenNote
+  @observable noteRecords: IRecord[] = []
+  @observable note?: INote
+  @observable noteId?: number
+  @observable edit: boolean = false
 
   constructor(private uiStore: UIStore) {}
 
   @action async loadNoteRecords(): Promise<void> {
     const data = await this.uiStore.errorHandler(api.listNotes(), 'failed to load notes list')
 
-    this.setNoteRecords(data)
-  }
-
-  isOpenNote(id: number): boolean {
-    return !!this.note && this.note.id === id
+    this.noteRecords = data
   }
 
   @action openNote = async (id: number): Promise<void> => {
-    if (this.isOpenNote(id)) {
-      return
-    }
+    this.noteId = id
+    this.edit = false
 
     const data = await this.uiStore.errorHandler(api.readNote(id), `failed to read note ${id}`)
-    this.setNote(data)
+    this.note = data
+  }
+
+  @action editNote(id: number, edit: boolean = true): void {
+    if (this.noteId === id) {
+      this.edit = edit
+    }
   }
 
   @action closeNote(id: number): void {
-    this.setNote(undefined, id)
+    if (this.noteId !== id)  {
+      return
+    }
+    this.note = undefined
+    this.edit = false
+    this.noteId = undefined
   }
 
   @action async createNote(name: string): Promise<void> {
     const data = await this.uiStore.errorHandler(api.createNote(name), 'failed to create note')
 
-    this.setNote(data, true)
+    this.note = data
+    this.noteId = data.id
+    this.edit = true
+
     this.loadNoteRecords()
   }
 
@@ -82,50 +83,25 @@ class NotesStore {
       `failed to update note ${id}`
     )
 
-    if (!this.note) {
-      return
-    }
-
-    this.setNote(note, this.note.editMode, id)
     this.loadNoteRecords()
+
+    if (this.noteId === id) {
+      this.note = note
+    }
   }
 
   @action async deleteNote(id: number): Promise<void> {
     await this.uiStore.errorHandler(api.deleteNote(id), `failed to delete note ${id}`)
 
-    this.closeNote(id)
     this.loadNoteRecords()
-  }
-
-  @action updateNoteFiles(noteId: number, files: IFileInfo[]): void {
-    if (!this.note || this.note.id !== noteId) {
-      return
-    }
-
-    this.note.files = files
-  }
-
-  @action private setNoteRecords(records: NoteRecord[]): void {
-    this.noteRecords = records
-  }
-
-  @action private setNote(note?: types.INote, edit?: boolean = false, id?: number): void {
-    if (!this.openNote && id) {
-      return
-    }
-
-    if (this.openNote && id && this.openNote.id !== id) {
-      return
-    }
-
-    this.openNote = note
+    this.closeNote(id)
   }
 }
 
 class TodosStore {
-  @observable projects: ReadonlyArray<types.IRecord> = []
-  @observable todos?: ReadonlyArray<types.ITodo>
-  @observable openProjectId?: number
+  @observable projects: ReadonlyArray<IRecord> = []
+  @observable todos?: ReadonlyArray<ITodo>
+  @observable projectId?: number
 
   constructor(private uiStore: UIStore) {}
 
@@ -134,37 +110,39 @@ class TodosStore {
     this.projects = data
   }
 
-  @action openProject(projectId: number): void {
-    this.openProjectId = projectId
-    this.loadProjectTodos(projectId)
-  }
+  @action async openProject(projectId: number): Promise<void> {
+    this.projectId = projectId
 
-  @action async loadProjectTodos(projectId: number): Promise<void> {
     const data = await this.uiStore.errorHandler(
       api.listProjectTodos(projectId),
       `failed to load todos of project ${projectId}`
     )
 
-    if (this.openProjectId === projectId) {
+    if (this.projectId === projectId) {
       this.todos = data
     }
   }
 
   @action async addTodo(projectId: number, name: string): Promise<void> {
     await this.uiStore.errorHandler(
-      api.createTodo(projectId, { name, details: '' }), `failed to create todo in project ${projectId}'`
+      api.createTodo(projectId, { name, details: '' }),
+      `failed to create todo in project ${projectId}'`
     )
 
-    this.loadProjectTodos(projectId)
+    if (this.projectId === projectId) {
+      this.openProject(projectId)
+    }
   }
 
-  @action async updateTodo(projectId: number, data: types.ITodoData, state: types.TodoState): Promise<void> {
+  @action async updateTodo(projectId: number, data: ITodoData, state: TodoState): Promise<void> {
     await this.uiStore.errorHandler(
       api.updateTodo(projectId, data, state),
       `failed to update todo in project ${projectId}'`
     )
 
-    this.loadProjectTodos(projectId)
+    if (this.projectId === projectId) {
+      this.openProject(projectId)
+    }
   }
 }
 

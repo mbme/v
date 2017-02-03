@@ -19,7 +19,7 @@ export default class TodosView extends WithModals<{}, {}> {
     return todosStore.projects.map(
       ({ id, name }) => (
         <div key={id}
-             className={cx('ProjectList-item', { 'is-open': todosStore.openProjectId === id })}
+             className={cx('ProjectList-item', { 'is-open': todosStore.projectId === id })}
              onClick={() => todosStore.openProject(id)}>
           <div className="u-like-a-h">{name}</div>
         </div>
@@ -29,8 +29,12 @@ export default class TodosView extends WithModals<{}, {}> {
 
   render (): JSX.Element {
     let list
-    if (todosStore.openProjectId) {
-      list = <ProjectTodosList projectId={todosStore.openProjectId} />
+    const { todos, projectId } = todosStore
+    if (todos) {
+      if (!projectId) {
+        throw new Error('this should never occur')
+      }
+      list = <ProjectTodosList key={projectId} projectId={projectId} todos={todos} />
     }
 
     return (

@@ -81,7 +81,6 @@ function POST<T>(url: string, data: Object): Promise<T> {
   return POST_FILE(url, req => req.send(renameProps(data, toSnakeCase)))
 }
 
-
 function PUT<T>(url: string, data: Object): Promise<T> {
   return wrapRequest(
     request.put(url).send(renameProps(data, toSnakeCase)),
