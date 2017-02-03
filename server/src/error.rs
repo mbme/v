@@ -44,7 +44,7 @@ impl Error {
 }
 
 pub fn into_err<T: StdError + Send + Sync + 'static>(err: T) -> Error {
-    Error::from(box err)
+    Error::from(Box::new(err))
 }
 
 pub type Result<T> = ::std::result::Result<T, Error>;
@@ -63,18 +63,18 @@ impl StdError for Error {
 
 impl From<SQLiteErr> for Error {
     fn from(err: SQLiteErr) -> Error {
-        Error::from(box err)
+        Error::from(Box::new(err))
     }
 }
 
 impl From<IOError> for Error {
     fn from(err: IOError) -> Error {
-        Error::from(box err)
+        Error::from(Box::new(err))
     }
 }
 
 impl From<JSONError> for Error {
     fn from(err: JSONError) -> Error {
-        Error::from(box err)
+        Error::from(Box::new(err))
     }
 }

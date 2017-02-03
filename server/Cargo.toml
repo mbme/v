@@ -9,9 +9,9 @@ rusqlite = "0.7"
 iron = "0.4"
 router = "0.4"
 mime_guess = "1.8"
-serde = "0.8"
-serde_json = "0.8"
-serde_derive = "0.8"
+serde = "0.9"
+serde_json = "0.9"
+serde_derive = "0.9"
 url = "1.2"
 
 [dependencies.multipart]

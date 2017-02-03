@@ -1,5 +1,3 @@
-#![feature(box_syntax)]
-
 extern crate time;
 extern crate rusqlite;
 extern crate multipart;
