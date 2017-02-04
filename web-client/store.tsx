@@ -123,6 +123,15 @@ class TodosStore {
     }
   }
 
+  @action async closeProject(projectId: number): Promise<void> {
+    if (this.projectId !== projectId) {
+      return
+    }
+
+    this.projectId = undefined
+    this.todos = undefined
+  }
+
   @action async addTodo(projectId: number, name: string): Promise<void> {
     await this.uiStore.errorHandler(
       api.createTodo(projectId, { name, details: '' }),
