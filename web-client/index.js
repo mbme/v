@@ -3,7 +3,7 @@ require('normalize.css')
 require('web-client/styles.css')
 
 const mobx = require('mobx')
-mobx.useStrict(true) // do not allow to modify state out of actions
+//mobx.useStrict(true) // do not allow to modify state out of actions
 
 // prevent default drag-n-drop behavior in Chrome
 // (it just opens the file in the current tab)

@@ -48,6 +48,7 @@ function toSnakeCase(s: string): string {
   return s.replace(/([a-z][A-Z])/g, c => c.charAt(0) + '_' + c.charAt(1).toLowerCase())
 }
 
+/* tslint:disable:no-any */
 function renameProps(data: any, convert: (s: string) => string): any {
   const type = Object.prototype.toString.call(data)
 
@@ -65,6 +66,7 @@ function renameProps(data: any, convert: (s: string) => string): any {
 
   return data
 }
+/* tslint:enable:no-any */
 
 function GET<T>(url: string): Promise<T> {
   return wrapRequest(request.get(url), status => maybeLog('  GET', url, status))
