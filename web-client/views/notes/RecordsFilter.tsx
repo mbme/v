@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
-import {action, observable, reaction} from 'mobx'
+import {observable, reaction} from 'mobx'
 import { config } from 'web-client/utils'
 
 interface IProps {
@@ -13,10 +13,6 @@ export default class RecordsFilter extends React.Component<IProps, {}> {
 
   @observable inputValue: string = ''
 
-  @action updateInputValue(newValue: string): void {
-    this.inputValue = newValue
-  }
-
   componentWillMount(): void {
     // debounce search input
     reaction( // FIXME dispose this?
@@ -27,7 +23,7 @@ export default class RecordsFilter extends React.Component<IProps, {}> {
   }
 
   onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    this.updateInputValue(e.currentTarget.value)
+    this.inputValue = e.currentTarget.value
   }
 
   render (): JSX.Element {

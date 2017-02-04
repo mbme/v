@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {action, observable} from 'mobx'
+import {observable} from 'mobx'
 import {observer} from 'mobx-react'
 
 import { Button, ButtonType } from 'web-client/components'
@@ -27,16 +27,11 @@ export default class Toolbar extends React.Component<IProps, {}> {
 
   constructor(props: IProps) {
     super(props)
-    this.reloadFiles()
-  }
-
-  @action setFiles(files: IFileInfo[]): void {
-    this.files = files
+    this.reloadFiles() // FIXME ?
   }
 
   reloadFiles = async () => {
-    const files = await filesStore.loadFiles(this.props.recordId)
-    this.setFiles(files)
+    this.files = await filesStore.loadFiles(this.props.recordId)
   }
 
   render(): JSX.Element {

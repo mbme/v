@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {action, observable} from 'mobx'
+import {observable} from 'mobx'
 import {observer} from 'mobx-react'
 
 import {
@@ -24,10 +24,6 @@ type ModalState = 'ready' | 'uploading' | { error: string }
 @observer
 export default class UploadFileModal extends React.Component<IProps, {}> {
   @observable modalState: ModalState = 'ready'
-
-  @action switchModalState(state: ModalState): void {
-    this.modalState = state
-  }
 
   render (): JSX.Element {
     const { file, onClose } = this.props
@@ -74,7 +70,7 @@ export default class UploadFileModal extends React.Component<IProps, {}> {
   }
 
   onClickCreate = () => {
-    this.switchModalState('uploading')
+    this.modalState = 'uploading'
 
     const { file, onClose, onFileUploaded } = this.props
     const name = (this.refs['fileName'] as HTMLInputElement).value
@@ -84,7 +80,7 @@ export default class UploadFileModal extends React.Component<IProps, {}> {
         onFileUploaded()
         onClose()
       },
-      (err: Error) => this.switchModalState({ error: err.toString() })
+      (err: Error) => this.modalState = { error: err.toString() }
     )
   }
 }

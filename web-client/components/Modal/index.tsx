@@ -1,4 +1,4 @@
-import {observable, action} from 'mobx'
+import {observable} from 'mobx'
 import {observer} from 'mobx-react'
 import * as React from 'react'
 import * as cx from 'classnames'
@@ -120,7 +120,7 @@ export function confirmationModal({
 export class WithModals<T, S> extends React.Component<T, S> {
   @observable.ref modal?: JSX.Element
 
-  @action setModal(modal?: JSX.Element): void {
+  setModal(modal?: JSX.Element): void {
     this.modal = modal
   }
 

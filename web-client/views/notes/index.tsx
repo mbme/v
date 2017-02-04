@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {observable, action, computed} from 'mobx'
+import {observable, computed} from 'mobx'
 import {observer} from 'mobx-react'
 
 import {config, fuzzySearch} from 'web-client/utils'
@@ -17,10 +17,6 @@ import AddNoteModal from './AddNoteModal'
 @observer
 export default class NotesView extends WithModals<{}, {}> {
   @observable filter: string = ''
-
-  @action updateFilter = (filter: string) => {
-    this.filter = filter
-  }
 
   @computed get visibleRecords(): IRecord[] {
     return notesStore.noteRecords.filter(record => {
@@ -97,7 +93,7 @@ export default class NotesView extends WithModals<{}, {}> {
         </Header>
 
         <div className="NotesView-left">
-          <RecordsFilter initialValue={this.filter} onChange={this.updateFilter} />
+          <RecordsFilter initialValue={this.filter} onChange={filter => this.filter = filter} />
 
           <div className="NotesView-recordsCount">{this.renderRecordsCount()}</div>
 
