@@ -1,9 +1,7 @@
 import * as React from 'react'
-import {observable} from 'mobx'
 import {observer} from 'mobx-react'
 
 import { Button, ButtonType } from 'web-client/components'
-import { filesStore } from 'web-client/store'
 import {IFileInfo} from 'api-client/types'
 
 import FileLink from './FileLink'
@@ -18,44 +16,36 @@ export interface IAction {
 interface IProps {
   recordId: number,
   edit: boolean,
-  actions: IAction[]
+  actions: IAction[],
+  files: IFileInfo[],
+  reloadFiles: () => void,
 }
 
 @observer
 export default class Toolbar extends React.Component<IProps, {}> {
-  @observable files: IFileInfo[] = []
-
-  constructor(props: IProps) {
-    super(props)
-    this.reloadFiles() // FIXME ?
-  }
-
-  reloadFiles = async () => {
-    this.files = await filesStore.loadFiles(this.props.recordId)
-  }
-
   render(): JSX.Element {
-    const { recordId, edit, actions } = this.props
+    const { recordId, edit, actions, files, reloadFiles } = this.props
 
-    const links = this.files.map(
+    const links = files.map(
       file => (
         <FileLink key={file.name}
                   editMode={edit}
                   recordId={recordId}
                   file={file}
-                  onRemove={this.reloadFiles} />
+                  onRemove={reloadFiles} />
       )
     )
 
     if (!links.length) {
       links.push(<label key="no-files-label" className="u-like-secondary">No files</label>)
     }
+
     if (edit) {
       links.push(
         <FilePicker key="file-picker"
                     label="Attach file"
                     recordId={recordId}
-                    onFileUploaded={this.reloadFiles} />
+                    onFileUploaded={reloadFiles} />
       )
     }
 

@@ -1,24 +1,29 @@
 import {observer} from 'mobx-react'
 import * as React from 'react'
 
+import { notesStore } from 'web-client/store'
 import { INote } from 'api-client/types'
 
 import Toolbar, { IAction } from './Toolbar'
 
 interface IProps {
   note: INote,
-  onClose: () => void,
-  onEdit: () => void,
 }
 
 @observer
 export default class Note extends React.Component<IProps, {}> {
+  closeNote = () => notesStore.closeNote(this.props.note.id)
+
+  editNote = () => notesStore.editNote(this.props.note.id)
+
+  reloadNote = () => notesStore.loadNote(this.props.note.id)
+
   render (): JSX.Element {
-    const { note, onEdit, onClose } = this.props
+    const { note } = this.props
 
     const actions: IAction[] = [
-      { label: 'Close', action: onClose},
-      { label: 'Edit', action: onEdit},
+      { label: 'Close', action: this.closeNote},
+      { label: 'Edit', action: this.editNote},
     ]
 
     return (
@@ -28,7 +33,11 @@ export default class Note extends React.Component<IProps, {}> {
           <div className="Note-data">{note.data}</div>
         </div>
 
-        <Toolbar recordId={note.id} edit={false} actions={actions} />
+        <Toolbar recordId={note.id}
+                 edit={false}
+                 actions={actions}
+                 files={note.files}
+                 reloadFiles={this.reloadNote} />
       </div>
     )
   }

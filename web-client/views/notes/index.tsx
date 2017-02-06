@@ -76,12 +76,9 @@ export default class NotesView extends WithModals<{}, {}> {
 
     if (note) {
       if (notesStore.edit) {
-        noteView = <NoteEditorView key={note.id} note={note} />
+        noteView = <NoteEditorView note={note} />
       } else {
-        noteView = <NoteView key={note.id}
-                             note={note}
-                             onEdit={() => notesStore.editNote(note.id)}
-                             onClose={() => notesStore.closeNote(note.id)} />
+        noteView = <NoteView note={note} />
       }
     }
 
@@ -102,9 +99,7 @@ export default class NotesView extends WithModals<{}, {}> {
           </ul>
         </div>
 
-        <div className="NotesView-center">
-          {noteView}
-        </div>
+        <div key={note && note.id} className="NotesView-center">{noteView}</div>
       </div>
     )
   }

@@ -6,8 +6,8 @@ import * as api from 'api-client'
 import { IRecord, ITodo, ITodoData, TodoState } from 'api-client/types'
 
 export default class TodosStore {
-  @observable projects: ReadonlyArray<IRecord> = []
-  @observable todos?: ReadonlyArray<ITodo>
+  @observable projects: IRecord[] = []
+  @observable todos?: ITodo[]
   @observable projectId?: number
 
   constructor(private uiStore: UIStore) {}

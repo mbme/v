@@ -23,8 +23,15 @@ export default class NotesStore {
     this.noteId = id
     this.edit = false
 
+    await this.loadNote(id)
+  }
+
+  loadNote = async (id: number): Promise<void> => {
     const data = await this.uiStore.errorHandler(api.readNote(id), `failed to read note ${id}`)
-    this.note = data
+
+    if (this.noteId === id) {
+      this.note = data
+    }
   }
 
   editNote(id: number, edit: boolean = true): void {

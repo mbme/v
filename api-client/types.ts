@@ -17,7 +17,7 @@ export interface INote {
   readonly createTs: number,
   readonly updateTs: number,
   readonly data: string,
-  readonly files: ReadonlyArray<IFileInfo>,
+  readonly files: IFileInfo[],
 }
 
 export interface IProject {
@@ -26,7 +26,7 @@ export interface IProject {
   readonly createTs: number,
   readonly updateTs: number,
   readonly description: string,
-  readonly files: ReadonlyArray<IFileInfo>,
+  readonly files: IFileInfo[],
 }
 
 export type TodoState = 'inbox' | 'todo' | 'in-progress' | 'blocked' | 'done' | 'canceled'
@@ -44,5 +44,5 @@ export interface ITodo extends ITodoData {
   readonly updateTs: number,
   readonly projectId: number,
   readonly state: TodoState,
-  readonly files: ReadonlyArray<IFileInfo>,
+  readonly files: IFileInfo[],
 }

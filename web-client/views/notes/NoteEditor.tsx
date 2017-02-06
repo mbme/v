@@ -19,9 +19,9 @@ export default class NoteEditor extends WithModals<IProps, {}> {
     const { note } = this.props
 
     const actions: IAction[] = [
-      { label: 'Save', action: this.onClickSave },
-      { label: 'Delete', type: 'dangerous', action: this.onClickDelete },
-      { label: 'Close editor', type: 'secondary', action: this.onClickCloseEditor }
+      { label: 'Save', action: this.saveNote },
+      { label: 'Delete', type: 'dangerous', action: this.deleteNote },
+      { label: 'Close editor', type: 'secondary', action: this.onClickCloseEditor },
     ]
 
     return (
@@ -42,7 +42,11 @@ export default class NoteEditor extends WithModals<IProps, {}> {
 
         </div>
 
-        <Toolbar recordId={note.id} edit={true} actions={actions} />
+        <Toolbar recordId={note.id}
+                 edit
+                 actions={actions}
+                 files={note.files}
+                 reloadFiles={() => notesStore.loadNote(note.id)} />
       </div>
     )
   }
@@ -65,7 +69,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
     notesStore.editNote(this.props.note.id, false)
   }
 
-  onClickSave = () => {
+  saveNote = () => {
     const name = this.getNameInputValue()
     const data = this.getDataTextareaValue()
 
@@ -78,7 +82,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
     notesStore.updateNote(this.props.note.id, name, data).then(this.maybeCloseEditor)
   }
 
-  onClickDelete = () => {
+  deleteNote = () => {
     const { note } = this.props
     const modalConfig = {
       title: 'Delete note',

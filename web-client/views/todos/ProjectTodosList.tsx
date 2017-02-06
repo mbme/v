@@ -6,7 +6,7 @@ import { ITodo } from 'api-client/types'
 
 interface IProps {
   projectId: number,
-  todos: ReadonlyArray<ITodo>,
+  todos: ITodo[],
 }
 
 @observer
