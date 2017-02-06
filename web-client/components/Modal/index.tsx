@@ -90,7 +90,7 @@ interface IConfirmationModalConfig {
   actionBtnText: string,
   cancelBtnText?: string,
 }
-export function confirmationModal({
+function confirmationModal({
   title,
   body,
   onCancel,
@@ -122,6 +122,10 @@ export class WithModals<T, S> extends React.Component<T, S> {
 
   setModal(modal?: JSX.Element): void {
     this.modal = modal
+  }
+
+  setConfirmationModal(config: IConfirmationModalConfig): void {
+    this.setModal(confirmationModal(config))
   }
 
   hideModal = () => this.setModal()

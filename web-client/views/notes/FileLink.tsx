@@ -6,7 +6,7 @@ import {IFileInfo} from 'api-client/types'
 
 import { filesStore } from 'web-client/store'
 import {formatBytes} from 'web-client/utils'
-import { Button, confirmationModal, WithModals } from 'web-client/components'
+import { Button, WithModals } from 'web-client/components'
 
 interface IProps {
   recordId: number,
@@ -20,16 +20,17 @@ export default class FileLink extends WithModals<IProps, {}> {
   onClickRemove = () => {
     const { file, recordId, onRemove } = this.props
 
-    this.setModal(confirmationModal({
+    this.setConfirmationModal({
       title: 'Delete file',
       body: (<span>Do you really want to delete file <b>{file.name}</b></span>),
       onCancel: this.hideModal,
-      onAction: () => filesStore.deleteFile(recordId, file).then(() => {
+      onAction: async () => {
+        await filesStore.deleteFile(recordId, file)
         this.hideModal()
         onRemove()
-      }),
+      },
       actionBtnText: 'Delete',
-    }))
+    })
   }
 
   render (): JSX.Element {

@@ -5,7 +5,7 @@ import { config } from 'web-client/utils'
 import { notesStore } from 'web-client/store'
 import { INote } from 'api-client/types'
 
-import { confirmationModal, WithModals } from 'web-client/components'
+import { WithModals } from 'web-client/components'
 import Toolbar, { IAction } from './Toolbar'
 
 interface IProps {
@@ -91,7 +91,7 @@ export default class NoteEditor extends WithModals<IProps, {}> {
       onAction: () => notesStore.deleteNote(note.id),
       actionBtnText: 'Delete',
     }
-    this.setModal(confirmationModal(modalConfig))
+    this.setConfirmationModal(modalConfig)
   }
 
   onClickCloseEditor = () => {
@@ -117,6 +117,6 @@ export default class NoteEditor extends WithModals<IProps, {}> {
       onAction: this.closeEditor,
       actionBtnText: 'Close',
     }
-    this.setModal(confirmationModal(modalConfig))
+    this.setConfirmationModal(modalConfig)
   }
 }
