@@ -1,0 +1,22 @@
+.Expandable {
+  &-title {
+    user-select: none;
+    cursor: pointer;
+
+    @mixin like-a-h;
+    font-size: 1.2em;
+  }
+
+  &-icon {
+    font-family: $font-monospace;
+    padding-right: 0.5vr;
+  }
+
+  &-content {
+    display: none;
+  }
+
+  &.is-expanded &-content {
+    display: block
+  }
+}
