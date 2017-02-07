@@ -73,7 +73,6 @@ pub struct Project {
 
 #[derive(Eq, PartialEq, Debug, Clone, Copy)]
 pub enum TodoState {
-    Inbox,
     Todo,
     InProgress,
     Blocked,
@@ -84,7 +83,6 @@ pub enum TodoState {
 impl fmt::Display for TodoState {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         let result = match *self {
-            TodoState::Inbox      => "inbox",
             TodoState::Todo       => "todo",
             TodoState::InProgress => "in-progress",
             TodoState::Blocked    => "blocked",
@@ -101,7 +99,6 @@ impl str::FromStr for TodoState {
 
     fn from_str(s: &str) -> Result<TodoState> {
         match s {
-            "inbox"       => Ok(TodoState::Inbox),
             "todo"        => Ok(TodoState::Todo),
             "in-progress" => Ok(TodoState::InProgress),
             "blocked"     => Ok(TodoState::Blocked),

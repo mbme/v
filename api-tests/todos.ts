@@ -22,7 +22,7 @@ async function createRandomTodo(projectId?: number): Promise<types.ITodo> {
   const [name, details] = randomTodo()
   const todo = await api.createTodo(projectId, { name, details })
 
-  validateTodo(todo, { name, details }, 'inbox')
+  validateTodo(todo, { name, details }, 'todo')
 
   return todo
 }

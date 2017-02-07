@@ -29,7 +29,7 @@ export interface IProject {
   readonly files: IFileInfo[],
 }
 
-export type TodoState = 'inbox' | 'todo' | 'in-progress' | 'blocked' | 'done' | 'canceled'
+export type TodoState = 'todo' | 'in-progress' | 'blocked' | 'done' | 'canceled'
 
 export interface ITodoData {
   readonly name: string,
