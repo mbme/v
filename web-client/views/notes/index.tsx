@@ -94,9 +94,7 @@ export default class NotesView extends WithModals<{}, {}> {
 
           <div className="NotesView-recordsCount">{this.renderRecordsCount()}</div>
 
-          <ul className="NotesView-list">
-            {records}
-          </ul>
+          <ul className="NotesView-list">{records}</ul>
         </div>
 
         <div key={note && note.id} className="NotesView-center">{noteView}</div>

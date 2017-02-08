@@ -12,7 +12,7 @@
 
   .RecordsFilter {
     margin-top: 10px;
-    width: 100%;
+    @mixin like-input;
   }
 
   .NoteRecord {
@@ -99,9 +99,7 @@
 
   .NoteEditor {
     &-name, &-data {
-      display: block;
-      width: 100%;
-      margin-top: 0.5vr;
+      @mixin like-input;
     }
 
     &-name {
@@ -109,6 +107,7 @@
     }
 
     &-data {
+      margin-top: 0.5vr;
       height: 190px;
     }
   }

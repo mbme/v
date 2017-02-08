@@ -47,7 +47,7 @@
   &-center {
     width: 58%;
     margin-left: 42%;
-    padding-top: 1vr;
+    padding: 1vr 0;
   }
 }
 
@@ -57,4 +57,10 @@
 
 .u-like-a-h {
   @mixin like-a-h;
+}
+
+@define-mixin like-input {
+  display: block;
+  width: 100%;
+  padding: 0.5vr 1vr;
 }

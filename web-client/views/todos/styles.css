@@ -34,18 +34,30 @@
     background-color: white;
     border: $light-border;
 
-    padding: 2vr;
+    padding: 1.5vr 2vr;
 
     &-task-input {
-      display: block;
-      width: 100%;
+      @mixin like-input;
+    }
+
+    .Expandable {
+      margin-top: 1.5vr;
+
+      &-content {
+        padding-left: 2vr;
+      }
+    }
+
+    .Todo-nothing {
+      margin-top: 1vr;
     }
 
     .Todo {
-      margin-top: 1vr;
+      margin: 1vr 0 1.5vr -0.5vr;
+      cursor: pointer;
 
       &-name {
-        margin-left: 1vr;
+        margin-left: 0.5vr;
       }
     }
   }

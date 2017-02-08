@@ -2,7 +2,9 @@ import * as React from 'react'
 import {observer} from 'mobx-react'
 
 import { todosStore } from 'web-client/store'
-import { ITodo } from 'api-client/types'
+import { ITodo, TodoState } from 'api-client/types'
+
+import { Expandable } from 'web-client/components'
 
 interface IProps {
   projectId: number,
@@ -11,21 +13,19 @@ interface IProps {
 
 @observer
 export default class ProjectTodosList extends React.Component<IProps, {}> {
-  renderList(): JSX.Element[] | string {
-    const { todos } = this.props
+  renderList(...states: TodoState[]): JSX.Element[] {
+    const todos = this.props.todos.filter(todo => states.indexOf(todo.state) > -1)
 
     if (!todos.length) {
-      return 'No todos :)'
+      return [<div key="todo-nothing" className="Todo-nothing">No tasks</div>]
     }
 
-    return todos.map(
-      ({ id, name }) => (
-        <div key={id} className="Todo">
-          <input type="checkbox" />
-          <span className="Todo-name">{name}</span>
-        </div>
-      )
-    )
+    return todos.map(({ id, name }) => (
+      <div key={id} className="Todo">
+        -
+        <span className="Todo-name">{name}</span>
+      </div>
+    ))
   }
 
   render(): JSX.Element {
@@ -35,7 +35,15 @@ export default class ProjectTodosList extends React.Component<IProps, {}> {
                type="text"
                placeholder="Add task"
                onKeyPress={this.onKeyPress} />
-        {this.renderList()}
+        <Expandable expanded title="In Progress">
+          {this.renderList('in-progress', 'blocked')}
+        </Expandable>
+        <Expandable expanded title="Inbox">
+          {this.renderList('todo')}
+        </Expandable>
+        <Expandable title="Completed">
+          {this.renderList('done', 'canceled')}
+        </Expandable>
       </div>
     )
   }
