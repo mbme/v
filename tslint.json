@@ -29,7 +29,7 @@
     ],
     "max-line-length": [
       true,
-      100
+      120
     ],
     "member-ordering": [
       true,
@@ -39,7 +39,7 @@
     ],
     "new-parens": true,
     "no-angle-bracket-type-assertion": true,
-    "no-any": true,
+    "no-any": false,
     "no-arg": true,
     "no-bitwise": true,
     "no-conditional-assignment": true,
@@ -113,9 +113,7 @@
     ],
     "typedef": [
       true,
-      "call-signature",
-      "parameter",
-      "member-variable-declaration"
+      "call-signature"
     ],
     "typedef-whitespace": [
       true,

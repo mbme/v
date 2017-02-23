@@ -30,6 +30,7 @@ export interface IProject {
 }
 
 export type TodoState = 'todo' | 'in-progress' | 'blocked' | 'done' | 'canceled'
+export const todoStates = (...state: TodoState[]) => state
 
 export interface ITodoData {
   readonly name: string,

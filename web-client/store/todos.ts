@@ -50,14 +50,18 @@ export default class TodosStore {
     }
   }
 
-  async updateTodo(projectId: number, data: ITodoData, state: TodoState): Promise<void> {
+  async updateTodo(projectId: number, id: number, data: ITodoData, state: TodoState): Promise<void> {
     await this.uiStore.errorHandler(
-      api.updateTodo(projectId, data, state),
-      `failed to update todo in project ${projectId}'`
+      api.updateTodo(id, data, state),
+      `failed to update todo ${id} in project ${projectId}'`
     )
 
     if (this.projectId === projectId) {
       this.openProject(projectId)
     }
+  }
+
+  updateTodoState(todo: ITodo, state: TodoState): Promise<void> {
+    return this.updateTodo(todo.projectId, todo.id, todo, state)
   }
 }

@@ -53,11 +53,21 @@
     }
 
     .Todo {
-      margin: 1vr 0 1.5vr -0.5vr;
+      margin: 1vr 0 1vr -0.5vr;
+      padding-left: 1.5vr;
+
       cursor: pointer;
 
-      &-name {
-        margin-left: 0.5vr;
+      position: relative;
+
+      .Icon-done {
+        visibility: hidden;
+        position: absolute;
+        left: 0;
+      }
+
+      &:hover .Icon-done {
+        visibility: visible;
       }
     }
   }
