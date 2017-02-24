@@ -1,5 +1,5 @@
 use storage::types::*;
-use utils::convert_all_into;
+use server::utils::convert_all_into;
 
 #[derive(Debug, Serialize)]
 pub struct ErrorDTO {

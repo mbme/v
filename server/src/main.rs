@@ -10,7 +10,6 @@ extern crate mime_guess;
 extern crate url;
 
 mod storage;
-mod utils;
 mod server;
 mod error;
 mod config;

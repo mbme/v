@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS records (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    type TEXT NOT NULL, -- 'note', 'todo'
+    type TEXT NOT NULL,
     create_ts INTEGER NOT NULL,
     update_ts INTEGER NOT NULL
 );

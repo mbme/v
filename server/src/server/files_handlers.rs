@@ -10,7 +10,6 @@ use super::dto::*;
 use super::utils::*;
 use super::multipart::{parse_multipart, RequestData};
 
-use utils::convert_all_into;
 use error::Error;
 use storage::Storage;
 use storage::types::*;

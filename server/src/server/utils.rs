@@ -53,3 +53,7 @@ pub fn parse_id (id_str: &str) -> Result<Id> {
 pub fn get_id (req: &Request) -> Result<Id> {
     parse_id(&get_url_param(req, "id")?)
 }
+
+pub fn convert_all_into<A, B>(v: Vec<A>) -> Vec<B> where A: Into<B> {
+    v.into_iter().map(|a| a.into()).collect()
+}

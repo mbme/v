@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use utils::convert_all_into;
 use error::Error;
 use storage::Storage;
 
