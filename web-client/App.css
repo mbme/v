@@ -7,7 +7,10 @@ html {
   color: $base-font-color;
   /* for postcss-vertical-rhythm */
   font: $base-font-size/$base-line-height $font-common;
-  overflow-y: scroll;
+}
+
+html, body, #app, .App {
+  height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {

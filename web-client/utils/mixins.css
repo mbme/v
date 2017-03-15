@@ -26,31 +26,6 @@
   word-wrap: break-word;
 }
 
-@define-mixin container {
-  margin-top: $header-h;
-  position: relative;
-
-  $left-width: 320px;
-  $right-width: 650px;
-
-  &-left {
-    position: fixed;
-    right: 58%;
-
-    width: $left-width;
-    height: calc(100% - $header-h);
-
-    display: flex;
-    flex-direction: column;
-  }
-
-  &-center {
-    width: 58%;
-    margin-left: 42%;
-    padding: 1vr 0;
-  }
-}
-
 .u-like-secondary {
   @mixin like-secondary;
 }

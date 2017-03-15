@@ -6,7 +6,7 @@ import {config, fuzzySearch} from 'web-client/utils'
 import { notesStore } from 'web-client/store'
 import { IRecord } from 'api-client/types'
 
-import { Button, Header, WithModals } from 'web-client/components'
+import { Button, Header, WithModals, Page, LeftPane, MiddlePane } from 'web-client/components'
 
 import RecordsFilter from './RecordsFilter'
 import NoteRecordView from './NoteRecord'
@@ -55,11 +55,7 @@ export default class NotesView extends WithModals<{}, {}> {
     return `${recordsCount} notes`
   }
 
-  showModal = () => {
-    this.setModal(
-        <AddNoteModal onClose={this.hideModal} />
-    )
-  }
+  showModal = () => this.setModal(<AddNoteModal onClose={this.hideModal} />)
 
   render (): JSX.Element {
     const records = notesStore.noteRecords.map(
@@ -83,22 +79,22 @@ export default class NotesView extends WithModals<{}, {}> {
     }
 
     return (
-      <div className="NotesView">
+      <Page className="NotesView">
 
         <Header>
           <Button onClick={this.showModal}>Add Note</Button>
         </Header>
 
-        <div className="NotesView-left">
+        <LeftPane className="NotesView-left">
           <RecordsFilter initialValue={this.filter} onChange={filter => this.filter = filter} />
 
           <div className="NotesView-recordsCount">{this.renderRecordsCount()}</div>
 
           <ul className="NotesView-list">{records}</ul>
-        </div>
+        </LeftPane>
 
-        <div key={note && note.id} className="NotesView-center">{noteView}</div>
-      </div>
+        <MiddlePane className="NotesView-center">{noteView}</MiddlePane>
+      </Page>
     )
   }
 }

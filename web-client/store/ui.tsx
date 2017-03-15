@@ -6,11 +6,7 @@ export default class UIStore {
   @observable modals: Modal[] = []
   @observable toasts: Toast[] = []
 
-  @observable view: ViewTypes = 'todos'
-
-  setView(view: ViewTypes): void {
-    this.view = view
-  }
+  @observable view: ViewTypes = 'notes'
 
   @computed get visibleModal(): Modal | undefined {
     if (this.modals.length > 0) {

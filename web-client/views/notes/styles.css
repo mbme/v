@@ -1,6 +1,4 @@
 .NotesView {
-  @mixin container;
-
   &-list {
     overflow-y: auto;
   }
@@ -43,11 +41,8 @@
   }
 
   .NoteContainer {
-    display: flex;
-
     .Toolbar {
       position: fixed;
-      margin-left: calc($right-width + 2vr + 10px);
 
       display: flex;
       flex-direction: column;
@@ -76,11 +71,9 @@
   }
 
   .Note, .NoteEditor {
-    width: $right-width;
     min-height: 300px;
 
     padding: 1vr 2vr;
-    margin: 0 1vr;
 
     background-color: white;
     border: $light-border;

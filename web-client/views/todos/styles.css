@@ -1,6 +1,4 @@
 .TodosView {
-  @mixin container;
-
   .ProjectList {
     &-projects {
       overflow-y: auto;
@@ -28,7 +26,6 @@
   }
 
   .ProjectTodosList {
-    width: $right-width;
     min-height: 800px;
 
     background-color: white;

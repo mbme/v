@@ -1,10 +1,37 @@
+$header-height: 45px;
+
+.Page {
+  position: relative;
+  height: 100%;
+
+  padding-top: $header-height;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+
+  .LeftPane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 320px;
+  }
+
+  .MiddlePane {
+    padding: 1vr 0 1vr 2vr;
+    width: 650px;
+  }
+
+  .RightPane {
+  }
+}
+
 .Header {
+  height: $header-height;
+  width: 100%;
   position: fixed;
   top: 0;
-  z-index: 10;
-
-  width: 100%;
-  height: $header-h;
 
   background-color: #fafafa;
   border-bottom: $light-border;
