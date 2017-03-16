@@ -1,8 +1,12 @@
 $header-height: 45px;
+
+$content-margin: 5px;
 $content-width: 620px;
+$content-width-with-margin: 630px;
+
 $toolbar-width: 300px;
 $left-pane-width: 300px;
-$middle-pane-width: 920px;
+$middle-pane-width: 930px;
 
 .Page {
   position: relative;
@@ -13,6 +17,7 @@ $middle-pane-width: 920px;
 
   .LeftPane {
     position: fixed;
+    padding-top: $content-margin;
 
     display: flex;
     flex-direction: column;
@@ -26,13 +31,15 @@ $middle-pane-width: 920px;
     margin-left: $left-pane-width;
 
     .Content {
-      padding: 1vr 0 1vr 2vr;
+      margin: $content-margin;
+      padding: 1vr 2vr;
       width: $content-width;
     }
 
     .Toolbar {
       position: fixed;
-      margin-left: $content-width;
+      padding-top: $content-margin;
+      margin-left: $content-width-with-margin;
       width: $toolbar-width;
     }
   }

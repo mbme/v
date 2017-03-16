@@ -6,7 +6,7 @@ import { todosStore } from 'web-client/store'
 
 import ProjectTodosList from './ProjectTodosList'
 
-import { Button, Header, WithModals, Page, LeftPane } from 'web-client/components'
+import { Button, Header, WithModals, Page, LeftPane, MiddlePane } from 'web-client/components'
 
 @observer
 export default class TodosView extends WithModals<{}, {}> {
@@ -28,7 +28,7 @@ export default class TodosView extends WithModals<{}, {}> {
   }
 
   render (): JSX.Element {
-    let list
+    let list = <MiddlePane />
     const { todos, projectId } = todosStore
     if (todos) {
       if (!projectId) {
