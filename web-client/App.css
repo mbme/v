@@ -46,3 +46,10 @@ img {
   border-radius: 3px;
   @mixin lite-shadow;
 }
+
+.App {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  overflow-y: scroll;
+}

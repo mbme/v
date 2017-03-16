@@ -18,7 +18,8 @@ function createLayoutPart(baseClass: string) {
 export const Page = createLayoutPart('Page')
 export const LeftPane = createLayoutPart('LeftPane')
 export const MiddlePane = createLayoutPart('MiddlePane')
-export const RightPane = createLayoutPart('RightPane')
+export const Content = createLayoutPart('Content')
+export const Toolbar = createLayoutPart('Toolbar')
 
 export class Header extends React.Component<{}, {}> {
   renderLink(view: ViewTypes, text: string): JSX.Element {

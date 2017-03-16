@@ -5,6 +5,7 @@ import { notesStore } from 'web-client/store'
 import { INote } from 'api-client/types'
 
 import Toolbar, { IAction } from './Toolbar'
+import { MiddlePane, Content } from 'web-client/components'
 
 interface IProps {
   note: INote,
@@ -27,18 +28,18 @@ export default class Note extends React.Component<IProps, {}> {
     ]
 
     return (
-      <div className="NoteContainer">
-        <div className="Note">
+      <MiddlePane className="NoteContainer">
+        <Content className="Note">
           <h1 className="Note-name">{note.name}</h1>
           <div className="Note-data">{note.data}</div>
-        </div>
+        </Content>
 
         <Toolbar recordId={note.id}
                  edit={false}
                  actions={actions}
                  files={note.files}
                  reloadFiles={this.reloadNote} />
-      </div>
+      </MiddlePane>
     )
   }
 }

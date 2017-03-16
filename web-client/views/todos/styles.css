@@ -26,8 +26,6 @@
   }
 
   .ProjectTodosList {
-    min-height: 800px;
-
     background-color: white;
     border: $light-border;
 

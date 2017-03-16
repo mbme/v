@@ -5,7 +5,7 @@ import { config } from 'web-client/utils'
 import { notesStore } from 'web-client/store'
 import { INote } from 'api-client/types'
 
-import { WithModals } from 'web-client/components'
+import { WithModals, MiddlePane, Content } from 'web-client/components'
 import Toolbar, { IAction } from './Toolbar'
 
 interface IProps {
@@ -25,10 +25,10 @@ export default class NoteEditor extends WithModals<IProps, {}> {
     ]
 
     return (
-      <div className="NoteContainer">
+      <MiddlePane className="NoteContainer">
         {this.modal}
 
-        <div className="NoteEditor">
+        <Content className="NoteEditor">
           <input className="NoteEditor-name"
                  ref="name"
                  type="text"
@@ -40,14 +40,14 @@ export default class NoteEditor extends WithModals<IProps, {}> {
                     placeholder="Type something here"
                     defaultValue={note.data} />
 
-        </div>
+        </Content>
 
         <Toolbar recordId={note.id}
                  edit
                  actions={actions}
                  files={note.files}
                  reloadFiles={() => notesStore.loadNote(note.id)} />
-      </div>
+      </MiddlePane>
     )
   }
 

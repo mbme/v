@@ -1,29 +1,40 @@
 $header-height: 45px;
+$content-width: 620px;
+$toolbar-width: 300px;
+$left-pane-width: 300px;
+$middle-pane-width: 920px;
 
 .Page {
   position: relative;
-  height: 100%;
 
+  min-height: 100%;
   padding-top: $header-height;
-
   display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  justify-content: center;
 
   .LeftPane {
+    position: fixed;
+
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 320px;
+    width: $left-pane-width;
   }
 
   .MiddlePane {
-    padding: 1vr 0 1vr 2vr;
-    width: 650px;
-  }
+    display: flex;
+    width: $middle-pane-width;
+    margin-left: $left-pane-width;
 
-  .RightPane {
+    .Content {
+      padding: 1vr 0 1vr 2vr;
+      width: $content-width;
+    }
+
+    .Toolbar {
+      position: fixed;
+      margin-left: $content-width;
+      width: $toolbar-width;
+    }
   }
 }
 
@@ -31,6 +42,7 @@ $header-height: 45px;
   height: $header-height;
   width: 100%;
   position: fixed;
+  left: 0;
   top: 0;
 
   background-color: #fafafa;

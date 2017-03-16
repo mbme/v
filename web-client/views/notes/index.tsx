@@ -68,7 +68,7 @@ export default class NotesView extends WithModals<{}, {}> {
     )
 
     const { note } = notesStore
-    let noteView
+    let noteView = <MiddlePane />
 
     if (note) {
       if (notesStore.edit) {
@@ -93,7 +93,7 @@ export default class NotesView extends WithModals<{}, {}> {
           <ul className="NotesView-list">{records}</ul>
         </LeftPane>
 
-        <MiddlePane className="NotesView-center">{noteView}</MiddlePane>
+        {noteView}
       </Page>
     )
   }

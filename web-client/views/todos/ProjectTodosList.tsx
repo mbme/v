@@ -4,7 +4,7 @@ import {observer} from 'mobx-react'
 import { todosStore } from 'web-client/store'
 import { ITodo, TodoState, todoStates } from 'api-client/types'
 
-import { Expandable, IconDone } from 'web-client/components'
+import { Expandable, IconDone, MiddlePane, Content } from 'web-client/components'
 
 const STATES = {
   IN_PROGRESS: todoStates('in-progress', 'blocked'),
@@ -48,21 +48,23 @@ export default class ProjectTodosList extends React.Component<IProps, {}> {
 
   render(): JSX.Element {
     return (
-      <div className="ProjectTodosList">
-        <input className="ProjectTodosList-task-input"
-               type="text"
-               placeholder="Add task"
-               onKeyPress={this.onKeyPress} />
-        <Expandable expanded title="In Progress">
-          {this.renderList(STATES.IN_PROGRESS)}
-        </Expandable>
-        <Expandable expanded title="Inbox">
-          {this.renderList(STATES.INBOX)}
-        </Expandable>
-        <Expandable title="Completed">
-          {this.renderList(STATES.COMPLETED)}
-        </Expandable>
-      </div>
+      <MiddlePane>
+        <Content className="ProjectTodosList">
+          <input className="ProjectTodosList-task-input"
+                 type="text"
+                 placeholder="Add task"
+                 onKeyPress={this.onKeyPress} />
+          <Expandable expanded title="In Progress">
+            {this.renderList(STATES.IN_PROGRESS)}
+          </Expandable>
+          <Expandable expanded title="Inbox">
+            {this.renderList(STATES.INBOX)}
+          </Expandable>
+          <Expandable title="Completed">
+            {this.renderList(STATES.COMPLETED)}
+          </Expandable>
+        </Content>
+      </MiddlePane>
     )
   }
 

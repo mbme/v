@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 
-import { Button, ButtonType } from 'web-client/components'
+import { Button, ButtonType, Toolbar as ToolbarLayout } from 'web-client/components'
 import {IFileInfo} from 'api-client/types'
 
 import FileLink from './FileLink'
@@ -55,12 +55,11 @@ export default class Toolbar extends React.Component<IProps, {}> {
     )
 
     return (
-      <div className="Toolbar">
-        <label key="title-actions" className="title">ACTIONS</label>
+      <ToolbarLayout className="Toolbar">
         {buttons}
         <label key="title-files" className="title">FILES</label>
         {links}
-      </div>
+      </ToolbarLayout>
     )
   }
 }

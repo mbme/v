@@ -9,7 +9,6 @@
   }
 
   .RecordsFilter {
-    margin-top: 10px;
     @mixin like-input;
   }
 
@@ -42,8 +41,6 @@
 
   .NoteContainer {
     .Toolbar {
-      position: fixed;
-
       display: flex;
       flex-direction: column;
 
@@ -91,6 +88,9 @@
   }
 
   .NoteEditor {
+    display: flex;
+    flex-direction: column;
+
     &-name, &-data {
       @mixin like-input;
     }
@@ -100,8 +100,8 @@
     }
 
     &-data {
+      flex-grow: 1;
       margin-top: 0.5vr;
-      height: 190px;
     }
   }
 }

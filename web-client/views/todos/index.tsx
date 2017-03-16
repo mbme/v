@@ -6,7 +6,7 @@ import { todosStore } from 'web-client/store'
 
 import ProjectTodosList from './ProjectTodosList'
 
-import { Button, Header, WithModals } from 'web-client/components'
+import { Button, Header, WithModals, Page, LeftPane } from 'web-client/components'
 
 @observer
 export default class TodosView extends WithModals<{}, {}> {
@@ -32,23 +32,23 @@ export default class TodosView extends WithModals<{}, {}> {
     const { todos, projectId } = todosStore
     if (todos) {
       if (!projectId) {
-        throw new Error('this should never occur')
+        throw new Error('this should never happen')
       }
       list = <ProjectTodosList key={projectId} projectId={projectId} todos={todos} />
     }
 
     return (
-      <div className="TodosView">
+      <Page className="TodosView">
         <Header />
-        <div className="TodosView-left">
+        <LeftPane>
           <div className="ProjectList-item is-disabled">Inbox</div>
           <div className="ProjectList-item is-disabled">Today</div>
           <div className="ProjectList-item is-disabled">Upcoming</div>
           <div className="ProjectList-projects">{this.renderProjects()}</div>
           <Button className="ProjectList-add-project" onClick={() => {}}>Add Project</Button>
-        </div>
-        <div className="TodosView-center">{list}</div>
-      </div>
+        </LeftPane>
+        {list}
+      </Page>
     )
   }
 }
