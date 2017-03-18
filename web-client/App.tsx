@@ -45,23 +45,12 @@ export default class App extends React.Component<{}, {}> {
     )
 
     return (
-      <div className="ToastsContainer">
-        {toasts}
-      </div>
+      <div className="ToastsContainer">{toasts}</div>
     )
   }
 
   render (): JSX.Element {
-    let devTools: JSX.Element | undefined
-
-    if (__DEV__) {
-      const devToolsPosition = {
-        bottom: 10,
-        right: 10,
-      }
-
-      devTools = <DevTools position={devToolsPosition} />
-    }
+    const devTools = __DEV__ ? <DevTools position={{ bottom: 10, right: 10 }} /> : null
 
     return (
       <div className="App">
