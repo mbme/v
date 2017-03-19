@@ -1,8 +1,11 @@
 module.exports = {
+  "parserOptions": {
+    "ecmaVersion": 8,
+  },
   "env": {
-    "browser": true,
+    "node": true,
     "es6": true,
-    "node": true
+    "jest": true,
   },
   "extends": "eslint:recommended",
   "rules": {
@@ -26,6 +29,7 @@ module.exports = {
     "comma-dangle": [
       "error",
       "always-multiline"
-    ]
+    ],
+    "no-console": "off",
   }
 };
