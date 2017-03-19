@@ -1,6 +1,0 @@
-@import './utils/variables.css';
-@import './utils/mixins.css';
-
-@import './App.css';
-@import './components/**/*.css';
-@import './views/**/*.css';
