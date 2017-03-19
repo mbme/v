@@ -37,10 +37,6 @@
 
     .Expandable {
       margin-top: 1.5vr;
-
-      &-content {
-        padding-left: 2vr;
-      }
     }
 
     .Todo-nothing {
