@@ -9,7 +9,7 @@ describe('DB', () => {
   })
   afterAll(() => db.close())
 
-  describe('records', async () => {
+  describe('records', () => {
     const type = 'type'
     const name = 'name'
     const data = 'data'
@@ -46,7 +46,7 @@ describe('DB', () => {
     })
   })
 
-  describe('files', async () => {
+  describe('files', () => {
     const name = 'package.json'
     const data = fs.readFileSync(name)
 
@@ -58,6 +58,8 @@ describe('DB', () => {
 
     test('create file', async () => {
       await db.createFile(record_id, name, data)
+      const files = await db.listFiles()
+      expect(files[record_id]).toEqual([{ record_id, name, size: data.length }])
     })
 
     test('read file', async () => {

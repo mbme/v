@@ -55,17 +55,25 @@ function dbAPI(db) {
     return new Promise((resolve, reject) => stmt.get([], (err, row) => err ? reject(err) : resolve(row)))
   }
 
+  async function selectAll(query, args, cb) {
+    const stmt = await prepare(query, args)
+
+    let row = await statementGet(stmt)
+    while (row) {
+      cb(row)
+      row = await statementGet(stmt)
+    }
+  }
+
   return {
     async listRecords(type) {
-      const stmt = await prepare('SELECT id, type, name, data FROM records WHERE type = ?', [type])
+      const files = await this.listFiles()
 
       const results = []
-
-      let row = await statementGet(stmt)
-      while (row) {
+      await selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [type], (row) => {
+        row.files = files[row.id] || []
         results.push(row)
-        row = await statementGet(stmt)
-      }
+      })
 
       return results
     },
@@ -87,6 +95,21 @@ function dbAPI(db) {
     },
 
     // ----------- FILES ----------------------------------
+
+    /**
+     * @returns {[record_id]: [...fileInfo]}
+     */
+    async listFiles() {
+      const result = {}
+      await selectAll('SELECT record_id, name, length(data) AS size FROM files', [], (row) => {
+        const files = result[row.record_id] || []
+        files.push(row)
+
+        result[row.record_id] = files
+      })
+
+      return result
+    },
 
     /**
      * @param {Buffer} data
