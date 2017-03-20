@@ -28,7 +28,13 @@ module.exports = {
     ],
     "comma-dangle": [
       "error",
-      "always-multiline"
+      {
+        "arrays": "only-multiline",
+        "objects": "only-multiline",
+        "imports": "only-multiline",
+        "exports": "only-multiline",
+        "functions": "never",
+      }
     ],
     "no-console": "off",
   }

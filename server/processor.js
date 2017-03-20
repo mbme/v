@@ -1,38 +1,62 @@
 const getDB = require('./db')
+const { validators, validate } = require('./validators')
 
 const actions = {
-  LIST_RECORDS: ({ type }) => {
-    // TODO validate data.type
+  LIST_RECORDS: async ({ type }) => {
+    validate(
+      validators.record.type(type)
+    )
     return db => db.listRecords(type)
   },
 
-  CREATE_RECORD: ({ type, name, data }) => {
-    // validate everything
+  CREATE_RECORD: async ({ type, name, data }) => {
+    validate(
+      validators.record.type(type),
+      validators.record.name(name),
+      validators.record.data(data)
+    )
     return db => db.createRecord(type, name, data)
   },
 
-  UPDATE_RECORD: ({ id, type, name, data }) => {
-    // validate
+  UPDATE_RECORD: async ({ id, type, name, data }) => {
+    validate(
+      validators.record.id(id),
+      validators.record.type(type),
+      validators.record.name(name),
+      validators.record.data(data)
+    )
     return db => db.updateRecord(id, type, name, data)
   },
 
-  DELETE_RECORD: ({ id }) => {
-    // validate
+  DELETE_RECORD: async ({ id }) => {
+    validate(
+      validators.record.id(id)
+    )
     return db => db.deleteRecord(id)
   },
 
-  CREATE_FILE: ({ record_id, name, data }) => {
-    // validate
+  CREATE_FILE: async ({ record_id, name, data }) => {
+    validate(
+      validators.record.id(record_id),
+      validators.file.name(name),
+      validators.file.data(data)
+    )
     return db => db.createFile(record_id, name, data)
   },
 
-  READ_FILE: ({ record_id, name }) => {
-    // validate
+  READ_FILE: async ({ record_id, name }) => {
+    validate(
+      validators.record.id(record_id),
+      validators.file.name(name)
+    )
     return db => db.readFile(record_id, name)
   },
 
-  DELETE_FILE: ({ record_id, name }) => {
-    // validate
+  DELETE_FILE: async ({ record_id, name }) => {
+    validate(
+      validators.record.id(record_id),
+      validators.file.name(name)
+    )
     return db => db.deleteFile(record_id, name)
   },
 }
