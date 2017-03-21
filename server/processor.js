@@ -58,31 +58,31 @@ const actions = {
       validators.file.name(name)
     )
     return db => db.deleteFile(record_id, name)
-  },
+  }
 }
 
-module.exports = async function createProcessor() {
+module.exports = async function createProcessor () {
   const db = await getDB()
 
   return {
-    async processAction({ name, data }) {
+    async processAction ({ name, data }) {
       const action = actions[name]
       if (!action) {
         return {
-          error: `unknown action: ${name}`,
+          error: `unknown action: ${name}`
         }
       }
 
       try {
         return await action(data)
-      } catch(error) {
+      } catch (error) {
         console.error(`action ${name} processing error:`, error)
         return { error }
       }
     },
 
-    close() {
+    close () {
       return db.close()
-    },
+    }
   }
 }

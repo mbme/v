@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 const getDB = require('./db')
 const fs = require('fs')
 
@@ -28,7 +30,6 @@ describe('DB', () => {
       const record = await db.readRecord(id)
       expect(record).toEqual({ id, type, name, data })
     })
-
 
     test('update record', async () => {
       const newName = 'newName'

@@ -7,35 +7,10 @@ module.exports = {
     "es6": true,
     "jest": true,
   },
-  "extends": "eslint:recommended",
+  "extends": "standard",
   "rules": {
-    "indent": [
-      "error",
-      2,
-      { "SwitchCase": 1 }
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "never"
-    ],
-    "comma-dangle": [
-      "error",
-      {
-        "arrays": "only-multiline",
-        "objects": "only-multiline",
-        "imports": "only-multiline",
-        "exports": "only-multiline",
-        "functions": "never",
-      }
-    ],
-    "no-console": "off",
+    "prefer-const": "error",
+    "no-var": "error",
+    "object-curly-spacing": ["error", "always"],
   }
 };
