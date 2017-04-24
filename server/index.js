@@ -1,19 +1,25 @@
 const http = require('http')
 const formidable = require('formidable')
 const Route = require('route-parser')
+const fileType = require('file-type')
+const fs = require('fs')
 
 const createProcessor = require('./processor')
 
-const fileUploadRoute = new Route('/api/files/:record_id')
-const fileRoute = new Route('/api/files/:record_id/:file_name')
-const apiRoute = new Route('/api')
-
 function parseRequestBody (req) {
-  return new Promise((resolve, reject) => {
+  return new Promise(function (resolve, reject) {
     const data = []
 
     req.on('data', chunk => data.push(chunk))
-      .on('end', () => resolve(JSON.parse(Buffer.concat(data).toString())))
+      .on('end', () => {
+        const body = Buffer.concat(data).toString()
+
+        try {
+          resolve(JSON.parse(body))
+        } catch (e) {
+          reject(e)
+        }
+      })
   })
 }
 
@@ -31,13 +37,23 @@ async function parseForm (req) {
   })
 }
 
+function readFile (path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, (err, data) => err ? reject(err) : resolve(data))
+  })
+}
+
 function writeResponse (res, response) {
   res.writeHead(200, { 'content-type': 'application/json' })
-  res.write(JSON.stringify(response))
+  res.end(JSON.stringify(response))
 }
 
 async function createRequestHandler () {
   const processor = await createProcessor()
+
+  const fileUploadRoute = new Route('/api/files/:record_id')
+  const fileRoute = new Route('/api/files/:record_id/:file_name')
+  const apiRoute = new Route('/api')
 
   return async function handleRequest (req, res) {
     const method = req.method.toLowerCase()
@@ -46,15 +62,15 @@ async function createRequestHandler () {
     if (method === 'post' && fileUploadRouteResult) {
       const { fields, files } = await parseForm(req)
 
-      // TODO save file
+      const data = await readFile(files.data.path)
 
       const response = await processor.processAction({
         name: 'CREATE_FILE',
         data: {
-          record_id: fileUploadRouteResult.record_id,
-          name: '',
-          data: ''
-        }
+          record_id: parseInt(fileUploadRouteResult.record_id, 10),
+          name: fields.name,
+          data: data,
+        },
       })
 
       writeResponse(res, response)
@@ -67,17 +83,17 @@ async function createRequestHandler () {
       const response = await processor.processAction({
         name: 'READ_FILE',
         data: {
-          record_id: fileRouteResult.record_id,
-          name: fileRouteResult.file_name
-        }
+          record_id: parseInt(fileRouteResult.record_id, 10),
+          name: fileRouteResult.file_name,
+        },
       })
 
-      if (response instanceof Buffer) {
-        res.writeHead(200, {}) // TODO write proper content type
-        res.write(response)
+      if (Buffer.isBuffer(response)) {
+        res.writeHead(200, { 'content-type': fileType(response).mime })
+        res.end(response)
       } else {
         res.writeHead(400, { 'content-type': 'application/json' })
-        res.write(JSON.stringify(response))
+        res.end(JSON.stringify(response))
       }
 
       return
@@ -85,12 +101,23 @@ async function createRequestHandler () {
 
     if (method === 'post' && apiRoute.match(req.url)) {
       // handle api request
-      const response = await processor.processAction(await parseRequestBody(req))
+      try {
+        const action = await parseRequestBody(req)
+        const response = await processor.processAction(action)
 
-      writeResponse(res, response)
+        writeResponse(res, response)
+      } catch (e) {
+        console.error('API REQUEST ERROR', e)
+        res.writeHead(400)
+        res.end(e.stack.toString())
+      }
+
+      return
     }
 
     // TODO write static files
+    res.writeHead(404)
+    res.end()
   }
 }
 
@@ -100,7 +127,7 @@ async function startServer (port = 8080) {
 
   return new Promise((resolve) => {
     server.on('error', (error) => {
-      console.error(error)
+      console.error('SERVER ERROR', error)
     })
 
     server.listen(port, function () {

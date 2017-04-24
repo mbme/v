@@ -31,7 +31,7 @@ const validators = {
       return check(isString(name), `file name: expected string, received ${getType(name)}`)
     },
     data (data) {
-      return check(Buffer.isBuffer(data)`file data: expected Buffer, received ${getType(data)}`)
+      return check(Buffer.isBuffer(data), `file data: expected Buffer, received ${getType(data)}`)
     }
   }
 }

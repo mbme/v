@@ -12,5 +12,6 @@ module.exports = {
     "prefer-const": "error",
     "no-var": "error",
     "object-curly-spacing": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"],
   }
 };
