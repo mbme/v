@@ -131,7 +131,7 @@ function dbAPI (db) {
       return new Promise((resolve, reject) => {
         db.close(err => err ? reject(err) : resolve())
       })
-    }
+    },
   }
 }
 

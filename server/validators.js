@@ -24,7 +24,7 @@ const validators = {
     },
     data (data) {
       return check(isString(data), `record data: expected string, received ${getType(data)}`)
-    }
+    },
   },
   file: {
     name (name) {
@@ -32,8 +32,8 @@ const validators = {
     },
     data (data) {
       return check(Buffer.isBuffer(data), `file data: expected Buffer, received ${getType(data)}`)
-    }
-  }
+    },
+  },
 }
 
 function validate (...validators) {
