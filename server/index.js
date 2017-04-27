@@ -6,6 +6,13 @@ const fs = require('fs')
 
 const createProcessor = require('./processor')
 
+const webpack = require('webpack')
+const webpackDevMiddleware = require('webpack-dev-middleware')
+const compiler = webpack({
+  output: { path: '/' },
+})
+
+
 function parseRequestBody (req) {
   return new Promise(function (resolve, reject) {
     const data = []
