@@ -12,9 +12,7 @@ module.exports = {
     filename: 'bundle.js',
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      title: 'QuantumV',
-    }),
+    new HtmlWebpackPlugin({ template: 'client/index.html' }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
   ],
