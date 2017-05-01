@@ -1,17 +1,14 @@
-const http = require('http')
+const express = require('express')
 const formidable = require('formidable')
-const Route = require('route-parser')
 const fileType = require('file-type')
 const fs = require('fs')
 
-const createProcessor = require('./processor')
-
 const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
-const compiler = webpack({
-  output: { path: '/' },
-})
+const webpackHotMiddleware = require('webpack-hot-middleware')
+const webpackConfig = require('../webpack.config')
 
+const createProcessor = require('./processor')
 
 function parseRequestBody (req) {
   return new Promise(function (resolve, reject) {
@@ -50,97 +47,66 @@ function readFile (path) {
   })
 }
 
-function writeResponse (res, response) {
-  res.writeHead(200, { 'content-type': 'application/json' })
-  res.end(JSON.stringify(response))
-}
+async function startServer (port = 8080) {
+  const app = express()
 
-async function createRequestHandler () {
   const processor = await createProcessor()
 
-  const fileUploadRoute = new Route('/api/files/:record_id')
-  const fileRoute = new Route('/api/files/:record_id/:file_name')
-  const apiRoute = new Route('/api')
+  app.post('/api/files/:record_id', async function (req, res) {
+    const { fields, files } = await parseForm(req)
 
-  return async function handleRequest (req, res) {
-    const method = req.method.toLowerCase()
+    const data = await readFile(files.data.path)
 
-    const fileUploadRouteResult = fileUploadRoute.match(req.url)
-    if (method === 'post' && fileUploadRouteResult) {
-      const { fields, files } = await parseForm(req)
-
-      const data = await readFile(files.data.path)
-
-      const response = await processor.processAction({
-        name: 'CREATE_FILE',
-        data: {
-          record_id: parseInt(fileUploadRouteResult.record_id, 10),
-          name: fields.name,
-          data: data,
-        },
-      })
-
-      writeResponse(res, response)
-
-      return
-    }
-
-    const fileRouteResult = fileRoute.match(req.url)
-    if (method === 'get' && fileRouteResult) {
-      const response = await processor.processAction({
-        name: 'READ_FILE',
-        data: {
-          record_id: parseInt(fileRouteResult.record_id, 10),
-          name: fileRouteResult.file_name,
-        },
-      })
-
-      if (Buffer.isBuffer(response)) {
-        res.writeHead(200, { 'content-type': fileType(response).mime })
-        res.end(response)
-      } else {
-        res.writeHead(400, { 'content-type': 'application/json' })
-        res.end(JSON.stringify(response))
-      }
-
-      return
-    }
-
-    if (method === 'post' && apiRoute.match(req.url)) {
-      // handle api request
-      try {
-        const action = await parseRequestBody(req)
-        const response = await processor.processAction(action)
-
-        writeResponse(res, response)
-      } catch (e) {
-        console.error('API REQUEST ERROR', e)
-        res.writeHead(400)
-        res.end(e.stack.toString())
-      }
-
-      return
-    }
-
-    // TODO write static files
-    res.writeHead(404)
-    res.end()
-  }
-}
-
-async function startServer (port = 8080) {
-  const handler = await createRequestHandler()
-  const server = http.createServer(handler)
-
-  return new Promise((resolve) => {
-    server.on('error', (error) => {
-      console.error('SERVER ERROR', error)
+    const response = await processor.processAction({
+      name: 'CREATE_FILE',
+      data: {
+        record_id: parseInt(req.params.record_id, 10),
+        name: fields.name,
+        data: data,
+      },
     })
 
-    server.listen(port, function () {
-      console.log('Server listening on: http://localhost:%s', port)
-      resolve(server)
+    res.json(response)
+  })
+
+  app.get('/api/files/:record_id/:file_name', async function (req, res) {
+    const response = await processor.processAction({
+      name: 'READ_FILE',
+      data: {
+        record_id: parseInt(req.params.record_id, 10),
+        name: req.params.file_name,
+      },
     })
+
+    if (Buffer.isBuffer(response)) {
+      res.set('Content-Type', fileType(response).mime).send(response)
+    } else {
+      res.status(400).json(response)
+    }
+  })
+
+  app.post('/api', async function (req, res) {
+    try {
+      const action = await parseRequestBody(req)
+      const response = await processor.processAction(action)
+
+      res.json(response)
+    } catch (e) {
+      console.error('API REQUEST ERROR', e)
+      res.status(400).json({
+        error: e.stack.toString(),
+      })
+    }
+  })
+
+  const compiler = webpack(webpackConfig)
+
+  app.use(webpackDevMiddleware(compiler))
+  app.use(webpackHotMiddleware(compiler))
+
+  // TODO request/response logger logger
+  app.listen(port, function () {
+    console.log('Server listening on: http://localhost:%s', port)
   })
 }
 

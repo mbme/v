@@ -7,13 +7,13 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
+    "express": "^4.15.2",
     "file-type": "^4.2.0",
     "formidable": "^1.1.1",
     "material-ui": "^0.17.4",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-tap-event-plugin": "^2.0.1",
-    "route-parser": "^0.0.5",
     "sqlite3": "^3.1.8"
   },
   "devDependencies": {
@@ -25,7 +25,8 @@
     "jest": "^19.0.2",
     "standard": "^9.0.2",
     "webpack": "^2.4.1",
-    "webpack-dev-middleware": "^1.10.2"
+    "webpack-dev-middleware": "^1.10.2",
+    "webpack-hot-middleware": "^2.18.0"
   },
   "scripts": {
     "build": "",
