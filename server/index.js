@@ -102,17 +102,17 @@ async function startServer (port = 8080) {
   })
 
   app.post('/api', async function (req, res) {
+    let action
     try {
-      const action = await parseRequestBody(req)
-      const response = await processor.processAction(action)
-
-      res.json(response)
+      action = await parseRequestBody(req)
     } catch (e) {
-      console.error('API REQUEST ERROR', e)
-      res.status(400).json({
-        error: e.stack.toString(),
-      })
+      res.status(400).json({ error: e.stack.toString() })
+      return
     }
+
+    const response = await processor.processAction(action)
+
+    res.json(response)
   })
 
   const compiler = webpack(webpackConfig)

@@ -75,9 +75,9 @@ module.exports = async function createProcessor () {
 
       try {
         return await action(data)(db)
-      } catch (error) {
-        console.error(`action ${name} processing error:`, error)
-        return { error: error.toString() }
+      } catch (e) {
+        console.error(`action ${name} processing error:`, e)
+        return { error: e.stack.toString() }
       }
     },
 
