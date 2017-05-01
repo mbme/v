@@ -47,10 +47,26 @@ function readFile (path) {
   })
 }
 
+function log (start, req, res, isFinished = true) {
+  const hrend = process.hrtime(start)
+  const ms = hrend[0] * 1000 + Math.round(hrend[1] / 1000000)
+
+  console.info('%s %s %d %s - %dms %s', req.method, req.url, res.statusCode, res.statusMessage, ms, isFinished ? '' : '[CLOSED]')
+}
+
 async function startServer (port = 8080) {
   const app = express()
 
   const processor = await createProcessor()
+
+  app.use(function logger (req, res, next) {
+    const start = process.hrtime()
+
+    res.on('close', () => log(start, req, res, false))
+    res.on('finish', () => log(start, req, res))
+
+    next()
+  })
 
   app.post('/api/files/:record_id', async function (req, res) {
     const { fields, files } = await parseForm(req)
@@ -101,10 +117,14 @@ async function startServer (port = 8080) {
 
   const compiler = webpack(webpackConfig)
 
-  app.use(webpackDevMiddleware(compiler))
+  app.use(webpackDevMiddleware(compiler, {
+    noInfo: false,
+    stats: {
+      colors: true,
+    },
+  }))
   app.use(webpackHotMiddleware(compiler))
 
-  // TODO request/response logger logger
   app.listen(port, function () {
     console.log('Server listening on: http://localhost:%s', port)
   })
