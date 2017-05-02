@@ -4,7 +4,8 @@ const webpack = require('webpack')
 module.exports = {
   entry: [
     'webpack-hot-middleware/client',
-    './client/index.js',
+    'react-hot-loader/patch',
+    './client/index.jsx',
   ],
   output: {
     path: path.resolve(__dirname, 'dist'),
