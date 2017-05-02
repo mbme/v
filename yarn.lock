@@ -1749,6 +1749,18 @@ fbjs@^0.8.1, fbjs@^0.8.4, fbjs@^0.8.6, fbjs@^0.8.9:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.9"
 
+fela-plugin-unit@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/fela-plugin-unit/-/fela-plugin-unit-4.3.5.tgz#90897bd8b99bc21f2acbadb71b0c3bb27cb35b78"
+  dependencies:
+    css-in-js-utils "^1.0.3"
+
+fela@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/fela/-/fela-4.3.5.tgz#dbafc23e24c330a81b4788c2fe1a9442435e2c3c"
+  dependencies:
+    css-in-js-utils "^1.0.3"
+
 figures@^1.3.5:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-1.7.0.tgz#cbe1e3affcf1cd44b80cadfed28dc793a9701d2e"
@@ -3358,7 +3370,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.4, prop-types@^15.5.7, prop-types@~15.5.7:
+prop-types@^15.5.4, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@~15.5.7:
   version "15.5.8"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.8.tgz#6b7b2e141083be38c8595aa51fc55775c7199394"
   dependencies:
@@ -3464,6 +3476,12 @@ react-event-listener@^0.4.5:
     fbjs "^0.8.4"
     prop-types "^15.5.4"
     warning "^3.0.0"
+
+react-fela@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/react-fela/-/react-fela-4.3.5.tgz#f7d3bed97bcc45915d269ff5238e2bfadd9c02f2"
+  dependencies:
+    prop-types "^15.5.8"
 
 react-hot-loader@next:
   version "3.0.0-beta.6"

@@ -123,6 +123,7 @@ async function startServer (port = 8080) {
           <meta charset="utf-8">
           <title>QuantumV</title>
           <script src="bundle.js" defer></script>
+          <style id="stylesheet"></style>
         </head>
         <body>
           <div id="root" />
