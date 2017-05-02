@@ -5,6 +5,8 @@ import { createRenderer } from 'fela'
 import { Provider } from 'react-fela'
 import unit from 'fela-plugin-unit'
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import { AppContainer } from 'react-hot-loader'
 
 import App from './views/App'
@@ -22,9 +24,11 @@ const renderer = createRenderer({
 function render (Component) {
   ReactDOM.render(
     <Provider renderer={renderer} mountNode={document.getElementById('stylesheet')}>
-      <AppContainer>
-        <Component />
-      </AppContainer>
+      <MuiThemeProvider>
+        <AppContainer>
+          <Component />
+        </AppContainer>
+      </MuiThemeProvider>
     </Provider>,
     document.getElementById('root')
   )
