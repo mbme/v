@@ -5,7 +5,7 @@ import { createRenderer } from 'fela'
 import { Provider } from 'react-fela'
 import unit from 'fela-plugin-unit'
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import { AppContainer } from 'react-hot-loader'
 
@@ -20,6 +20,23 @@ injectTapEventPlugin()
 const renderer = createRenderer({
   plugins: [ unit() ],
 })
+
+renderer.renderStatic(`
+  html {
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+  }
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  body {
+    font-size: 14px;
+    line-height: 1.15;
+    margin: 0;
+  }
+`)
 
 function render (Component) {
   ReactDOM.render(
