@@ -115,6 +115,22 @@ async function startServer (port = 8080) {
     res.json(response)
   })
 
+  app.get('/', function (req, res) {
+    res.end(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>QuantumV</title>
+          <script src="bundle.js" defer></script>
+        </head>
+        <body>
+          <div id="root" />
+        </body>
+      </html>
+    `)
+  })
+
   const compiler = webpack(webpackConfig)
 
   app.use(webpackDevMiddleware(compiler, {

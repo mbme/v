@@ -28,7 +28,6 @@
     "babel-preset-env": "^1.4.0",
     "eslint": "^3.18.0",
     "eslint-plugin-react": "^6.10.3",
-    "html-webpack-plugin": "^2.28.0",
     "jest": "^19.0.2",
     "standard": "^10.0.2",
     "webpack": "^2.4.1",
@@ -37,7 +36,7 @@
   },
   "scripts": {
     "build": "",
-    "start": "",
+    "start": "node server/index.js",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -46,9 +45,7 @@
     "last 2 Firefox versions"
   ],
   "babel": {
-    "presets": [
-      "env"
-    ],
+    "presets": [ "env" ],
     "plugins": [
       "syntax-jsx",
       "transform-react-jsx",
@@ -68,21 +65,13 @@
       "es6": true,
       "jest": true
     },
-    "extends": ["standard", "plugin:react/recommended"],
+    "extends": [ "standard", "plugin:react/recommended" ],
+    "plugins": [ "react" ],
     "rules": {
       "prefer-const": "error",
       "no-var": "error",
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ],
-      "comma-dangle": [
-        "error",
-        "always-multiline"
-      ]
-    },
-    "plugins": [
-      "react"
-    ]
+      "object-curly-spacing": [ "error", "always" ],
+      "comma-dangle": [ "error", "always-multiline" ]
+    }
   }
 }
