@@ -30,7 +30,7 @@
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "eslint": "^3.18.0",
-    "eslint-plugin-react": "^6.10.3",
+    "eslint-plugin-react": "^7.0.0",
     "jest": "^19.0.2",
     "react-hot-loader": "next",
     "standard": "^10.0.2",
