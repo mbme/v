@@ -54,7 +54,7 @@ function log (start, req, res, isFinished = true) {
   console.info('%s %s %d %s - %dms %s', req.method, req.url, res.statusCode, res.statusMessage, ms, isFinished ? '' : '[CLOSED]')
 }
 
-async function startServer (port = 8080) {
+module.exports = async function startServer (port = 8080) {
   const app = express()
 
   const processor = await createProcessor()
@@ -146,5 +146,3 @@ async function startServer (port = 8080) {
     console.log('Server listening on: http://localhost:%s', port)
   })
 }
-
-startServer()
