@@ -11,20 +11,32 @@ function sendRequest (method, url, data) {
   })
 }
 
-function apiUrl(path) {
-  return '/api' + path
-}
+export default function createApiClient (baseUrl = '') {
+  function apiUrl (path) {
+    return baseUrl + '/api' + path
+  }
 
-export async function createFile(recordId, name, file) {
-  await sendRequest('POST', apiUrl(`/files/${recordId}`), {
-    name,
-    data: file,
-  })
-}
+  function apiRequest (action, data) {
+    return sendRequest('POST', apiUrl(''), JSON.stringify({
+      name: action,
+      data,
+    }))
+  }
 
-function apiRequest(action, data) {
-  return sendRequest('POST', apiUrl(''), {
-    name: action,
-    data,
-  })
+  return {
+    async createFile (recordId, name, file) {
+      await sendRequest('POST', apiUrl(`/files/${recordId}`), {
+        name,
+        data: file,
+      })
+    },
+
+    createRecord (type, name, data) {
+      return apiRequest('CREATE_RECORD', {
+        type,
+        name,
+        data,
+      })
+    },
+  }
 }

@@ -1,4 +1,5 @@
 const express = require('express')
+const http = require('http')
 const formidable = require('formidable')
 const fileType = require('file-type')
 const fs = require('fs')
@@ -54,7 +55,7 @@ function log (start, req, res, isFinished = true) {
   console.info('%s %s %d %s - %dms %s', req.method, req.url, res.statusCode, res.statusMessage, ms, isFinished ? '' : '[CLOSED]')
 }
 
-module.exports = async function startServer (port = 8080) {
+module.exports = async function startServer (port = 8080, dev = false) {
   const app = express()
 
   const processor = await createProcessor()
@@ -132,17 +133,26 @@ module.exports = async function startServer (port = 8080) {
     `)
   })
 
-  const compiler = webpack(webpackConfig)
+  if (dev) {
+    const compiler = webpack(webpackConfig)
 
-  app.use(webpackDevMiddleware(compiler, {
-    noInfo: false,
-    stats: {
-      colors: true,
-    },
-  }))
-  app.use(webpackHotMiddleware(compiler))
+    app.use(webpackDevMiddleware(compiler, {
+      noInfo: false,
+      stats: {
+        colors: true,
+      },
+    }))
 
-  app.listen(port, function () {
-    console.log('Server listening on: http://localhost:%s', port)
+    app.use(webpackHotMiddleware(compiler))
+  }
+
+  const server = http.createServer(app)
+
+  return new Promise(function (resolve, reject) {
+    console.log('Starting server...')
+    server.listen(port, function () {
+      console.log('Server listening on: http://localhost:%s', port)
+      resolve(server)
+    })
   })
 }
