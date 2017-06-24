@@ -107,7 +107,8 @@ module.exports = async function startServer (port = 8080, dev = false) {
     try {
       action = await parseRequestBody(req)
     } catch (e) {
-      res.status(400).json({ error: e.stack.toString() })
+      console.error(e)
+      res.status(400).json({ error: e })
       return
     }
 
