@@ -1,8 +1,6 @@
 const express = require('express')
 const http = require('http')
-const formidable = require('formidable')
 const fileType = require('file-type')
-const fs = require('fs')
 
 const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
@@ -11,40 +9,12 @@ const webpackConfig = require('../webpack.config')
 
 const createProcessor = require('./processor')
 
-function parseRequestBody (req) {
+function getRequestBody (req) {
   return new Promise(function (resolve, reject) {
     const data = []
 
     req.on('data', chunk => data.push(chunk))
-      .on('end', () => {
-        const body = Buffer.concat(data).toString()
-
-        try {
-          resolve(JSON.parse(body))
-        } catch (e) {
-          reject(e)
-        }
-      })
-  })
-}
-
-async function parseForm (req) {
-  const form = new formidable.IncomingForm()
-
-  return new Promise((resolve, reject) => {
-    form.parse(req, function (err, fields, files) {
-      if (err) {
-        reject(err)
-      } else {
-        resolve({ fields, files })
-      }
-    })
-  })
-}
-
-function readFile (path) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, (err, data) => err ? reject(err) : resolve(data))
+      .on('end', () => resolve(Buffer.concat(data)))
   })
 }
 
@@ -69,52 +39,76 @@ module.exports = async function startServer (port = 8080, dev = false) {
     next()
   })
 
-  app.post('/api/files/:record_id', async function (req, res) {
-    const { fields, files } = await parseForm(req)
+  app.post('/api/files/:record_id/:file_name', async function (req, res) {
+    try {
+      const data = await getRequestBody(req)
 
-    const data = await readFile(files.data.path)
+      await processor.processAction({
+        name: 'CREATE_FILE',
+        data: {
+          record_id: parseInt(req.params.record_id, 10),
+          name: req.params.file_name,
+          data,
+        },
+      })
 
-    const response = await processor.processAction({
-      name: 'CREATE_FILE',
-      data: {
-        record_id: parseInt(req.params.record_id, 10),
-        name: fields.name,
-        data: data,
-      },
-    })
-
-    res.json(response)
+      res.end()
+    } catch (e) {
+      console.error(e)
+      res.status(400).json({ error: e })
+    }
   })
 
   app.get('/api/files/:record_id/:file_name', async function (req, res) {
-    const response = await processor.processAction({
-      name: 'READ_FILE',
-      data: {
-        record_id: parseInt(req.params.record_id, 10),
-        name: req.params.file_name,
-      },
-    })
+    try {
+      const response = await processor.processAction({
+        name: 'READ_FILE',
+        data: {
+          record_id: parseInt(req.params.record_id, 10),
+          name: req.params.file_name,
+        },
+      })
 
-    if (Buffer.isBuffer(response)) {
-      res.set('Content-Type', fileType(response).mime).send(response)
-    } else {
-      res.status(400).json(response)
+      const type = fileType(response)
+      if (type) {
+        res.set('Content-Type', type.mime)
+      }
+
+      res.send(response)
+    } catch (e) {
+      console.error(e)
+      res.status(400).json({ error: e })
+    }
+  })
+
+  app.delete('/api/files/:record_id/:file_name', async function (req, res) {
+    try {
+      await processor.processAction({
+        name: 'DELETE_FILE',
+        data: {
+          record_id: parseInt(req.params.record_id, 10),
+          name: req.params.file_name,
+        },
+      })
+
+      res.end()
+    } catch (e) {
+      console.error(e)
+      res.status(400).json({ error: e })
     }
   })
 
   app.post('/api', async function (req, res) {
-    let action
     try {
-      action = await parseRequestBody(req)
+      const body = await getRequestBody(req)
+      const action = JSON.parse(body.toString())
+      const response = await processor.processAction(action)
+
+      res.json(response)
     } catch (e) {
       console.error(e)
       res.status(400).json({ error: e })
-      return
     }
-
-    const response = await processor.processAction(action)
-
-    res.json(response)
   })
 
   app.get('/', function (req, res) {

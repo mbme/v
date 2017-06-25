@@ -6,7 +6,7 @@ function sendRequest (method, url, data) {
   request.open(method, url)
 
   return new Promise((resolve, reject) => {
-    request.onload = () => resolve(JSON.parse(request.responseText))
+    request.onload = () => resolve(JSON.parse(request.responseText || 'null')) // FIXME improve this
     request.onerror = reject
 
     request.send(data)
@@ -26,11 +26,16 @@ export default function createApiClient (baseUrl = '') {
   }
 
   return {
-    async createFile (recordId, name, file) {
-      await sendRequest('POST', apiUrl(`/files/${recordId}`), {
-        name,
-        data: file,
-      })
+    createFile (recordId, name, file) {
+      return sendRequest('POST', apiUrl(`/files/${recordId}/${name}`), file)
+    },
+
+    readFile (recordId, name) {
+      return sendRequest('GET', apiUrl(`/files/${recordId}/${name}`))
+    },
+
+    deleteFile (recordId, name) {
+      return sendRequest('DELETE', apiUrl(`/files/${recordId}/${name}`))
     },
 
     listRecords (type) {

@@ -41,7 +41,7 @@ const actions = {
       validators.file.name(name),
       validators.file.data(data)
     )
-    return db => db.createFile(record_id, name, data)
+    return db => db.createFile(record_id, name, data).then(() => {})
   },
 
   READ_FILE: ({ record_id, name }) => {
@@ -57,7 +57,7 @@ const actions = {
       validators.record.id(record_id),
       validators.file.name(name)
     )
-    return db => db.deleteFile(record_id, name)
+    return db => db.deleteFile(record_id, name).then(() => {})
   },
 }
 
@@ -68,16 +68,14 @@ module.exports = async function createProcessor () {
     async processAction ({ name, data }) {
       const action = actions[name]
       if (!action) {
-        return {
-          error: `unknown action: ${name}`,
-        }
+        throw new Error(`unknown action: ${name}`)
       }
 
       try {
         return await action(data)(db)
       } catch (e) {
         console.error(`action ${name} processing error:`, e)
-        return { error: e }
+        throw e
       }
     },
 
