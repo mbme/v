@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
-const getDB = require('./db')
-const fs = require('fs')
+import fs from 'fs'
+import getDB from './db'
 
 describe('DB', () => {
   let db

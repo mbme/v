@@ -1,4 +1,4 @@
-const { validators, validate } = require('./validators')
+import { validators, validate } from './validators'
 
 describe('Validators', () => {
   test('record id', () => {

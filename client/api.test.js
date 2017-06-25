@@ -25,17 +25,18 @@ describe('API client', () => {
   it('should manage files', async () => {
     const buffer = fs.readFileSync(path.join(__dirname, '../package.json'))
     const recordId = await newRecord()
+    const name = 'super text.json'
 
     // create file
-    await api.createFile(recordId, 'name', buffer)
+    await api.createFile(recordId, name, buffer)
 
     // read file
-    const file = await api.readFile(recordId, 'name')
+    const file = await api.readFile(recordId, name)
     expect(buffer.equals(file)).toBeTruthy()
 
     // delete file
-    await api.deleteFile(recordId, 'name')
-    await expect(api.readFile(recordId, 'name')).resolves.toBeNull()
+    await api.deleteFile(recordId, name)
+    await expect(api.readFile(recordId, name)).resolves.toBeNull()
   })
 
   it('should manage records', async () => {

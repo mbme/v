@@ -5,7 +5,7 @@ const isString = val => typeof val === 'string'
 const RECORD_TYPES = ['note']
 
 // each validator could return undefined, string or string[]
-const validators = {
+export const validators = {
   record: {
     id (id) {
       return check(
@@ -36,7 +36,7 @@ const validators = {
   },
 }
 
-function validate (...results) {
+export function validate (...results) {
   // flatten arrays and skip empty items
   const flatResults = results.reduce((acc, val) => acc.concat(val), []).filter(result => !!result)
 
@@ -44,5 +44,3 @@ function validate (...results) {
     throw flatResults
   }
 }
-
-module.exports = { validators, validate }

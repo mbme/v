@@ -1,14 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const express = require('express')
-const http = require('http')
-const fileType = require('file-type')
+import express from 'express'
+import http from 'http'
+import fileType from 'file-type'
 
-const webpack = require('webpack')
-const webpackDevMiddleware = require('webpack-dev-middleware')
-const webpackHotMiddleware = require('webpack-hot-middleware')
-const webpackConfig = require('../webpack.config')
+import webpack from 'webpack'
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
+import webpackConfig from '../webpack.config'
 
-const createProcessor = require('./processor')
+import createProcessor from './processor'
 
 function getRequestBody (req) {
   return new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ function log (start, req, res, isFinished = true) {
   console.info('%s %s %d %s - %dms %s', req.method, req.url, res.statusCode, res.statusMessage, ms, isFinished ? '' : '[CLOSED]')
 }
 
-module.exports = async function startServer (port = 8080, dev = false) {
+export default async function startServer (port = 8080, dev = false) {
   const app = express()
 
   const processor = await createProcessor()

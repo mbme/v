@@ -9,7 +9,7 @@ function processError (res) {
 }
 
 export default function createApiClient (baseUrl = '') {
-  function apiUrl (path) { // TODO make this vararg and URL escape
+  function apiUrl (path) {
     return baseUrl + '/api' + path
   }
 

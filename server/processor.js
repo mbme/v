@@ -1,5 +1,5 @@
-const getDB = require('./db')
-const { validators, validate } = require('./validators')
+import getDB from './db'
+import { validators, validate } from './validators'
 
 const actions = {
   LIST_RECORDS: ({ type }) => {
@@ -61,7 +61,7 @@ const actions = {
   },
 }
 
-module.exports = async function createProcessor () {
+export default async function createProcessor () {
   const db = await getDB()
 
   return {

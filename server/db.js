@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-const sqlite3 = require('sqlite3')
+import sqlite3 from 'sqlite3'
 
 const SQL_INIT_DB = `
   PRAGMA foreign_keys = ON;
@@ -32,7 +32,9 @@ function expectSingleChange ({ changes }) {
 function dbAPI (db) {
   function run (sql, args) {
     return new Promise((resolve, reject) => {
-      db.run(sql, args, err => err ? reject(err) : resolve(this))
+      db.run(sql, args, function runCallback (err) {
+        err ? reject(err) : resolve(this)
+      })
     })
   }
 
@@ -135,7 +137,7 @@ function dbAPI (db) {
   }
 }
 
-module.exports = function getDB (file = ':memory:') {
+export default function getDB (file = ':memory:') {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(file, err => err ? reject(err) : resolve(db))
   })
