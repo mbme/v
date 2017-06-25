@@ -34,14 +34,14 @@ describe('DB', () => {
     test('update record', async () => {
       const newName = 'newName'
       const newData = 'newData'
-      expect(await db.updateRecord(id, type, newName, newData)).toBeTruthy()
+      expect(await db.updateRecord(id, type, newName, newData)).toBeUndefined()
 
       const record = await db.readRecord(id)
       expect(record).toEqual({ id, type, name: newName, data: newData })
     })
 
     test('delete record', async () => {
-      expect(await db.deleteRecord(id)).toBeTruthy()
+      expect(await db.deleteRecord(id)).toBeUndefined()
       expect(await db.readRecord(id)).toBeUndefined()
       expect(await db.listRecords(type)).toHaveLength(0)
     })
@@ -69,7 +69,7 @@ describe('DB', () => {
     })
 
     test('delete file', async () => {
-      expect(await db.deleteFile(record_id, name)).toBeTruthy()
+      expect(await db.deleteFile(record_id, name)).toBeUndefined()
       expect(await db.readFile(record_id, name)).toBeUndefined()
     })
 

@@ -24,11 +24,9 @@ const sql = `
 `
 
 function expectSingleChange ({ changes }) {
-  if (changes > 1) {
+  if (changes !== 1) {
     throw new Error(`Expected single change, but there were ${changes} changes`)
   }
-
-  return changes === 1
 }
 
 function dbAPI (db) {

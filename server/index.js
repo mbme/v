@@ -69,6 +69,10 @@ module.exports = async function startServer (port = 8080, dev = false) {
         },
       })
 
+      if (!response) {
+        return res.status(404).send()
+      }
+
       const type = fileType(response)
       if (type) {
         res.set('Content-Type', type.mime)
@@ -77,7 +81,7 @@ module.exports = async function startServer (port = 8080, dev = false) {
       res.send(response)
     } catch (e) {
       console.error(e)
-      res.status(400).json({ error: e })
+      res.status(400).json({ error: e.toString() })
     }
   })
 
@@ -94,7 +98,7 @@ module.exports = async function startServer (port = 8080, dev = false) {
       res.end()
     } catch (e) {
       console.error(e)
-      res.status(400).json({ error: e })
+      res.status(400).json({ error: e.toString() })
     }
   })
 
@@ -104,10 +108,10 @@ module.exports = async function startServer (port = 8080, dev = false) {
       const action = JSON.parse(body.toString())
       const response = await processor.processAction(action)
 
-      res.json(response)
+      res.json({ data: response })
     } catch (e) {
       console.error(e)
-      res.status(400).json({ error: e })
+      res.status(400).json({ error: e.toString() })
     }
   })
 

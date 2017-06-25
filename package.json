@@ -9,10 +9,10 @@
   "dependencies": {
     "express": "^4.15.2",
     "file-type": "^5.2.0",
+    "node-fetch": "^1.7.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
-    "sqlite3": "^3.1.8",
-    "xmlhttprequest": "^1.8.0"
+    "sqlite3": "^3.1.8"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",

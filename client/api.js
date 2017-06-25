@@ -1,41 +1,50 @@
-import { XMLHttpRequest } from 'xmlhttprequest'
+function processError (res) {
+  if (res.status === 400) {
+    return res.json().then(({ error }) => {
+      throw new Error(error)
+    })
+  }
 
-function sendRequest (method, url, data) {
-  const request = new XMLHttpRequest()
-  request.responseType = 'json'
-  request.open(method, url)
-
-  return new Promise((resolve, reject) => {
-    request.onload = () => resolve(JSON.parse(request.responseText || 'null')) // FIXME improve this
-    request.onerror = reject
-
-    request.send(data)
-  })
+  return res
 }
 
 export default function createApiClient (baseUrl = '') {
-  function apiUrl (path) {
+  function apiUrl (path) { // TODO make this vararg and URL escape
     return baseUrl + '/api' + path
   }
 
   function apiRequest (action, data) {
-    return sendRequest('POST', apiUrl(''), JSON.stringify({
-      name: action,
-      data,
-    }))
+    return fetch(
+      apiUrl(''),
+      {
+        method: 'POST',
+        body: JSON.stringify({ name: action, data }),
+      }
+    )
+      .then(processError)
+      .then(res => res.json())
+      .then(({ data }) => data)
   }
 
   return {
     createFile (recordId, name, file) {
-      return sendRequest('POST', apiUrl(`/files/${recordId}/${name}`), file)
+      return fetch(
+        apiUrl(`/files/${recordId}/${name}`),
+        {
+          method: 'POST',
+          body: file,
+        }
+      ).then(processError)
     },
 
     readFile (recordId, name) {
-      return sendRequest('GET', apiUrl(`/files/${recordId}/${name}`))
+      return fetch(apiUrl(`/files/${recordId}/${name}`))
+        .then(processError)
+        .then(res => res.status === 404 ? null : res.buffer())
     },
 
     deleteFile (recordId, name) {
-      return sendRequest('DELETE', apiUrl(`/files/${recordId}/${name}`))
+      return fetch(apiUrl(`/files/${recordId}/${name}`), { method: 'DELETE' }).then(processError)
     },
 
     listRecords (type) {
@@ -43,20 +52,11 @@ export default function createApiClient (baseUrl = '') {
     },
 
     createRecord (type, name, data) {
-      return apiRequest('CREATE_RECORD', {
-        type,
-        name,
-        data,
-      })
+      return apiRequest('CREATE_RECORD', { type, name, data })
     },
 
     updateRecord (id, type, name, data) {
-      return apiRequest('UPDATE_RECORD', {
-        id,
-        type,
-        name,
-        data,
-      })
+      return apiRequest('UPDATE_RECORD', { id, type, name, data })
     },
 
     deleteRecord (id) {
