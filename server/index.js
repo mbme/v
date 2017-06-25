@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express')
 const http = require('http')
 const fileType = require('file-type')
@@ -10,7 +11,7 @@ const webpackConfig = require('../webpack.config')
 const createProcessor = require('./processor')
 
 function getRequestBody (req) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     const data = []
 
     req.on('data', chunk => data.push(chunk))
@@ -39,7 +40,7 @@ module.exports = async function startServer (port = 8080, dev = false) {
     next()
   })
 
-  app.post('/api/files/:record_id/:file_name', async function (req, res) {
+  app.post('/api/files/:record_id/:file_name', async (req, res) => {
     try {
       const data = await getRequestBody(req)
 
@@ -59,7 +60,7 @@ module.exports = async function startServer (port = 8080, dev = false) {
     }
   })
 
-  app.get('/api/files/:record_id/:file_name', async function (req, res) {
+  app.get('/api/files/:record_id/:file_name', async (req, res) => {
     try {
       const response = await processor.processAction({
         name: 'READ_FILE',
@@ -69,23 +70,23 @@ module.exports = async function startServer (port = 8080, dev = false) {
         },
       })
 
-      if (!response) {
-        return res.status(404).send()
-      }
+      if (response) {
+        const type = fileType(response)
+        if (type) {
+          res.set('Content-Type', type.mime)
+        }
 
-      const type = fileType(response)
-      if (type) {
-        res.set('Content-Type', type.mime)
+        res.send(response)
+      } else {
+        res.status(404).send()
       }
-
-      res.send(response)
     } catch (e) {
       console.error(e)
       res.status(400).json({ error: e.toString() })
     }
   })
 
-  app.delete('/api/files/:record_id/:file_name', async function (req, res) {
+  app.delete('/api/files/:record_id/:file_name', async (req, res) => {
     try {
       await processor.processAction({
         name: 'DELETE_FILE',
@@ -102,7 +103,7 @@ module.exports = async function startServer (port = 8080, dev = false) {
     }
   })
 
-  app.post('/api', async function (req, res) {
+  app.post('/api', async (req, res) => {
     try {
       const body = await getRequestBody(req)
       const action = JSON.parse(body.toString())
@@ -115,7 +116,7 @@ module.exports = async function startServer (port = 8080, dev = false) {
     }
   })
 
-  app.get('/', function (req, res) {
+  app.get('/', (req, res) => {
     res.end(`
       <!DOCTYPE html>
       <html lang="en">
@@ -147,9 +148,9 @@ module.exports = async function startServer (port = 8080, dev = false) {
 
   const server = http.createServer(app)
 
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     console.log('Starting server...')
-    server.listen(port, function () {
+    server.listen(port, () => {
       console.log('Server listening on: http://localhost:%s', port)
       resolve(server)
     })

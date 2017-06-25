@@ -36,12 +36,12 @@ const validators = {
   },
 }
 
-function validate (...validators) {
+function validate (...results) {
   // flatten arrays and skip empty items
-  const results = validators.reduce((acc, val) => acc.concat(val), []).filter(result => !!result)
+  const flatResults = results.reduce((acc, val) => acc.concat(val), []).filter(result => !!result)
 
-  if (results.length) {
-    throw results
+  if (flatResults.length) {
+    throw flatResults
   }
 }
 

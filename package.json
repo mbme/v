@@ -24,11 +24,14 @@
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "eslint": "^3.18.0",
-    "eslint-plugin-react": "^7.0.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.1.0",
     "jest": "^20.0.0",
     "react-hot-loader": "next",
     "standard": "^10.0.2",
-    "webpack": "^2.4.1",
+    "webpack": "^3.0.0",
     "webpack-dev-middleware": "^1.10.2",
     "webpack-hot-middleware": "^2.18.0"
   },
@@ -68,19 +71,18 @@
       "jest": true
     },
     "extends": [
-      "standard",
-      "plugin:react/recommended"
+      "airbnb",
+      "standard"
     ],
     "plugins": [
       "react"
     ],
     "rules": {
-      "prefer-const": "error",
-      "no-var": "error",
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ],
+      "max-len": 0,
+      "no-console": 0,
+      "no-confusing-arrow": 0,
+      "prefer-arrow-callback": 0,
+      "prefer-template": 0,
       "comma-dangle": [
         "error",
         "always-multiline"

@@ -23,7 +23,7 @@ export default function createApiClient (baseUrl = '') {
     )
       .then(processError)
       .then(res => res.json())
-      .then(({ data }) => data)
+      .then(resObj => resObj.data)
   }
 
   return {

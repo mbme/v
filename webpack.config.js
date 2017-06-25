@@ -12,7 +12,7 @@ module.exports = {
     filename: 'bundle.js',
   },
   resolve: {
-    extensions: [ '.js', '.jsx', '.json' ],
+    extensions: ['.js', '.jsx', '.json'],
   },
   module: {
     rules: [
@@ -31,7 +31,7 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       },
     }),
   ],

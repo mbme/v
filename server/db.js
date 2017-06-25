@@ -2,7 +2,7 @@
 
 const sqlite3 = require('sqlite3')
 
-const sql = `
+const SQL_INIT_DB = `
   PRAGMA foreign_keys = ON;
 
   CREATE TABLE IF NOT EXISTS records (
@@ -32,9 +32,7 @@ function expectSingleChange ({ changes }) {
 function dbAPI (db) {
   function run (sql, args) {
     return new Promise((resolve, reject) => {
-      db.run(sql, args, function (err) {
-        err ? reject(err) : resolve(this)
-      })
+      db.run(sql, args, err => err ? reject(err) : resolve(this))
     })
   }
 
@@ -51,7 +49,9 @@ function dbAPI (db) {
   }
 
   function statementGet (stmt) {
-    return new Promise((resolve, reject) => stmt.get([], (err, row) => err ? reject(err) : resolve(row)))
+    return new Promise(
+      (resolve, reject) => stmt.get([], (err, row) => err ? reject(err) : resolve(row))
+    )
   }
 
   async function selectAll (query, args, cb) {
@@ -60,7 +60,7 @@ function dbAPI (db) {
     let row = await statementGet(stmt)
     while (row) {
       cb(row)
-      row = await statementGet(stmt)
+      row = await statementGet(stmt) // eslint-disable-line no-await-in-loop
     }
   }
 
@@ -70,8 +70,10 @@ function dbAPI (db) {
 
       const results = []
       await selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [type], (row) => {
-        row.files = files[row.id] || []
-        results.push(row)
+        results.push({
+          ...row,
+          files: files[row.id] || [],
+        })
       })
 
       return results
@@ -136,9 +138,7 @@ function dbAPI (db) {
 module.exports = function getDB (file = ':memory:') {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(file, err => err ? reject(err) : resolve(db))
-  }).then((db) => {
-    return new Promise((resolve, reject) => {
-      db.exec(sql, err => err ? reject(err) : resolve(db))
-    })
-  }).then(dbAPI)
+  })
+    .then(db => new Promise((resolve, reject) => db.exec(SQL_INIT_DB, err => err ? reject(err) : resolve(db))))
+    .then(dbAPI)
 }

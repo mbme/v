@@ -1,7 +1,7 @@
-import startServer from '../server'
-import createApiClient from './api'
 import fs from 'fs'
 import path from 'path'
+import startServer from '../server'
+import createApiClient from './api'
 
 global.fetch = require('node-fetch')
 
@@ -51,7 +51,7 @@ describe('API client', () => {
 
     // update record
     await api.updateRecord(id, 'note', 'new name', 'new data')
-    const record = (await api.listRecords('note')).find(record => record.id === id)
+    const record = (await api.listRecords('note')).find(rec => rec.id === id)
     expect(record.name).toBe('new name')
     expect(record.data).toBe('new data')
 
