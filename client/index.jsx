@@ -5,17 +5,9 @@ import { createRenderer } from 'fela'
 import { Provider } from 'react-fela'
 import unit from 'fela-plugin-unit'
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-
 import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
-
-import injectTapEventPlugin from 'react-tap-event-plugin'
-
-// Needed for onTouchTap
-// http://stackoverflow.com/a/34015469/988941
-injectTapEventPlugin()
 
 const renderer = createRenderer({
   plugins: [ unit() ],
