@@ -2,4 +2,4 @@ require('babel-register')
 
 const startServer = require('../server').default
 
-startServer()
+startServer(8080, true)

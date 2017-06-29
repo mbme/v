@@ -2,43 +2,49 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { createRenderer } from 'fela'
-import { Provider } from 'react-fela'
+import { render as felaRender } from 'fela-dom'
 import unit from 'fela-plugin-unit'
 
 import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
 
+const robotoStyles = require('raw-loader!./roboto-fontface.css')
+
 const renderer = createRenderer({
-  plugins: [ unit() ],
+  plugins: [unit()],
 })
 
+// html {
+//   font-family: 'Roboto', sans-serif;
+//   box-sizing: border-box;
+// }
+
+// *, *:before, *:after {
+//   box-sizing: inherit;
+// }
+
+// body {
+//   font-size: 14px;
+//   line-height: 1.3;
+//   margin: 0;
+// }
+
 renderer.renderStatic(`
-  html {
-    font-family: 'Roboto', sans-serif;
-    box-sizing: border-box;
-  }
-
-  *, *:before, *:after {
-    box-sizing: inherit;
-  }
-
-  body {
-    font-size: 14px;
-    line-height: 1.15;
-    margin: 0;
-  }
+${robotoStyles}
+html {
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+}
 `)
+
+felaRender(renderer, document.getElementById('stylesheet'))
 
 function render (Component) {
   ReactDOM.render(
-    <Provider renderer={renderer} mountNode={document.getElementById('stylesheet')}>
-      <MuiThemeProvider>
-        <AppContainer>
-          <Component />
-        </AppContainer>
-      </MuiThemeProvider>
-    </Provider>,
+    <AppContainer>
+      <Component />
+    </AppContainer>,
     document.getElementById('root')
   )
 }
@@ -46,5 +52,5 @@ function render (Component) {
 render(App)
 
 if (module.hot) {
-  module.hot.accept('./views/App', () => render(App))
+  module.hot.accept('./App', () => render(App))
 }
