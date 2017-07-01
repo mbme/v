@@ -121,12 +121,17 @@ export default async function startServer (port = 8080, dev = false) {
       <!DOCTYPE html>
       <html lang="en">
         <head>
-          <meta charset="utf-8">
           <title>QuantumV</title>
+
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
           <script src="bundle.js" defer></script>
-          <style id="stylesheet"></style>
+
+          <link rel="stylesheet" href="styles.css" type="text/css">
         </head>
         <body>
+          <style id="stylesheet"></style>
           <div id="root" />
         </body>
       </html>

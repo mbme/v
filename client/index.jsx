@@ -13,30 +13,6 @@ const renderer = createRenderer({
   plugins: [unit()],
 })
 
-// html {
-//   font-family: 'Roboto', sans-serif;
-//   box-sizing: border-box;
-// }
-
-// *, *:before, *:after {
-//   box-sizing: inherit;
-// }
-
-// body {
-//   font-size: 14px;
-//   line-height: 1.3;
-//   margin: 0;
-// }
-
-renderer.renderStatic(`
-@import 'roboto-fontface.css';
-
-html {
-  font-family: 'Roboto', sans-serif;
-  box-sizing: border-box;
-}
-`)
-
 felaRender(renderer, document.getElementById('stylesheet'))
 
 function render (Component) {
