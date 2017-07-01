@@ -9,8 +9,6 @@ import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
 
-const robotoStyles = require('raw-loader!./roboto-fontface.css')
-
 const renderer = createRenderer({
   plugins: [unit()],
 })
@@ -31,7 +29,8 @@ const renderer = createRenderer({
 // }
 
 renderer.renderStatic(`
-${robotoStyles}
+@import 'roboto-fontface.css';
+
 html {
   font-family: 'Roboto', sans-serif;
   box-sizing: border-box;

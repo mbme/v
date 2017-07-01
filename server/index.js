@@ -133,6 +133,8 @@ export default async function startServer (port = 8080, dev = false) {
     `)
   })
 
+  app.use(express.static('static'))
+
   if (dev) {
     const compiler = webpack(webpackConfig)
 
