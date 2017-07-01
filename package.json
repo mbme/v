@@ -56,21 +56,16 @@
       [
         "env",
         {
-          "useBuiltIns": true,
           "targets": {
             "node": "current"
-          }
+          },
+          "modules": false
         }
       ]
     ],
     "plugins": [
+      "transform-object-rest-spread",
       "syntax-jsx",
-      [
-        "transform-object-rest-spread",
-        {
-          "useBuiltIns": true
-        }
-      ],
       "transform-react-jsx",
       "transform-react-display-name",
       "react-hot-loader/babel"

@@ -1,4 +1,6 @@
-require('babel-register')
+require('babel-register')({
+  plugins: ['transform-es2015-modules-commonjs'],
+})
 
 const startServer = require('../server').default
 
