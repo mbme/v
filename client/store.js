@@ -1,14 +1,4 @@
-function getType (elem) {
-  return Object.prototype.toString.call(elem).slice(8, -1)
-}
-
-function isObject (elem) {
-  return getType(elem) === 'Object'
-}
-
-function isArray (elem) {
-  return getType(elem) === 'Array'
-}
+import { isObject, isArray } from './utils'
 
 function wrap (val, handler) {
   if (isObject(val)) {

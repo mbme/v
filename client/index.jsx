@@ -3,15 +3,16 @@ import ReactDOM from 'react-dom'
 
 import { createRenderer } from 'fela'
 import { render as felaRender } from 'fela-dom'
-import unit from 'fela-plugin-unit'
+import webPreset from 'fela-preset-web'
 
 import { AppContainer } from 'react-hot-loader'
 
 import App from './App'
 
 const renderer = createRenderer({
-  plugins: [unit()],
+  plugins: [...webPreset],
 })
+window.renderer = renderer
 
 felaRender(renderer, document.getElementById('stylesheet'))
 
