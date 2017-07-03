@@ -3543,7 +3543,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.4:
+prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8:
   version "15.5.10"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
   dependencies:
@@ -3629,6 +3629,14 @@ react-dom@^15.5.4:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
     prop-types "^15.5.10"
+
+react-fela@^5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/react-fela/-/react-fela-5.0.4.tgz#8e86dc72499109da63a19dee04406b24261880d4"
+  dependencies:
+    fela "^5.0.2"
+    fela-dom "^5.0.3"
+    prop-types "^15.5.8"
 
 react-hot-loader@next:
   version "3.0.0-beta.7"

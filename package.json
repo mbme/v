@@ -10,13 +10,13 @@
     "babel-register": "^6.24.1",
     "express": "^4.15.2",
     "fela": "^5.0.2",
-    "fela-dom": "^5.0.3",
     "fela-preset-web": "^5.0.3",
     "file-type": "^5.2.0",
     "node-fetch": "^1.7.1",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-fela": "^5.0.4",
     "react-hot-loader": "next",
     "sqlite3": "^3.1.8"
   },
@@ -109,7 +109,8 @@
         "error",
         "always-multiline"
       ],
-      "react/require-default-props": 0
+      "react/require-default-props": 0,
+      "react/forbid-prop-types": 0
     }
   }
 }

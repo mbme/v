@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './styles'
+import { connect } from 'react-fela'
 
 const SIZE = {
   small: 'small',
@@ -9,7 +9,7 @@ const SIZE = {
   giant: 'giant',
 }
 
-const iconStyles = styles(({ size = SIZE.medium }) => ({
+const icon = ({ size = SIZE.medium }) => ({
   extend: [
     {
       condition: size === SIZE.small,
@@ -36,18 +36,21 @@ const iconStyles = styles(({ size = SIZE.medium }) => ({
       },
     },
   ],
-}))
+})
 
 /**
  * @see http://google.github.io/material-design-icons/#icon-font-for-the-web
  */
-export default function Icon ({ name, size }) {
+function Icon ({ name, size, styles }) {
   return (
-    <i className={`material-icons ${iconStyles({ size })}`}>{name}</i>
+    <i className={'material-icons ' + styles.icon}>{name}</i>
   )
 }
 
 Icon.propTypes = {
   name: PropTypes.string.isRequired,
   size: PropTypes.oneOf(Object.values(SIZE)),
+  styles: PropTypes.object.isRequired,
 }
+
+export default connect({ icon })(Icon)
