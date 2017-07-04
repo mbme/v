@@ -13,6 +13,8 @@ const renderer = createRenderer({
   plugins: [...webPreset],
 })
 
+renderer.renderStatic(require('material-components-web/dist/material-components-web.min.css'))
+
 function render (Component) {
   ReactDOM.render(
     <AppContainer>

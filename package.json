@@ -12,6 +12,7 @@
     "fela": "^5.0.2",
     "fela-preset-web": "^5.0.3",
     "file-type": "^5.2.0",
+    "material-components-web": "^0.14.0",
     "node-fetch": "^1.7.1",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
@@ -37,6 +38,7 @@
     "eslint-plugin-jsx-a11y": "^5.0.3",
     "eslint-plugin-react": "^7.1.0",
     "jest": "^20.0.0",
+    "raw-loader": "^0.5.1",
     "standard": "^10.0.2",
     "webpack": "^3.0.0",
     "webpack-dev-middleware": "^1.10.2",
@@ -112,7 +114,8 @@
         "always-multiline"
       ],
       "react/require-default-props": 0,
-      "react/forbid-prop-types": 0
+      "react/forbid-prop-types": 0,
+      "react/sort-comp": 0
     }
   }
 }

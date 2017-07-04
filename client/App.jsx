@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Icon from './Icon'
+import Button from './Button'
 import connect from './store'
 
 class App extends React.Component {
@@ -9,15 +10,16 @@ class App extends React.Component {
   }
 
   componentWillMount () {
-    this.props.store.start()
+    // this.props.store.start()
   }
 
   render () {
     return (
-      <h1>
+      <h1 className="mdc-typography--display1">
         HELLO WORLD <Icon name="face" size="large" />
         {this.props.store.time}
         {this.props.store.items}
+        <Button className="mdc-button--raised">TEST</Button>
       </h1>
     )
   }
