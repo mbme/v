@@ -26,6 +26,7 @@
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",
     "babel-loader": "^7.0.0",
+    "babel-plugin-module-resolver": "^2.7.1",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
@@ -34,6 +35,7 @@
     "babel-preset-env": "^1.4.0",
     "eslint": "^3.18.0",
     "eslint-config-airbnb": "^15.0.1",
+    "eslint-import-resolver-babel-module": "^3.0.0",
     "eslint-plugin-import": "^2.6.0",
     "eslint-plugin-jsx-a11y": "^5.0.3",
     "eslint-plugin-react": "^7.1.0",
@@ -50,18 +52,19 @@
     "test": "jest",
     "lint": "eslint ."
   },
-  "browserslist": [
-    "last 2 Chrome versions",
-    "last 2 Firefox versions"
-  ],
   "babel": {
     "presets": [
       [
         "env",
         {
           "targets": {
-            "node": "current"
+            "node": "current",
+            "browsers": [
+              "last 2 Chrome versions",
+              "last 2 Firefox versions"
+            ]
           },
+          "debug": true,
           "modules": false
         }
       ]
@@ -79,6 +82,14 @@
       "syntax-jsx",
       "transform-react-jsx",
       "transform-react-display-name",
+      [
+        "module-resolver",
+        {
+          "root": [
+            "."
+          ]
+        }
+      ],
       "react-hot-loader/babel"
     ]
   },
@@ -116,6 +127,11 @@
       "react/require-default-props": 0,
       "react/forbid-prop-types": 0,
       "react/sort-comp": 0
+    },
+    "settings": {
+      "import/resolver": {
+        "babel-module": {}
+      }
     }
   }
 }

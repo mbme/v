@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Icon from './Icon'
-import Button from './Button'
-import connect from './store'
+import { Icon, Button } from 'client/components'
+import connect from 'client/store'
 
 class App extends React.Component {
   static propTypes = {
