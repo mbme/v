@@ -50,6 +50,7 @@
   "scripts": {
     "build": "",
     "start": "node bin/server.js",
+    "gen-data": "node bin/gen-data.js",
     "test": "jest",
     "lint": "eslint ."
   },
