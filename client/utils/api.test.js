@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import startServer from '../server'
+import startServer from 'server'
 import createApiClient from './api'
 
 global.fetch = require('node-fetch')
@@ -23,7 +23,7 @@ describe('API client', () => {
   const newRecord = () => api.createRecord('note', 'name', 'some data')
 
   it('should manage files', async () => {
-    const buffer = fs.readFileSync(path.join(__dirname, '../package.json'))
+    const buffer = fs.readFileSync(path.join(__dirname, '../../package.json'))
     const recordId = await newRecord()
     const name = 'super text.json'
 

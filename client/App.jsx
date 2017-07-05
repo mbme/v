@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
 import ActionHome from 'material-ui/svg-icons/action/home'
-import { connect } from 'client/hoc'
+import { connect } from 'client/utils'
 
 class App extends React.Component {
   static propTypes = {
