@@ -119,7 +119,7 @@ export default async function startServer (port = 8080, dev = false) {
   app.get('/', (req, res) => {
     res.end(`
       <!DOCTYPE html>
-      <html lang="en" class="mdc-typography">
+      <html lang="en">
         <head>
           <title>QuantumV</title>
 

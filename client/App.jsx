@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Icon, Button } from 'client/components'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
+import ActionHome from 'material-ui/svg-icons/action/home'
 import connect from 'client/store'
 
 class App extends React.Component {
@@ -14,12 +16,15 @@ class App extends React.Component {
 
   render () {
     return (
-      <h1 className="mdc-typography--display1">
-        HELLO WORLD <Icon name="face" size="large" />
+      <Paper>
+        <h1>HELLO WORLD</h1>
         {this.props.store.time}
         {this.props.store.items}
-        <Button className="mdc-button--raised">TEST</Button>
-      </h1>
+        <ActionHome />
+        <RaisedButton primary>
+          TEST
+        </RaisedButton>
+      </Paper>
     )
   }
 }
