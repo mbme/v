@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
 import ActionHome from 'material-ui/svg-icons/action/home'
-import connect from 'client/store'
+import { connect } from 'client/hoc'
 
 class App extends React.Component {
   static propTypes = {
@@ -29,7 +29,9 @@ class App extends React.Component {
   }
 }
 
-function initStore () {
+function initStore (client) {
+  console.error(client)
+
   return {
     time: 0,
     items: [],

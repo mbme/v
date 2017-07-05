@@ -8,6 +8,7 @@ import webPreset from 'fela-preset-web'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { AppContainer } from 'react-hot-loader'
 import injectTapEventPlugin from 'react-tap-event-plugin'
+import { Provider as StoreProvider } from './hoc'
 
 import App from './App'
 
@@ -24,7 +25,9 @@ function render (Component) {
     <AppContainer>
       <Provider renderer={renderer}>
         <MuiThemeProvider>
-          <Component />
+          <StoreProvider baseUrl="http://localhost:8080">
+            <Component />
+          </StoreProvider>
         </MuiThemeProvider>
       </Provider>
     </AppContainer>,

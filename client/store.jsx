@@ -1,4 +1,3 @@
-import React from 'react'
 import { isObject, isArray } from './utils'
 
 function wrap (val, handler) {
@@ -45,33 +44,4 @@ export function asyncWatchChanges (obj, cb) {
       cb()
     }, 0)
   })
-}
-
-export default function connect (initStore) {
-  return WrappedComponent =>
-    class extends React.Component {
-      static displayName = 'Connected' + (WrappedComponent.displayName || WrappedComponent.name || 'Component')
-
-      mounted = false
-
-      componentWillMount () {
-        this.store = asyncWatchChanges(initStore(), () => {
-          if (this.mounted) {
-            this.forceUpdate()
-          }
-        })
-      }
-
-      componentDidMount () {
-        this.mounted = true
-      }
-
-      componentWillUnmount () {
-        this.mounted = false
-      }
-
-      render () {
-        return <WrappedComponent store={this.store} {...this.props} />
-      }
-    }
 }
