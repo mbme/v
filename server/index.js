@@ -10,8 +10,8 @@ import webpackConfig from '../webpack.config'
 
 import createProcessor from './processor'
 
-function getRequestBody (req) {
-  return new Promise((resolve, reject) => {
+function getRequestBody(req) {
+  return new Promise((resolve) => {
     const data = []
 
     req.on('data', chunk => data.push(chunk))
@@ -19,19 +19,19 @@ function getRequestBody (req) {
   })
 }
 
-function log (start, req, res, isFinished = true) {
+function log(start, req, res, isFinished = true) {
   const hrend = process.hrtime(start)
-  const ms = hrend[0] * 1000 + Math.round(hrend[1] / 1000000)
+  const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000)
 
   console.info('%s %s %d %s - %dms %s', req.method, req.url, res.statusCode, res.statusMessage, ms, isFinished ? '' : '[CLOSED]')
 }
 
-export default async function startServer (port = 8080, dev = false) {
+export default async function startServer(port = 8080, dev = false) {
   const app = express()
 
   const processor = await createProcessor()
 
-  app.use(function logger (req, res, next) {
+  app.use(function logger(req, res, next) {
     const start = process.hrtime()
 
     res.on('close', () => log(start, req, res, false))
@@ -155,7 +155,7 @@ export default async function startServer (port = 8080, dev = false) {
 
   const server = http.createServer(app)
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     console.log('Starting server...')
     server.listen(port, () => {
       console.log('Server listening on: http://localhost:%s', port)

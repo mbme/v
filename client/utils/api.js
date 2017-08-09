@@ -1,4 +1,4 @@
-function processError (res) {
+function processError(res) {
   if (res.status === 400) {
     return res.json().then(({ error }) => {
       throw new Error(error)
@@ -8,12 +8,12 @@ function processError (res) {
   return res
 }
 
-export default function createApiClient (baseUrl = '') {
-  function apiUrl (path) {
+export default function createApiClient(baseUrl = '') {
+  function apiUrl(path) {
     return baseUrl + '/api' + path
   }
 
-  function apiRequest (action, data) {
+  function apiRequest(action, data) {
     return fetch(
       apiUrl(''),
       {
@@ -27,7 +27,7 @@ export default function createApiClient (baseUrl = '') {
   }
 
   return {
-    createFile (recordId, name, file) {
+    createFile(recordId, name, file) {
       return fetch(
         apiUrl(`/files/${recordId}/${name}`),
         {
@@ -37,29 +37,29 @@ export default function createApiClient (baseUrl = '') {
       ).then(processError)
     },
 
-    readFile (recordId, name) {
+    readFile(recordId, name) {
       return fetch(apiUrl(`/files/${recordId}/${name}`))
         .then(processError)
         .then(res => res.status === 404 ? null : res.buffer())
     },
 
-    deleteFile (recordId, name) {
+    deleteFile(recordId, name) {
       return fetch(apiUrl(`/files/${recordId}/${name}`), { method: 'DELETE' }).then(processError)
     },
 
-    listRecords (type) {
+    listRecords(type) {
       return apiRequest('LIST_RECORDS', { type })
     },
 
-    createRecord (type, name, data) {
+    createRecord(type, name, data) {
       return apiRequest('CREATE_RECORD', { type, name, data })
     },
 
-    updateRecord (id, type, name, data) {
+    updateRecord(id, type, name, data) {
       return apiRequest('UPDATE_RECORD', { id, type, name, data })
     },
 
-    deleteRecord (id) {
+    deleteRecord(id) {
       return apiRequest('DELETE_RECORD', { id })
     },
   }

@@ -61,11 +61,11 @@ const actions = {
   },
 }
 
-export default async function createProcessor () {
+export default async function createProcessor() {
   const db = await getDB()
 
   return {
-    async processAction ({ name, data }) {
+    async processAction({ name, data }) {
       const action = actions[name]
       if (!action) {
         throw new Error(`unknown action: ${name}`)
@@ -79,7 +79,7 @@ export default async function createProcessor () {
       }
     },
 
-    close () {
+    close() {
       return db.close()
     },
   }

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { asyncWatchChanges } from './store'
 import createApiClient from './api'
 
-export function connect (initStore) {
+export function connect(initStore) {
   return WrappedComponent =>
     class extends React.Component {
       static displayName = 'Connected' + (WrappedComponent.displayName || WrappedComponent.name || 'Component')
@@ -16,7 +16,7 @@ export function connect (initStore) {
 
       mounted = false
 
-      componentWillMount () {
+      componentWillMount() {
         this.store = asyncWatchChanges(initStore(this.context.client), () => {
           if (this.mounted) {
             this.forceUpdate()
@@ -24,15 +24,15 @@ export function connect (initStore) {
         })
       }
 
-      componentDidMount () {
+      componentDidMount() {
         this.mounted = true
       }
 
-      componentWillUnmount () {
+      componentWillUnmount() {
         this.mounted = false
       }
 
-      render () {
+      render() {
         return <WrappedComponent store={this.store} {...this.props} />
       }
     }
@@ -48,17 +48,17 @@ export class Provider extends React.Component {
     client: PropTypes.object.isRequired,
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.client = createApiClient(props.baseUrl)
   }
 
-  getChildContext () {
+  getChildContext() {
     return { client: this.client }
   }
 
-  render () {
+  render() {
     return this.props.children
   }
 }

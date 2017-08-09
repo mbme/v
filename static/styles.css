@@ -1,1 +1,10 @@
 @import 'sanitize.css';
+
+html {
+  font-size: 18px;
+}
+
+body {
+  font-size: 100%;
+  background-color: #f6f8fa;
+}

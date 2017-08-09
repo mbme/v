@@ -1,67 +1,77 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import Paper from 'material-ui/Paper'
-import AppBar from 'material-ui/AppBar'
-import IconButton from 'material-ui/IconButton'
-import NavigationClose from 'material-ui/svg-icons/navigation/close'
-import NavigationMenu from 'material-ui/svg-icons/navigation/menu'
-import Drawer from 'material-ui/Drawer'
-import TextField from 'material-ui/TextField'
-import { List, ListItem } from 'material-ui/List'
+import debounce from 'lodash.debounce'
+import { connect, styled, mixins, fuzzySearch } from 'client/utils'
+import { Input, Section, Text } from 'client/components'
 
-import { connect } from 'client/utils'
+const Container = styled({
+  margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  width: '40%',
+})
 
-class NotesView extends React.Component {
+const Record = styled({
+  backgroundColor: '#fff',
+  ...mixins.border,
+  borderRadius: '2px',
+  padding: '2rem',
+  margin: '1rem 0',
+})
+
+class NotesView extends Component {
   static propTypes = {
     store: PropTypes.object.isRequired,
   }
 
   state = {
-    showList: true,
+    filter: '',
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.props.store.listNotes()
   }
 
-  toggleList = () => this.setState({ showList: !this.state.showList })
+  getVisibleNotes() {
+    const visibleNotes = this.props.store.notes.filter(({ name }) => fuzzySearch(this.state.filter, name.toLowerCase()))
 
-  render () {
-    const { notes } = this.props.store
+    return visibleNotes.map(({ id, name }) => (
+      <Record key={id}>{name}</Record>
+    ))
+  }
 
-    const appBarIcon = this.state.showList ? <NavigationClose /> : <NavigationMenu />
+  setFilter = (filter) => {
+    if (this.state.filter !== filter) {
+      this.setState({ filter })
+    }
+  }
+  setFilterDebounced = debounce(this.setFilter, 300)
+
+  onFilterChange = e => this.setFilterDebounced(e.target.value.trim())
+
+  render() {
+    const notes = this.getVisibleNotes()
 
     return (
-      <div>
-        <AppBar
-          title="Notes"
-          iconElementLeft={<IconButton>{appBarIcon}</IconButton>}
-          onLeftIconButtonTouchTap={this.toggleList}
-          />
-
-        <Drawer open={this.state.showList} openSecondary>
-          <TextField hintText="Search" />
-          <List>
-            {notes.map(note => <ListItem key={note.id} primaryText={note.name} />)}
-          </List>
-        </Drawer>
-
-        <Paper>
-          <pre>
-            {JSON.stringify(notes, null, 2)}
-          </pre>
-        </Paper>
-      </div>
+      <Container>
+        <Section>
+          <Input name="filter" type="text" placeholder="Filter notes" onChange={this.onFilterChange} />
+        </Section>
+        <Text center>
+          {notes.length} items
+        </Text>
+        <div>{notes}</div>
+      </Container>
     )
   }
 }
 
-function initStore (client) {
+function initStore(client) {
   return {
     notes: [],
 
-    async listNotes () {
+    async listNotes() {
       this.notes = await client.listRecords('note')
     },
   }

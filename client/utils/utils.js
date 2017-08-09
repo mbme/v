@@ -1,15 +1,49 @@
-function getType (elem) {
+function getType(elem) {
   return Object.prototype.toString.call(elem).slice(8, -1)
 }
 
-export function isObject (elem) {
+export function isObject(elem) {
   return getType(elem) === 'Object'
 }
 
-export function isArray (elem) {
+export function isArray(elem) {
   return getType(elem) === 'Array'
 }
 
-export function isFunction (elem) {
+export function isFunction(elem) {
   return getType(elem) === 'Function'
+}
+
+/**
+ * Check if needle fuzzy matches haystack.
+ * @see https://github.com/bevacqua/fuzzysearch
+ */
+export function fuzzySearch(needle, haystack) {
+  const nlen = needle.length
+
+  // if needle is empty then it matches everything
+  if (!nlen) {
+    return true
+  }
+
+  const hlen = haystack.length
+  if (nlen > hlen) {
+    return false
+  }
+
+  if (nlen === hlen) {
+    return needle === haystack
+  }
+
+  outer: for (let i = 0, j = 0; i < nlen; i += 1) { // eslint-disable-line
+    const nch = needle.charCodeAt(i)
+    while (j < hlen) {
+      if (haystack.charCodeAt(j++) === nch) { // eslint-disable-line
+        continue outer // eslint-disable-line
+      }
+    }
+    return false
+  }
+
+  return true
 }

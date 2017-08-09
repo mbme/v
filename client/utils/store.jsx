@@ -1,6 +1,6 @@
 import { isObject, isArray } from './utils'
 
-function wrap (val, handler) {
+function wrap(val, handler) {
   if (isObject(val)) {
     const wrappedVal = {}
 
@@ -18,9 +18,9 @@ function wrap (val, handler) {
   return val
 }
 
-export function watchChanges (obj, cb) {
+export function watchChanges(obj, cb) {
   const handler = {
-    set (target, property, value, receiver) {
+    set(target, property, value, receiver) {
       Reflect.set(target, property, wrap(value, handler), receiver)
       cb()
 
@@ -31,7 +31,7 @@ export function watchChanges (obj, cb) {
   return wrap(obj, handler)
 }
 
-export function asyncWatchChanges (obj, cb) {
+export function asyncWatchChanges(obj, cb) {
   let timeout
 
   return watchChanges(obj, () => {
