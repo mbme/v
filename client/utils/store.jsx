@@ -1,4 +1,4 @@
-import { isObject, isArray } from './utils'
+import { isObject, isArray } from 'utils/utils'
 
 function wrap(val, handler) {
   if (isObject(val)) {

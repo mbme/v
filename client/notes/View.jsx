@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import debounce from 'lodash.debounce'
-import { connect, styled, mixins, fuzzySearch } from 'client/utils'
+import { connect, styled, mixins } from 'client/utils'
+import { fuzzySearch } from 'utils/utils'
 import { Input, Section, Text } from 'client/components'
 
 const Container = styled({

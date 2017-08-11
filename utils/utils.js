@@ -1,4 +1,4 @@
-function getType(elem) {
+export function getType(elem) {
   return Object.prototype.toString.call(elem).slice(8, -1)
 }
 
@@ -12,6 +12,10 @@ export function isArray(elem) {
 
 export function isFunction(elem) {
   return getType(elem) === 'Function'
+}
+
+export function isString(elem) {
+  return getType(elem) === 'String'
 }
 
 /**

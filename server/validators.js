@@ -1,6 +1,6 @@
+import { getType, isString } from 'utils/utils'
+
 const check = (result, msg) => result ? null : msg
-const getType = val => Object.prototype.toString.call(val)
-const isString = val => typeof val === 'string'
 
 const RECORD_TYPES = ['note']
 

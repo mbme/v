@@ -1,5 +1,5 @@
 import { createComponentWithProxy } from 'react-fela'
-import { isFunction } from './utils'
+import { isFunction } from 'utils/utils'
 
 export function styled(styles, type = 'div') {
   const rule = isFunction(styles) ? styles : () => styles
