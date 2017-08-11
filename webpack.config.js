@@ -38,6 +38,8 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
@@ -46,5 +48,5 @@ module.exports = {
       },
     }),
   ],
-  devtool: 'cheap-eval-source-map',
+  devtool: 'cheap-module-eval-source-map',
 }
