@@ -1,46 +1,61 @@
-import { getType, isString } from 'utils/utils'
-
-const check = (result, msg) => result ? null : msg
+import { getType, isString, isObject, isFunction } from 'utils/utils'
 
 const RECORD_TYPES = ['note']
 
-// each validator could return undefined, string or string[]
-export const validators = {
-  record: {
-    id(id) {
-      return check(
-        Number.isInteger(id) && id > 0,
-        `record id: expected positive integer, received "${id}"`
-      )
-    },
-    type(type) {
-      return check(
-        RECORD_TYPES.indexOf(type) >= 0,
-        `record type: expected one of ${RECORD_TYPES}, received "${type}"`
-      )
-    },
-    name(name) {
-      return check(isString(name), `record name: expected string, received "${getType(name)}"`)
-    },
-    data(data) {
-      return check(isString(data), `record data: expected string, received "${getType(data)}"`)
-    },
+const Types = {
+  'positive-integer': val => Number.isInteger(val) && val > 0,
+  'record-type': val => RECORD_TYPES.includes(val),
+  'string': isString,
+  'buffer': Buffer.isBuffer,
+  'Record': {
+    id: 'positive-integer',
+    type: 'record-type',
+    name: 'string',
+    data: 'string',
   },
-  file: {
-    name(name) {
-      return check(isString(name), `file name: expected string, received "${getType(name)}"`)
-    },
-    data(data) {
-      return check(Buffer.isBuffer(data), `file data: expected Buffer, received "${getType(data)}"`)
-    },
+  'File': {
+    name: 'string',
+    data: 'buffer',
   },
 }
 
-export function validate(...results) {
-  // flatten arrays and skip empty items
-  const flatResults = results.reduce((acc, val) => acc.concat(val), []).filter(result => !!result)
+// TODO handle Record.type, File.data etc
+export function validate(val, typeName, prefix = '') {
+  const type = Types[typeName]
+  if (!type) {
+    throw new Error(`validateSchema: unknown type ${typeName}`)
+  }
 
-  if (flatResults.length) {
-    throw flatResults
+  if (isFunction(type)) {
+    if (type(val)) {
+      return []
+    }
+
+    return [`${prefix}: expected ${typeName}, received ${getType(val)}`]
+  }
+
+  if (isObject(type)) {
+    if (!isObject(val)) {
+      return [`Expected ${typeName}(object), received ${getType(val)}`]
+    }
+
+    const messages = []
+
+    Object.keys(type).forEach((prop) => {
+      messages.push(
+        ...validate(val[prop], type[prop], `${prefix}.${prop}`, messages)
+      )
+    })
+
+    return messages
+  }
+
+  throw new Error(`validateSchema: unknown type test ${getType(type)}`)
+}
+
+export function validateAndThrow(...args) {
+  const messages = validate(...args)
+  if (messages.length) {
+    throw messages
   }
 }

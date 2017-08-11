@@ -1,11 +1,10 @@
 import getDB from './db'
-import { validators, validate } from './validators'
+import { validateAndThrow } from './validators'
 
 const actions = {
   LIST_RECORDS: ({ type }) => {
-    validate(
-      validators.record.type(type)
-    )
+    validateAndThrow(type, 'record-type')
+
     return db => db.listRecords(type)
   },
 
@@ -18,14 +17,9 @@ const actions = {
     return db => db.createRecord(type, name, data)
   },
 
-  UPDATE_RECORD: ({ id, type, name, data }) => {
-    validate(
-      validators.record.id(id),
-      validators.record.type(type),
-      validators.record.name(name),
-      validators.record.data(data)
-    )
-    return db => db.updateRecord(id, type, name, data)
+  UPDATE_RECORD: (record) => {
+    validateAndThrow(record, 'Record')
+    return db => db.updateRecord(record.id, record.type, record.name, record.data)
   },
 
   DELETE_RECORD: ({ id }) => {
