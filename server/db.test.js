@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import fs from 'fs'
 import getDB from './db'
 
@@ -51,34 +49,34 @@ describe('DB', () => {
     const name = 'package.json'
     const data = fs.readFileSync(name)
 
-    let record_id
+    let recordId
 
     beforeAll(async () => {
-      record_id = await db.createRecord('type', '', '')
+      recordId = await db.createRecord('type', '', '')
     })
 
     test('create file', async () => {
-      await db.createFile(record_id, name, data)
+      await db.createFile(recordId, name, data)
       const files = await db.listFiles()
-      expect(files[record_id]).toEqual([{ record_id, name, size: data.length }])
+      expect(files[recordId]).toEqual([{ recordId, name, size: data.length }])
     })
 
     test('read file', async () => {
-      const file = await db.readFile(record_id, name)
+      const file = await db.readFile(recordId, name)
       expect(file.equals(data)).toBeTruthy()
     })
 
     test('delete file', async () => {
-      expect(await db.deleteFile(record_id, name)).toBeUndefined()
-      expect(await db.readFile(record_id, name)).toBeUndefined()
+      expect(await db.deleteFile(recordId, name)).toBeUndefined()
+      expect(await db.readFile(recordId, name)).toBeUndefined()
     })
 
     test('auto cleanup after removing record', async () => {
-      await db.createFile(record_id, name, data)
-      expect(await db.readFile(record_id, name)).toBeTruthy()
+      await db.createFile(recordId, name, data)
+      expect(await db.readFile(recordId, name)).toBeTruthy()
 
-      await db.deleteRecord(record_id)
-      expect(await db.readFile(record_id, name)).toBeUndefined()
+      await db.deleteRecord(recordId)
+      expect(await db.readFile(recordId, name)).toBeUndefined()
     })
   })
 })

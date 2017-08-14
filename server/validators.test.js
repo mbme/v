@@ -1,4 +1,4 @@
-import { validate } from './validators'
+import { validate, validateAndThrow } from './validators'
 
 describe('Validators', () => {
   test('positive-integer', () => {
@@ -46,5 +46,24 @@ describe('Validators', () => {
     }, 'File')).toHaveLength(2)
 
     expect(validate(null, 'File')).toHaveLength(1)
+  })
+
+  test('Record.id', () => {
+    expect(validate(2, 'Record.id')).toHaveLength(0)
+    expect(validate(-2, 'Record.id')).toHaveLength(1)
+  })
+
+  test('validateAndThrow', () => {
+    expect(() => {
+      validateAndThrow(
+        [1, 'string'],
+      )
+    }).toThrow()
+
+    expect(() => {
+      validateAndThrow(
+        ['1', 'string']
+      )
+    }).not.toThrow()
   })
 })

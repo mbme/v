@@ -51,3 +51,15 @@ export function fuzzySearch(needle, haystack) {
 
   return true
 }
+
+function getInRec(obj, [prop, ...rest]) {
+  if (!rest.length) {
+    return obj[prop]
+  }
+
+  return getInRec(obj[prop], rest)
+}
+
+export function getIn(obj, propName) {
+  return getInRec(obj, propName.split('.'))
+}

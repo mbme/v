@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import sqlite3 from 'sqlite3'
 
 const SQL_INIT_DB = `
@@ -14,12 +12,12 @@ const SQL_INIT_DB = `
   CREATE INDEX Record_ix_type ON records(type);
 
   CREATE TABLE IF NOT EXISTS files (
-      record_id INTEGER NOT NULL,
+      recordId INTEGER NOT NULL,
       name TEXT NOT NULL,
       data BLOB NOT NULL,
 
-      CONSTRAINT unique_name UNIQUE (record_id, name),
-      CONSTRAINT File_fk_record_id FOREIGN KEY(record_id) REFERENCES records(id) ON DELETE CASCADE
+      CONSTRAINT unique_name UNIQUE (recordId, name),
+      CONSTRAINT File_fk_recordId FOREIGN KEY(recordId) REFERENCES records(id) ON DELETE CASCADE
   );
 `
 
@@ -100,15 +98,15 @@ function dbAPI(db) {
     // ----------- FILES ----------------------------------
 
     /**
-     * @returns {[record_id]: [...fileInfo]}
+     * @returns {[recordId]: [...fileInfo]}
      */
     async listFiles() {
       const result = {}
-      await selectAll('SELECT record_id, name, length(data) AS size FROM files', [], (row) => {
-        const files = result[row.record_id] || []
+      await selectAll('SELECT recordId, name, length(data) AS size FROM files', [], (row) => {
+        const files = result[row.recordId] || []
         files.push(row)
 
-        result[row.record_id] = files
+        result[row.recordId] = files
       })
 
       return result
@@ -117,16 +115,16 @@ function dbAPI(db) {
     /**
      * @param {Buffer} data
      */
-    createFile(record_id, name, data) {
-      return run('INSERT INTO files(record_id, name, data) VALUES (?, ?, ?)', [record_id, name, data])
+    createFile(recordId, name, data) {
+      return run('INSERT INTO files(recordId, name, data) VALUES (?, ?, ?)', [recordId, name, data])
     },
 
-    readFile(record_id, name) {
-      return get('SELECT data FROM files WHERE record_id = ? AND name = ?', [record_id, name]).then(file => file ? file.data : file)
+    readFile(recordId, name) {
+      return get('SELECT data FROM files WHERE recordId = ? AND name = ?', [recordId, name]).then(file => file ? file.data : file)
     },
 
-    deleteFile(record_id, name) {
-      return run('DELETE FROM files where record_id = ? AND name = ?', [record_id, name]).then(expectSingleChange)
+    deleteFile(recordId, name) {
+      return run('DELETE FROM files where recordId = ? AND name = ?', [recordId, name]).then(expectSingleChange)
     },
 
     close() {

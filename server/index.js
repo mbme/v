@@ -40,15 +40,15 @@ export default async function startServer(port = 8080, dev = false) {
     next()
   })
 
-  app.post('/api/files/:record_id/:file_name', async (req, res) => {
+  app.post('/api/files/:recordId/:fileName', async (req, res) => {
     try {
       const data = await getRequestBody(req)
 
       await processor.processAction({
         name: 'CREATE_FILE',
         data: {
-          record_id: parseInt(req.params.record_id, 10),
-          name: req.params.file_name,
+          recordId: parseInt(req.params.recordId, 10),
+          name: req.params.fileName,
           data,
         },
       })
@@ -60,13 +60,13 @@ export default async function startServer(port = 8080, dev = false) {
     }
   })
 
-  app.get('/api/files/:record_id/:file_name', async (req, res) => {
+  app.get('/api/files/:recordId/:fileName', async (req, res) => {
     try {
       const response = await processor.processAction({
         name: 'READ_FILE',
         data: {
-          record_id: parseInt(req.params.record_id, 10),
-          name: req.params.file_name,
+          recordId: parseInt(req.params.recordId, 10),
+          name: req.params.fileName,
         },
       })
 
@@ -86,13 +86,13 @@ export default async function startServer(port = 8080, dev = false) {
     }
   })
 
-  app.delete('/api/files/:record_id/:file_name', async (req, res) => {
+  app.delete('/api/files/:recordId/:fileName', async (req, res) => {
     try {
       await processor.processAction({
         name: 'DELETE_FILE',
         data: {
-          record_id: parseInt(req.params.record_id, 10),
-          name: req.params.file_name,
+          recordId: parseInt(req.params.recordId, 10),
+          name: req.params.fileName,
         },
       })
 

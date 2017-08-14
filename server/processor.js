@@ -3,55 +3,68 @@ import { validateAndThrow } from './validators'
 
 const actions = {
   LIST_RECORDS: ({ type }) => {
-    validateAndThrow(type, 'record-type')
+    validateAndThrow(
+      [type, 'Record.type'],
+    )
 
     return db => db.listRecords(type)
   },
 
   CREATE_RECORD: ({ type, name, data }) => {
-    validate(
-      validators.record.type(type),
-      validators.record.name(name),
-      validators.record.data(data)
+    validateAndThrow(
+      [type, 'Record.type'],
+      [name, 'Record.name'],
+      [data, 'Record.data'],
     )
+
     return db => db.createRecord(type, name, data)
   },
 
-  UPDATE_RECORD: (record) => {
-    validateAndThrow(record, 'Record')
-    return db => db.updateRecord(record.id, record.type, record.name, record.data)
+  UPDATE_RECORD: ({ id, type, name, data }) => {
+    validateAndThrow(
+      [id, 'Record.id'],
+      [type, 'Record.type'],
+      [name, 'Record.name'],
+      [data, 'Record.data'],
+    )
+
+    return db => db.updateRecord(id, type, name, data)
   },
 
   DELETE_RECORD: ({ id }) => {
-    validate(
-      validators.record.id(id)
+    validateAndThrow(
+      [id, 'Record.id'],
     )
+
     return db => db.deleteRecord(id)
   },
 
-  CREATE_FILE: ({ record_id, name, data }) => {
-    validate(
-      validators.record.id(record_id),
-      validators.file.name(name),
-      validators.file.data(data)
+  CREATE_FILE: ({ recordId, name, data }) => {
+    validateAndThrow(
+      [recordId, 'Record.id'],
+      [name, 'File.name'],
+      [data, 'File.data'],
     )
-    return db => db.createFile(record_id, name, data).then(() => {})
+
+    return db => db.createFile(recordId, name, data).then(() => {})
   },
 
-  READ_FILE: ({ record_id, name }) => {
-    validate(
-      validators.record.id(record_id),
-      validators.file.name(name)
+  READ_FILE: ({ recordId, name }) => {
+    validateAndThrow(
+      [recordId, 'Record.id'],
+      [name, 'File.name'],
     )
-    return db => db.readFile(record_id, name)
+
+    return db => db.readFile(recordId, name)
   },
 
-  DELETE_FILE: ({ record_id, name }) => {
-    validate(
-      validators.record.id(record_id),
-      validators.file.name(name)
+  DELETE_FILE: ({ recordId, name }) => {
+    validateAndThrow(
+      [recordId, 'Record.id'],
+      [name, 'File.name'],
     )
-    return db => db.deleteFile(record_id, name).then(() => {})
+
+    return db => db.deleteFile(recordId, name).then(() => {})
   },
 }
 

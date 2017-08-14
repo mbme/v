@@ -1,4 +1,4 @@
-import { getType, isString, isObject, isFunction } from 'utils/utils'
+import { getIn, getType, isString, isObject, isFunction } from 'utils/utils'
 
 const RECORD_TYPES = ['note']
 
@@ -19,14 +19,20 @@ const Types = {
   },
 }
 
-// TODO handle Record.type, File.data etc
+/**
+ * @prop typeName Type name like "Record" or "Record.id"
+ */
 export function validate(val, typeName, prefix = '') {
-  const type = Types[typeName]
+  const type = getIn(Types, typeName)
   if (!type) {
     throw new Error(`validateSchema: unknown type ${typeName}`)
   }
 
-  if (isFunction(type)) {
+  if (isString(type)) { // type is an alias of other type
+    return validate(val, type, prefix)
+  }
+
+  if (isFunction(type)) { // type is validator function
     if (type(val)) {
       return []
     }
@@ -34,7 +40,7 @@ export function validate(val, typeName, prefix = '') {
     return [`${prefix}: expected ${typeName}, received ${getType(val)}`]
   }
 
-  if (isObject(type)) {
+  if (isObject(type)) { // type is an object
     if (!isObject(val)) {
       return [`Expected ${typeName}(object), received ${getType(val)}`]
     }
@@ -42,9 +48,7 @@ export function validate(val, typeName, prefix = '') {
     const messages = []
 
     Object.keys(type).forEach((prop) => {
-      messages.push(
-        ...validate(val[prop], type[prop], `${prefix}.${prop}`, messages)
-      )
+      messages.push(...validate(val[prop], type[prop], `${prefix}.${prop}`, messages))
     })
 
     return messages
@@ -53,9 +57,12 @@ export function validate(val, typeName, prefix = '') {
   throw new Error(`validateSchema: unknown type test ${getType(type)}`)
 }
 
-export function validateAndThrow(...args) {
-  const messages = validate(...args)
-  if (messages.length) {
-    throw messages
+export function validateAndThrow(...rules) {
+  const results = []
+
+  rules.forEach(([val, typeName]) => results.push(...validate(val, typeName)))
+
+  if (results.length) {
+    throw results
   }
 }
