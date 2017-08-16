@@ -4,21 +4,25 @@ import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import { connect, styled, mixins } from 'client/utils'
 import { fuzzySearch } from 'utils/utils'
-import { Input, Section, Text } from 'client/components'
+import { Input, Section, Text, Heading } from 'client/components'
 
-const Container = styled({
+const Container = styled('Container', {
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
   width: '40%',
 })
 
-const Record = styled({
+const Record = styled('Record', {
   backgroundColor: '#fff',
+
   ...mixins.border,
   borderRadius: '2px',
-  padding: '2rem',
-  margin: '1rem 0',
+
+  extend: [
+    ...mixins.margins('vertical', 'medium'),
+    ...mixins.paddings('all', 'medium'),
+  ],
 })
 
 class NotesView extends Component {
@@ -62,6 +66,9 @@ class NotesView extends Component {
         <Text center>
           {notes.length} items
         </Text>
+        <Heading center>
+          {notes.length} items
+        </Heading>
         <div>{notes}</div>
       </Container>
     )

@@ -1,10 +1,14 @@
 @import 'sanitize.css';
 
 html {
-  font-size: 18px;
+  font-size: 1.125rem; // usually 18px
 }
 
 body {
   font-size: 100%;
-  background-color: #f6f8fa;
+  font-weight: 400;
+  line-height: 1.45;
+
+  background-color: #fafafa;
+  color: #333;
 }

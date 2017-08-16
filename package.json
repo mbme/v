@@ -11,7 +11,7 @@
     "express": "^4.15.2",
     "fela": "^5.0.2",
     "fela-preset-web": "^5.0.3",
-    "file-type": "^5.2.0",
+    "file-type": "^6.1.0",
     "lodash.debounce": "^4.0.8",
     "node-fetch": "^1.7.1",
     "prop-types": "^15.5.10",
@@ -134,9 +134,19 @@
         "error",
         "never"
       ],
-      "quote-props": ["error", "consistent-as-needed"],
+      "quote-props": [
+        "error",
+        "consistent-as-needed"
+      ],
       "jsx-a11y/href-no-hash": "off",
-      "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
+      "jsx-a11y/anchor-is-valid": [
+        "warn",
+        {
+          "aspects": [
+            "invalidHref"
+          ]
+        }
+      ],
       "react/require-default-props": 0,
       "react/forbid-prop-types": 0,
       "react/sort-comp": 0,
