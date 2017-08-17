@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import debounce from 'lodash.debounce'
 import { connect, styled, mixins } from 'client/utils'
-import { fuzzySearch } from 'utils/utils'
+import { fuzzySearch } from 'shared/utils'
 import { Input, Section, Text, Heading } from 'client/components'
 
 const Container = styled('Container', {

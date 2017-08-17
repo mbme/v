@@ -18,7 +18,7 @@ startServer(8080, isDevelopment).then(() => {
   }
 
   global.fetch = require('node-fetch')
-  const createApiClient = require('../client/utils/api').default
+  const createApiClient = require('../shared/api').default
 
   const api = createApiClient('http://localhost:8080')
 

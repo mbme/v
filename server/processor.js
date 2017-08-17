@@ -1,5 +1,5 @@
+import { validateAndThrow } from 'shared/validators'
 import getDB from './db'
-import { validateAndThrow } from './validators'
 
 const actions = {
   LIST_RECORDS: ({ type }) => {

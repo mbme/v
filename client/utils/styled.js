@@ -1,5 +1,5 @@
 import { createComponent } from 'react-fela'
-import { isFunction, isString, isObject } from 'utils/utils'
+import { isFunction, isString, isObject } from 'shared/utils'
 
 export const theme = {
   fontSize: {

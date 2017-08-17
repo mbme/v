@@ -2,8 +2,8 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { asyncWatchChanges } from './store'
-import createApiClient from './api'
+import { asyncWatchChanges } from 'shared/store'
+import createApiClient from 'shared/api'
 
 export function connect(initStore) {
   return WrappedComponent =>

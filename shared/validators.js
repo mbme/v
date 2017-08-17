@@ -1,4 +1,4 @@
-import { getIn, getType, isString, isObject, isFunction } from 'utils/utils'
+import { getIn, getType, isString, isObject, isFunction } from 'shared/utils'
 
 const RECORD_TYPES = ['note']
 
