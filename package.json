@@ -19,7 +19,8 @@
     "react-dom": "^15.5.4",
     "react-fela": "^5.0.4",
     "react-hot-loader": "next",
-    "sqlite3": "^3.1.8"
+    "sqlite3": "^3.1.8",
+    "universal-router": "^3.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",

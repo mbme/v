@@ -116,7 +116,22 @@ export default async function startServer(port = 8080, dev = false) {
     }
   })
 
-  app.get('/', (req, res) => {
+  app.use(express.static('static'))
+
+  if (dev) {
+    const compiler = webpack(webpackConfig)
+
+    app.use(webpackDevMiddleware(compiler, {
+      noInfo: false,
+      stats: {
+        colors: true,
+      },
+    }))
+
+    app.use(webpackHotMiddleware(compiler))
+  }
+
+  app.use((req, res) => {
     res.end(`
       <!DOCTYPE html>
       <html lang="en">
@@ -137,21 +152,6 @@ export default async function startServer(port = 8080, dev = false) {
       </html>
     `)
   })
-
-  app.use(express.static('static'))
-
-  if (dev) {
-    const compiler = webpack(webpackConfig)
-
-    app.use(webpackDevMiddleware(compiler, {
-      noInfo: false,
-      stats: {
-        colors: true,
-      },
-    }))
-
-    app.use(webpackHotMiddleware(compiler))
-  }
 
   const server = http.createServer(app)
 
