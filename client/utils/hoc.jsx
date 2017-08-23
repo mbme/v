@@ -16,7 +16,13 @@ function createRouter(routes, view$) {
   const router = new Router(routes)
   const url = generateUrls(router)
 
-  router.resolve(window.location.pathname).then(view => view$.set(view))
+  function useCurrentPath() {
+    router.resolve(window.location.pathname).then(view => view$.set(view))
+  }
+
+  window.addEventListener('popstate', useCurrentPath)
+
+  useCurrentPath()
 
   return {
     async push(name, params) {
@@ -27,12 +33,44 @@ function createRouter(routes, view$) {
       window.history.pushState(null, '', pathname)
       view$.set(view)
     },
+
+    close() {
+      window.removeEventListener('popstate', useCurrentPath)
+    },
+  }
+}
+
+export class Link extends Component {
+  static propTypes = {
+    className: PropTypes.string,
+    to: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      params: PropTypes.object,
+    }).isRequired,
+    children: PropTypes.node.isRequired,
+  }
+
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  }
+
+  onClick = () => {
+    const { name, params } = this.props.to
+    this.context.router.push(name, params)
+  }
+
+  render() {
+    const { className, children } = this.props
+
+    return (
+      <div className={className} role="link" tabIndex="0" onClick={this.onClick}>{children}</div>
+    )
   }
 }
 
 export function connect(initStore) {
   return WrappedComponent =>
-    class extends React.Component {
+    class extends Component {
       static displayName = 'Connected' + (WrappedComponent.displayName || WrappedComponent.name || 'Component')
 
       static contextTypes = {
@@ -91,6 +129,7 @@ export class VProvider extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.routes !== nextProps.routes) {
+      this.router.close()
       this.router = createRouter(nextProps.routes, this.view$)
     }
   }

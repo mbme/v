@@ -52,6 +52,7 @@ export function fuzzySearch(needle, haystack) {
   return true
 }
 
+// recursive helper for `getIn`
 function getInRec(obj, [prop, ...rest]) {
   if (!rest.length) {
     return obj[prop]
