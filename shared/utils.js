@@ -63,3 +63,31 @@ function getInRec(obj, [prop, ...rest]) {
 export function getIn(obj, propName) {
   return getInRec(obj, propName.split('.'))
 }
+
+export function observable(initialValue) {
+  let currentValue = initialValue
+  const subscribers = []
+
+  return {
+    set(value) {
+      currentValue = value
+      subscribers.forEach(cb => cb(currentValue))
+    },
+
+    subscribe(cb) {
+      subscribers.push(cb)
+      cb(currentValue)
+
+      return () => {
+        const pos = subscribers.indexOf(cb)
+        if (pos > -1) {
+          subscribers.splice(pos, 1)
+        }
+      }
+    },
+
+    unsubscribeAll() {
+      subscribers.length = 0
+    },
+  }
+}

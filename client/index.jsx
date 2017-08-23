@@ -1,14 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { Provider } from 'react-fela'
+import { Provider as FelaProvider } from 'react-fela'
 import { createRenderer } from 'fela'
 import webPreset from 'fela-preset-web'
 
 import { AppContainer } from 'react-hot-loader'
-import { Provider as StoreProvider } from 'client/utils/hoc'
+import { VProvider } from 'client/utils/hoc'
 
 import App from './App'
+import routes from './routes'
 
 const renderer = createRenderer({
   plugins: [...webPreset],
@@ -17,11 +18,11 @@ const renderer = createRenderer({
 function render() {
   ReactDOM.render(
     <AppContainer>
-      <Provider renderer={renderer}>
-        <StoreProvider baseUrl="http://localhost:8080">
+      <FelaProvider renderer={renderer}>
+        <VProvider baseUrl="http://localhost:8080" routes={routes}>
           <App />
-        </StoreProvider>
-      </Provider>
+        </VProvider>
+      </FelaProvider>
     </AppContainer>,
     document.getElementById('root')
   )
@@ -30,5 +31,5 @@ function render() {
 render()
 
 if (module.hot) {
-  module.hot.accept('./App', render)
+  module.hot.accept(['./App', './routes'], render)
 }
