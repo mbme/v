@@ -1,9 +1,50 @@
+/* eslint-disable react/prop-types */
+
 import React from 'react'
-import NotesView from './notes/View'
+
+import initNotesStore from './notes/store'
+import NotesView from './notes/Notes'
+import NoteView from './notes/Note'
 
 export default [
-  { path: '/one', name: 'one', action: () => <h1>Page One</h1> },
-  { path: '/two', name: 'two', action: () => <h1>Page Two</h1> },
-  { path: '/notes', name: 'notes', action: () => <NotesView /> },
+  {
+    path: '/one',
+    name: 'one',
+    action: () => <h1>Page One</h1>,
+  },
+  {
+    path: '/notes',
+    store: {
+      name: 'notes',
+      init: initNotesStore,
+    },
+    children: [
+      {
+        name: 'notes',
+        path: '/',
+        action: context => <NotesView store$={context.stores.notes} />,
+      },
+      {
+        name: 'note',
+        path: '/:id',
+        async action({ stores: { notes }, params }) {
+          await notes.value.listNotesOnce()
+
+          const id = parseInt(params.id, 10)
+          if (Number.isNaN(id)) {
+            return null
+          }
+
+          const note = notes.value.notes.find(rec => rec.id === id)
+
+          if (!note) {
+            return null
+          }
+
+          return <NoteView note={note} />
+        },
+      },
+    ],
+  },
   { path: '*', action: () => <h1>Not Found</h1> },
 ]

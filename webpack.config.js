@@ -8,6 +8,7 @@ module.exports = {
     './client/index.jsx',
   ],
   output: {
+    publicPath: '/',
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
   },

@@ -13,7 +13,10 @@ export default class App extends Component {
   unsubscribe = null
 
   componentWillMount() {
-    this.unsubscribe = this.context.view$.subscribe(view => this.setState({ view }))
+    const { view$ } = this.context
+
+    this.setState({ view: view$.value })
+    this.unsubscribe = view$.subscribe(view => this.setState({ view }))
   }
 
   componentWillUnmount() {

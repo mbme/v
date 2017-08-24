@@ -8,37 +8,9 @@ import Router from 'universal-router'
 import generateUrls from 'universal-router/generateUrls'
 /* eslint-enable import/extensions */
 
-import { observable } from 'shared/utils'
-import { asyncWatchChanges } from 'shared/store'
+import { createSubject, isFunction } from 'shared/utils'
+import { createAsyncStore } from 'shared/store'
 import createApiClient from 'shared/api'
-
-function createRouter(routes, view$) {
-  const router = new Router(routes)
-  const url = generateUrls(router)
-
-  function useCurrentPath() {
-    router.resolve(window.location.pathname).then(view => view$.set(view))
-  }
-
-  window.addEventListener('popstate', useCurrentPath)
-
-  useCurrentPath()
-
-  return {
-    async push(name, params) {
-      const pathname = url(name, params)
-
-      const view = await router.resolve(pathname)
-
-      window.history.pushState(null, '', pathname)
-      view$.set(view)
-    },
-
-    close() {
-      window.removeEventListener('popstate', useCurrentPath)
-    },
-  }
-}
 
 export class Link extends Component {
   static propTypes = {
@@ -68,38 +40,27 @@ export class Link extends Component {
   }
 }
 
-export function connect(initStore) {
-  return WrappedComponent =>
-    class extends Component {
-      static displayName = 'Connected' + (WrappedComponent.displayName || WrappedComponent.name || 'Component')
+export function observeStore(WrappedComponent) {
+  return class extends Component {
+    static displayName = 'Connected' + (WrappedComponent.displayName || WrappedComponent.name || 'Component')
 
-      static contextTypes = {
-        client: PropTypes.object.isRequired,
-      }
-
-      mounted = false
-      store = undefined
-
-      componentWillMount() {
-        this.store = asyncWatchChanges(initStore(this.context.client), () => {
-          if (this.mounted) {
-            this.forceUpdate()
-          }
-        })
-      }
-
-      componentDidMount() {
-        this.mounted = true
-      }
-
-      componentWillUnmount() {
-        this.mounted = false
-      }
-
-      render() {
-        return <WrappedComponent store={this.store} {...this.props} />
-      }
+    static propTypes = {
+      store$: PropTypes.object.isRequired,
     }
+
+    componentWillMount() {
+      this.unsubscribe = this.props.store$.subscribe(() => this.forceUpdate())
+    }
+
+    componentWillUnmount() {
+      this.unsubscribe()
+    }
+
+    render() {
+      const { store$, ...otherProps } = this.props
+      return <WrappedComponent store={store$.value} {...otherProps} />
+    }
+  }
 }
 
 export class VProvider extends Component {
@@ -110,7 +71,6 @@ export class VProvider extends Component {
   }
 
   static childContextTypes = {
-    client: PropTypes.object.isRequired,
     router: PropTypes.object.isRequired,
     view$: PropTypes.object.isRequired,
   }
@@ -118,28 +78,81 @@ export class VProvider extends Component {
   client = null
   view$ = null
   router = null
+  stores = null
 
   constructor(props) {
     super(props)
 
     this.client = createApiClient(props.baseUrl)
-    this.view$ = observable(null)
-    this.router = createRouter(props.routes, this.view$)
+    this.view$ = createSubject(null)
+    this.stores = {}
+    this.router = this.createRouter(props.routes)
+  }
+
+  componentWillMount() {
+    window.addEventListener('popstate', this.updateRouter)
+    this.updateRouter()
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.routes !== nextProps.routes) {
-      this.router.close()
-      this.router = createRouter(nextProps.routes, this.view$)
+      this.router = this.createRouter(nextProps.routes)
+      this.updateRouter()
     }
   }
 
   componentWillUnmount() {
+    window.removeEventListener('popstate', this.updateRouter)
     this.view$.unsubscribeAll()
   }
 
   getChildContext() {
-    return { client: this.client, router: this.router, view$: this.view$ }
+    return { router: this.router, view$: this.view$ }
+  }
+
+  createRouter(routes) {
+    const { stores, view$, client } = this
+
+    const router = new Router(routes, {
+      context: { stores },
+      resolveRoute(context, params) {
+        const { action, store } = context.route
+
+        if (store && !stores[store.name]) {
+          stores[store.name] = createAsyncStore(store.init(client))
+        }
+
+        if (isFunction(action)) {
+          return action(context, params)
+        }
+
+        return null
+      },
+    })
+
+    const url = generateUrls(router)
+
+    return {
+      async push(name, params) {
+        const pathname = url(name, params)
+
+        const view = await router.resolve(pathname)
+
+        window.history.pushState(null, '', pathname)
+        view$.next(view)
+      },
+
+      async useCurrentPath() {
+        const view = await router.resolve(window.location.pathname)
+        view$.next(view)
+      },
+    }
+  }
+
+  updateRouter = () => {
+    if (this.router) {
+      this.router.useCurrentPath()
+    }
   }
 
   render() {

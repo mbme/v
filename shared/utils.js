@@ -11,7 +11,8 @@ export function isArray(elem) {
 }
 
 export function isFunction(elem) {
-  return getType(elem) === 'Function'
+  const type = getType(elem)
+  return type === 'Function' || type === 'AsyncFunction'
 }
 
 export function isString(elem) {
@@ -65,25 +66,44 @@ export function getIn(obj, propName) {
   return getInRec(obj, propName.split('.'))
 }
 
-export function observable(initialValue) {
-  let currentValue = initialValue
+/**
+ * Create new object with specified prototype `proto` and custom `props`
+ */
+export function extend(proto, props) {
+  const propertiesObject = {}
+
+  Object.keys(props).forEach((prop) => {
+    propertiesObject[prop] = { value: props[prop] }
+  })
+
+  return Object.create(proto, propertiesObject)
+}
+
+export function createSubject(initialValue) {
   const subscribers = []
 
+  let currentValue = initialValue
+
   return {
-    set(value) {
+    get value() {
+      return currentValue
+    },
+
+    next(value) {
       currentValue = value
-      subscribers.forEach(cb => cb(currentValue))
+      subscribers.forEach(cb => cb(value))
     },
 
     subscribe(cb) {
       subscribers.push(cb)
-      cb(currentValue)
 
-      return () => {
-        const pos = subscribers.indexOf(cb)
-        if (pos > -1) {
-          subscribers.splice(pos, 1)
-        }
+      return () => this.unsubscribe(cb)
+    },
+
+    unsubscribe(cb) {
+      const pos = subscribers.indexOf(cb)
+      if (pos > -1) {
+        subscribers.splice(pos, 1)
       }
     },
 

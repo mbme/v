@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import debounce from 'lodash.debounce'
-import { connect, styled, mixins, Link } from 'client/utils'
+import { observeStore, styled, mixins, Link } from 'client/utils'
 import { fuzzySearch } from 'shared/utils'
 import { Input, Section, Text, Heading } from 'client/components'
 
@@ -42,7 +42,7 @@ class NotesView extends Component {
     const visibleNotes = this.props.store.notes.filter(({ name }) => fuzzySearch(this.state.filter, name.toLowerCase()))
 
     return visibleNotes.map(({ id, name }) => (
-      <Link key={id} to={{ name: 'one' }}>
+      <Link key={id} to={{ name: 'note', params: { id } }}>
         <Record>{name}</Record>
       </Link>
     ))
@@ -77,14 +77,4 @@ class NotesView extends Component {
   }
 }
 
-function initStore(client) {
-  return {
-    notes: [],
-
-    async listNotes() {
-      this.notes = await client.listRecords('note')
-    },
-  }
-}
-
-export default connect(initStore)(NotesView)
+export default observeStore(NotesView)

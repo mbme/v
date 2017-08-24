@@ -1,4 +1,4 @@
-import { watchChanges, asyncWatchChanges } from './store'
+import { watchChanges, createAsyncStore } from './store'
 
 describe('Store', () => {
   test('watchChanges() should detect changes', () => {
@@ -29,13 +29,14 @@ describe('Store', () => {
     expect(cb).toHaveBeenCalledTimes(13)
   })
 
-  test('asyncWatchChanges() should batch changes', (done) => {
+  test('createAsyncStore() should batch changes', (done) => {
     const cb = jest.fn()
-    const obj = asyncWatchChanges({ test: 1, arr: [] }, cb)
+    const store$ = createAsyncStore({ test: 1, arr: [] })
+    store$.subscribe(cb)
 
-    obj.test = 2
-    obj.arr.push(1, 2, 3)
-    obj.obj = {}
+    store$.value.test = 2
+    store$.value.arr.push(1, 2, 3)
+    store$.value.obj = {}
     expect(cb).toHaveBeenCalledTimes(0)
 
     setTimeout(() => {

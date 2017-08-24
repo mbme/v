@@ -1,4 +1,4 @@
-import { isObject, observable } from './utils'
+import { isObject, isFunction, createSubject } from './utils'
 
 describe('Utils', () => {
   test('isObject', () => {
@@ -6,15 +6,23 @@ describe('Utils', () => {
     expect(isObject({})).toBe(true)
   })
 
-  test('observable', () => {
-    const o = observable(1)
+  test('isFunction', () => {
+    expect(isFunction(() => true)).toBe(true)
+    expect(isFunction(async () => true)).toBe(true)
+    expect(isFunction(function testIsFunction() {})).toBe(true)
+    expect(isFunction(async function testIsFunction() { return true })).toBe(true)
+  })
+
+  test('createSubject', () => {
+    const o = createSubject(1)
 
     const cb = jest.fn()
     const unsubscribe = o.subscribe(cb)
+    cb(o.value)
 
-    o.set(2)
+    o.next(2)
     unsubscribe()
-    o.set(3)
+    o.next(3)
 
     expect(cb.mock.calls).toEqual([[1], [2]])
   })

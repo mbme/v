@@ -1,4 +1,4 @@
-import { isObject, isArray } from 'shared/utils'
+import { isObject, isArray, createSubject } from 'shared/utils'
 
 function wrap(val, handler) {
   if (isObject(val)) {
@@ -31,17 +31,21 @@ export function watchChanges(obj, cb) {
   return wrap(obj, handler)
 }
 
-export function asyncWatchChanges(obj, cb) {
-  let timeout
+export function createAsyncStore(obj) {
+  const subject = createSubject()
 
-  return watchChanges(obj, () => {
+  let timeout
+  const value = watchChanges(obj, () => {
     if (timeout) {
       return
     }
 
     timeout = setTimeout(() => {
       timeout = null
-      cb()
+      subject.next(value)
     }, 0)
   })
+  subject.next(value) // put initial value
+
+  return subject
 }
