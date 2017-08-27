@@ -53,6 +53,19 @@ export function fuzzySearch(needle, haystack) {
   return true
 }
 
+export function capitalize(str) {
+  return str[0].toUpperCase() + str.substring(1)
+}
+
+export function createArray(size, val) {
+  const arr = Array(size)
+  if (isFunction(val)) {
+    return arr.fill(0).map((_, i) => val(i))
+  }
+
+  return arr.fill(val)
+}
+
 // recursive helper for `getIn`
 function getInRec(obj, [prop, ...rest]) {
   if (!rest.length) {

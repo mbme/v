@@ -18,12 +18,24 @@ startServer(8080, isDevelopment).then(() => {
   }
 
   global.fetch = require('node-fetch')
+  const fs = require('fs')
+  const path = require('path')
   const createApiClient = require('../shared/api').default
+  const text = fs.readFileSync(path.join(__dirname, '../shared/text.txt'), 'utf-8')
+  const { createTextGenerator } = require('../shared/random')
+  const { createArray } = require('../shared/utils')
+
+  const generator = createTextGenerator(text)
 
   const api = createApiClient('http://localhost:8080')
 
-  const promises = Array(23).fill(0).map(
-    (_, i) => api.createRecord('note', `Note #${i}`, 'Some very random data')
+  const promises = createArray(
+    23,
+    () => {
+      const name = generator.generateSentence()
+      const data = generator.generateText()
+      return api.createRecord('note', name.substring(0, name.length - 1), data)
+    }
   )
 
   Promise.all(promises).then(
