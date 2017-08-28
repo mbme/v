@@ -1,26 +1,70 @@
+/* eslint-disable no-continue */
 import { capitalize, createArray } from './utils'
 
 // TODO handle few separators in a row
 // TODO handle exceptions Dr. Mr. Mrs. etc
 
-function getSentences(text) {
+function isSeparator(char) {
+  return char === '.' || char === '?' || char === '!'
+}
+
+function isPunctuation(char) {
+  return char === ',' || char === ';'
+}
+
+export function getSentences(text) {
   const sentences = []
 
   let sentenceStart = 0
   for (let i = 0; i < text.length; i += 1) {
-    const char = text[i]
-
-    if (char === '.' || char === '?' || char === '!') {
-      sentences.push(text.substring(sentenceStart, i + 1))
+    if (isSeparator(text[i])) {
+      sentences.push(text.substring(sentenceStart, i + 1).trim())
       sentenceStart = i + 1
     }
   }
 
   if (!sentences.length) {
-    sentences.push(text)
+    sentences.push(text.trim())
   }
 
   return sentences
+}
+
+export function getWords(sentence) {
+  const words = []
+
+  let i = 0
+  let word = ''
+  while (i < sentence.length) {
+    const char = sentence[i]
+    i += 1
+
+    if (char === ' ') {
+      if (word.length) {
+        words.push(word)
+        word = ''
+      }
+      continue
+    }
+
+    if (isPunctuation(char) || isSeparator(char)) {
+      if (word.length) {
+        words.push(word)
+        word = ''
+      }
+
+      words.push(char)
+      continue
+    }
+
+    word += char
+  }
+
+  if (word.length) {
+    words.push(word)
+  }
+
+  return words.map(w => w.toLowerCase())
 }
 
 function calculateTextStats(text) {
@@ -30,12 +74,13 @@ function calculateTextStats(text) {
   // 1. count words
   const sentences = getSentences(text)
   sentences.forEach((sentence) => {
-    const words = sentence.split(/ +/).map(word => word.trim().toLowerCase()).filter(word => !!word)
+    const words = getWords(sentence)
 
     const lastWord = words[words.length - 1]
-    const separator = lastWord[lastWord.length - 1]
-    separators[separator] = (separators[separator] || 0) + 1
-    words.splice(words.length - 1, 1, lastWord.substring(0, lastWord.length - 1)) // remove separator from last word
+    if (isSeparator(lastWord)) {
+      separators[lastWord] = (separators[lastWord] || 0) + 1
+      words.splice(words.length - 1, 1, lastWord.substring(0, lastWord.length - 1)) // remove separator from last word
+    }
 
     words.forEach((word, index) => {
       const stats = dict[word] || { next: {}, nextWords: 0, start: 0, end: 0 }
@@ -116,28 +161,34 @@ function pickWord(wordsDistribution) {
 }
 
 function genSentence(stats, maxWords) {
-  const sentence = []
-
   let word = pickWord(stats.starts)
-  sentence.push(capitalize(word))
+  let sentence = capitalize(word)
+  let wordsCount = 0
 
   let ended = pickWord(stats.ends) === word
 
   while (!ended) {
     word = pickWord(stats.words[word])
 
-    if (word) {
-      sentence.push(word)
-      ended = pickWord(stats.ends) === word
-      if (maxWords && sentence.length === maxWords) {
-        ended = true
-      }
+    if (!word) {
+      ended = true
+      continue
+    }
+
+    if (isPunctuation(word)) {
+      sentence += word
     } else {
+      sentence += ' ' + word
+      wordsCount += 1
+    }
+
+    ended = pickWord(stats.ends) === word
+    if (maxWords && wordsCount === maxWords) {
       ended = true
     }
   }
 
-  return sentence.join(' ') + pickWord(stats.separators)
+  return sentence + pickWord(stats.separators)
 }
 
 function genParagraph(stats, minSentences = 1, maxSentences = 10) {
