@@ -144,18 +144,18 @@ export class VProvider extends Component {
 
     async function onLocationChange(isPush) {
       scrollPos[currentLocation] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
-
-      if (isPush) {
-        delete scrollPos[window.location.pathname] // delete stored scroll position for the next page
-      }
-
       currentLocation = window.location.pathname
 
       const view = await router.resolve(currentLocation)
       view$.next(view)
 
-      const { offsetX = 0, offsetY = 0 } = (scrollPos[currentLocation] || {})
-      window.scrollTo(offsetX, offsetY)
+      if (isPush) {
+        delete scrollPos[currentLocation] // delete stored scroll position for the next page
+        window.scrollTo(0, 0)
+      } else {
+        const { offsetX, offsetY } = scrollPos[currentLocation]
+        window.scrollTo(offsetX, offsetY)
+      }
     }
 
     const onPopState = () => onLocationChange(false)

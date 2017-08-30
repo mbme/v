@@ -4,14 +4,7 @@ import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import { observeStore, styled, mixins, Link } from 'client/utils'
 import { fuzzySearch } from 'shared/utils'
-import { Input, Section, Text, Heading } from 'client/components'
-
-const Container = styled('Container', {
-  margin: '0 auto',
-  display: 'flex',
-  flexDirection: 'column',
-  width: '40%',
-})
+import { ViewContainer, Input, Section, Text, Heading } from 'client/components'
 
 const Record = styled('Record', {
   backgroundColor: '#fff',
@@ -61,7 +54,7 @@ class NotesView extends Component {
     const notes = this.getVisibleNotes()
 
     return (
-      <Container>
+      <ViewContainer>
         <Section>
           <Input name="filter" type="text" placeholder="Filter notes" onChange={this.onFilterChange} />
         </Section>
@@ -72,7 +65,7 @@ class NotesView extends Component {
           {notes.length} items
         </Heading>
         <div>{notes}</div>
-      </Container>
+      </ViewContainer>
     )
   }
 }

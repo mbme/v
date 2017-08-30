@@ -1,20 +1,28 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { styled } from 'client/utils'
+import { styled, mixins } from 'client/utils'
+import { ViewContainer, Heading } from 'client/components'
 
-const Container = styled('Container', {
-  margin: '0 auto',
-  display: 'flex',
-  flexDirection: 'column',
-  width: '40%',
+const Page = styled('Page', {
+  backgroundColor: '#fff',
+
+  ...mixins.border,
+  borderRadius: '2px',
+
+  extend: [
+    ...mixins.margins('vertical', 'medium'),
+    ...mixins.paddings('all', 'medium'),
+  ],
 })
 
 export default function NoteView({ note }) {
   return (
-    <Container>
-      <h1>{note.name}</h1>
-      {note.data.split('\n').map((paragraph, i) => <p key={i}>{paragraph}</p>)}
-    </Container>
+    <ViewContainer>
+      <Page>
+        <Heading>{note.name}</Heading>
+        {note.data.split('\n').map((paragraph, i) => <p key={i}>{paragraph}</p>)}
+      </Page>
+    </ViewContainer>
   )
 }
 

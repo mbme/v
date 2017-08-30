@@ -33,3 +33,11 @@ export const Heading = styled('Heading', ({ xxlarge, center }) => ({
     mixins.textAlignCenterIf(center),
   ],
 }))
+
+export const ViewContainer = styled('ViewContainer', {
+  margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  width: '40%',
+  minWidth: '600px',
+})
