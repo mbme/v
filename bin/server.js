@@ -32,7 +32,7 @@ startServer(8080, isDevelopment).then(() => {
   const promises = createArray(
     23,
     () => {
-      const name = generator.generateSentence()
+      const name = generator.generateSentence(1, 8)
       const data = generator.generateText()
       return api.createRecord('note', name.substring(0, name.length - 1), data)
     }

@@ -2,14 +2,31 @@
 import { capitalize, createArray } from './utils'
 
 // TODO handle few separators in a row
-// TODO handle exceptions Dr. Mr. Mrs. etc
+
+const SKIP_WORDS = ['dr.', 'mr.', 'mrs.']
+
+function hasSkipWordAt(text, pos) {
+  for (let i = 0; i < SKIP_WORDS.length; i += 1) {
+    const word = SKIP_WORDS[i]
+    if (pos + 1 < word.length) {
+      continue
+    }
+
+    const skipWord = text.substring((pos + 1) - word.length, pos + 1).toLowerCase()
+    if (skipWord === word) {
+      return true
+    }
+  }
+
+  return false
+}
 
 function isSeparator(char) {
   return char === '.' || char === '?' || char === '!'
 }
 
 function isPunctuation(char) {
-  return char === ',' || char === ';'
+  return char === ',' || char === ';' || char === ':'
 }
 
 export function getSentences(text) {
@@ -17,7 +34,7 @@ export function getSentences(text) {
 
   let sentenceStart = 0
   for (let i = 0; i < text.length; i += 1) {
-    if (isSeparator(text[i])) {
+    if (isSeparator(text[i]) && !hasSkipWordAt(text, i)) {
       sentences.push(text.substring(sentenceStart, i + 1).trim())
       sentenceStart = i + 1
     }
@@ -37,27 +54,30 @@ export function getWords(sentence) {
   let word = ''
   while (i < sentence.length) {
     const char = sentence[i]
-    i += 1
 
     if (char === ' ') {
       if (word.length) {
         words.push(word)
         word = ''
       }
+
+      i += 1
       continue
     }
 
-    if (isPunctuation(char) || isSeparator(char)) {
+    if (isPunctuation(char) || (isSeparator(char) && !hasSkipWordAt(sentence, i))) {
       if (word.length) {
         words.push(word)
         word = ''
       }
 
       words.push(char)
+      i += 1
       continue
     }
 
     word += char
+    i += 1
   }
 
   if (word.length) {
@@ -160,10 +180,9 @@ function pickWord(wordsDistribution) {
   return word
 }
 
-function genSentence(stats, maxWords) {
+function genSentence(stats) {
   let word = pickWord(stats.starts)
   let sentence = capitalize(word)
-  let wordsCount = 0
 
   let ended = pickWord(stats.ends) === word
 
@@ -179,24 +198,23 @@ function genSentence(stats, maxWords) {
       sentence += word
     } else {
       sentence += ' ' + word
-      wordsCount += 1
     }
 
     ended = pickWord(stats.ends) === word
-    if (maxWords && wordsCount === maxWords) {
-      ended = true
-    }
   }
 
   return sentence + pickWord(stats.separators)
 }
 
-function genParagraph(stats, minSentences = 1, maxSentences = 10) {
-  return createArray(randomInt(minSentences, maxSentences), () => genSentence(stats)).join(' ')
+function genParagraph(stats, sentences) {
+  return createArray(sentences, () => genSentence(stats)).join(' ')
 }
 
-function genText(stats, minParagraphs, maxParagraphs) {
-  return createArray(randomInt(minParagraphs, maxParagraphs), () => genParagraph(stats)).join('\n')
+function genText(stats, paragraphs) {
+  return createArray(
+    paragraphs,
+    () => genParagraph(stats, randomInt(1, 10)),
+  ).join('\n')
 }
 
 export function createTextGenerator(corpus) {
@@ -204,11 +222,22 @@ export function createTextGenerator(corpus) {
 
   return {
     generateText(minParagpahs = 1, maxParagraphs = 7) {
-      return genText(stats, minParagpahs, maxParagraphs)
+      return genText(stats, randomInt(minParagpahs, maxParagraphs))
     },
 
-    generateSentence() {
-      return genSentence(stats, randomInt(2, 7))
+    generateSentence(minWords = 1, maxWords = 20, maxTries = 100) {
+      let sentence = genSentence(stats)
+
+      for (let tries = 0; tries < maxTries; tries += 1) {
+        const words = sentence.split(' ')
+        if (words.length >= minWords && words.length <= maxWords) {
+          return sentence
+        }
+
+        sentence = genSentence(stats)
+      }
+
+      return sentence
     },
   }
 }
