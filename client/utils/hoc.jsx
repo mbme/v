@@ -79,6 +79,7 @@ export class VProvider extends Component {
   view$ = null
   router = null
   stores = null
+  scrollPos = null
 
   constructor(props) {
     super(props)
@@ -86,23 +87,31 @@ export class VProvider extends Component {
     this.client = createApiClient(props.baseUrl)
     this.view$ = createSubject(null)
     this.stores = {}
-    this.router = this.createRouter(props.routes)
+    this.scrollPos = {}
+
+    // Switch off the native scroll restoration behavior and handle it manually
+    // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
   }
 
   componentWillMount() {
-    window.addEventListener('popstate', this.updateRouter)
-    this.updateRouter()
+    this.router = this.createRouter(this.props.routes)
+    this.router.start()
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.routes !== nextProps.routes) {
+      this.router.stop() // stop previous router
+
       this.router = this.createRouter(nextProps.routes)
-      this.updateRouter()
+      this.router.start()
     }
   }
 
   componentWillUnmount() {
-    window.removeEventListener('popstate', this.updateRouter)
+    this.router.stop()
     this.view$.unsubscribeAll()
   }
 
@@ -111,7 +120,7 @@ export class VProvider extends Component {
   }
 
   createRouter(routes) {
-    const { stores, view$, client } = this
+    const { stores, view$, client, scrollPos } = this
 
     const router = new Router(routes, {
       context: { stores },
@@ -131,27 +140,40 @@ export class VProvider extends Component {
     })
 
     const url = generateUrls(router)
+    let currentLocation = window.location.pathname
+
+    async function onLocationChange(isPush) {
+      scrollPos[currentLocation] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
+
+      if (isPush) {
+        delete scrollPos[window.location.pathname] // delete stored scroll position for the next page
+      }
+
+      currentLocation = window.location.pathname
+
+      const view = await router.resolve(currentLocation)
+      view$.next(view)
+
+      const { offsetX = 0, offsetY = 0 } = (scrollPos[currentLocation] || {})
+      window.scrollTo(offsetX, offsetY)
+    }
+
+    const onPopState = () => onLocationChange(false)
 
     return {
+      start() {
+        onLocationChange(false)
+        window.addEventListener('popstate', onPopState)
+      },
+
       async push(name, params) {
-        const pathname = url(name, params)
-
-        const view = await router.resolve(pathname)
-
-        window.history.pushState(null, '', pathname)
-        view$.next(view)
+        window.history.pushState(null, '', url(name, params))
+        onLocationChange(true)
       },
 
-      async useCurrentPath() {
-        const view = await router.resolve(window.location.pathname)
-        view$.next(view)
+      stop() {
+        window.removeEventListener('popstate', onPopState)
       },
-    }
-  }
-
-  updateRouter = () => {
-    if (this.router) {
-      this.router.useCurrentPath()
     }
   }
 
