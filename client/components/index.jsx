@@ -1,4 +1,8 @@
+/* eslint quote-props: ["error", "as-needed"] */
+
 import { styled, mixins, theme } from 'client/utils'
+
+const TOOLBAR_HEIGHT = 50
 
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',
@@ -40,4 +44,46 @@ export const ViewContainer = styled('ViewContainer', {
   flexDirection: 'column',
   width: '40%',
   minWidth: '600px',
+  paddingTop: TOOLBAR_HEIGHT,
 })
+
+export const Paper = styled('Paper', {
+  backgroundColor: '#fff',
+
+  ...mixins.border,
+  borderRadius: '2px',
+
+  extend: [
+    ...mixins.margins('vertical', 'medium'),
+    ...mixins.paddings('all', 'medium'),
+  ],
+})
+
+export const Toolbar = styled('Toolbar', {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: TOOLBAR_HEIGHT,
+
+  backgroundColor: '#fff',
+  display: 'flex',
+  justifyContent: 'flex-end',
+})
+
+export const LinkButton = styled('LinkButton', {
+  border: '0 none',
+  cursor: 'pointer',
+  textTransform: 'uppercase',
+  letterSpacing: '1.2px',
+
+  transition: 'background-color 100ms linear',
+  ':hover': {
+    backgroundColor: 'gray',
+  },
+
+  extend: [
+    ...mixins.paddings('horizontal', 'medium'),
+    ...mixins.paddings('vertical', 'fine'),
+  ],
+}, 'button')

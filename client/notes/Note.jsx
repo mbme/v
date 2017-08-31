@@ -1,27 +1,26 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { styled, mixins } from 'client/utils'
-import { ViewContainer, Heading } from 'client/components'
+import { Link } from 'client/utils'
+import { ViewContainer, Heading, Paper, Toolbar, LinkButton } from 'client/components'
 
-const Page = styled('Page', {
-  backgroundColor: '#fff',
-
-  ...mixins.border,
-  borderRadius: '2px',
-
-  extend: [
-    ...mixins.margins('vertical', 'medium'),
-    ...mixins.paddings('all', 'medium'),
-  ],
-})
+function renderMarkup(data) {
+  return data.split('\n').map(
+    (paragraph, i) => <p key={i}>{paragraph}</p> // eslint-disable-line react/no-array-index-key
+  )
+}
 
 export default function NoteView({ note }) {
   return (
     <ViewContainer>
-      <Page>
+      <Toolbar>
+        <Link key={note.id} to={{ name: 'note-editor', params: { id: note.id } }}>
+          <LinkButton>Edit</LinkButton>
+        </Link>
+      </Toolbar>
+      <Paper>
         <Heading>{note.name}</Heading>
-        {note.data.split('\n').map((paragraph, i) => <p key={i}>{paragraph}</p>)}
-      </Page>
+        {renderMarkup(note.data)}
+      </Paper>
     </ViewContainer>
   )
 }

@@ -2,21 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import debounce from 'lodash.debounce'
-import { observeStore, styled, mixins, Link } from 'client/utils'
+import { observeStore, Link } from 'client/utils'
 import { fuzzySearch } from 'shared/utils'
-import { ViewContainer, Input, Section, Text, Heading } from 'client/components'
-
-const Record = styled('Record', {
-  backgroundColor: '#fff',
-
-  ...mixins.border,
-  borderRadius: '2px',
-
-  extend: [
-    ...mixins.margins('vertical', 'medium'),
-    ...mixins.paddings('all', 'medium'),
-  ],
-})
+import { ViewContainer, Input, Section, Text, Heading, Paper } from 'client/components'
 
 class NotesView extends Component {
   static propTypes = {
@@ -36,7 +24,7 @@ class NotesView extends Component {
 
     return visibleNotes.map(({ id, name }) => (
       <Link key={id} to={{ name: 'note', params: { id } }}>
-        <Record>{name}</Record>
+        <Paper>{name}</Paper>
       </Link>
     ))
   }
