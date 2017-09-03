@@ -153,7 +153,7 @@ export class VProvider extends Component {
         delete scrollPos[currentLocation] // delete stored scroll position for the next page
         window.scrollTo(0, 0)
       } else {
-        const { offsetX, offsetY } = scrollPos[currentLocation]
+        const { offsetX, offsetY } = scrollPos[currentLocation] || { offsetX: 0, offsetY: 0 }
         window.scrollTo(offsetX, offsetY)
       }
     }

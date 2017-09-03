@@ -96,10 +96,10 @@ export function styled(name, styles, type = 'div') {
     throw new Error('styled: "name" must be a string')
   }
 
-  let usedProps = []
+  const usedProps = ['innerRef']
   let rule = styles
   if (isFunction(rule)) {
-    usedProps = extractUsedProps(styles)
+    usedProps.push(...extractUsedProps(styles))
   } else {
     rule = () => styles
   }

@@ -4,6 +4,8 @@ import { styled, mixins, theme } from 'client/utils'
 
 const TOOLBAR_HEIGHT = 50
 
+export { default as Textarea } from './Textarea'
+
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',
   display: 'block',
@@ -42,7 +44,7 @@ export const ViewContainer = styled('ViewContainer', {
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
-  width: '40%',
+  maxWidth: '800px',
   minWidth: '600px',
   paddingTop: TOOLBAR_HEIGHT,
 })

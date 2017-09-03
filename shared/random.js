@@ -214,7 +214,7 @@ function genText(stats, paragraphs) {
   return createArray(
     paragraphs,
     () => genParagraph(stats, randomInt(1, 10)),
-  ).join('\n')
+  ).join('\n\n')
 }
 
 export function createTextGenerator(corpus) {

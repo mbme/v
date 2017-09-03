@@ -4,7 +4,7 @@ import { Link } from 'client/utils'
 import { ViewContainer, Heading, Paper, Toolbar, LinkButton } from 'client/components'
 
 function renderMarkup(data) {
-  return data.split('\n').map(
+  return data.split('\n\n').map(
     (paragraph, i) => <p key={i}>{paragraph}</p> // eslint-disable-line react/no-array-index-key
   )
 }
