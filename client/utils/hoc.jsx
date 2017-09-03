@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 
-import React, { Component } from 'react'
+import React, { Component, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
 /* eslint-disable import/extensions */
@@ -12,7 +12,7 @@ import { createSubject, isFunction } from 'shared/utils'
 import { createAsyncStore } from 'shared/store'
 import createApiClient from 'shared/api'
 
-export class Link extends Component {
+export class Link extends PureComponent {
   static propTypes = {
     className: PropTypes.string,
     to: PropTypes.shape({

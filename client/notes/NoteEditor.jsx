@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { ViewContainer, Textarea, Toolbar, LinkButton, Input, Section } from 'client/components'
 
-export default class NoteEditorView extends Component {
+export default class NoteEditorView extends PureComponent {
   static propTypes = {
     note: PropTypes.object.isRequired,
   }
@@ -23,8 +23,8 @@ export default class NoteEditorView extends Component {
     console.error('SAVE')
   }
 
-  onCanel = () => {
-    console.error('CANCEL')
+  onClose = () => {
+    console.error('CLOSE')
   }
 
   onDelete = () => {
@@ -37,9 +37,9 @@ export default class NoteEditorView extends Component {
     return (
       <ViewContainer>
         <Toolbar>
-          <LinkButton onClick={this.onSave}>SAVE</LinkButton>
-          <LinkButton onClick={this.onDelete}>DELETE</LinkButton>
-          <LinkButton onClick={this.onCanel}>CANCEL</LinkButton>
+          <LinkButton onClick={this.onSave}>Save</LinkButton>
+          <LinkButton onClick={this.onDelete}>Delete</LinkButton>
+          <LinkButton onClick={this.onClose}>Close</LinkButton>
         </Toolbar>
 
         <Section side="top">

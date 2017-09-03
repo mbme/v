@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
 import { styled, mixins } from 'client/utils'
@@ -18,7 +18,7 @@ const StyledTextarea = styled('StyledTextarea', {
   ],
 }, 'textarea')
 
-export default class Textarea extends Component {
+export default class Textarea extends PureComponent {
   static propTypes = {
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
