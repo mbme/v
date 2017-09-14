@@ -5,6 +5,7 @@ import { styled, mixins, theme } from 'client/utils'
 const TOOLBAR_HEIGHT = 50
 
 export { default as Textarea } from './Textarea'
+export { Modal } from './Modal'
 
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',

@@ -73,10 +73,12 @@ export class VProvider extends Component {
   static childContextTypes = {
     router: PropTypes.object.isRequired,
     view$: PropTypes.object.isRequired,
+    modal$: PropTypes.object.isRequired,
   }
 
   client = null
   view$ = null
+  modal$ = null
   router = null
   stores = null
   scrollPos = null
@@ -86,6 +88,7 @@ export class VProvider extends Component {
 
     this.client = createApiClient(props.baseUrl)
     this.view$ = createSubject(null)
+    this.modal$ = createSubject(null)
     this.stores = {}
     this.scrollPos = {}
 
@@ -113,10 +116,11 @@ export class VProvider extends Component {
   componentWillUnmount() {
     this.router.stop()
     this.view$.unsubscribeAll()
+    this.modal$.unsubscribeAll()
   }
 
   getChildContext() {
-    return { router: this.router, view$: this.view$ }
+    return { router: this.router, view$: this.view$, modal$: this.modal$ }
   }
 
   createRouter(routes) {

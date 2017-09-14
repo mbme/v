@@ -1,29 +1,59 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import { ModalContainer, StyledModal } from 'client/components/Modal'
+
 export default class App extends Component {
+  static propTypes = {
+    onClose: PropTypes.func.isRequired,
+  }
+
   static contextTypes = {
     view$: PropTypes.object.isRequired,
+    modal$: PropTypes.object.isRequired,
   }
 
   state = {
     view: null,
+    modal: null,
   }
 
-  unsubscribe = null
+  unsubscribeView = null
+  unsubscribeModal = null
 
   componentWillMount() {
-    const { view$ } = this.context
+    const { view$, modal$ } = this.context
 
-    this.setState({ view: view$.value })
-    this.unsubscribe = view$.subscribe(view => this.setState({ view }))
+    this.setState({ view: view$.value, modal: modal$.value })
+
+    this.unsubscribeView = view$.subscribe(view => this.setState({ view }))
+    this.unsubscribeModal = modal$.subscribe(modal => this.setState({ modal }))
   }
 
   componentWillUnmount() {
-    this.unsubscribe()
+    this.unsubscribeView()
+    this.unsubscribeModal()
+  }
+
+  onClick = (e) => {
+    if (e.target === e.currentTarget) {
+      this.props.onClose()
+    }
   }
 
   render() {
-    return this.state.view
+    const { view, modal } = this.state
+
+    return (
+      <div>
+        {view}
+        {modal && (
+          <ModalContainer onClick={this.onClick}>
+            <StyledModal>{modal}</StyledModal>
+          </ModalContainer>
+
+        )}
+      </div>
+    )
   }
 }

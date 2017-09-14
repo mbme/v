@@ -2,6 +2,7 @@
 
 import React from 'react'
 
+import { Modal } from 'client/components'
 import initNotesStore from './notes/store'
 import NotesView from './notes/Notes'
 import NoteView from './notes/Note'
@@ -11,7 +12,16 @@ export default [
   {
     path: '/one',
     name: 'one',
-    action: () => <h1>Page One</h1>,
+    action: () => (
+      <div>
+        <h1>Page One</h1>
+        <Modal>
+          <h1>Here we go!</h1>
+          <input name="" type="text" value="" />
+          <button>TEST</button>
+        </Modal>
+      </div>
+    ),
   },
   {
     path: '/notes',
