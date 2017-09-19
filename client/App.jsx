@@ -4,10 +4,6 @@ import PropTypes from 'prop-types'
 import { ModalContainer, StyledModal } from 'client/components/Modal'
 
 export default class App extends Component {
-  static propTypes = {
-    onClose: PropTypes.func.isRequired,
-  }
-
   static contextTypes = {
     view$: PropTypes.object.isRequired,
     modal$: PropTypes.object.isRequired,
@@ -36,8 +32,8 @@ export default class App extends Component {
   }
 
   onClick = (e) => {
-    if (e.target === e.currentTarget) {
-      this.props.onClose()
+    if (e.target === e.currentTarget && this.state.modal) {
+      this.state.modal.props.onClose()
     }
   }
 
@@ -48,7 +44,7 @@ export default class App extends Component {
       <div>
         {view}
         {modal && (
-          <ModalContainer onClick={this.onClick}>
+          <ModalContainer onClick={this.onModalClick}>
             <StyledModal>{modal}</StyledModal>
           </ModalContainer>
 

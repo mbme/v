@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'client/utils'
-import { ViewContainer, Heading, Paper, Toolbar, LinkButton } from 'client/components'
+import { ViewContainer, Heading, Paper, Toolbar, FlatButton } from 'client/components'
 
 function renderMarkup(data) {
   return data.split('\n\n').map(
@@ -14,7 +14,7 @@ export default function NoteView({ note }) {
     <ViewContainer>
       <Toolbar>
         <Link key={note.id} to={{ name: 'note-editor', params: { id: note.id } }}>
-          <LinkButton>Edit</LinkButton>
+          <FlatButton>Edit</FlatButton>
         </Link>
       </Toolbar>
       <Paper>

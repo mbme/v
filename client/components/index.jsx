@@ -5,7 +5,7 @@ import { styled, mixins, theme } from 'client/utils'
 const TOOLBAR_HEIGHT = 50
 
 export { default as Textarea } from './Textarea'
-export { Modal } from './Modal'
+export { Modal, ConfirmationDialog } from './Modal'
 
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',
@@ -74,7 +74,7 @@ export const Toolbar = styled('Toolbar', {
   justifyContent: 'flex-end',
 })
 
-export const LinkButton = styled('LinkButton', {
+export const FlatButton = styled('FlatButton', {
   border: '0 none',
   cursor: 'pointer',
   textTransform: 'uppercase',
@@ -85,8 +85,14 @@ export const LinkButton = styled('LinkButton', {
     backgroundColor: 'gray',
   },
 
+  borderRadius: 2,
+
   extend: [
     ...mixins.paddings('horizontal', 'medium'),
     ...mixins.paddings('vertical', 'fine'),
   ],
 }, 'button')
+
+export const RaisedButton = styled('RaisedButton', {
+  ...mixins.border,
+}, FlatButton)

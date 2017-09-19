@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { ViewContainer, Textarea, Toolbar, LinkButton, Input, Section } from 'client/components'
+import { ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
 
 export default class NoteEditorView extends PureComponent {
   static propTypes = {
@@ -37,9 +37,9 @@ export default class NoteEditorView extends PureComponent {
     return (
       <ViewContainer>
         <Toolbar>
-          <LinkButton onClick={this.onSave}>Save</LinkButton>
-          <LinkButton onClick={this.onDelete}>Delete</LinkButton>
-          <LinkButton onClick={this.onClose}>Close</LinkButton>
+          <FlatButton onClick={this.onSave}>Save</FlatButton>
+          <FlatButton onClick={this.onDelete}>Delete</FlatButton>
+          <FlatButton onClick={this.onClose}>Close</FlatButton>
         </Toolbar>
 
         <Section side="top">

@@ -1,6 +1,7 @@
-import { PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { styled, mixins } from 'client/utils'
+import { FlatButton, RaisedButton } from './index'
 
 export const ModalContainer = styled('ModalContainer', {
   backgroundColor: 'rgba(255,255,255,.65)',
@@ -28,6 +29,9 @@ export const StyledModal = styled('StyledModal', {
 export class Modal extends PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
+
+    // we use this directly from App.jsx
+    onClose: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   }
 
   static contextTypes = {
@@ -54,4 +58,23 @@ export class Modal extends PureComponent {
   render() {
     return null
   }
+}
+
+export function ConfirmationDialog({ children, confirmation, onConfirmed, onClose }) {
+  return (
+    <Modal onClose={onClose}>
+      <div>{children}</div>
+      <div>
+        <FlatButton onClick={onClose}>CANCEL</FlatButton>
+        <RaisedButton onClick={onConfirmed}>{confirmation}</RaisedButton>
+      </div>
+    </Modal>
+  )
+}
+
+ConfirmationDialog.propTypes = {
+  children: PropTypes.node.isRequired,
+  confirmation: PropTypes.node.isRequired,
+  onConfirmed: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 }
