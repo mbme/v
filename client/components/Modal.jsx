@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { styled, mixins } from 'client/utils'
-import { FlatButton, RaisedButton } from './index'
+import { Flex, Section, FlatButton, RaisedButton } from './index'
 
 export const ModalContainer = styled('ModalContainer', {
   backgroundColor: 'rgba(255,255,255,.65)',
@@ -20,6 +20,7 @@ export const ModalContainer = styled('ModalContainer', {
 export const StyledModal = styled('StyledModal', {
   backgroundColor: '#ffffff',
   marginTop: '17vh',
+  width: 375,
   ...mixins.border,
   extend: [
     ...mixins.paddings('all', 'medium'),
@@ -63,11 +64,11 @@ export class Modal extends PureComponent {
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onClose }) {
   return (
     <Modal onClose={onClose}>
-      <div>{children}</div>
-      <div>
+      <Section>{children}</Section>
+      <Flex justifyContent="flex-end">
         <FlatButton onClick={onClose}>CANCEL</FlatButton>
         <RaisedButton onClick={onConfirmed}>{confirmation}</RaisedButton>
-      </div>
+      </Flex>
     </Modal>
   )
 }

@@ -96,3 +96,8 @@ export const FlatButton = styled('FlatButton', {
 export const RaisedButton = styled('RaisedButton', {
   ...mixins.border,
 }, FlatButton)
+
+export const Flex = styled('Flex', ({ justifyContent = 'center' }) => ({
+  display: 'flex',
+  justifyContent,
+}))
