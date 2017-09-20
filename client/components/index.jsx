@@ -6,6 +6,7 @@ const TOOLBAR_HEIGHT = 50
 
 export { default as Textarea } from './Textarea'
 export { Modal, ConfirmationDialog } from './Modal'
+export { default as Icon } from './Icon'
 
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',
@@ -76,16 +77,17 @@ export const Toolbar = styled('Toolbar', {
 
 export const FlatButton = styled('FlatButton', {
   border: '0 none',
+  borderRadius: 2,
+
   cursor: 'pointer',
   textTransform: 'uppercase',
   letterSpacing: '1.2px',
+  userSelect: 'none',
 
   transition: 'background-color 100ms linear',
   ':hover': {
     backgroundColor: 'gray',
   },
-
-  borderRadius: 2,
 
   extend: [
     ...mixins.paddings('horizontal', 'medium'),

@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import { ConfirmationDialog } from 'client/components'
+import { ConfirmationDialog, Icon } from 'client/components'
 import initNotesStore from './notes/store'
 import NotesView from './notes/Notes'
 import NoteView from './notes/Note'
@@ -17,6 +17,7 @@ export default [
         <h1>Page One</h1>
         <ConfirmationDialog confirmation="Remove">
           Are you sure you want to <b>remove it?</b>
+          <Icon type="edit" />
         </ConfirmationDialog>
       </div>
     ),

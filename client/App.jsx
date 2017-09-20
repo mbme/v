@@ -31,7 +31,7 @@ export default class App extends Component {
     this.unsubscribeModal()
   }
 
-  onClick = (e) => {
+  onModalClick = (e) => {
     if (e.target === e.currentTarget && this.state.modal) {
       this.state.modal.props.onClose()
     }
