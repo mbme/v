@@ -18,6 +18,7 @@ export const theme = {
     small: '0.5rem',
     fine: '0.25rem',
   },
+  TOOLBAR_HEIGHT: 50,
 }
 
 function getSide(side) {

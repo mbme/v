@@ -10,13 +10,15 @@ function renderMarkup(data) {
 }
 
 export default function NoteView({ note }) {
+  const editBtn = (
+    <Link key={note.id} to={{ name: 'note-editor', params: { id: note.id } }}>
+      <FlatButton>Edit</FlatButton>
+    </Link>
+  )
+
   return (
     <ViewContainer>
-      <Toolbar>
-        <Link key={note.id} to={{ name: 'note-editor', params: { id: note.id } }}>
-          <FlatButton>Edit</FlatButton>
-        </Link>
-      </Toolbar>
+      <Toolbar right={editBtn} />
       <Paper>
         <Heading>{note.name}</Heading>
         {renderMarkup(note.data)}

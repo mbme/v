@@ -31,7 +31,6 @@ export default [
     children: [
       {
         name: 'notes',
-        path: '/',
         action: context => <NotesView store$={context.stores.notes} />,
       },
       {

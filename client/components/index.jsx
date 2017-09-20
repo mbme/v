@@ -2,11 +2,10 @@
 
 import { styled, mixins, theme } from 'client/utils'
 
-const TOOLBAR_HEIGHT = 50
-
 export { default as Textarea } from './Textarea'
 export { Modal, ConfirmationDialog } from './Modal'
 export { default as Icon } from './Icon'
+export { default as Toolbar } from './Toolbar'
 
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',
@@ -48,7 +47,7 @@ export const ViewContainer = styled('ViewContainer', {
   flexDirection: 'column',
   maxWidth: '800px',
   minWidth: '600px',
-  paddingTop: TOOLBAR_HEIGHT,
+  paddingTop: theme.TOOLBAR_HEIGHT,
 })
 
 export const Paper = styled('Paper', {
@@ -61,18 +60,6 @@ export const Paper = styled('Paper', {
     ...mixins.margins('vertical', 'medium'),
     ...mixins.paddings('all', 'medium'),
   ],
-})
-
-export const Toolbar = styled('Toolbar', {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: TOOLBAR_HEIGHT,
-
-  backgroundColor: '#fff',
-  display: 'flex',
-  justifyContent: 'flex-end',
 })
 
 export const FlatButton = styled('FlatButton', {

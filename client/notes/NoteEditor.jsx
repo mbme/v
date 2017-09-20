@@ -34,13 +34,18 @@ export default class NoteEditorView extends PureComponent {
   render() {
     const { name, data } = this.state
 
+    const leftIcons = [
+      <FlatButton key="delete" onClick={this.onDelete}>Delete</FlatButton>,
+    ]
+
+    const rightIcons = [
+      <FlatButton key="cancel" onClick={this.onClose}>Cancel</FlatButton>,
+      <FlatButton key="save" onClick={this.onSave}>Save</FlatButton>,
+    ]
+
     return (
       <ViewContainer>
-        <Toolbar>
-          <FlatButton onClick={this.onSave}>Save</FlatButton>
-          <FlatButton onClick={this.onDelete}>Delete</FlatButton>
-          <FlatButton onClick={this.onClose}>Close</FlatButton>
-        </Toolbar>
+        <Toolbar left={leftIcons} right={rightIcons} />
 
         <Section side="top">
           <Input name="name" type="text" value={name} onChange={this.onNameChange} />
