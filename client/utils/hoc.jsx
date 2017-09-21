@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 
-import React, { Component, PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 /* eslint-disable import/extensions */
@@ -11,34 +11,6 @@ import generateUrls from 'universal-router/generateUrls'
 import { createSubject, isFunction } from 'shared/utils'
 import { createAsyncStore } from 'shared/store'
 import createApiClient from 'shared/api'
-
-export class Link extends PureComponent {
-  static propTypes = {
-    className: PropTypes.string,
-    to: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      params: PropTypes.object,
-    }).isRequired,
-    children: PropTypes.node.isRequired,
-  }
-
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
-  }
-
-  onClick = () => {
-    const { name, params } = this.props.to
-    this.context.router.push(name, params)
-  }
-
-  render() {
-    const { className, children } = this.props
-
-    return (
-      <div className={className} role="link" tabIndex="0" onClick={this.onClick}>{children}</div>
-    )
-  }
-}
 
 export function observeStore(WrappedComponent) {
   return class extends Component {
@@ -173,6 +145,10 @@ export class VProvider extends Component {
       async push(name, params) {
         window.history.pushState(null, '', url(name, params))
         onLocationChange(true)
+      },
+
+      back() {
+        window.history.back()
       },
 
       stop() {

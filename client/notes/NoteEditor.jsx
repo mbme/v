@@ -1,10 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
+import { ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Section } from 'client/components'
 
 export default class NoteEditorView extends PureComponent {
   static propTypes = {
     note: PropTypes.object.isRequired,
+  }
+
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
   }
 
   constructor(props) {
@@ -23,8 +27,8 @@ export default class NoteEditorView extends PureComponent {
     console.error('SAVE')
   }
 
-  onClose = () => {
-    console.error('CLOSE')
+  onCancel = () => {
+    this.context.router.back()
   }
 
   onDelete = () => {
@@ -35,11 +39,11 @@ export default class NoteEditorView extends PureComponent {
     const { name, data } = this.state
 
     const leftIcons = [
-      <FlatButton key="delete" onClick={this.onDelete}>Delete</FlatButton>,
+      <IconButton key="delete" type="trash-2" onClick={this.onDelete} />,
     ]
 
     const rightIcons = [
-      <FlatButton key="cancel" onClick={this.onClose}>Cancel</FlatButton>,
+      <FlatButton key="cancel" onClick={this.onCancel}>Cancel</FlatButton>,
       <FlatButton key="save" onClick={this.onSave}>Save</FlatButton>,
     ]
 

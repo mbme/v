@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import debounce from 'lodash.debounce'
-import { observeStore, Link } from 'client/utils'
+import { observeStore } from 'client/utils'
 import { fuzzySearch } from 'shared/utils'
-import { ViewContainer, Input, Section, Text, Heading, Paper } from 'client/components'
+import { ViewContainer, Link, Input, Section, Text, Heading, Paper } from 'client/components'
 
 class NotesView extends Component {
   static propTypes = {

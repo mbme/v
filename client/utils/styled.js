@@ -18,7 +18,7 @@ export const theme = {
     small: '0.5rem',
     fine: '0.25rem',
   },
-  TOOLBAR_HEIGHT: 50,
+  toolbarHeight: 50,
 }
 
 function getSide(side) {
@@ -41,6 +41,11 @@ export const mixins = {
   border: {
     border: '1px solid rgba(0,0,0,.09)',
     boxShadow: '0 1px 4px rgba(0,0,0,.04)',
+  },
+
+  limitWidth: {
+    maxWidth: '800px',
+    minWidth: '600px',
   },
 
   fontSizeIf: (cond, value) => createCondition(cond, 'fontSize', value),

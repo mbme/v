@@ -1,11 +1,11 @@
-/* eslint quote-props: ["error", "as-needed"] */
-
 import { styled, mixins, theme } from 'client/utils'
 
+export { default as Link } from './Link'
 export { default as Textarea } from './Textarea'
 export { Modal, ConfirmationDialog } from './Modal'
 export { default as Icon } from './Icon'
 export { default as Toolbar } from './Toolbar'
+export * from './Button'
 
 export const Input = styled('Input', {
   backgroundColor: '#ffffff',
@@ -45,9 +45,8 @@ export const ViewContainer = styled('ViewContainer', {
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '800px',
-  minWidth: '600px',
-  paddingTop: theme.TOOLBAR_HEIGHT,
+  paddingTop: theme.toolbarHeight,
+  ...mixins.limitWidth,
 })
 
 export const Paper = styled('Paper', {
@@ -61,30 +60,6 @@ export const Paper = styled('Paper', {
     ...mixins.paddings('all', 'medium'),
   ],
 })
-
-export const FlatButton = styled('FlatButton', {
-  border: '0 none',
-  borderRadius: 2,
-
-  cursor: 'pointer',
-  textTransform: 'uppercase',
-  letterSpacing: '1.2px',
-  userSelect: 'none',
-
-  transition: 'background-color 100ms linear',
-  ':hover': {
-    backgroundColor: 'gray',
-  },
-
-  extend: [
-    ...mixins.paddings('horizontal', 'medium'),
-    ...mixins.paddings('vertical', 'fine'),
-  ],
-}, 'button')
-
-export const RaisedButton = styled('RaisedButton', {
-  ...mixins.border,
-}, FlatButton)
 
 export const Flex = styled('Flex', ({ justifyContent = 'center' }) => ({
   display: 'flex',
