@@ -2,6 +2,7 @@
 
 import React from 'react'
 
+import { observeStore } from 'client/utils'
 import { ConfirmationDialog, Icon } from 'client/components'
 import initNotesStore from './notes/store'
 import NotesView from './notes/Notes'
@@ -31,7 +32,10 @@ export default [
     children: [
       {
         name: 'notes',
-        action: context => <NotesView store$={context.stores.notes} />,
+        action(context) {
+          const View = observeStore(NotesView)
+          return <View store$={context.stores.notes} />
+        },
       },
       {
         name: 'note',
@@ -40,10 +44,6 @@ export default [
           await notes.value.listNotesOnce()
 
           const id = parseInt(params.id, 10)
-          if (Number.isNaN(id)) {
-            return null
-          }
-
           const note = notes.value.notes.find(rec => rec.id === id)
 
           if (!note) {
@@ -60,17 +60,19 @@ export default [
           await notes.value.listNotesOnce()
 
           const id = parseInt(params.id, 10)
-          if (Number.isNaN(id)) {
-            return null
-          }
-
           const note = notes.value.notes.find(rec => rec.id === id)
 
           if (!note) {
             return null
           }
 
-          return <NoteEditorView note={note} />
+          return (
+            <NoteEditorView
+              note={note}
+              onSave={notes.value.updateNote.bind(notes.value)}
+              onDelete={notes.value.deleteNote.bind(notes.value)}
+              />
+          )
         },
       },
     ],

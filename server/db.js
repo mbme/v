@@ -87,8 +87,8 @@ function dbAPI(db) {
       return get('SELECT id, type, name, data FROM records WHERE id = ?', [id])
     },
 
-    updateRecord(id, type, name, data) {
-      return run('UPDATE records set name = ?, data = ? WHERE id = ? AND type = ?', [name, data, id, type]).then(expectSingleChange)
+    updateRecord(id, name, data) {
+      return run('UPDATE records set name = ?, data = ? WHERE id = ?', [name, data, id]).then(expectSingleChange)
     },
 
     deleteRecord(id) {

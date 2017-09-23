@@ -14,5 +14,15 @@ export default function initStore(client) {
         await this.listNotes()
       }
     },
+
+    async updateNote(id, name, data) {
+      await client.updateRecord(id, name, data)
+      return this.listNotes()
+    },
+
+    async deleteNote(id) {
+      await client.deleteRecord(id)
+      return this.listNotes()
+    },
   }
 }

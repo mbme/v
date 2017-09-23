@@ -55,8 +55,8 @@ export default function createApiClient(baseUrl = '') {
       return apiRequest('CREATE_RECORD', { type, name, data })
     },
 
-    updateRecord(id, type, name, data) {
-      return apiRequest('UPDATE_RECORD', { id, type, name, data })
+    updateRecord(id, name, data) {
+      return apiRequest('UPDATE_RECORD', { id, name, data })
     },
 
     deleteRecord(id) {

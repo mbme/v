@@ -20,15 +20,14 @@ const actions = {
     return db => db.createRecord(type, name, data)
   },
 
-  UPDATE_RECORD: ({ id, type, name, data }) => {
+  UPDATE_RECORD: ({ id, name, data }) => {
     validateAndThrow(
       [id, 'Record.id'],
-      [type, 'Record.type'],
       [name, 'Record.name'],
       [data, 'Record.data'],
     )
 
-    return db => db.updateRecord(id, type, name, data)
+    return db => db.updateRecord(id, name, data)
   },
 
   DELETE_RECORD: ({ id }) => {

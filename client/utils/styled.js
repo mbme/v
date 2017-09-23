@@ -97,7 +97,7 @@ function extractUsedProps(rule) {
   return usedProps
 }
 
-export function styled(name, styles, type = 'div') {
+export function styled(name, styles, type = 'div', passThroughProps = []) {
   if (!isString(name)) {
     throw new Error('styled: "name" must be a string')
   }
@@ -105,7 +105,8 @@ export function styled(name, styles, type = 'div') {
   const usedProps = ['innerRef']
   let rule = styles
   if (isFunction(rule)) {
-    usedProps.push(...extractUsedProps(styles))
+    const extractedProps = extractUsedProps(styles)
+    usedProps.push(...extractedProps.filter(p => !passThroughProps.includes(p)))
   } else {
     rule = () => styles
   }

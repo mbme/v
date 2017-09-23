@@ -32,7 +32,7 @@ describe('DB', () => {
     test('update record', async () => {
       const newName = 'newName'
       const newData = 'newData'
-      expect(await db.updateRecord(id, type, newName, newData)).toBeUndefined()
+      expect(await db.updateRecord(id, newName, newData)).toBeUndefined()
 
       const record = await db.readRecord(id)
       expect(record).toEqual({ id, type, name: newName, data: newData })

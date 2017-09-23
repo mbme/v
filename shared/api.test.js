@@ -51,7 +51,7 @@ describe('API client', () => {
     expect(newRecords.length).toBe(records.length + 1)
 
     // update record
-    await api.updateRecord(id, 'note', 'new name', 'new data')
+    await api.updateRecord(id, 'new name', 'new data')
     const record = (await api.listRecords('note')).find(rec => rec.id === id)
     expect(record.name).toBe('new name')
     expect(record.data).toBe('new data')

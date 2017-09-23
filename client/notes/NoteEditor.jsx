@@ -5,6 +5,8 @@ import { ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Link, 
 export default class NoteEditorView extends PureComponent {
   static propTypes = {
     note: PropTypes.object.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -19,12 +21,16 @@ export default class NoteEditorView extends PureComponent {
   onNameChange = e => this.setState({ name: e.target.value })
   onDataChange = e => this.setState({ data: e.target.value })
 
+  hasChanges() {
+    return this.state.name !== this.props.note.name || this.state.data !== this.props.note.data
+  }
+
   onSave = () => {
-    console.error('SAVE')
+    this.props.onSave(this.props.note.id, this.state.name, this.state.data)
   }
 
   onDelete = () => {
-    console.error('DELETE')
+    this.props.onDelete(this.props.note.id)
   }
 
   render() {
@@ -38,7 +44,7 @@ export default class NoteEditorView extends PureComponent {
       <Link key="cancel" to={{ name: 'note', params: { id: this.props.note.id } }}>
         <FlatButton>Cancel</FlatButton>
       </Link>,
-      <FlatButton key="save" onClick={this.onSave}>Save</FlatButton>,
+      <FlatButton key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</FlatButton>,
     ]
 
     return (

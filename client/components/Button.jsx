@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { styled, mixins } from 'client/utils'
 import Icon from './Icon'
 
-const CleanButton = styled('CleanButton', {
+const CleanButton = styled('CleanButton', ({ disabled = false }) => ({
   border: '0 none',
   borderRadius: 2,
 
@@ -15,18 +15,33 @@ const CleanButton = styled('CleanButton', {
   extend: [
     ...mixins.paddings('horizontal', 'medium'),
     ...mixins.paddings('vertical', 'fine'),
+    {
+      condition: disabled,
+      style: {
+        cursor: 'auto',
+        filter: 'invert(80%)',
+      },
+    },
   ],
-}, 'button')
+}), 'button')
 
-export const FlatButton = styled('FlatButton', {
+export const FlatButton = styled('FlatButton', ({ disabled }) => ({
   textTransform: 'uppercase',
   letterSpacing: '1.2px',
 
   transition: 'background-color 100ms linear',
-  ':hover': {
-    backgroundColor: 'gray',
-  },
-}, CleanButton)
+
+  extend: [
+    {
+      condition: !disabled,
+      style: {
+        ':hover': {
+          backgroundColor: 'gray',
+        },
+      },
+    },
+  ],
+}), CleanButton, ['disabled'])
 
 export const RaisedButton = styled('RaisedButton', {
   ...mixins.border,
