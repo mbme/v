@@ -20,6 +20,9 @@
     "react-dom": "^15.5.4",
     "react-fela": "^5.0.4",
     "react-hot-loader": "next",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
     "sqlite3": "^3.1.12",
     "universal-router": "^4.2.0"
   },

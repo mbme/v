@@ -1,0 +1,4 @@
+export const LOCATION_CHANGE = 'ROUTER/LOCATION_CHANGE'
+export const PUSH = 'ROUTER/PUSH'
+export const REPLACE = 'ROUTER/REPLACE'
+export const GO_BACK = 'ROUTER/GO_BACK'

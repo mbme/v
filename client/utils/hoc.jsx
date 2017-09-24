@@ -9,33 +9,9 @@ import generateUrls from 'universal-router/generateUrls'
 /* eslint-enable import/extensions */
 
 import { createSubject, isFunction } from 'shared/utils'
-import { createAsyncStore } from 'shared/store'
 import createApiClient from 'shared/api'
 
-export function observeStore(WrappedComponent) {
-  return class extends Component {
-    static displayName = 'Connected' + (WrappedComponent.displayName || WrappedComponent.name || 'Component')
-
-    static propTypes = {
-      store$: PropTypes.object.isRequired,
-    }
-
-    componentWillMount() {
-      this.unsubscribe = this.props.store$.subscribe(() => this.forceUpdate())
-    }
-
-    componentWillUnmount() {
-      this.unsubscribe()
-    }
-
-    render() {
-      const { store$, ...otherProps } = this.props
-      return <WrappedComponent store={store$.value} {...otherProps} />
-    }
-  }
-}
-
-export class VProvider extends Component {
+export default class VProvider extends Component {
   static propTypes = {
     baseUrl: PropTypes.string.isRequired,
     routes: PropTypes.arrayOf(PropTypes.object).isRequired,

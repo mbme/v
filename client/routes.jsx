@@ -2,7 +2,6 @@
 
 import React from 'react'
 
-import { observeStore } from 'client/utils'
 import { ConfirmationDialog, Icon } from 'client/components'
 import initNotesStore from './notes/store'
 import NotesView from './notes/Notes'
