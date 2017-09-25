@@ -3,9 +3,9 @@
 import React from 'react'
 
 import { ConfirmationDialog, Icon } from 'client/components'
-import NotesView from './notes/Notes'
-import NoteView from './notes/Note'
-import NoteEditorView from './notes/NoteEditor'
+import NotesView from 'client/notes/Notes'
+import NoteView from 'client/notes/Note'
+import NoteEditorView from 'client/notes/NoteEditor'
 
 export default [
   {
