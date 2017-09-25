@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import PropTypes from 'prop-types'
 
 /* eslint-disable import/extensions */
@@ -72,23 +72,10 @@ export default class VProvider extends Component {
   }
 
   createRouter(routes) {
-    const { stores, view$, client, scrollPos } = this
+    const { stores, view$, scrollPos } = this
 
     const router = new Router(routes, {
       context: { stores },
-      resolveRoute(context, params) {
-        const { action, store } = context.route
-
-        if (store && !stores[store.name]) {
-          stores[store.name] = createAsyncStore(store.init(client))
-        }
-
-        if (isFunction(action)) {
-          return action(context, params)
-        }
-
-        return null
-      },
     })
 
     const url = generateUrls(router)

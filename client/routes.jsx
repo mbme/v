@@ -3,7 +3,6 @@
 import React from 'react'
 
 import { ConfirmationDialog, Icon } from 'client/components'
-import initNotesStore from './notes/store'
 import NotesView from './notes/Notes'
 import NoteView from './notes/Note'
 import NoteEditorView from './notes/NoteEditor'
@@ -24,16 +23,11 @@ export default [
   },
   {
     path: '/notes',
-    store: {
-      name: 'notes',
-      init: initNotesStore,
-    },
     children: [
       {
         name: 'notes',
         action(context) {
-          const View = observeStore(NotesView)
-          return <View store$={context.stores.notes} />
+          return <NotesView store$={context.stores.notes} />
         },
       },
       {
