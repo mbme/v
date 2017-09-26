@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ViewContainer, Link, Heading, Paper, Toolbar, FlatButton } from 'client/components'
+import { connect } from 'react-redux'
+import { NotFoundView, LoadingView, ViewContainer, Link, Heading, Paper, Toolbar, FlatButton } from 'client/components'
+import * as notesActions from './actions'
 
 function renderMarkup(data) {
   return data.split('\n\n').map(
@@ -8,7 +10,7 @@ function renderMarkup(data) {
   )
 }
 
-export default function NoteView({ note }) {
+function NoteView({ note }) {
   const editBtn = (
     <Link to={{ name: 'note-editor', params: { id: note.id } }}>
       <FlatButton>Edit</FlatButton>
@@ -25,7 +27,36 @@ export default function NoteView({ note }) {
     </ViewContainer>
   )
 }
-
 NoteView.propTypes = {
   note: PropTypes.object.isRequired,
 }
+
+function Loader({ initialized, note, listNotes, ...props }) {
+  if (!initialized) {
+    listNotes()
+
+    return <LoadingView />
+  }
+
+  if (!note) {
+    return <NotFoundView />
+  }
+
+  return <NoteView note={note} {...props} />
+}
+Loader.propTypes = {
+  initialized: PropTypes.bool.isRequired,
+  note: PropTypes.object,
+  listNotes: PropTypes.func.isRequired,
+}
+
+const mapStateToProps = ({ notes }, { id }) => ({
+  note: notes.notes.find(note => note.id === id),
+  initialized: notes.initialized,
+})
+
+const mapDispatchToProps = {
+  listNotes: notesActions.listNotes,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Loader)

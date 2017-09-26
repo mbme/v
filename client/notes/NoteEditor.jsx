@@ -1,12 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Link, Section } from 'client/components'
+import { connect } from 'react-redux'
+import { LoadingView, NotFoundView, ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Link, Section } from 'client/components'
+import * as notesActions from './actions'
 
-export default class NoteEditorView extends PureComponent {
+class NoteEditorView extends PureComponent {
   static propTypes = {
     note: PropTypes.object.isRequired,
-    onSave: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
+    updateNote: PropTypes.func.isRequired,
+    deleteNote: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -18,20 +20,15 @@ export default class NoteEditorView extends PureComponent {
     }
   }
 
-  onNameChange = e => this.setState({ name: e.target.value })
-  onDataChange = e => this.setState({ data: e.target.value })
-
   hasChanges() {
     return this.state.name !== this.props.note.name || this.state.data !== this.props.note.data
   }
 
-  onSave = () => {
-    this.props.onSave(this.props.note.id, this.state.name, this.state.data)
-  }
+  onNameChange = e => this.setState({ name: e.target.value })
+  onDataChange = e => this.setState({ data: e.target.value })
 
-  onDelete = () => {
-    this.props.onDelete(this.props.note.id)
-  }
+  onSave = () => this.props.updateNote(this.props.note.id, this.state.name, this.state.data)
+  onDelete = () => this.props.deleteNote(this.props.note.id)
 
   render() {
     const { name, data } = this.state
@@ -62,3 +59,35 @@ export default class NoteEditorView extends PureComponent {
     )
   }
 }
+
+function Loader({ initialized, note, listNotes, ...props }) {
+  if (!initialized) {
+    listNotes()
+
+    return <LoadingView />
+  }
+
+  if (!note) {
+    return <NotFoundView />
+  }
+
+  return <NoteEditorView note={note} {...props} />
+}
+Loader.propTypes = {
+  initialized: PropTypes.bool.isRequired,
+  note: PropTypes.object,
+  listNotes: PropTypes.func.isRequired,
+}
+
+const mapStateToProps = ({ notes }, { id }) => ({
+  note: notes.notes.find(note => note.id === id),
+  initialized: notes.initialized,
+})
+
+const mapDispatchToProps = {
+  listNotes: notesActions.listNotes,
+  updateNote: notesActions.updateNote,
+  deleteNote: notesActions.deleteNote,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Loader)

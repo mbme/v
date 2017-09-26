@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import * as routerActions from 'client/router/actions'
 
-export default class Link extends PureComponent {
+class Link extends PureComponent {
   static propTypes = {
     className: PropTypes.string,
     to: PropTypes.shape({
@@ -9,15 +11,12 @@ export default class Link extends PureComponent {
       params: PropTypes.object,
     }).isRequired,
     children: PropTypes.node.isRequired,
-  }
-
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
+    push: PropTypes.func.isRequired,
   }
 
   onClick = () => {
     const { name, params } = this.props.to
-    this.context.router.push(name, params)
+    this.props.push(name, params)
   }
 
   render() {
@@ -28,3 +27,9 @@ export default class Link extends PureComponent {
     )
   }
 }
+
+const mapDispatchToProps = {
+  push: routerActions.push,
+}
+
+export default connect(null, mapDispatchToProps)(Link)

@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import { ConfirmationDialog, Icon } from 'client/components'
+import { ConfirmationDialog, Icon, NotFoundView } from 'client/components'
 import NotesView from 'client/notes/Notes'
 import NoteView from 'client/notes/Note'
 import NoteEditorView from 'client/notes/NoteEditor'
@@ -14,7 +14,7 @@ export default [
     action: () => (
       <div>
         <h1>Page One</h1>
-        <ConfirmationDialog confirmation="Remove">
+        <ConfirmationDialog confirmation="Remove" onConfirmed={() => {}} onCancel={() => {}}>
           Are you sure you want to <b>remove it?</b>
           <Icon type="edit" />
         </ConfirmationDialog>
@@ -26,49 +26,19 @@ export default [
     children: [
       {
         name: 'notes',
-        action(context) {
-          return <NotesView store$={context.stores.notes} />
-        },
+        action: () => <NotesView />,
       },
       {
         name: 'note',
         path: '/:id',
-        async action({ stores: { notes }, params }) {
-          await notes.value.listNotesOnce()
-
-          const id = parseInt(params.id, 10)
-          const note = notes.value.notes.find(rec => rec.id === id)
-
-          if (!note) {
-            return null
-          }
-
-          return <NoteView note={note} />
-        },
+        action: ({ params }) => <NoteView id={parseInt(params.id, 10)} />,
       },
       {
         name: 'note-editor',
         path: '/:id/editor',
-        async action({ stores: { notes }, params }) {
-          await notes.value.listNotesOnce()
-
-          const id = parseInt(params.id, 10)
-          const note = notes.value.notes.find(rec => rec.id === id)
-
-          if (!note) {
-            return null
-          }
-
-          return (
-            <NoteEditorView
-              note={note}
-              onSave={notes.value.updateNote.bind(notes.value)}
-              onDelete={notes.value.deleteNote.bind(notes.value)}
-              />
-          )
-        },
+        action: ({ params }) => <NoteEditorView id={parseInt(params.id, 10)} />,
       },
     ],
   },
-  { path: '(.*)', action: () => <h1>Not Found</h1> },
+  { path: '(.*)', action: () => <NotFoundView /> },
 ]

@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { ModalContainer, StyledModal } from 'client/components/Modal'
+const ModalRenderer = connect(({ components }) => ({ modal: components.modal }))(({ modal }) => modal)
 
-class App extends Component {
+class App extends PureComponent {
   static propTypes = {
     router: PropTypes.object.isRequired,
     pathname: PropTypes.string.isRequired,
@@ -13,7 +13,6 @@ class App extends Component {
 
   state = {
     view: null,
-    modal: null,
   }
 
   scrollPos = {}
@@ -38,8 +37,12 @@ class App extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
-    this.updateView(nextProps.pathname)
+    if (this.props.pathname !== nextProps.pathname) {
+      // save scroll pos
+      this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
+
+      this.updateView(nextProps.pathname)
+    }
   }
 
   componentDidUpdate() {
@@ -55,24 +58,11 @@ class App extends Component {
     }
   }
 
-  onModalClick = (e) => {
-    if (e.target === e.currentTarget && this.state.modal) {
-      this.state.modal.props.onClose()
-    }
-  }
-
   render() {
-    const { view, modal } = this.state
-
     return (
       <div>
-        {view}
-        {modal && (
-          <ModalContainer onClick={this.onModalClick}>
-            <StyledModal>{modal}</StyledModal>
-          </ModalContainer>
-
-        )}
+        {this.state.view}
+        <ModalRenderer />
       </div>
     )
   }

@@ -30,8 +30,7 @@ const store = createStore(
 
 // handle browser back/forward buttons, and history.back()/forward()/go()
 window.addEventListener('popstate', () => store.dispatch(propagateCurrentLocation()))
-
-store.dispatch(propagateCurrentLocation())
+store.dispatch(propagateCurrentLocation()) // use current location
 
 const renderer = createRenderer({ plugins: webPreset })
 
@@ -53,9 +52,12 @@ render()
 if (module.hot) {
   module.hot.accept('./App', render)
 
-  module.hot.accept('./reducers', () => store.replaceReducer(rootReducer))
+  module.hot.accept('./reducers', () => {
+    store.replaceReducer(rootReducer)
+    render()
+  })
 
-  module.hot.accept('./routes', () => {
+  module.hot.accept('./router', () => {
     actualRoutes.splice(0, actualRoutes.length, ...routes)
     store.dispatch(propagateCurrentLocation())
   })

@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { styled, mixins } from 'client/utils'
+import * as componentActions from './actions'
 import { Flex, Section, FlatButton, RaisedButton } from './index'
 
-export const ModalContainer = styled('ModalContainer', {
+const ModalContainer = styled('ModalContainer', {
   backgroundColor: 'rgba(255,255,255,.65)',
   position: 'absolute',
   zIndex: 10,
@@ -17,7 +19,7 @@ export const ModalContainer = styled('ModalContainer', {
   alignItems: 'flex-start',
 })
 
-export const StyledModal = styled('StyledModal', {
+const StyledModal = styled('StyledModal', {
   backgroundColor: '#ffffff',
   marginTop: '17vh',
   width: 375,
@@ -27,33 +29,43 @@ export const StyledModal = styled('StyledModal', {
   ],
 })
 
-export class Modal extends PureComponent {
+class ModalComponent extends PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
-
-    // we use this directly from App.jsx
-    onClose: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
+    onCancel: PropTypes.func.isRequired,
+    showModal: PropTypes.func.isRequired,
+    hideModal: PropTypes.func.isRequired,
   }
 
-  static contextTypes = {
-    modal$: PropTypes.object.isRequired,
+  modal = null
+
+  onModalClick = (e) => {
+    if (e.target === e.currentTarget) {
+      this.props.onCancel()
+    }
+  }
+
+  showModal(children) {
+    this.modal = (
+      <ModalContainer onClick={this.onModalClick}>
+        <StyledModal>{children}</StyledModal>
+      </ModalContainer>
+    )
+    this.props.showModal(this.modal)
   }
 
   componentWillMount() {
-    this.context.modal$.next(this.props.children)
+    this.showModal(this.props.children)
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.children !== nextProps.children) {
-      this.context.modal$.next(nextProps.children)
+      this.showModal(nextProps.children)
     }
   }
 
   componentWillUnmount() {
-    const { modal$ } = this.context
-    if (modal$.value === this.props.children) {
-      modal$.next(null)
-    }
+    this.props.hideModal(this.modal)
   }
 
   render() {
@@ -61,12 +73,19 @@ export class Modal extends PureComponent {
   }
 }
 
-export function ConfirmationDialog({ children, confirmation, onConfirmed, onClose }) {
+const mapDispatchToProps = {
+  showModal: componentActions.showModal,
+  hideModal: componentActions.hideModal,
+}
+
+export const Modal = connect(null, mapDispatchToProps)(ModalComponent)
+
+export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (
-    <Modal onClose={onClose}>
+    <Modal onCancel={onCancel}>
       <Section>{children}</Section>
       <Flex justifyContent="flex-end">
-        <FlatButton onClick={onClose}>CANCEL</FlatButton>
+        <FlatButton onClick={onCancel}>CANCEL</FlatButton>
         <RaisedButton onClick={onConfirmed}>{confirmation}</RaisedButton>
       </Flex>
     </Modal>
@@ -77,5 +96,5 @@ ConfirmationDialog.propTypes = {
   children: PropTypes.node.isRequired,
   confirmation: PropTypes.node.isRequired,
   onConfirmed: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 }

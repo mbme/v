@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import debounce from 'lodash.debounce'
 import { fuzzySearch } from 'shared/utils'
-import { ViewContainer, Link, Input, Section, Text, Heading, Paper } from 'client/components'
+import { ViewContainer, Link, Input, Section, Text, Paper } from 'client/components'
+import * as notesActions from './actions'
 
-export default class NotesView extends Component {
+class NotesView extends Component {
   static propTypes = {
-    store: PropTypes.object.isRequired,
+    listNotes: PropTypes.func.isRequired,
+    notes: PropTypes.arrayOf(PropTypes.object).isRequired,
   }
 
   state = {
@@ -15,11 +18,11 @@ export default class NotesView extends Component {
   }
 
   componentWillMount() {
-    this.props.store.listNotes()
+    this.props.listNotes()
   }
 
   getVisibleNotes() {
-    const visibleNotes = this.props.store.notes.filter(({ name }) => fuzzySearch(this.state.filter, name.toLowerCase()))
+    const visibleNotes = this.props.notes.filter(({ name }) => fuzzySearch(this.state.filter, name.toLowerCase()))
 
     return visibleNotes.map(({ id, name }) => (
       <Link key={id} to={{ name: 'note', params: { id } }}>
@@ -48,11 +51,18 @@ export default class NotesView extends Component {
         <Text center>
           {notes.length} items
         </Text>
-        <Heading center>
-          {notes.length} items
-        </Heading>
         <div>{notes}</div>
       </ViewContainer>
     )
   }
 }
+
+const mapStateToProps = ({ notes }) => ({
+  notes: notes.notes,
+})
+
+const mapDispatchToProps = {
+  listNotes: notesActions.listNotes,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NotesView)
