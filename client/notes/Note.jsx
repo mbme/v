@@ -11,6 +11,12 @@ function renderMarkup(data) {
 }
 
 function NoteView({ note }) {
+  const backBtn = (
+    <Link to={{ name: 'notes' }}>
+      <FlatButton>Notes</FlatButton>
+    </Link>
+  )
+
   const editBtn = (
     <Link to={{ name: 'note-editor', params: { id: note.id } }}>
       <FlatButton>Edit</FlatButton>
@@ -19,7 +25,7 @@ function NoteView({ note }) {
 
   return (
     <ViewContainer>
-      <Toolbar right={editBtn} />
+      <Toolbar left={backBtn} right={editBtn} />
       <Paper>
         <Heading>{note.name}</Heading>
         {renderMarkup(note.data)}

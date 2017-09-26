@@ -10,26 +10,20 @@ import { createStore, applyMiddleware } from 'redux'
 import reduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 
-import Router from 'universal-router' // eslint-disable-line import/extensions
 import createApiClient from 'shared/api'
-import App from './App'
-import { routes, propagateCurrentLocation } from './router'
+import { routes as routesModule, routerMiddleware, propagateCurrentLocation } from './router'
 import rootReducer from './reducers'
-import routerMiddleware from './router/middleware'
+import App from './App'
 
-const actualRoutes = [...routes]
-const router = new Router(actualRoutes)
+const routes = [...routesModule]
 
 const store = createStore(
   rootReducer,
   applyMiddleware(
     reduxThunk.withExtraArgument(createApiClient('http://localhost:8080')),
-    routerMiddleware(router),
+    routerMiddleware(routes),
   ),
 )
-
-// handle browser back/forward buttons, and history.back()/forward()/go()
-window.addEventListener('popstate', () => store.dispatch(propagateCurrentLocation()))
 store.dispatch(propagateCurrentLocation()) // use current location
 
 const renderer = createRenderer({ plugins: webPreset })
@@ -39,7 +33,7 @@ function render() {
     <Provider store={store}>
       <AppContainer>
         <FelaProvider renderer={renderer}>
-          <App router={router} />
+          <App />
         </FelaProvider>
       </AppContainer>
     </Provider>,
@@ -58,7 +52,7 @@ if (module.hot) {
   })
 
   module.hot.accept('./router', () => {
-    actualRoutes.splice(0, actualRoutes.length, ...routes)
+    routes.splice(0, routes.length, ...routesModule) // replace routes using update module data
     store.dispatch(propagateCurrentLocation())
   })
 }

@@ -4,6 +4,7 @@ const defaultState = {
   pathname: '/',
   search: '',
   isPush: false,
+  view: null,
 }
 
 export default function router(state = defaultState, action) {
@@ -13,6 +14,7 @@ export default function router(state = defaultState, action) {
         pathname: action.pathname,
         search: action.search,
         isPush: action.isPush,
+        view: action.view,
       }
 
     default:

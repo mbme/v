@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { LoadingView, NotFoundView, ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Link, Section } from 'client/components'
+import { LoadingView, NotFoundView, ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Link, Section, ConfirmationDialog } from 'client/components'
+import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
 
 class NoteEditorView extends PureComponent {
@@ -9,6 +10,7 @@ class NoteEditorView extends PureComponent {
     note: PropTypes.object.isRequired,
     updateNote: PropTypes.func.isRequired,
     deleteNote: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -17,21 +19,30 @@ class NoteEditorView extends PureComponent {
     this.state = {
       name: props.note.name,
       data: props.note.data,
+      showDeleteConfirmation: false,
     }
   }
 
-  hasChanges() {
-    return this.state.name !== this.props.note.name || this.state.data !== this.props.note.data
-  }
+  hasChanges = () => this.state.name !== this.props.note.name || this.state.data !== this.props.note.data
 
   onNameChange = e => this.setState({ name: e.target.value })
   onDataChange = e => this.setState({ data: e.target.value })
 
   onSave = () => this.props.updateNote(this.props.note.id, this.state.name, this.state.data)
-  onDelete = () => this.props.deleteNote(this.props.note.id)
+  onDelete = () => this.setState({ showDeleteConfirmation: true })
+
+  deleteNote = () => this.props.deleteNote(this.props.note.id).then(() => this.props.push('notes'))
+
+  renderDeleteConfirmation() {
+    return (
+      <ConfirmationDialog confirmation="Delete" onConfirmed={this.deleteNote} onCancel={() => this.setState({ showDeleteConfirmation: false })}>
+        Are you sure you want to <b>delete this note?</b>
+      </ConfirmationDialog>
+    )
+  }
 
   render() {
-    const { name, data } = this.state
+    const { name, data, showDeleteConfirmation } = this.state
 
     const leftIcons = [
       <IconButton key="delete" type="trash-2" onClick={this.onDelete} />,
@@ -55,6 +66,8 @@ class NoteEditorView extends PureComponent {
         <Section>
           <Textarea name="data" value={data} onChange={this.onDataChange} />
         </Section>
+
+        {showDeleteConfirmation && this.renderDeleteConfirmation()}
       </ViewContainer>
     )
   }
@@ -88,6 +101,7 @@ const mapDispatchToProps = {
   listNotes: notesActions.listNotes,
   updateNote: notesActions.updateNote,
   deleteNote: notesActions.deleteNote,
+  push: routerActions.push,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Loader)

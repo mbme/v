@@ -6,13 +6,9 @@ const ModalRenderer = connect(({ components }) => ({ modal: components.modal }))
 
 class App extends PureComponent {
   static propTypes = {
-    router: PropTypes.object.isRequired,
     pathname: PropTypes.string.isRequired,
     isPush: PropTypes.bool.isRequired,
-  }
-
-  state = {
-    view: null,
+    view: PropTypes.node,
   }
 
   scrollPos = {}
@@ -27,21 +23,10 @@ class App extends PureComponent {
     }
   }
 
-  async updateView(pathname) {
-    const view = await this.props.router.resolve(pathname)
-    this.setState({ view })
-  }
-
-  componentDidMount() {
-    this.updateView(this.props.pathname)
-  }
-
   componentWillUpdate(nextProps) {
     if (this.props.pathname !== nextProps.pathname) {
       // save scroll pos
       this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
-
-      this.updateView(nextProps.pathname)
     }
   }
 
@@ -61,7 +46,7 @@ class App extends PureComponent {
   render() {
     return (
       <div>
-        {this.state.view}
+        {this.props.view}
         <ModalRenderer />
       </div>
     )
@@ -71,6 +56,7 @@ class App extends PureComponent {
 const mapStateToProps = ({ router }) => ({
   pathname: router.pathname,
   isPush: router.isPush,
+  view: router.view,
 })
 
 export default connect(mapStateToProps)(App)
