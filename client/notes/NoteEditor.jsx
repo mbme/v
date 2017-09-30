@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { LoadingView, NotFoundView, ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Link, Section, ConfirmationDialog } from 'client/components'
+import { LoadingView, NotFoundView, ViewContainer, Textarea, Toolbar, IconButton, FlatButton, Input, Section, ConfirmationDialog } from 'client/components'
 import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
 
@@ -28,8 +28,9 @@ class NoteEditorView extends PureComponent {
   onNameChange = e => this.setState({ name: e.target.value })
   onDataChange = e => this.setState({ data: e.target.value })
 
-  onSave = () => this.props.updateNote(this.props.note.id, this.state.name, this.state.data)
+  onSave = () => this.props.updateNote(this.props.note.id, this.state.name, this.state.data).then(this.closeEditor)
   onDelete = () => this.setState({ showDeleteConfirmation: true })
+  closeEditor = () => this.props.push('note', { id: this.props.note.id })
 
   deleteNote = () => this.props.deleteNote(this.props.note.id).then(() => this.props.push('notes'))
 
@@ -49,9 +50,7 @@ class NoteEditorView extends PureComponent {
     ]
 
     const rightIcons = [
-      <Link key="cancel" to={{ name: 'note', params: { id: this.props.note.id } }}>
-        <FlatButton>Cancel</FlatButton>
-      </Link>,
+      <FlatButton key="cancel" onClick={this.closeEditor}>Cancel</FlatButton>,
       <FlatButton key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</FlatButton>,
     ]
 
