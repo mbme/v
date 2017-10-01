@@ -6,6 +6,8 @@ html {
     "Segoe UI", Roboto, Oxygen, /* Windows, Android, KDE */
     Ubuntu, Cantarell, "Fira Sans", /* Ubuntu, Gnome, Firefox OS */
     "Droid Sans", "Helvetica Neue", sans-serif; /* Old Android */
+
+  overflow-y: scroll;
 }
 
 body {

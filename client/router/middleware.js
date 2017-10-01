@@ -4,7 +4,11 @@ import { LOCATION_CHANGE, GO, GO_FORWARD, PUSH, REPLACE, GO_BACK, propagateCurre
 
 export default function routerMiddleware(routes) {
   const router = new Router(routes)
-  const url = generateUrls(router)
+  const url = generateUrls(router, {
+    stringifyQueryParams(params) { // treat unexpected params as query params
+      return Object.keys(params).map(key => `${key}=${params[key]}`).join('&')
+    },
+  })
 
   // eslint-disable-next-line consistent-return
   return (store) => {
