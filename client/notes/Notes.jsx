@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import debounce from 'lodash.debounce'
 import { fuzzySearch } from 'shared/utils'
-import { ViewContainer, Link, Input, Section, Text, Paper } from 'client/components'
+import { ViewContainer, Toolbar, FlatButton, Link, Input, Section, Text, Paper } from 'client/components'
 import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
 
@@ -13,7 +13,8 @@ class NotesView extends Component {
     listNotes: PropTypes.func.isRequired,
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
-    replace: PropTypes.func.isRequired,
+    setFilter: PropTypes.func.isRequired,
+    createNote: PropTypes.func.isRequired,
   }
 
   componentWillMount() {
@@ -30,15 +31,19 @@ class NotesView extends Component {
     ))
   }
 
-  setFilter = filter => this.props.replace('notes', filter ? { filter } : null)
-  setFilterDebounced = debounce(this.setFilter, 300)
+  setFilterDebounced = debounce(this.props.setFilter, 300)
   onFilterChange = e => this.setFilterDebounced(e.target.value.trim())
 
   render() {
     const notes = this.getVisibleNotes()
 
+    const addBtn = (
+      <FlatButton onClick={this.props.createNote}>Add</FlatButton>
+    )
+
     return (
       <ViewContainer>
+        <Toolbar right={addBtn} />
         <Section>
           <Input name="filter" type="text" defaultValue={this.props.filter} placeholder="Filter notes" onChange={this.onFilterChange} />
         </Section>
@@ -56,9 +61,13 @@ const mapStateToProps = ({ notes, router }) => ({
   filter: router.query.filter || '',
 })
 
-const mapDispatchToProps = {
-  listNotes: notesActions.listNotes,
-  replace: routerActions.replace,
-}
+const mapDispatchToProps = dispatch => ({
+  listNotes: () => dispatch(notesActions.listNotes()),
+  async createNote() {
+    const id = await dispatch(notesActions.createNote('Tabula rasa', ''))
+    return dispatch(routerActions.push('note-editor', { id }))
+  },
+  setFilter: filter => dispatch(routerActions.replace('notes', filter ? { filter } : null)),
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotesView)
