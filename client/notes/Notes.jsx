@@ -45,7 +45,13 @@ class NotesView extends Component {
       <ViewContainer>
         <Toolbar right={addBtn} />
         <Section>
-          <Input name="filter" type="text" defaultValue={this.props.filter} placeholder="Filter notes" onChange={this.onFilterChange} />
+          <Input
+            name="filter"
+            type="text"
+            defaultValue={this.props.filter}
+            placeholder="Filter notes"
+            onChange={this.onFilterChange}
+            autoFocus />
         </Section>
         <Text center>
           {notes.length} items

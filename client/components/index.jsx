@@ -3,21 +3,11 @@ import { styled, mixins, theme } from 'client/utils'
 
 export { default as Link } from './Link'
 export { default as Textarea } from './Textarea'
+export { default as Input } from './Input'
 export { Modal, ConfirmationDialog } from './Modal'
 export { default as Icon } from './Icon'
 export { default as Toolbar } from './Toolbar'
 export * from './Button'
-
-export const Input = styled('Input', {
-  backgroundColor: '#ffffff',
-  display: 'block',
-  width: '100%',
-  ...mixins.border,
-
-  extend: [
-    ...mixins.paddings('all', 'small'),
-  ],
-}, 'input')
 
 export const Section = styled('Section', ({ side = 'vertical', amount = 'medium' }) => ({
   extend: [
