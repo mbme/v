@@ -33,6 +33,7 @@ export const Heading = styled('Heading', ({ xxlarge, center }) => ({
 }))
 
 export const ViewContainer = styled('ViewContainer', {
+  position: 'relative',
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',

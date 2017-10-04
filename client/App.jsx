@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Link } from 'client/components'
 
 const ModalRenderer = connect(({ components }) => ({ modal: components.modal }))(({ modal }) => modal)
 
@@ -8,6 +9,7 @@ class App extends PureComponent {
   static propTypes = {
     pathname: PropTypes.string.isRequired,
     isPush: PropTypes.bool.isRequired,
+    routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
     view: PropTypes.node,
   }
 
@@ -44,8 +46,14 @@ class App extends PureComponent {
   }
 
   render() {
+    const { routingSequence } = this.props
     return (
       <div>
+        <div>
+          <Link to={{ name: 'notes' }}>Notes</Link>
+          <Link to={{ name: 'todos' }}>Todos</Link>
+          <Link to={{ name: 'one' }}>One</Link>
+        </div>
         {this.props.view}
         <ModalRenderer />
       </div>
@@ -57,6 +65,7 @@ const mapStateToProps = ({ router }) => ({
   pathname: router.pathname,
   isPush: router.isPush,
   view: router.view,
+  routingSequence: router.routingSequence,
 })
 
 export default connect(mapStateToProps)(App)
