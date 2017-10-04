@@ -23,9 +23,9 @@ export default [
   },
   {
     path: '/notes',
+    name: 'notes',
     children: [
       {
-        name: 'notes',
         action: () => <NotesView />,
       },
       {

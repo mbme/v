@@ -5,6 +5,7 @@ const defaultState = {
   search: '',
   query: {},
   isPush: false,
+  routingSequence: [],
   view: null,
 }
 
@@ -32,6 +33,7 @@ export default function router(state = defaultState, action) {
         query: parseQuery(action.search.trim()),
         isPush: action.isPush,
         view: action.view,
+        routingSequence: action.routingSequence,
       }
 
     default:

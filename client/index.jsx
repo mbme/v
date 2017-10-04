@@ -11,17 +11,19 @@ import reduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 
 import createApiClient from 'shared/api'
-import { routes as routesModule, routerMiddleware, propagateCurrentLocation } from './router'
+import createRouter, { routerMiddleware, propagateCurrentLocation } from './router'
+import routes from './router/routes'
 import rootReducer from './reducers'
 import App from './App'
 
-const routes = [...routesModule]
+const router = createRouter()
+router.useRoutes(routes)
 
 const store = createStore(
   rootReducer,
   applyMiddleware(
     reduxThunk.withExtraArgument(createApiClient('http://localhost:8080')),
-    routerMiddleware(routes),
+    routerMiddleware(router),
   ),
 )
 store.dispatch(propagateCurrentLocation()) // use current location
@@ -51,8 +53,8 @@ if (module.hot) {
     render()
   })
 
-  module.hot.accept('./router', () => {
-    routes.splice(0, routes.length, ...routesModule) // replace routes using update module data
+  module.hot.accept('./router/routes', () => {
+    router.useRoutes(routes)
     store.dispatch(propagateCurrentLocation())
   })
 }
