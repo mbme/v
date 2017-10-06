@@ -42,7 +42,7 @@
     "eslint-config-airbnb": "^15.0.1",
     "eslint-import-resolver-babel-module": "^3.0.0",
     "eslint-plugin-import": "^2.6.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.2.0",
     "jest": "^21.1.0",
     "raw-loader": "^0.5.1",
@@ -143,25 +143,9 @@
         "error",
         "consistent-as-needed"
       ],
-      "jsx-a11y/href-no-hash": "off",
-      "jsx-a11y/anchor-is-valid": [
-        "warn",
-        {
-          "aspects": [
-            "invalidHref"
-          ]
-        }
-      ],
       "react/require-default-props": 0,
       "react/forbid-prop-types": 0,
-      "react/sort-comp": 0,
-      "react/jsx-closing-bracket-location": [
-        1,
-        {
-          "selfClosing": "props-aligned",
-          "nonEmpty": "after-props"
-        }
-      ]
+      "react/sort-comp": 0
     },
     "settings": {
       "import/resolver": {

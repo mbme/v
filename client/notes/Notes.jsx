@@ -51,7 +51,8 @@ class NotesView extends Component {
             defaultValue={this.props.filter}
             placeholder="Filter notes"
             onChange={this.onFilterChange}
-            autoFocus />
+            autoFocus
+          />
         </Section>
         <Text center>
           {notes.length} items
