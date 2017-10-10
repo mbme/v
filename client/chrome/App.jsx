@@ -29,8 +29,6 @@ const NavbarLink = styled('NavbarLink', ({ selected }) => ({
   ],
 }), Link)
 
-const ModalRenderer = connect(({ components }) => ({ modal: components.modal }))(({ modal }) => modal)
-
 class App extends PureComponent {
   static propTypes = {
     pathname: PropTypes.string.isRequired,
@@ -88,7 +86,6 @@ class App extends PureComponent {
       <div>
         {this.renderNavbar()}
         {this.props.view}
-        <ModalRenderer />
       </div>
     )
   }

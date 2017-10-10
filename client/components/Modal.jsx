@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { styled, mixins } from 'client/utils'
-import * as componentActions from './actions'
 import { Flex, Section, FlatButton, RaisedButton } from './index'
 
 const ModalContainer = styled('ModalContainer', {
@@ -29,15 +28,13 @@ const StyledModal = styled('StyledModal', {
   ],
 })
 
-class ModalComponent extends PureComponent {
+export class Modal extends PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onCancel: PropTypes.func.isRequired,
-    showModal: PropTypes.func.isRequired,
-    hideModal: PropTypes.func.isRequired,
   }
 
-  modal = null
+  modalRootEl = null
 
   onModalClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -45,40 +42,19 @@ class ModalComponent extends PureComponent {
     }
   }
 
-  showModal(children) {
-    this.modal = (
-      <ModalContainer onClick={this.onModalClick}>
-        <StyledModal>{children}</StyledModal>
-      </ModalContainer>
-    )
-    this.props.showModal(this.modal)
-  }
-
   componentWillMount() {
-    this.showModal(this.props.children)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.children !== nextProps.children) {
-      this.showModal(nextProps.children)
-    }
-  }
-
-  componentWillUnmount() {
-    this.props.hideModal(this.modal)
+    this.modalRootEl = document.getElementById('modal')
   }
 
   render() {
-    return null
+    return ReactDOM.createPortal(
+      <ModalContainer onClick={this.onModalClick}>
+        <StyledModal>{this.props.children}</StyledModal>
+      </ModalContainer>,
+      this.modalRootEl,
+    )
   }
 }
-
-const mapDispatchToProps = {
-  showModal: componentActions.showModal,
-  hideModal: componentActions.hideModal,
-}
-
-export const Modal = connect(null, mapDispatchToProps)(ModalComponent)
 
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (

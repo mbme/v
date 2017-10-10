@@ -148,7 +148,8 @@ export default async function startServer(port = 8080, dev = false) {
         </head>
         <body>
           <style id="stylesheet"></style>
-          <div id="root" />
+          <div id="root"></div>
+          <div id="modal"></div>
         </body>
       </html>
     `)
