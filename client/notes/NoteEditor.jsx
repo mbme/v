@@ -58,11 +58,11 @@ class NoteEditorView extends PureComponent {
       <ViewContainer>
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <Section side="top">
+        <Section side="bottom">
           <Input name="name" type="text" value={name} onChange={this.onNameChange} autoFocus />
         </Section>
 
-        <Section>
+        <Section side="bottom">
           <Textarea name="data" value={data} onChange={this.onDataChange} />
         </Section>
 

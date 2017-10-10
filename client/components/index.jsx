@@ -48,7 +48,6 @@ export const Paper = styled('Paper', {
   borderRadius: '2px',
 
   extend: [
-    ...mixins.margins('vertical', 'medium'),
     ...mixins.paddings('all', 'medium'),
   ],
 })

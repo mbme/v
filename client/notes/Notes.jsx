@@ -26,7 +26,9 @@ class NotesView extends Component {
 
     return visibleNotes.map(({ id, name }) => (
       <Link key={id} to={{ name: 'note', params: { id } }}>
-        <Paper>{name}</Paper>
+        <Section side="vertical">
+          <Paper>{name}</Paper>
+        </Section>
       </Link>
     ))
   }
@@ -44,7 +46,7 @@ class NotesView extends Component {
     return (
       <ViewContainer>
         <Toolbar right={addBtn} />
-        <Section>
+        <Section side="bottom">
           <Input
             name="filter"
             type="text"

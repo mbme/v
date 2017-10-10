@@ -17,8 +17,6 @@ const Content = styled('Content', {
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  backgroundColor: '#fff',
-
   height: '100%',
   ...mixins.limitWidth,
   margin: '0 auto',
