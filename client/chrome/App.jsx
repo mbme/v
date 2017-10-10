@@ -2,6 +2,32 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'client/components'
+import { styled, mixins } from 'client/utils'
+
+const Navbar = styled('Navbar', {
+  margin: '0 auto',
+  textAlign: 'center',
+  extend: [
+    mixins.limitWidth,
+    ...mixins.margins('vertical', 'medium'),
+  ],
+})
+
+const NavbarLink = styled('NavbarLink', ({ selected }) => ({
+  display: 'inline-block',
+  margin: '0 ',
+  color: 'blue',
+  cursor: 'pointer',
+  extend: [
+    ...mixins.margins('horizontal', 'medium'),
+    {
+      condition: selected,
+      style: {
+        borderBottom: '2px solid blue',
+      },
+    },
+  ],
+}), Link)
 
 const ModalRenderer = connect(({ components }) => ({ modal: components.modal }))(({ modal }) => modal)
 
@@ -45,15 +71,22 @@ class App extends PureComponent {
     }
   }
 
+  renderNavbar() {
+    const route = this.props.routingSequence[0]
+
+    return (
+      <Navbar>
+        <NavbarLink to={{ name: 'notes' }} selected={route === 'notes'}>Notes</NavbarLink>
+        <NavbarLink to={{ name: 'todos' }} selected={route === 'todos'}>Todos</NavbarLink>
+        <NavbarLink to={{ name: 'one' }} selected={route === 'one'}>One</NavbarLink>
+      </Navbar>
+    )
+  }
+
   render() {
-    const { routingSequence } = this.props
     return (
       <div>
-        <div>
-          <Link to={{ name: 'notes' }}>Notes</Link>
-          <Link to={{ name: 'todos' }}>Todos</Link>
-          <Link to={{ name: 'one' }}>One</Link>
-        </div>
+        {this.renderNavbar()}
         {this.props.view}
         <ModalRenderer />
       </div>

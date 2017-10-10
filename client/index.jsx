@@ -15,7 +15,7 @@ import createApiClient from 'shared/api'
 import createRouter, { routerMiddleware, propagateCurrentLocation } from './router'
 import routes from './router/routes'
 import rootReducer from './reducers'
-import App from './App'
+import App from './chrome/App'
 
 const router = createRouter()
 router.useRoutes(routes)
@@ -47,7 +47,7 @@ function render() {
 render()
 
 if (module.hot) {
-  module.hot.accept('./App', render)
+  module.hot.accept('./chrome/App', render)
 
   module.hot.accept('./reducers', () => {
     store.replaceReducer(rootReducer)
