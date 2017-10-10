@@ -43,11 +43,6 @@ export const mixins = {
     boxShadow: '0 1px 4px rgba(0,0,0,.04)',
   },
 
-  limitWidth: {
-    maxWidth: '800px',
-    minWidth: '600px',
-  },
-
   fontSizeIf: (cond, value) => createCondition(cond, 'fontSize', value),
 
   textAlignCenterIf: cond => createCondition(cond, 'textAlign', 'center'),

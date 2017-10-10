@@ -59,7 +59,7 @@ class NotesView extends Component {
         <Text center>
           {notes.length} items
         </Text>
-        <div>{notes}</div>
+        {notes}
       </ViewContainer>
     )
   }

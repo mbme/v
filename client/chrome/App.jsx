@@ -4,11 +4,15 @@ import { connect } from 'react-redux'
 import { Link } from 'client/components'
 import { styled, mixins } from 'client/utils'
 
-const Navbar = styled('Navbar', {
+const AppContainer = styled('AppContainer', {
   margin: '0 auto',
+  maxWidth: '800px',
+  minWidth: '600px',
+})
+
+const Navbar = styled('Navbar', {
   textAlign: 'center',
   extend: [
-    mixins.limitWidth,
     ...mixins.margins('vertical', 'medium'),
   ],
 })
@@ -83,10 +87,10 @@ class App extends PureComponent {
 
   render() {
     return (
-      <div>
+      <AppContainer>
         {this.renderNavbar()}
         {this.props.view}
-      </div>
+      </AppContainer>
     )
   }
 }
