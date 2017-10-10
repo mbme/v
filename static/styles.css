@@ -1,7 +1,7 @@
 @import 'sanitize.css';
 
 html {
-  font-size: 1.125rem; /* usually 18px */
+  font-size: 1rem;
   font-family: -apple-system, BlinkMacSystemFont, /* Safari Mac/iOS, Chrome */
     "Segoe UI", Roboto, Oxygen, /* Windows, Android, KDE */
     Ubuntu, Cantarell, "Fira Sans", /* Ubuntu, Gnome, Firefox OS */

@@ -6,8 +6,7 @@ import { styled, mixins } from 'client/utils'
 
 const AppContainer = styled('AppContainer', {
   margin: '0 auto',
-  maxWidth: '800px',
-  minWidth: '600px',
+  maxWidth: '740px',
 })
 
 const Navbar = styled('Navbar', {

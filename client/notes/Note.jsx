@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { NotFoundView, LoadingView, ViewContainer, Link, Heading, Paper, Toolbar, FlatButton } from 'client/components'
+import { NotFoundView, LoadingView, ViewContainer, Link, Heading, Paper, Toolbar, IconButton } from 'client/components'
 import * as notesActions from './actions'
 
 function renderMarkup(data) {
@@ -13,7 +13,7 @@ function renderMarkup(data) {
 function NoteView({ note }) {
   const editBtn = (
     <Link to={{ name: 'note-editor', params: { id: note.id } }}>
-      <FlatButton>Edit</FlatButton>
+      <IconButton type="edit-2" />
     </Link>
   )
 
