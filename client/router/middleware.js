@@ -32,7 +32,7 @@ export default function routerMiddleware(router) {
         case LOCATION_CHANGE:
           // add view & routingSequence properties to the LOCATION_CHANGE event
           router.resolve(action.pathname).then(({ view, routingSequence }) => {
-            next({ ...action, view, routingSequence: [...routingSequence] })
+            next({ ...action, view, routingSequence: [ ...routingSequence ] })
           })
           break
 

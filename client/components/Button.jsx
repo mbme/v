@@ -41,7 +41,7 @@ export const FlatButton = styled('FlatButton', ({ disabled }) => ({
       },
     },
   ],
-}), CleanButton, ['disabled'])
+}), CleanButton, [ 'disabled' ])
 
 export const RaisedButton = styled('RaisedButton', {
   ...mixins.border,

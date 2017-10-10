@@ -3,7 +3,7 @@ import { capitalize, createArray } from './utils'
 
 // TODO handle few separators in a row
 
-const SKIP_WORDS = ['dr.', 'mr.', 'mrs.']
+const SKIP_WORDS = [ 'dr.', 'mr.', 'mrs.' ]
 
 function hasSkipWordAt(text, pos) {
   for (let i = 0; i < SKIP_WORDS.length; i += 1) {
@@ -130,20 +130,20 @@ function calculateTextStats(text) {
     words: {},
   }
 
-  Object.entries(dict).forEach(([word, wordStats]) => {
+  Object.entries(dict).forEach(([ word, wordStats ]) => {
     if (wordStats.start > 0) {
-      stats.starts.push([word, wordStats.start / sentences.length])
+      stats.starts.push([ word, wordStats.start / sentences.length ])
     }
 
     if (wordStats.end > 0) {
-      stats.ends.push([word, wordStats.end / sentences.length])
+      stats.ends.push([ word, wordStats.end / sentences.length ])
     }
 
 
-    stats.words[word] = Object.entries(wordStats.next).map(([nextWord, usages]) => [nextWord, usages / wordStats.nextWords])
+    stats.words[word] = Object.entries(wordStats.next).map(([ nextWord, usages ]) => [ nextWord, usages / wordStats.nextWords ])
   })
-  Object.entries(separators).forEach(([separator, usages]) => {
-    stats.separators.push([separator, usages / sentences.length])
+  Object.entries(separators).forEach(([ separator, usages ]) => {
+    stats.separators.push([ separator, usages / sentences.length ])
   })
 
   return stats
@@ -162,14 +162,14 @@ function pickWord(wordsDistribution) {
   }
 
   const wordProb = Math.random()
-  let [word, distribution] = wordsDistribution[0]
+  let [ word, distribution ] = wordsDistribution[0]
 
   if (distribution > wordProb) {
     return word
   }
 
   for (let i = 1; i < wordsDistribution.length; i += 1) {
-    word = wordsDistribution[i][0]
+    word = wordsDistribution[i][0] // eslint-disable-line prefer-destructuring
     distribution += wordsDistribution[i][1]
 
     if (distribution > wordProb) {

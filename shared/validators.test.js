@@ -56,13 +56,13 @@ describe('Validators', () => {
   test('validateAndThrow', () => {
     expect(() => {
       validateAndThrow(
-        [1, 'string'],
+        [ 1, 'string' ],
       )
     }).toThrow()
 
     expect(() => {
       validateAndThrow(
-        ['1', 'string']
+        [ '1', 'string' ]
       )
     }).not.toThrow()
   })

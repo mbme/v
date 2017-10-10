@@ -24,11 +24,11 @@ describe('Utils', () => {
     unsubscribe()
     o.next(3)
 
-    expect(cb.mock.calls).toEqual([[1], [2]])
+    expect(cb.mock.calls).toEqual([ [ 1 ], [ 2 ] ])
   })
 
   test('createArray', () => {
-    expect(createArray(3, 0)).toEqual([0, 0, 0])
-    expect(createArray(3, i => i)).toEqual([0, 1, 2])
+    expect(createArray(3, 0)).toEqual([ 0, 0, 0 ])
+    expect(createArray(3, i => i)).toEqual([ 0, 1, 2 ])
   })
 })

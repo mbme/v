@@ -23,7 +23,7 @@ export default class Input extends PureComponent {
   componentDidMount() {
     if (this.props.autoFocus) {
       this.ref.focus()
-      const length = this.ref.value.length
+      const { length } = this.ref.value
       // put cursor at the end of the input
       this.ref.setSelectionRange(length, length)
     }

@@ -4,7 +4,7 @@ import getDB from './db'
 const actions = {
   LIST_RECORDS: ({ type }) => {
     validateAndThrow(
-      [type, 'Record.type'],
+      [ type, 'Record.type' ],
     )
 
     return db => db.listRecords(type)
@@ -12,9 +12,9 @@ const actions = {
 
   CREATE_RECORD: ({ type, name, data }) => {
     validateAndThrow(
-      [type, 'Record.type'],
-      [name, 'Record.name'],
-      [data, 'Record.data'],
+      [ type, 'Record.type' ],
+      [ name, 'Record.name' ],
+      [ data, 'Record.data' ],
     )
 
     return db => db.createRecord(type, name, data)
@@ -22,9 +22,9 @@ const actions = {
 
   UPDATE_RECORD: ({ id, name, data }) => {
     validateAndThrow(
-      [id, 'Record.id'],
-      [name, 'Record.name'],
-      [data, 'Record.data'],
+      [ id, 'Record.id' ],
+      [ name, 'Record.name' ],
+      [ data, 'Record.data' ],
     )
 
     return db => db.updateRecord(id, name, data)
@@ -32,7 +32,7 @@ const actions = {
 
   DELETE_RECORD: ({ id }) => {
     validateAndThrow(
-      [id, 'Record.id'],
+      [ id, 'Record.id' ],
     )
 
     return db => db.deleteRecord(id)
@@ -40,9 +40,9 @@ const actions = {
 
   CREATE_FILE: ({ recordId, name, data }) => {
     validateAndThrow(
-      [recordId, 'Record.id'],
-      [name, 'File.name'],
-      [data, 'File.data'],
+      [ recordId, 'Record.id' ],
+      [ name, 'File.name' ],
+      [ data, 'File.data' ],
     )
 
     return db => db.createFile(recordId, name, data).then(() => {})
@@ -50,8 +50,8 @@ const actions = {
 
   READ_FILE: ({ recordId, name }) => {
     validateAndThrow(
-      [recordId, 'Record.id'],
-      [name, 'File.name'],
+      [ recordId, 'Record.id' ],
+      [ name, 'File.name' ],
     )
 
     return db => db.readFile(recordId, name)
@@ -59,8 +59,8 @@ const actions = {
 
   DELETE_FILE: ({ recordId, name }) => {
     validateAndThrow(
-      [recordId, 'Record.id'],
-      [name, 'File.name'],
+      [ recordId, 'Record.id' ],
+      [ name, 'File.name' ],
     )
 
     return db => db.deleteFile(recordId, name).then(() => {})

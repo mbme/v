@@ -58,7 +58,7 @@ describe('DB', () => {
     test('create file', async () => {
       await db.createFile(recordId, name, data)
       const files = await db.listFiles()
-      expect(files[recordId]).toEqual([{ recordId, name, size: data.length }])
+      expect(files[recordId]).toEqual([ { recordId, name, size: data.length } ])
     })
 
     test('read file', async () => {

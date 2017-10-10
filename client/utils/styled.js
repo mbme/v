@@ -23,10 +23,10 @@ export const theme = {
 
 function getSide(side) {
   return {
-    top: ['all', 'vertical', 'top'].includes(side),
-    right: ['all', 'horizontal', 'right'].includes(side),
-    bottom: ['all', 'vertical', 'bottom'].includes(side),
-    left: ['all', 'horizontal', 'left'].includes(side),
+    top: [ 'all', 'vertical', 'top' ].includes(side),
+    right: [ 'all', 'horizontal', 'right' ].includes(side),
+    bottom: [ 'all', 'vertical', 'bottom' ].includes(side),
+    left: [ 'all', 'horizontal', 'left' ].includes(side),
   }
 }
 
@@ -102,7 +102,7 @@ export function styled(name, styles, type = 'div', passThroughProps = []) {
     throw new Error('styled: "name" must be a string')
   }
 
-  const usedProps = ['innerRef']
+  const usedProps = [ 'innerRef' ]
   let rule = styles
   if (isFunction(rule)) {
     const extractedProps = extractUsedProps(styles)

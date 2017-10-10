@@ -3,7 +3,7 @@
 /* eslint-disable global-require */
 
 require('babel-register')({
-  plugins: ['transform-es2015-modules-commonjs'],
+  plugins: [ 'transform-es2015-modules-commonjs' ],
 })
 
 

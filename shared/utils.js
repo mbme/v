@@ -67,7 +67,7 @@ export function createArray(size, val) {
 }
 
 // recursive helper for `getIn`
-function getInRec(obj, [prop, ...rest]) {
+function getInRec(obj, [ prop, ...rest ]) {
   if (!rest.length) {
     return obj[prop]
   }

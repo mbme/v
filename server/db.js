@@ -69,7 +69,7 @@ function dbAPI(db) {
       const files = await this.listFiles()
 
       const results = []
-      await selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [type], (row) => {
+      await selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [ type ], (row) => {
         results.push({
           ...row,
           files: files[row.id] || [],
@@ -80,19 +80,19 @@ function dbAPI(db) {
     },
 
     createRecord(type, name, data) {
-      return run('INSERT INTO records(type, name, data) VALUES (?, ?, ?)', [type, name, data]).then(ctx => ctx.lastID)
+      return run('INSERT INTO records(type, name, data) VALUES (?, ?, ?)', [ type, name, data ]).then(ctx => ctx.lastID)
     },
 
     readRecord(id) {
-      return get('SELECT id, type, name, data FROM records WHERE id = ?', [id])
+      return get('SELECT id, type, name, data FROM records WHERE id = ?', [ id ])
     },
 
     updateRecord(id, name, data) {
-      return run('UPDATE records set name = ?, data = ? WHERE id = ?', [name, data, id]).then(expectSingleChange)
+      return run('UPDATE records set name = ?, data = ? WHERE id = ?', [ name, data, id ]).then(expectSingleChange)
     },
 
     deleteRecord(id) {
-      return run('DELETE FROM records where id = ?', [id]).then(expectSingleChange)
+      return run('DELETE FROM records where id = ?', [ id ]).then(expectSingleChange)
     },
 
     // ----------- FILES ----------------------------------
@@ -116,15 +116,15 @@ function dbAPI(db) {
      * @param {Buffer} data
      */
     createFile(recordId, name, data) {
-      return run('INSERT INTO files(recordId, name, data) VALUES (?, ?, ?)', [recordId, name, data])
+      return run('INSERT INTO files(recordId, name, data) VALUES (?, ?, ?)', [ recordId, name, data ])
     },
 
     readFile(recordId, name) {
-      return get('SELECT data FROM files WHERE recordId = ? AND name = ?', [recordId, name]).then(file => file ? file.data : file)
+      return get('SELECT data FROM files WHERE recordId = ? AND name = ?', [ recordId, name ]).then(file => file ? file.data : file)
     },
 
     deleteFile(recordId, name) {
-      return run('DELETE FROM files where recordId = ? AND name = ?', [recordId, name]).then(expectSingleChange)
+      return run('DELETE FROM files where recordId = ? AND name = ?', [ recordId, name ]).then(expectSingleChange)
     },
 
     close() {
