@@ -4,6 +4,7 @@ import { AppContainer } from 'react-hot-loader'
 
 import { Provider as FelaProvider } from 'react-fela'
 import { createRenderer } from 'fela'
+import combineArrays from 'fela-combine-arrays'
 import webPreset from 'fela-preset-web'
 
 import { createStore, applyMiddleware } from 'redux'
@@ -28,7 +29,7 @@ const store = createStore(
 )
 store.dispatch(propagateCurrentLocation()) // use current location
 
-const renderer = createRenderer({ plugins: webPreset })
+const renderer = createRenderer({ plugins: webPreset, enhancers: [combineArrays()] })
 
 function render() {
   ReactDOM.render(
