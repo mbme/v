@@ -19,6 +19,10 @@ export default function createRouter() {
             routingSequence.push(context.route.name)
           }
 
+          if (context.route.redirectTo) {
+            return { redirectTo: context.route.redirectTo }
+          }
+
           if (typeof context.route.action === 'function') {
             return context.route.action(context, params)
           }
@@ -39,7 +43,12 @@ export default function createRouter() {
     },
 
     resolve(pathname) {
-      return router.resolve(pathname).then(view => ({ view, routingSequence }))
+      return router.resolve(pathname).then((view) => {
+        if (view.redirectTo) {
+          return { redirectTo: view.redirectTo }
+        }
+        return { view, routingSequence }
+      })
     },
   }
 }

@@ -9,6 +9,10 @@ import NoteEditorView from 'client/notes/NoteEditor'
 
 export default [
   {
+    path: '',
+    redirectTo: 'notes',
+  },
+  {
     path: '/one',
     name: 'one',
     action: () => (
