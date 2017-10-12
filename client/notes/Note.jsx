@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { NotFoundView, LoadingView, ViewContainer, Link, Heading, Paper, Toolbar, IconButton } from 'client/components'
 import * as notesActions from './actions'
+import DeleteNoteButton from './DeleteNoteButton'
 
 function renderMarkup(data) {
   return data.split('\n\n').map(
@@ -11,6 +12,10 @@ function renderMarkup(data) {
 }
 
 function NoteView({ note }) {
+  const deleteBtn = (
+    <DeleteNoteButton key="delete" id={note.id} />
+  )
+
   const editBtn = (
     <Link to={{ name: 'note-editor', params: { id: note.id } }}>
       <IconButton type="edit-2" />
@@ -19,7 +24,7 @@ function NoteView({ note }) {
 
   return (
     <ViewContainer>
-      <Toolbar right={editBtn} />
+      <Toolbar left={deleteBtn} right={editBtn} />
       <Paper>
         <Heading>{note.name}</Heading>
         {renderMarkup(note.data)}
