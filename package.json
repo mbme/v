@@ -20,7 +20,7 @@
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-fela": "^6.0.1",
-    "react-hot-loader": "next",
+    "react-hot-loader": "3.0.0-beta.7",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
@@ -149,9 +149,21 @@
       "react/sort-comp": 0,
       "jsx-a11y/anchor-is-valid": 0,
       "jsx-a11y/click-events-have-key-events": 0,
-      "function-paren-newline": ["error", "consistent"],
-      "object-curly-newline": ["error", { "multiline": true, "consistent": true }],
-      "array-bracket-spacing": ["error", "always"]
+      "function-paren-newline": [
+        "error",
+        "consistent"
+      ],
+      "object-curly-newline": [
+        "error",
+        {
+          "multiline": true,
+          "consistent": true
+        }
+      ],
+      "array-bracket-spacing": [
+        "error",
+        "always"
+      ]
     },
     "settings": {
       "import/resolver": {
