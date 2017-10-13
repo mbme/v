@@ -12,8 +12,7 @@ import reduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 
 import createApiClient from 'shared/api'
-import createRouter, { routerMiddleware, propagateCurrentLocation } from './router'
-import routes from './router/routes'
+import { createRouter, routes, routerMiddleware, propagateCurrentLocation } from './router'
 import rootReducer from './reducers'
 import App from './chrome/App'
 
@@ -54,7 +53,7 @@ if (module.hot) {
     render()
   })
 
-  module.hot.accept('./router/routes', () => {
+  module.hot.accept('./router', () => {
     router.useRoutes(routes)
     store.dispatch(propagateCurrentLocation())
   })
