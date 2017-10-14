@@ -6,14 +6,12 @@ import debounce from 'lodash.debounce'
 import { fuzzySearch } from 'shared/utils'
 import { ViewContainer, Toolbar, FlatButton, Link, Input, Section, Text, Paper } from 'client/components'
 import * as routerActions from 'client/router/actions'
-import * as notesActions from './actions'
 
 class NotesView extends Component {
   static propTypes = {
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
     setFilter: PropTypes.func.isRequired,
-    createNote: PropTypes.func.isRequired,
   }
 
   getVisibleNotes() {
@@ -35,7 +33,9 @@ class NotesView extends Component {
     const notes = this.getVisibleNotes()
 
     const addBtn = (
-      <FlatButton onClick={this.props.createNote}>Add</FlatButton>
+      <Link to={{ name: 'add-note' }}>
+        <FlatButton>Add</FlatButton>
+      </Link>
     )
 
     return (
@@ -66,11 +66,7 @@ const mapStateToProps = ({ notes, router }) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  async createNote() {
-    const id = await dispatch(notesActions.createNote('Tabula rasa', ''))
-    return dispatch(routerActions.push('note-editor', { id }))
-  },
-  setFilter: filter => dispatch(routerActions.replace('notes', filter ? { filter } : null)),
+  setFilter: filter => dispatch(routerActions.replace({ name: 'notes', params: filter ? { filter } : null })),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotesView)

@@ -16,7 +16,7 @@ class DeleteNoteButton extends PureComponent {
     showConfirmation: false,
   }
 
-  deleteNote = () => this.props.deleteNote(this.props.id).then(() => this.props.push('notes'))
+  deleteNote = () => this.props.deleteNote(this.props.id).then(() => this.props.push({ name: 'notes' }))
 
   render() {
     return [

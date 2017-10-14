@@ -53,7 +53,7 @@ class App extends PureComponent {
   static propTypes = {
     pathname: PropTypes.string.isRequired,
     isPush: PropTypes.bool.isRequired,
-    loading: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
     routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
     view: PropTypes.node,
   }
@@ -103,9 +103,9 @@ class App extends PureComponent {
   }
 
   render() {
-    const { view, loading } = this.props
+    const { view, isLoading } = this.props
 
-    const currentView = loading ? <LoadingView /> : (view || <NotFoundView />)
+    const currentView = isLoading ? <LoadingView /> : (view || <NotFoundView />)
 
     return (
       <AppContainer>
@@ -119,7 +119,7 @@ class App extends PureComponent {
 const mapStateToProps = ({ router }) => ({
   pathname: router.pathname,
   isPush: router.isPush,
-  loading: router.loading,
+  isLoading: router.isLoading,
   view: router.view,
   routingSequence: router.routingSequence,
 })

@@ -1,5 +1,5 @@
 export const PUSH = 'ROUTER/PUSH'
-export function push(name, params) {
+export function push({ name, params }) {
   return {
     type: PUSH,
     name,
@@ -8,7 +8,7 @@ export function push(name, params) {
 }
 
 export const REPLACE = 'ROUTER/REPLACE'
-export function replace(name, params) {
+export function replace({ name, params }) {
   return {
     type: REPLACE,
     name,

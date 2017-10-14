@@ -1,7 +1,7 @@
-import { LIST_CHANGE } from './actions'
+import { LIST_CHANGE, LIST_OUTDATED } from './actions'
 
 const defaultState = {
-  initialized: false,
+  fresh: false,
   notes: [],
 }
 
@@ -9,8 +9,14 @@ export default function notes(state = defaultState, action) {
   switch (action.type) {
     case LIST_CHANGE:
       return {
-        initialized: true,
         notes: action.notes,
+        fresh: true,
+      }
+
+    case LIST_OUTDATED:
+      return {
+        ...state,
+        fresh: false,
       }
 
     default:

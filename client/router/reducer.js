@@ -5,7 +5,7 @@ const defaultState = {
   search: '',
   query: {},
   isPush: false,
-  loading: false,
+  isLoading: false,
   routingSequence: [],
   view: null,
 }
@@ -34,13 +34,13 @@ export default function router(state = defaultState, action) {
         search: action.search,
         query: parseQuery(action.search.trim()),
         isPush: action.isPush,
-        loading: true,
+        isLoading: true,
       }
 
     case SET_VIEW:
       return {
         ...state,
-        loading: false,
+        isLoading: false,
         view: action.view,
         routingSequence: action.routingSequence,
       }

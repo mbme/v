@@ -1,12 +1,18 @@
-export const LIST_CHANGE = 'NOTES/LIST_CHANGE'
-
 const NOTE_TYPE = 'note'
 
-export function listNotes(reload = false) {
+export const LIST_OUTDATED = 'NOTES/LIST_OUTDATED'
+export function markNotesListOutdated() {
+  return {
+    type: LIST_OUTDATED,
+  }
+}
+
+export const LIST_CHANGE = 'NOTES/LIST_CHANGE'
+export function listNotes() {
   return async (dispatch, getState, client) => {
     const { notes } = getState()
 
-    if (notes.initialized && !reload) {
+    if (notes.fresh) {
       return null
     }
 
@@ -23,7 +29,7 @@ export function updateNote(id, name, data) {
   return async (dispatch, getState, client) => {
     await client.updateRecord(id, name, data)
 
-    return dispatch(listNotes(true))
+    dispatch(markNotesListOutdated())
   }
 }
 
@@ -31,7 +37,7 @@ export function deleteNote(id) {
   return async (dispatch, getState, client) => {
     await client.deleteRecord(id)
 
-    return dispatch(listNotes(true))
+    dispatch(markNotesListOutdated())
   }
 }
 
@@ -39,7 +45,7 @@ export function createNote(name, data) {
   return async (dispatch, getState, client) => {
     const id = await client.createRecord(NOTE_TYPE, name, data)
 
-    await dispatch(listNotes(true))
+    dispatch(markNotesListOutdated())
 
     return id
   }

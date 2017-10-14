@@ -8,38 +8,48 @@ import DeleteNoteButton from './DeleteNoteButton'
 
 class NoteEditorView extends PureComponent {
   static propTypes = {
-    note: PropTypes.object.isRequired,
-    updateNote: PropTypes.func.isRequired,
+    id: PropTypes.number,
+    name: PropTypes.string.isRequired,
+    data: PropTypes.string.isRequired,
     push: PropTypes.func.isRequired,
+    createNote: PropTypes.func.isRequired,
+    updateNote: PropTypes.func.isRequired,
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      name: props.note.name,
-      data: props.note.data,
-    }
+  state = {
+    name: this.props.name,
+    data: this.props.data,
   }
 
-  hasChanges = () => this.state.name !== this.props.note.name || this.state.data !== this.props.note.data
-
+  hasChanges = () => this.state.name !== this.props.name || this.state.data !== this.props.data
   onNameChange = e => this.setState({ name: e.target.value })
   onDataChange = e => this.setState({ data: e.target.value })
 
-  onSave = () => this.props.updateNote(this.props.note.id, this.state.name, this.state.data).then(this.closeEditor)
-  closeEditor = () => this.props.push('note', { id: this.props.note.id })
+  closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' })
+
+  onSave = async () => {
+    await this.props.updateNote(this.props.id, this.state.name, this.state.data)
+    this.closeEditor(this.props.id)
+  }
+
+  onCreate = async () => {
+    const id = await this.props.createNote(this.state.name, this.state.data)
+    this.closeEditor(id)
+  }
 
   render() {
     const { name, data } = this.state
+    const { id } = this.props
 
     const leftIcons = [
-      <DeleteNoteButton key="delete" id={this.props.note.id} />,
+      id && <DeleteNoteButton key="delete" id={id} />,
     ]
 
     const rightIcons = [
-      <FlatButton key="cancel" onClick={this.closeEditor}>Cancel</FlatButton>,
-      <FlatButton key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</FlatButton>,
+      <FlatButton key="cancel" onClick={() => this.closeEditor(id)}>Cancel</FlatButton>,
+      id
+        ? <FlatButton key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</FlatButton>
+        : <FlatButton key="create" onClick={this.onCreate} disabled={!this.hasChanges()}>Create</FlatButton>,
     ]
 
     return (
@@ -58,12 +68,18 @@ class NoteEditorView extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ notes }, { id }) => ({
-  note: notes.notes.find(note => note.id === id),
-})
+const mapStateToProps = ({ notes }, { id }) => {
+  if (!id) {
+    return { name: '', data: '' }
+  }
+
+  const note = notes.notes.find(n => n.id === id)
+  return { name: note.name, data: note.data }
+}
 
 const mapDispatchToProps = {
   updateNote: notesActions.updateNote,
+  createNote: notesActions.createNote,
   push: routerActions.push,
 }
 

@@ -21,7 +21,7 @@ async function initNote(store, params) {
 export default [
   {
     path: '',
-    redirectTo: 'notes',
+    redirectTo: { name: 'notes' },
   },
   {
     path: '/one',
@@ -43,6 +43,11 @@ export default [
       {
         init: store => store.dispatch(notesActions.listNotes()),
         render: () => <NotesView />,
+      },
+      {
+        name: 'add-note',
+        path: '/add',
+        render: () => <NoteEditorView />,
       },
       {
         name: 'note',
