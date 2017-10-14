@@ -1,4 +1,4 @@
-import { LOCATION_CHANGE, GO, GO_FORWARD, PUSH, REPLACE, GO_BACK, propagateCurrentLocation, replace } from './actions'
+import { LOCATION_CHANGE, GO, GO_FORWARD, PUSH, REPLACE, GO_BACK, propagateCurrentLocation, replace, setView } from './actions'
 
 export default function routerMiddleware(router) {
   return (store) => {
@@ -30,13 +30,25 @@ export default function routerMiddleware(router) {
           break
 
         case LOCATION_CHANGE:
-          // add view & routingSequence properties to the LOCATION_CHANGE event
-          router.resolve(action.pathname).then(({ view, routingSequence, redirectTo }) => {
-            if (redirectTo) {
-              store.dispatch(replace(redirectTo))
-            } else {
-              next({ ...action, view, routingSequence: [ ...routingSequence ] })
+          router.resolve(action.pathname).then((resp) => {
+            if (resp.redirectTo) {
+              store.dispatch(replace(resp.redirectTo))
+              return
             }
+
+            next(action)
+
+            const initPromise = resp.init ? resp.init(store, resp.params) : Promise.resolve()
+
+            initPromise.then(
+              () => resp.render(resp.params),
+              (e) => {
+                console.error(e)
+                return null
+              },
+            ).then(
+              view => store.dispatch(setView(view, resp.routingSequence)),
+            )
           })
           break
 

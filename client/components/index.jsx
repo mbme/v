@@ -1,4 +1,3 @@
-import React from 'react'
 import { styled, mixins, theme } from 'client/utils'
 
 export { default as Link } from './Link'
@@ -24,7 +23,6 @@ export const Text = styled('Text', ({ center }) => ({
 export const Heading = styled('Heading', ({ xxlarge, center }) => ({
   fontWeight: 'bold',
   fontSize: theme.fontSize.large,
-  lineHeight: '1.25',
 
   extend: [
     mixins.fontSizeIf(xxlarge, theme.fontSize.xxlarge),
@@ -54,19 +52,3 @@ export const Flex = styled('Flex', ({ justifyContent = 'center' }) => ({
   display: 'flex',
   justifyContent,
 }))
-
-export function NotFoundView() {
-  return (
-    <ViewContainer>
-      <Heading>NOT FOUND</Heading>
-    </ViewContainer>
-  )
-}
-
-export function LoadingView() {
-  return (
-    <ViewContainer>
-      <Heading>LOADING...</Heading>
-    </ViewContainer>
-  )
-}

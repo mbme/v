@@ -9,19 +9,19 @@ export default function createRouter() {
   return {
     useRoutes(routes) {
       router = new Router(routes, {
-        resolveRoute(context, params) {
-          if (!context.route.parent) {
+        resolveRoute({ route }, params) {
+          if (!route.parent) {
             routingSequence = []
           } else {
-            routingSequence.push(context.route.name)
+            routingSequence.push(route.name)
           }
 
-          if (context.route.redirectTo) {
-            return { redirectTo: context.route.redirectTo }
+          if (route.redirectTo) {
+            return { redirectTo: route.redirectTo }
           }
 
-          if (typeof context.route.action === 'function') {
-            return context.route.action(context, params)
+          if (route.render) {
+            return { render: route.render, init: route.init, params }
           }
 
           return null
@@ -40,12 +40,7 @@ export default function createRouter() {
     },
 
     resolve(pathname) {
-      return router.resolve(pathname).then((view) => {
-        if (view.redirectTo) {
-          return { redirectTo: view.redirectTo }
-        }
-        return { view, routingSequence }
-      })
+      return router.resolve(pathname).then(resp => ({ ...resp, routingSequence }))
     },
   }
 }

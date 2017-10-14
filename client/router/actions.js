@@ -52,3 +52,12 @@ export function locationChange(pathname, search, isPush = false) {
 export function propagateCurrentLocation(isPush = false) {
   return locationChange(window.location.pathname, window.location.search, isPush)
 }
+
+export const SET_VIEW = 'ROUTER/SET_VIEW'
+export function setView(view, routingSequence) {
+  return {
+    type: SET_VIEW,
+    view,
+    routingSequence,
+  }
+}

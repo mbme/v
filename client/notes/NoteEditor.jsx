@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { LoadingView, NotFoundView, ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
+import { ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
 import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
 import DeleteNoteButton from './DeleteNoteButton'
@@ -58,34 +58,13 @@ class NoteEditorView extends PureComponent {
   }
 }
 
-function Loader({ initialized, note, listNotes, ...props }) {
-  if (!initialized) {
-    listNotes()
-
-    return <LoadingView />
-  }
-
-  if (!note) {
-    return <NotFoundView />
-  }
-
-  return <NoteEditorView note={note} {...props} />
-}
-Loader.propTypes = {
-  initialized: PropTypes.bool.isRequired,
-  note: PropTypes.object,
-  listNotes: PropTypes.func.isRequired,
-}
-
 const mapStateToProps = ({ notes }, { id }) => ({
   note: notes.notes.find(note => note.id === id),
-  initialized: notes.initialized,
 })
 
 const mapDispatchToProps = {
-  listNotes: notesActions.listNotes,
   updateNote: notesActions.updateNote,
   push: routerActions.push,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Loader)
+export default connect(mapStateToProps, mapDispatchToProps)(NoteEditorView)

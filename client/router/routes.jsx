@@ -2,10 +2,21 @@
 
 import React from 'react'
 
-import { ConfirmationDialog, Icon, NotFoundView } from 'client/components'
+import { ConfirmationDialog, Icon } from 'client/components'
 import NotesView from 'client/notes/Notes'
 import NoteView from 'client/notes/Note'
 import NoteEditorView from 'client/notes/NoteEditor'
+import * as notesActions from 'client/notes/actions'
+
+async function initNote(store, params) {
+  const id = parseInt(params.id, 10)
+
+  await store.dispatch(notesActions.listNotes())
+
+  if (!store.getState().notes.notes.find(note => note.id === id)) {
+    throw new Error(`Unknown note ${id}`)
+  }
+}
 
 export default [
   {
@@ -15,7 +26,7 @@ export default [
   {
     path: '/one',
     name: 'one',
-    action: () => (
+    render: () => (
       <div>
         <h1>Page One</h1>
         <ConfirmationDialog confirmation="Remove" onConfirmed={() => {}} onCancel={() => {}}>
@@ -30,19 +41,25 @@ export default [
     name: 'notes',
     children: [
       {
-        action: () => <NotesView />,
+        init: store => store.dispatch(notesActions.listNotes()),
+        render: () => <NotesView />,
       },
       {
         name: 'note',
         path: '/:id',
-        action: ({ params }) => <NoteView id={parseInt(params.id, 10)} />,
+        init: initNote,
+        render: ({ id }) => <NoteView id={parseInt(id, 10)} />,
       },
       {
         name: 'note-editor',
         path: '/:id/editor',
-        action: ({ params }) => <NoteEditorView id={parseInt(params.id, 10)} />,
+        init: initNote,
+        render: ({ id }) => <NoteEditorView id={parseInt(id, 10)} />,
       },
     ],
   },
-  { path: '(.*)', action: () => <NotFoundView /> },
+  {
+    path: '(.*)',
+    render: () => null,
+  },
 ]

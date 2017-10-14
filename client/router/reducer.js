@@ -1,10 +1,11 @@
-import { LOCATION_CHANGE } from './actions'
+import { LOCATION_CHANGE, SET_VIEW } from './actions'
 
 const defaultState = {
   pathname: '/',
   search: '',
   query: {},
   isPush: false,
+  loading: false,
   routingSequence: [],
   view: null,
 }
@@ -28,10 +29,18 @@ export default function router(state = defaultState, action) {
   switch (action.type) {
     case LOCATION_CHANGE:
       return {
+        ...defaultState,
         pathname: action.pathname,
         search: action.search,
         query: parseQuery(action.search.trim()),
         isPush: action.isPush,
+        loading: true,
+      }
+
+    case SET_VIEW:
+      return {
+        ...state,
+        loading: false,
         view: action.view,
         routingSequence: action.routingSequence,
       }

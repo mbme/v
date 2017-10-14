@@ -10,15 +10,10 @@ import * as notesActions from './actions'
 
 class NotesView extends Component {
   static propTypes = {
-    listNotes: PropTypes.func.isRequired,
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
     setFilter: PropTypes.func.isRequired,
     createNote: PropTypes.func.isRequired,
-  }
-
-  componentWillMount() {
-    this.props.listNotes()
   }
 
   getVisibleNotes() {
@@ -71,7 +66,6 @@ const mapStateToProps = ({ notes, router }) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  listNotes: () => dispatch(notesActions.listNotes()),
   async createNote() {
     const id = await dispatch(notesActions.createNote('Tabula rasa', ''))
     return dispatch(routerActions.push('note-editor', { id }))

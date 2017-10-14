@@ -1,12 +1,29 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'client/components'
+import { Link, Heading, ViewContainer } from 'client/components'
 import { styled, mixins } from 'client/utils'
+
+
+export function NotFoundView() {
+  return (
+    <ViewContainer>
+      <Heading>NOT FOUND</Heading>
+    </ViewContainer>
+  )
+}
+
+export function LoadingView() {
+  return (
+    <ViewContainer>
+      <Heading>LOADING...</Heading>
+    </ViewContainer>
+  )
+}
 
 const AppContainer = styled('AppContainer', {
   margin: '0 auto',
-  maxWidth: '740px',
+  maxWidth: '42rem',
 })
 
 const Navbar = styled('Navbar', {
@@ -36,6 +53,7 @@ class App extends PureComponent {
   static propTypes = {
     pathname: PropTypes.string.isRequired,
     isPush: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired,
     routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
     view: PropTypes.node,
   }
@@ -85,10 +103,14 @@ class App extends PureComponent {
   }
 
   render() {
+    const { view, loading } = this.props
+
+    const currentView = loading ? <LoadingView /> : (view || <NotFoundView />)
+
     return (
       <AppContainer>
         {this.renderNavbar()}
-        {this.props.view}
+        {currentView}
       </AppContainer>
     )
   }
@@ -97,6 +119,7 @@ class App extends PureComponent {
 const mapStateToProps = ({ router }) => ({
   pathname: router.pathname,
   isPush: router.isPush,
+  loading: router.loading,
   view: router.view,
   routingSequence: router.routingSequence,
 })
