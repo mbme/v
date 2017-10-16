@@ -26,8 +26,7 @@ class NotesView extends Component {
     ))
   }
 
-  setFilterDebounced = debounce(this.props.setFilter, 300)
-  onFilterChange = e => this.setFilterDebounced(e.target.value.trim())
+  onFilterChange = debounce(this.props.setFilter, 300)
 
   render() {
     const notes = this.getVisibleNotes()
@@ -44,7 +43,6 @@ class NotesView extends Component {
         <Section side="bottom">
           <Input
             name="filter"
-            type="text"
             defaultValue={this.props.filter}
             placeholder="Filter notes"
             onChange={this.onFilterChange}
@@ -66,7 +64,11 @@ const mapStateToProps = ({ notes, router }) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  setFilter: filter => dispatch(routerActions.replace({ name: 'notes', params: filter ? { filter } : null })),
+  setFilter(rawFilter) {
+    const filter = rawFilter.trim()
+    const params = filter ? { filter } : null
+    dispatch(routerActions.replace({ name: 'notes', params }))
+  },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotesView)

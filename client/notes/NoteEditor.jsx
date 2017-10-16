@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
 import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
+import AttachFileButton from './AttachFileButton'
 import DeleteNoteButton from './DeleteNoteButton'
 
 class NoteEditorView extends PureComponent {
@@ -21,9 +22,11 @@ class NoteEditorView extends PureComponent {
     data: this.props.data,
   }
 
+  textAreaRef = null
+
   hasChanges = () => this.state.name !== this.props.name || this.state.data !== this.props.data
-  onNameChange = e => this.setState({ name: e.target.value })
-  onDataChange = e => this.setState({ data: e.target.value })
+  onNameChange = name => this.setState({ name })
+  onDataChange = data => this.setState({ data })
 
   closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' })
 
@@ -37,12 +40,22 @@ class NoteEditorView extends PureComponent {
     this.closeEditor(id)
   }
 
+  onFilesSelected = (files) => {
+    if (!files.length) {
+      return
+    }
+
+    this.textAreaRef.insert(files.map(file => `[[${file.name}][123]]`).join(' '))
+    this.textAreaRef.focus()
+  }
+
   render() {
     const { name, data } = this.state
     const { id } = this.props
 
     const leftIcons = [
       id && <DeleteNoteButton key="delete" id={id} />,
+      <AttachFileButton key="attach" onSelected={this.onFilesSelected} />,
     ]
 
     const rightIcons = [
@@ -57,11 +70,11 @@ class NoteEditorView extends PureComponent {
         <Toolbar left={leftIcons} right={rightIcons} />
 
         <Section side="bottom">
-          <Input name="name" type="text" value={name} onChange={this.onNameChange} autoFocus />
+          <Input name="name" value={name} onChange={this.onNameChange} autoFocus />
         </Section>
 
         <Section side="bottom">
-          <Textarea name="data" value={data} onChange={this.onDataChange} />
+          <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref }} />
         </Section>
       </ViewContainer>
     )
