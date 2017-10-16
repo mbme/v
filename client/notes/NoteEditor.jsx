@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { sha256 } from 'shared/utils'
+import { readFile } from 'client/utils'
 import { ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
 import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
@@ -40,12 +42,14 @@ class NoteEditorView extends PureComponent {
     this.closeEditor(id)
   }
 
-  onFilesSelected = (files) => {
+  onFilesSelected = async (files) => {
     if (!files.length) {
       return
     }
 
-    this.textAreaRef.insert(files.map(file => `[[${file.name}][123]]`).join(' '))
+    const hashes = await Promise.all(files.map(file => readFile(file).then(sha256)))
+
+    this.textAreaRef.insert(files.map((file, i) => `[[${file.name}][${hashes[i]}]]`).join(' '))
     this.textAreaRef.focus()
   }
 

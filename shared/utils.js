@@ -125,3 +125,11 @@ export function createSubject(initialValue) {
     },
   }
 }
+
+function bytesToHexString(buffer) {
+  return Array.from(new Uint8Array(buffer)).map(b => ('00' + b.toString(16)).slice(-2)).join('')
+}
+
+export function sha256(buffer) {
+  return crypto.subtle.digest('SHA-256', buffer).then(bytesToHexString)
+}
