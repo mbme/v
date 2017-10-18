@@ -1,3 +1,4 @@
+import parse from './parser'
 
 const text = `
 # Header
@@ -19,8 +20,33 @@ One more paragraph.
 `
 
 describe('Parser', () => {
-  test('isObject', () => {
-    // expect(isObject(null)).toBe(false)
-    // expect(isObject({})).toBe(true)
+  test('Italic', () => {
+    expect(parse('_test_', 'Italic')).toMatchSnapshot()
+    expect(parse('_ test and so on *test*_', 'Italic')).toMatchSnapshot()
+  })
+
+  test('Bold', () => {
+    expect(parse('*test*', 'Bold')).toMatchSnapshot()
+    expect(parse('* test _and_ so on*', 'Bold')).toMatchSnapshot()
+  })
+
+  test('Header', () => {
+    expect(parse('# AHAHAH *test oh no* !', 'Header')).toMatchSnapshot()
+    expect(parse(
+      `# AHAHAH *test oh no* !
+      there is no empty line
+      `,
+      'Header',
+    )).toBeNull()
+  })
+
+  test('Paragraph', () => {
+    expect(parse(
+      `
+      AHAHAH *test oh no* !
+      go go _power cows_
+      `,
+      'Paragraph',
+    )).toMatchSnapshot()
   })
 })

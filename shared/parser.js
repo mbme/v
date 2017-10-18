@@ -1,43 +1,59 @@
+/* eslint-disable no-labels, no-continue, no-restricted-syntax */
 // TODO preprocess: replace \r\n with \n
 
-const Grammar = {
-  Text: {
-    children: [],
-  },
+export const Grammar = {
   Italic: {
+    skip: [ 1, 1 ],
     children: [
-      'Text',
       'Bold',
     ],
     isStart: (str, pos) => str[pos] === '_',
     isEnd: (str, pos) => str[pos] === '_',
   },
+
   Bold: {
+    skip: [ 1, 1 ],
     children: [
       'Italic',
-      'Text',
     ],
     isStart: (str, pos) => str[pos] === '*', // TODO handle escaping with \*
     isEnd: (str, pos) => str[pos] === '*',
   },
+
   Header: {
-    children: [
-      'Text',
-    ],
-    isStart(str, pos) {
-      return str[pos] === '#' && (pos === 0 || str[pos - 1] === '\n')
+    skip: [ 1, 1 ],
+    children: [],
+    isStart: (str, pos) => {
+      if (str[pos] !== '#') {
+        return false
+      }
+
+      if (pos > 0 && str[pos - 1] !== '\n') { // check newline before #
+        return false
+      }
+
+      const newLinePos = str.indexOf('\n', pos)
+
+      // check if there is an empty line after header
+      if (newLinePos !== -1 && newLinePos + 1 < str.length && str[newLinePos + 1] !== '\n') {
+        return false
+      }
+
+      return true
     },
-    isEnd(str, pos) {
-      return str[pos] === '\n'
-    },
+    isEnd: (str, pos) => str[pos] === '\n',
   },
+
   Paragraph: {
+    skip: [ 0, 0 ],
     children: [
       'Bold',
       'Italic',
-      'Text',
     ],
+    isStart: (str, pos) => pos === 0 || (str[pos] === '\n' && str[pos - 1] === '\n'),
+    isEnd: (str, pos) => str[pos] === '\n' && (pos + 1 === str.length || str[pos + 1] === '\n'),
   },
+
   Document: {
     children: [
       'Header',
@@ -46,6 +62,58 @@ const Grammar = {
   },
 }
 
-export default function parse(str) {
+export function parseFrom(str, pos, type) {
+  const rule = Grammar[type]
+  const [ skipStart, skipEnd ] = rule.skip
 
+  let i = pos
+  if (!rule.isStart(str, i)) {
+    return [ 0, null ]
+  }
+
+  i += skipStart
+
+  const tree = {
+    type,
+    items: [],
+  }
+  let text = ''
+
+  outer:
+  while (!rule.isEnd(str, i) && i < str.length) {
+    for (const childType of rule.children) {
+      const [ length, leaf ] = parseFrom(str, i, childType)
+      if (!leaf) {
+        continue
+      }
+
+      if (text) {
+        tree.items.push(text)
+        text = ''
+      }
+
+      i += length
+      tree.items.push(leaf)
+
+      continue outer
+    }
+
+    text += str[i]
+    i += 1
+  }
+
+  if (text) {
+    tree.items.push(text)
+  }
+
+  i += skipEnd
+
+  const length = i - pos
+
+  return [ length, tree ]
+}
+
+export default function parse(str, type) {
+  const [ , tree ] = parseFrom(str, 0, type)
+  return tree
 }

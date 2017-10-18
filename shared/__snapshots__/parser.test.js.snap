@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parser Bold 1`] = `
+Object {
+  "items": Array [
+    "test",
+  ],
+  "type": "Bold",
+}
+`;
+
+exports[`Parser Bold 2`] = `
+Object {
+  "items": Array [
+    " test ",
+    Object {
+      "items": Array [
+        "and",
+      ],
+      "type": "Italic",
+    },
+    " so on",
+  ],
+  "type": "Bold",
+}
+`;
+
+exports[`Parser Header 1`] = `
+Object {
+  "items": Array [
+    " AHAHAH *test oh no* !",
+  ],
+  "type": "Header",
+}
+`;
+
+exports[`Parser Italic 1`] = `
+Object {
+  "items": Array [
+    "test",
+  ],
+  "type": "Italic",
+}
+`;
+
+exports[`Parser Italic 2`] = `
+Object {
+  "items": Array [
+    " test and so on ",
+    Object {
+      "items": Array [
+        "test",
+      ],
+      "type": "Bold",
+    },
+  ],
+  "type": "Italic",
+}
+`;
+
+exports[`Parser Paragraph 1`] = `
+Object {
+  "items": Array [
+    "
+      AHAHAH ",
+    Object {
+      "items": Array [
+        "test oh no",
+      ],
+      "type": "Bold",
+    },
+    " !
+      go go ",
+    Object {
+      "items": Array [
+        "power cows",
+      ],
+      "type": "Italic",
+    },
+    "
+      ",
+  ],
+  "type": "Paragraph",
+}
+`;
