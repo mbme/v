@@ -22,12 +22,12 @@ One more paragraph.
 describe('Parser', () => {
   test('Italic', () => {
     expect(parse('_test_', 'Italic')).toMatchSnapshot()
-    expect(parse('_ test and so on *test*_', 'Italic')).toMatchSnapshot()
+    expect(parse('_ test and so on *_test*_', 'Italic')).toMatchSnapshot()
   })
 
   test('Bold', () => {
     expect(parse('*test*', 'Bold')).toMatchSnapshot()
-    expect(parse('* test _and_ so on*', 'Bold')).toMatchSnapshot()
+    expect(parse('* test _and*_ so on*', 'Bold')).toMatchSnapshot()
   })
 
   test('Header', () => {

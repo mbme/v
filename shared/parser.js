@@ -7,7 +7,7 @@ export const Grammar = {
     children: [
       'Bold',
     ],
-    isStart: (str, pos) => str[pos] === '_',
+    isStart: (str, pos, context) => str[pos] === '_' && !context.includes('Italic'),
     isEnd: (str, pos) => str[pos] === '_',
   },
 
@@ -16,7 +16,7 @@ export const Grammar = {
     children: [
       'Italic',
     ],
-    isStart: (str, pos) => str[pos] === '*', // TODO handle escaping with \*
+    isStart: (str, pos, context) => str[pos] === '*' && !context.includes('Bold'), // TODO handle escaping with \*
     isEnd: (str, pos) => str[pos] === '*',
   },
 
@@ -62,12 +62,12 @@ export const Grammar = {
   },
 }
 
-export function parseFrom(str, pos, type) {
+export function parseFrom(str, pos, type, context) {
   const rule = Grammar[type]
   const [ skipStart, skipEnd ] = rule.skip
 
   let i = pos
-  if (!rule.isStart(str, i)) {
+  if (!rule.isStart(str, i, context)) {
     return [ 0, null ]
   }
 
@@ -82,7 +82,7 @@ export function parseFrom(str, pos, type) {
   outer:
   while (!rule.isEnd(str, i) && i < str.length) {
     for (const childType of rule.children) {
-      const [ length, leaf ] = parseFrom(str, i, childType)
+      const [ length, leaf ] = parseFrom(str, i, childType, [ ...context, type ])
       if (!leaf) {
         continue
       }
@@ -114,6 +114,6 @@ export function parseFrom(str, pos, type) {
 }
 
 export default function parse(str, type) {
-  const [ , tree ] = parseFrom(str, 0, type)
+  const [ , tree ] = parseFrom(str, 0, type, [])
   return tree
 }

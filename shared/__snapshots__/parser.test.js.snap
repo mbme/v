@@ -15,7 +15,7 @@ Object {
     " test ",
     Object {
       "items": Array [
-        "and",
+        "and*",
       ],
       "type": "Italic",
     },
@@ -49,7 +49,7 @@ Object {
     " test and so on ",
     Object {
       "items": Array [
-        "test",
+        "_test",
       ],
       "type": "Bold",
     },
