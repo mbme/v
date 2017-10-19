@@ -2,6 +2,7 @@
 
 exports[`Parser Bold 1`] = `
 Object {
+  "ended": true,
   "items": Array [
     "test",
   ],
@@ -11,9 +12,11 @@ Object {
 
 exports[`Parser Bold 2`] = `
 Object {
+  "ended": true,
   "items": Array [
     " test * \\\\ ",
     Object {
+      "ended": true,
       "items": Array [
         "and*",
       ],
@@ -27,6 +30,7 @@ Object {
 
 exports[`Parser Header 1`] = `
 Object {
+  "ended": true,
   "items": Array [
     " AHAHAH *test oh no* !",
   ],
@@ -36,6 +40,7 @@ Object {
 
 exports[`Parser Italic 1`] = `
 Object {
+  "ended": true,
   "items": Array [
     "test",
   ],
@@ -45,9 +50,11 @@ Object {
 
 exports[`Parser Italic 2`] = `
 Object {
+  "ended": true,
   "items": Array [
     " test _ and so on ",
     Object {
+      "ended": true,
       "items": Array [
         "_test",
       ],
@@ -60,10 +67,12 @@ Object {
 
 exports[`Parser Paragraph 1`] = `
 Object {
+  "ended": true,
   "items": Array [
     "
       AHAHAH ",
     Object {
+      "ended": true,
       "items": Array [
         "test oh no",
       ],
@@ -72,6 +81,7 @@ Object {
     " !
       go go ",
     Object {
+      "ended": true,
       "items": Array [
         "power cows",
       ],

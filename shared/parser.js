@@ -1,6 +1,5 @@
-/* eslint-disable no-labels, no-continue, no-extra-label, no-restricted-syntax */
+/* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
 // TODO preprocess: replace \r\n with \n
-// TODO handle not-ended rules
 
 export const Grammar = {
   Italic: {
@@ -20,7 +19,7 @@ export const Grammar = {
   },
 
   Header: {
-    skip: [ 1, 1 ],
+    skip: [ 1, 0 ],
     children: [],
     isStart: (str, pos) => {
       if (str[pos] !== '#') {
@@ -40,7 +39,7 @@ export const Grammar = {
 
       return true
     },
-    isEnd: (str, pos) => str[pos] === '\n',
+    isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
   },
 
   Paragraph: {
@@ -69,19 +68,26 @@ export function parseFrom(str, pos, type, context) {
   const tree = {
     type,
     items: [],
+    ended: false,
   }
   let text = ''
 
   outer:
-  while (i < str.length) {
+  while (true) {
     // handle escapes
-    if (str[i] === '\\' && rule.escapeChar === str[i + 1]) {
+    if (i < str.length && str[i] === '\\' && rule.escapeChar === str[i + 1]) {
       text += str[i + 1]
       i += 2
       continue outer
     }
 
     if (rule.isEnd(str, i)) {
+      tree.ended = true
+      i += skipEnd
+      break outer
+    }
+
+    if (i >= str.length) {
       break outer
     }
 
@@ -111,14 +117,15 @@ export function parseFrom(str, pos, type, context) {
     tree.items.push(text)
   }
 
-  i += skipEnd
-
   const length = i - pos
 
   return [ length, tree ]
 }
 
 export default function parse(str, type) {
-  const [ , tree ] = parseFrom(str, 0, type, [])
+  const [ i, tree ] = parseFrom(str, 0, type, [])
+  if (tree && i !== str.length) {
+    console.error('WARN', i, str.length)
+  }
   return tree
 }
