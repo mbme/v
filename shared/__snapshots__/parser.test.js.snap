@@ -12,7 +12,7 @@ Object {
 exports[`Parser Bold 2`] = `
 Object {
   "items": Array [
-    " test ",
+    " test * \\\\ ",
     Object {
       "items": Array [
         "and*",
@@ -46,7 +46,7 @@ Object {
 exports[`Parser Italic 2`] = `
 Object {
   "items": Array [
-    " test and so on ",
+    " test _ and so on ",
     Object {
       "items": Array [
         "_test",

@@ -2,6 +2,7 @@ import parse from './parser'
 
 const text = `
 # Header
+
 block
 # so not a header
 
@@ -9,11 +10,14 @@ block
 * test
 
 Paragraph and something else. sentence
-test *bold* _123_ _*bold italic*_ \`code\`
+test *bold* _italic_ _*bold italic*_ \`code\`
 
 \`\`\`js
  code block
 \`\`\`
+
+> some blockquote
+> quote
 
 One more paragraph.
 
@@ -22,12 +26,12 @@ One more paragraph.
 describe('Parser', () => {
   test('Italic', () => {
     expect(parse('_test_', 'Italic')).toMatchSnapshot()
-    expect(parse('_ test and so on *_test*_', 'Italic')).toMatchSnapshot()
+    expect(parse('_ test \\_ and so on *_test*_', 'Italic')).toMatchSnapshot()
   })
 
   test('Bold', () => {
     expect(parse('*test*', 'Bold')).toMatchSnapshot()
-    expect(parse('* test _and*_ so on*', 'Bold')).toMatchSnapshot()
+    expect(parse('* test \\* \\ _and*_ so on*', 'Bold')).toMatchSnapshot()
   })
 
   test('Header', () => {
