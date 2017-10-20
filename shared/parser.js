@@ -75,7 +75,8 @@ export const Grammar = {
 
   Document: {
     children: [ 'Header', 'Paragraph' ],
-
+    isStart: (str, pos) => pos === 0,
+    isEnd: (str, pos) => pos === str.length,
   },
 }
 
@@ -112,14 +113,14 @@ export function parseFrom(str, pos, type, context) {
       break outer
     }
 
-    if (i >= str.length) {
+    if (i === str.length) {
       break outer
     }
 
     inner:
     for (const childType of rule.children) {
       const [ length, leaf ] = parseFrom(str, i, childType, [ ...context, type ])
-      if (!leaf) {
+      if (!length) {
         continue inner
       }
 

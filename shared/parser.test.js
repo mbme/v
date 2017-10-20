@@ -58,4 +58,8 @@ describe('Parser', () => {
       'Paragraph',
     )).toMatchSnapshot()
   })
+
+  test('Document', () => {
+    expect(parse(text, 'Document')).toMatchSnapshot()
+  })
 })

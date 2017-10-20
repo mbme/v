@@ -28,6 +28,154 @@ Object {
 }
 `;
 
+exports[`Parser Document 1`] = `
+Object {
+  "ended": true,
+  "items": Array [
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+# Header",
+      ],
+      "type": "Paragraph",
+    },
+    "
+",
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+block
+# so not a header",
+      ],
+      "type": "Paragraph",
+    },
+    "
+",
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+",
+        Object {
+          "ended": true,
+          "items": Array [
+            " test
+",
+          ],
+          "type": "Bold",
+        },
+        " test",
+      ],
+      "type": "Paragraph",
+    },
+    "
+",
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+Paragraph and something else. sentence
+test ",
+        Object {
+          "ended": true,
+          "items": Array [
+            "bold",
+          ],
+          "type": "Bold",
+        },
+        " ",
+        Object {
+          "ended": true,
+          "items": Array [
+            "italic",
+          ],
+          "type": "Italic",
+        },
+        " ",
+        Object {
+          "ended": true,
+          "items": Array [
+            Object {
+              "ended": true,
+              "items": Array [
+                "bold italic",
+              ],
+              "type": "Bold",
+            },
+          ],
+          "type": "Italic",
+        },
+        " ",
+        Object {
+          "ended": true,
+          "items": Array [
+            "code",
+          ],
+          "type": "Mono",
+        },
+      ],
+      "type": "Paragraph",
+    },
+    "
+",
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+",
+        Object {
+          "ended": true,
+          "items": Array [],
+          "type": "Mono",
+        },
+        Object {
+          "ended": true,
+          "items": Array [
+            "js
+ code block
+",
+          ],
+          "type": "Mono",
+        },
+        Object {
+          "ended": true,
+          "items": Array [],
+          "type": "Mono",
+        },
+      ],
+      "type": "Paragraph",
+    },
+    "
+",
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+> some blockquote
+> quote",
+      ],
+      "type": "Paragraph",
+    },
+    "
+",
+    Object {
+      "ended": true,
+      "items": Array [
+        "
+One more paragraph.",
+      ],
+      "type": "Paragraph",
+    },
+    "
+
+",
+  ],
+  "type": "Document",
+}
+`;
+
 exports[`Parser Header 1`] = `
 Object {
   "ended": true,
