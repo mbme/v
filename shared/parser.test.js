@@ -34,6 +34,11 @@ describe('Parser', () => {
     expect(parse('* test \\* \\ _and*_ so on*', 'Bold')).toMatchSnapshot()
   })
 
+  test('Mono', () => {
+    expect(parse('`test`', 'Mono')).toMatchSnapshot()
+    expect(parse('` test \\` \\ _and*_ so on*', 'Mono')).toMatchSnapshot()
+  })
+
   test('Header', () => {
     expect(parse('# AHAHAH *test oh no* !', 'Header')).toMatchSnapshot()
     expect(parse(

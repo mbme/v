@@ -18,6 +18,14 @@ export const Grammar = {
     isEnd: (str, pos) => str[pos] === '*',
   },
 
+  Mono: {
+    skip: [ 1, 1 ],
+    children: [],
+    escapeChar: '`',
+    isStart: (str, pos, context) => str[pos] === '`' && !context.includes('Mono'),
+    isEnd: (str, pos) => str[pos] === '`',
+  },
+
   Header: {
     skip: [ 1, 0 ],
     children: [],

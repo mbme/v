@@ -65,6 +65,26 @@ Object {
 }
 `;
 
+exports[`Parser Mono 1`] = `
+Object {
+  "ended": true,
+  "items": Array [
+    "test",
+  ],
+  "type": "Mono",
+}
+`;
+
+exports[`Parser Mono 2`] = `
+Object {
+  "ended": false,
+  "items": Array [
+    " test \` \\\\ _and*_ so on*",
+  ],
+  "type": "Mono",
+}
+`;
+
 exports[`Parser Paragraph 1`] = `
 Object {
   "ended": true,
