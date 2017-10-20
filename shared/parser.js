@@ -1,5 +1,7 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
 // TODO preprocess: replace \r\n with \n
+// TODO handle newlines inside symmetric rules
+// TODO blockquote, code, list, secondary header
 
 export const Grammar = {
   Italic: {
@@ -22,7 +24,7 @@ export const Grammar = {
     skip: [ 1, 1 ],
     children: [],
     escapeChar: '`',
-    isStart: (str, pos, context) => str[pos] === '`' && !context.includes('Mono'),
+    isStart: (str, pos) => str[pos] === '`',
     isEnd: (str, pos) => str[pos] === '`',
   },
 
@@ -30,7 +32,7 @@ export const Grammar = {
     skip: [ 1, 0 ],
     children: [],
     isStart: (str, pos) => {
-      if (str[pos] !== '#') {
+      if (str[pos] !== '#' && str[pos + 1] !== ' ') {
         return false
       }
 
@@ -51,8 +53,7 @@ export const Grammar = {
   },
 
   Paragraph: {
-    skip: [ 0, 0 ],
-    children: [ 'Bold', 'Italic' ],
+    children: [ 'Bold', 'Italic', 'Mono' ],
     isStart: (str, pos) => pos === 0 || (str[pos] === '\n' && str[pos - 1] === '\n'),
     isEnd(str, pos) {
       if (pos === str.length) {
@@ -74,12 +75,13 @@ export const Grammar = {
 
   Document: {
     children: [ 'Header', 'Paragraph' ],
+
   },
 }
 
 export function parseFrom(str, pos, type, context) {
   const rule = Grammar[type]
-  const [ skipStart, skipEnd ] = rule.skip
+  const [ skipStart, skipEnd ] = rule.skip || [ 0, 0 ]
 
   let i = pos
   if (!rule.isStart(str, i, context)) {

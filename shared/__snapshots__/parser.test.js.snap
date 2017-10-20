@@ -107,6 +107,14 @@ Object {
       ],
       "type": "Italic",
     },
+    " ",
+    Object {
+      "ended": true,
+      "items": Array [
+        "code",
+      ],
+      "type": "Mono",
+    },
     "
       ",
   ],

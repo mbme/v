@@ -53,7 +53,7 @@ describe('Parser', () => {
     expect(parse(
       `
       AHAHAH *test oh no* !
-      go go _power cows_
+      go go _power cows_ \`code\`
       `,
       'Paragraph',
     )).toMatchSnapshot()
