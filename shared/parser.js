@@ -54,7 +54,22 @@ export const Grammar = {
     skip: [ 0, 0 ],
     children: [ 'Bold', 'Italic' ],
     isStart: (str, pos) => pos === 0 || (str[pos] === '\n' && str[pos - 1] === '\n'),
-    isEnd: (str, pos) => str[pos] === '\n' && (pos + 1 === str.length || str[pos + 1] === '\n'),
+    isEnd(str, pos) {
+      if (pos === str.length) {
+        return true
+      }
+
+      if (str[pos] !== '\n') {
+        return false
+      }
+
+
+      if (pos + 1 === str.length || str[pos + 1] === '\n') {
+        return true
+      }
+
+      return false
+    },
   },
 
   Document: {
