@@ -1,8 +1,10 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
 // TODO preprocess: replace \r\n with \n
 // TODO blockquote, code, list, secondary header
+// TODO validate schema, ended
 
-const isNewline = (str, i) => str[i] === '\n'
+const isChar = char => (str, i) => str[i] === char
+const isNewline = isChar('\n')
 
 export const Grammar = {
   Italic: {
@@ -11,7 +13,7 @@ export const Grammar = {
     escapeChar: '_',
     isStart: (str, pos, context) => str[pos] === '_' && !context.includes('Italic'),
     isBreak: isNewline,
-    isEnd: (str, pos) => str[pos] === '_',
+    isEnd: isChar('_'),
   },
 
   Bold: {
@@ -20,21 +22,44 @@ export const Grammar = {
     escapeChar: '*',
     isStart: (str, pos, context) => str[pos] === '*' && !context.includes('Bold'),
     isBreak: isNewline,
-    isEnd: (str, pos) => str[pos] === '*',
+    isEnd: isChar('*'),
   },
 
   Mono: {
     skip: [ 1, 1 ],
-    children: [],
     escapeChar: '`',
-    isStart: (str, pos) => str[pos] === '`',
+    isStart: isChar('`'),
     isBreak: isNewline,
-    isEnd: (str, pos) => str[pos] === '`',
+    isEnd: isChar('`'),
+  },
+
+  LinkName: {
+    skip: [ 1, 1 ],
+    escapeChar: ']',
+    isStart: isChar('['),
+    isBreak: isNewline,
+    isEnd: isChar(']'),
+  },
+
+  LinkAddress: {
+    skip: [ 1, 0 ],
+    escapeChar: ')',
+    isStart: isChar('('),
+    isBreak: isNewline,
+    isEnd: isChar(')'),
+  },
+
+  Link: {
+    skip: [ 0, 1 ],
+    escapeChar: ')',
+    children: [ 'LinkName', 'LinkAddress' ],
+    isStart: isChar('['),
+    isEnd: isChar(')'),
+    isValid: ({ items }) => items.length === 2 && items[0].type === 'LinkName' && items[1].type === 'LinkAddress',
   },
 
   Header: {
     skip: [ 1, 0 ],
-    children: [],
     isStart: (str, pos) => {
       if (str[pos] !== '#' && str[pos + 1] !== ' ') {
         return false
@@ -57,7 +82,7 @@ export const Grammar = {
   },
 
   Paragraph: {
-    children: [ 'Bold', 'Italic', 'Mono' ],
+    children: [ 'Bold', 'Italic', 'Mono', 'Link' ],
     isStart: (str, pos) => pos === 0 || (str[pos] === '\n' && str[pos - 1] === '\n'),
     isEnd(str, pos) {
       if (pos === str.length) {
@@ -122,7 +147,7 @@ export function parseFrom(str, pos, type, context) {
     }
 
     inner:
-    for (const childType of rule.children) {
+    for (const childType of rule.children || []) {
       const [ length, leaf ] = parseFrom(str, i, childType, [ ...context, type ])
       if (!length) {
         continue inner
@@ -149,6 +174,11 @@ export function parseFrom(str, pos, type, context) {
 
   if (text) {
     tree.items.push(text)
+  }
+
+  // validate result
+  if (rule.isValid && !rule.isValid(tree)) {
+    return [ 0, null ]
   }
 
   const length = i - pos

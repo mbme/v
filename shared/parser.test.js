@@ -19,7 +19,7 @@ test *bold* _italic_ _*bold italic*_ \`code\`
 > some blockquote
 > quote
 
-One more paragraph.
+One more paragraph. [link](http://link.to/123?321)
 
 `
 
@@ -62,6 +62,10 @@ describe('Parser', () => {
       `,
       'Header',
     )).toBeNull()
+  })
+
+  test('Link', () => {
+    expect(parse('[awesome link](http://amazing.com)', 'Link')).toMatchSnapshot()
   })
 
   test('Paragraph', () => {

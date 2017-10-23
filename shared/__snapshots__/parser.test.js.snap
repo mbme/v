@@ -151,7 +151,27 @@ test ",
       "ended": true,
       "items": Array [
         "
-One more paragraph.",
+One more paragraph. ",
+        Object {
+          "ended": true,
+          "items": Array [
+            Object {
+              "ended": true,
+              "items": Array [
+                "link",
+              ],
+              "type": "LinkName",
+            },
+            Object {
+              "ended": true,
+              "items": Array [
+                "http://link.to/123?321",
+              ],
+              "type": "LinkAddress",
+            },
+          ],
+          "type": "Link",
+        },
       ],
       "type": "Paragraph",
     },
@@ -197,6 +217,29 @@ Object {
     },
   ],
   "type": "Italic",
+}
+`;
+
+exports[`Parser Link 1`] = `
+Object {
+  "ended": true,
+  "items": Array [
+    Object {
+      "ended": true,
+      "items": Array [
+        "awesome link",
+      ],
+      "type": "LinkName",
+    },
+    Object {
+      "ended": true,
+      "items": Array [
+        "http://amazing.com",
+      ],
+      "type": "LinkAddress",
+    },
+  ],
+  "type": "Link",
 }
 `;
 
