@@ -1,5 +1,7 @@
 import parse from './parser'
 
+global.__DEVELOPMENT__ = false // suppress warnings
+
 const text = `
 # Header
 
@@ -46,7 +48,7 @@ describe('Parser', () => {
 
   test('Mono', () => {
     expect(parse('`test`', 'Mono')).toMatchSnapshot()
-    expect(parse('` test \\` \\ _and*_ so on*', 'Mono')).toMatchSnapshot()
+    expect(parse('` test \\` \\ _and*_ so on*`', 'Mono')).toMatchSnapshot()
     expect(parse(
       `\`te
       st\``,

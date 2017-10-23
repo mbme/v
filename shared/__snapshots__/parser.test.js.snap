@@ -2,7 +2,6 @@
 
 exports[`Parser Bold 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     "test",
   ],
@@ -12,11 +11,9 @@ Object {
 
 exports[`Parser Bold 2`] = `
 Object {
-  "ended": true,
   "items": Array [
     " test * \\\\ ",
     Object {
-      "ended": true,
       "items": Array [
         "and*",
       ],
@@ -30,10 +27,8 @@ Object {
 
 exports[`Parser Document 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     Object {
-      "ended": true,
       "items": Array [
         "
 # Header",
@@ -43,7 +38,6 @@ Object {
     "
 ",
     Object {
-      "ended": true,
       "items": Array [
         "
 block
@@ -54,7 +48,6 @@ block
     "
 ",
     Object {
-      "ended": true,
       "items": Array [
         "
 * test
@@ -65,13 +58,11 @@ block
     "
 ",
     Object {
-      "ended": true,
       "items": Array [
         "
 Paragraph and something else. sentence
 test ",
         Object {
-          "ended": true,
           "items": Array [
             "bold",
           ],
@@ -79,7 +70,6 @@ test ",
         },
         " ",
         Object {
-          "ended": true,
           "items": Array [
             "italic",
           ],
@@ -87,10 +77,8 @@ test ",
         },
         " ",
         Object {
-          "ended": true,
           "items": Array [
             Object {
-              "ended": true,
               "items": Array [
                 "bold italic",
               ],
@@ -101,7 +89,6 @@ test ",
         },
         " ",
         Object {
-          "ended": true,
           "items": Array [
             "code",
           ],
@@ -113,12 +100,10 @@ test ",
     "
 ",
     Object {
-      "ended": true,
       "items": Array [
         "
 ",
         Object {
-          "ended": true,
           "items": Array [],
           "type": "Mono",
         },
@@ -126,7 +111,6 @@ test ",
  code block
 ",
         Object {
-          "ended": true,
           "items": Array [],
           "type": "Mono",
         },
@@ -137,7 +121,6 @@ test ",
     "
 ",
     Object {
-      "ended": true,
       "items": Array [
         "
 > some blockquote
@@ -148,22 +131,18 @@ test ",
     "
 ",
     Object {
-      "ended": true,
       "items": Array [
         "
 One more paragraph. ",
         Object {
-          "ended": true,
           "items": Array [
             Object {
-              "ended": true,
               "items": Array [
                 "link",
               ],
               "type": "LinkName",
             },
             Object {
-              "ended": true,
               "items": Array [
                 "http://link.to/123?321",
               ],
@@ -185,7 +164,6 @@ One more paragraph. ",
 
 exports[`Parser Header 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     " AHAHAH *test oh no* !",
   ],
@@ -195,7 +173,6 @@ Object {
 
 exports[`Parser Italic 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     "test",
   ],
@@ -205,11 +182,9 @@ Object {
 
 exports[`Parser Italic 2`] = `
 Object {
-  "ended": true,
   "items": Array [
     " test _ and so on ",
     Object {
-      "ended": true,
       "items": Array [
         "_test",
       ],
@@ -222,17 +197,14 @@ Object {
 
 exports[`Parser Link 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     Object {
-      "ended": true,
       "items": Array [
         "awesome link",
       ],
       "type": "LinkName",
     },
     Object {
-      "ended": true,
       "items": Array [
         "http://amazing.com",
       ],
@@ -245,7 +217,6 @@ Object {
 
 exports[`Parser Mono 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     "test",
   ],
@@ -255,7 +226,6 @@ Object {
 
 exports[`Parser Mono 2`] = `
 Object {
-  "ended": false,
   "items": Array [
     " test \` \\\\ _and*_ so on*",
   ],
@@ -265,12 +235,10 @@ Object {
 
 exports[`Parser Paragraph 1`] = `
 Object {
-  "ended": true,
   "items": Array [
     "
       AHAHAH ",
     Object {
-      "ended": true,
       "items": Array [
         "test oh no",
       ],
@@ -279,7 +247,6 @@ Object {
     " !
       go go ",
     Object {
-      "ended": true,
       "items": Array [
         "power cows",
       ],
@@ -287,7 +254,6 @@ Object {
     },
     " ",
     Object {
-      "ended": true,
       "items": Array [
         "code",
       ],

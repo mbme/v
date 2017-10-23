@@ -99,6 +99,11 @@
       ]
     ]
   },
+  "jest": {
+    "globals": {
+      "__DEVELOPMENT__": true
+    }
+  },
   "eslintConfig": {
     "parser": "babel-eslint",
     "parserOptions": {
@@ -114,6 +119,9 @@
       "es6": true,
       "jest": true
     },
+    "globals": {
+      "__DEVELOPMENT__": true
+    },
     "extends": [
       "airbnb"
     ],
@@ -128,6 +136,12 @@
         "error",
         {
           "allowTernary": true
+        }
+      ],
+      "no-underscore-dangle": [
+        "error",
+        {
+          "allow": ["__DEVELOPMENT__"]
         }
       ],
       "prefer-arrow-callback": 0,
