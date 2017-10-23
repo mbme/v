@@ -1,7 +1,8 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
 // TODO preprocess: replace \r\n with \n
-// TODO handle newlines inside symmetric rules
 // TODO blockquote, code, list, secondary header
+
+const isNewline = (str, i) => str[i] === '\n'
 
 export const Grammar = {
   Italic: {
@@ -9,6 +10,7 @@ export const Grammar = {
     children: [ 'Bold' ],
     escapeChar: '_',
     isStart: (str, pos, context) => str[pos] === '_' && !context.includes('Italic'),
+    isBreak: isNewline,
     isEnd: (str, pos) => str[pos] === '_',
   },
 
@@ -17,6 +19,7 @@ export const Grammar = {
     children: [ 'Italic' ],
     escapeChar: '*',
     isStart: (str, pos, context) => str[pos] === '*' && !context.includes('Bold'),
+    isBreak: isNewline,
     isEnd: (str, pos) => str[pos] === '*',
   },
 
@@ -25,6 +28,7 @@ export const Grammar = {
     children: [],
     escapeChar: '`',
     isStart: (str, pos) => str[pos] === '`',
+    isBreak: isNewline,
     isEnd: (str, pos) => str[pos] === '`',
   },
 
@@ -133,6 +137,10 @@ export function parseFrom(str, pos, type, context) {
       tree.items.push(leaf)
 
       continue outer
+    }
+
+    if (rule.isBreak && rule.isBreak(str, i)) {
+      return [ 0, null ]
     }
 
     text += str[i]

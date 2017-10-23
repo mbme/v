@@ -27,16 +27,31 @@ describe('Parser', () => {
   test('Italic', () => {
     expect(parse('_test_', 'Italic')).toMatchSnapshot()
     expect(parse('_ test \\_ and so on *_test*_', 'Italic')).toMatchSnapshot()
+    expect(parse(
+      `_te
+      st_`,
+      'Italic',
+    )).toBeNull()
   })
 
   test('Bold', () => {
     expect(parse('*test*', 'Bold')).toMatchSnapshot()
     expect(parse('* test \\* \\ _and*_ so on*', 'Bold')).toMatchSnapshot()
+    expect(parse(
+      `*te
+      st*`,
+      'Bold',
+    )).toBeNull()
   })
 
   test('Mono', () => {
     expect(parse('`test`', 'Mono')).toMatchSnapshot()
     expect(parse('` test \\` \\ _and*_ so on*', 'Mono')).toMatchSnapshot()
+    expect(parse(
+      `\`te
+      st\``,
+      'Mono',
+    )).toBeNull()
   })
 
   test('Header', () => {

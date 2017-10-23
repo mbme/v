@@ -57,16 +57,8 @@ block
       "ended": true,
       "items": Array [
         "
-",
-        Object {
-          "ended": true,
-          "items": Array [
-            " test
-",
-          ],
-          "type": "Bold",
-        },
-        " test",
+* test
+* test",
       ],
       "type": "Paragraph",
     },
@@ -130,20 +122,15 @@ test ",
           "items": Array [],
           "type": "Mono",
         },
-        Object {
-          "ended": true,
-          "items": Array [
-            "js
+        "\`js
  code block
 ",
-          ],
-          "type": "Mono",
-        },
         Object {
           "ended": true,
           "items": Array [],
           "type": "Mono",
         },
+        "\`",
       ],
       "type": "Paragraph",
     },
