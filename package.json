@@ -12,7 +12,7 @@
     "feather-icons": "^3.2.2",
     "fela": "^6.0.1",
     "fela-combine-arrays": "^1.0.0",
-    "fela-preset-web": "^5.0.3",
+    "fela-preset-web": "^6.0.0",
     "file-type": "^7.0.1",
     "lodash.debounce": "^4.0.8",
     "node-fetch": "^1.7.3",
@@ -141,7 +141,9 @@
       "no-underscore-dangle": [
         "error",
         {
-          "allow": ["__DEVELOPMENT__"]
+          "allow": [
+            "__DEVELOPMENT__"
+          ]
         }
       ],
       "prefer-arrow-callback": 0,
