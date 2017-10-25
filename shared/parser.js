@@ -1,4 +1,6 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
+import { isString } from 'shared/utils'
+
 // TODO preprocess: replace \r\n with \n
 // TODO blockquote, code, list, secondary header
 
@@ -7,7 +9,7 @@ const isNewline = isChar('\n')
 
 const declareType = type => ({ skip: [ 0, 0 ], children: [], isBreak: () => false, isValid: () => true, ...type })
 
-export const Grammar = {
+const Grammar = {
   Italic: declareType({
     skip: [ 1, 1 ],
     children: [ 'Bold' ],
@@ -193,7 +195,17 @@ export function parseFrom(str, pos, type, context) {
   return [ length, tree ]
 }
 
+function assertType(type) {
+  if (Grammar[type]) {
+    return
+  }
+
+  throw new Error(`Uknown type ${type}`)
+}
+
 export default function parse(str, type) {
+  assertType(type)
+
   const [ i, tree ] = parseFrom(str, 0, type, [])
 
   if (__DEVELOPMENT__ && i !== str.length) {
@@ -201,4 +213,25 @@ export default function parse(str, type) {
   }
 
   return tree
+}
+
+export function select(tree, type) {
+  assertType(type)
+
+  if (!tree || isString(tree)) {
+    return []
+  }
+
+  const result = []
+  if (tree.type === type) {
+    result.push(tree)
+  }
+
+  tree.items.forEach(child => result.push(...select(child, type)))
+
+  return result
+}
+
+export function selectLinks(tree) {
+  return select(tree, 'Link').map(({ items: [ name, link ] }) => ({ name: name.items[0], link: link.items[0] }))
 }

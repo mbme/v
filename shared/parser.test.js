@@ -1,4 +1,4 @@
-import parse from './parser'
+import parse, { select, selectLinks } from './parser'
 
 global.__DEVELOPMENT__ = false // suppress warnings
 
@@ -73,7 +73,7 @@ describe('Parser', () => {
   test('Paragraph', () => {
     expect(parse(
       `
-      AHAHAH *test oh no* !
+      AHAHAH *test oh no!
       go go _power cows_ \`code\`
       `,
       'Paragraph',
@@ -82,5 +82,15 @@ describe('Parser', () => {
 
   test('Document', () => {
     expect(parse(text, 'Document')).toMatchSnapshot()
+  })
+
+  test('select', () => {
+    const links = select(parse(text, 'Document'), 'Link')
+    expect(links).toMatchSnapshot()
+  })
+
+  test('selectLinks', () => {
+    const links = selectLinks(parse(text, 'Document'))
+    expect(links).toMatchSnapshot()
   })
 })

@@ -237,14 +237,7 @@ exports[`Parser Paragraph 1`] = `
 Object {
   "items": Array [
     "
-      AHAHAH ",
-    Object {
-      "items": Array [
-        "test oh no",
-      ],
-      "type": "Bold",
-    },
-    " !
+      AHAHAH *test oh no!
       go go ",
     Object {
       "items": Array [
@@ -264,4 +257,35 @@ Object {
   ],
   "type": "Paragraph",
 }
+`;
+
+exports[`Parser select 1`] = `
+Array [
+  Object {
+    "items": Array [
+      Object {
+        "items": Array [
+          "link",
+        ],
+        "type": "LinkName",
+      },
+      Object {
+        "items": Array [
+          "http://link.to/123?321",
+        ],
+        "type": "LinkAddress",
+      },
+    ],
+    "type": "Link",
+  },
+]
+`;
+
+exports[`Parser selectLinks 1`] = `
+Array [
+  Object {
+    "link": "http://link.to/123?321",
+    "name": "link",
+  },
+]
 `;
