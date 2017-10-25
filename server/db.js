@@ -1,23 +1,24 @@
 import sqlite3 from 'sqlite3'
 
 const SQL_INIT_DB = `
-  PRAGMA foreign_keys = ON;
-
   CREATE TABLE IF NOT EXISTS records (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       type TEXT NOT NULL,
       name TEXT NOT NULL,
-      data TEXT NOT NULl
+      data TEXT NOT NULL
   );
   CREATE INDEX Record_ix_type ON records(type);
 
   CREATE TABLE IF NOT EXISTS files (
-      recordId INTEGER NOT NULL,
+      id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      data BLOB NOT NULL,
+      data BLOB NOT NULL
+  );
 
-      CONSTRAINT unique_name UNIQUE (recordId, name),
-      CONSTRAINT File_fk_recordId FOREIGN KEY(recordId) REFERENCES records(id) ON DELETE CASCADE
+  CREATE TABLE IF NOT EXISTS records_files (
+      recordId INTEGER NOT NULL,
+      fileId TEXT NOT NULL,
+      CONSTRAINT unique_connection UNIQUE (recordId, fileId)
   );
 `
 
@@ -25,6 +26,10 @@ function expectSingleChange({ changes }) {
   if (changes !== 1) {
     throw new Error(`Expected single change, but there were ${changes} changes`)
   }
+}
+
+function extractChanges({ changes }) {
+  return changes
 }
 
 function dbAPI(db) {
@@ -54,29 +59,31 @@ function dbAPI(db) {
     )
   }
 
-  async function selectAll(query, args, cb) {
+  function statementRun(stmt, args) {
+    return new Promise((resolve, reject) => {
+      stmt.run(args, function runCallback(err) {
+        err ? reject(err) : resolve(this)
+      })
+    })
+  }
+
+  async function selectAll(query, args) {
     const stmt = await prepare(query, args)
 
+    const results = []
+
     let row = await statementGet(stmt)
-    while (row) {
-      cb(row)
+    while (row) { // TODO check performance vs Promise.all()
+      results.push(row)
       row = await statementGet(stmt) // eslint-disable-line no-await-in-loop
     }
+
+    return results
   }
 
   return {
-    async listRecords(type) {
-      const files = await this.listFiles()
-
-      const results = []
-      await selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [ type ], (row) => {
-        results.push({
-          ...row,
-          files: files[row.id] || [],
-        })
-      })
-
-      return results
+    listRecords(type) {
+      return selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [ type ])
     },
 
     createRecord(type, name, data) {
@@ -97,34 +104,35 @@ function dbAPI(db) {
 
     // ----------- FILES ----------------------------------
 
-    /**
-     * @returns {[recordId]: [...fileInfo]}
-     */
-    async listFiles() {
-      const result = {}
-      await selectAll('SELECT recordId, name, length(data) AS size FROM files', [], (row) => {
-        const files = result[row.recordId] || []
-        files.push(row)
-
-        result[row.recordId] = files
-      })
-
-      return result
+    listFiles() {
+      return selectAll('SELECT id, name, length(data) AS size FROM files', [])
     },
 
     /**
      * @param {Buffer} data
      */
-    createFile(recordId, name, data) {
-      return run('INSERT INTO files(recordId, name, data) VALUES (?, ?, ?)', [ recordId, name, data ])
+    createFile(fileId, name, data) {
+      return run('INSERT INTO files(id, name, data) VALUES (?, ?, ?)', [ fileId, name, data ])
     },
 
-    readFile(recordId, name) {
-      return get('SELECT data FROM files WHERE recordId = ? AND name = ?', [ recordId, name ]).then(file => file ? file.data : file)
+    readFile(fileId) {
+      return get('SELECT data FROM files WHERE id = ?', [ fileId ]).then(file => file ? file.data : file)
     },
 
-    deleteFile(recordId, name) {
-      return run('DELETE FROM files where recordId = ? AND name = ?', [ recordId, name ]).then(expectSingleChange)
+    removeUnusedFiles() {
+      return run('DELETE FROM files WHERE id NOT IN (SELECT DISTINCT fileId FROM records_files)').then(extractChanges)
+    },
+
+    async addConnections(recordId, fileIds) {
+      const stmt = await prepare('INSERT INTO records_files(recordId, fileId) VALUES(?, ?)')
+
+      for (const fileId of fileIds) { // eslint-disable-line no-restricted-syntax
+        await statementRun(stmt, [ recordId, fileId ]) // eslint-disable-line no-await-in-loop
+      }
+    },
+
+    removeConnections(recordId) {
+      return run('DELETE FROM records_files WHERE recordId = ?', [ recordId ]).then(extractChanges)
     },
 
     close() {

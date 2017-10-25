@@ -49,34 +49,42 @@ describe('DB', () => {
     const name = 'package.json'
     const data = fs.readFileSync(name)
 
-    let recordId
-
-    beforeAll(async () => {
-      recordId = await db.createRecord('type', '', '')
-    })
+    let counter = 0
+    const nextId = () => { counter += 1; return `${counter}` }
 
     test('create file', async () => {
-      await db.createFile(recordId, name, data)
+      const id = nextId()
+      await db.createFile(id, name, data)
       const files = await db.listFiles()
-      expect(files[recordId]).toEqual([ { recordId, name, size: data.length } ])
+      expect(files.filter(file => file.id === id)).toEqual([ { id, name, size: data.length } ])
     })
 
     test('read file', async () => {
-      const file = await db.readFile(recordId, name)
+      const id = nextId()
+      await db.createFile(id, name, data)
+
+      const file = await db.readFile(id)
       expect(file.equals(data)).toBeTruthy()
     })
 
-    test('delete file', async () => {
-      expect(await db.deleteFile(recordId, name)).toBeUndefined()
-      expect(await db.readFile(recordId, name)).toBeUndefined()
+    test('remove unused files', async () => {
+      expect(await db.removeUnusedFiles()).toBe(2)
+      expect(await db.listFiles()).toHaveLength(0)
     })
 
-    test('auto cleanup after removing record', async () => {
-      await db.createFile(recordId, name, data)
-      expect(await db.readFile(recordId, name)).toBeTruthy()
+    test('connections', async () => {
+      const recordId = await db.createRecord('type', '', '')
 
-      await db.deleteRecord(recordId)
-      expect(await db.readFile(recordId, name)).toBeUndefined()
+      const fileId = nextId()
+      await db.createFile(fileId, name, data)
+      await db.addConnections(recordId, [ fileId ])
+
+      expect(await db.removeUnusedFiles()).toBe(0)
+      expect(await db.listFiles()).toHaveLength(1)
+
+      expect(await db.removeConnections(recordId)).toBe(1)
+      expect(await db.removeUnusedFiles()).toBe(1)
+      expect(await db.listFiles()).toHaveLength(0)
     })
   })
 })
