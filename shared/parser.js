@@ -235,3 +235,7 @@ export function select(tree, type) {
 export function selectLinks(tree) {
   return select(tree, 'Link').map(({ items: [ name, link ] }) => ({ name: name.items[0], link: link.items[0] }))
 }
+
+export function createLink(name, link) {
+  return `[${name}](${link})`
+}
