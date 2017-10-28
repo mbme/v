@@ -126,10 +126,20 @@ export function createSubject(initialValue) {
   }
 }
 
-function bytesToHexString(buffer) {
-  return Array.from(new Uint8Array(buffer)).map(b => ('00' + b.toString(16)).slice(-2)).join('')
-}
+export function uniq(arr, getKey = val => val) {
+  const result = []
+  const keys = []
 
-export function sha256(buffer) {
-  return crypto.subtle.digest('SHA-256', buffer).then(bytesToHexString)
+  arr.forEach((item) => {
+    const key = getKey(item)
+
+    if (keys.includes(key)) {
+      return
+    }
+
+    result.push(item)
+    keys.push(key)
+  })
+
+  return result
 }

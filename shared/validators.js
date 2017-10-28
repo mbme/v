@@ -1,4 +1,4 @@
-import { getIn, getType, isString, isObject, isFunction } from 'shared/utils'
+import { getIn, getType, isString, isObject, isFunction, isArray } from 'shared/utils'
 
 const RECORD_TYPES = [ 'note' ]
 
@@ -6,23 +6,34 @@ const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
   'record-type': val => RECORD_TYPES.includes(val),
   'string': isString,
+  'string!': val => isString(val) && val,
   'buffer': Buffer.isBuffer,
   'Record': {
     id: 'positive-integer',
     type: 'record-type',
-    name: 'string',
+    name: 'string!',
     data: 'string',
   },
   'File': {
-    name: 'string',
+    name: 'string!',
     data: 'buffer',
   },
+  'file-id': 'string!',
 }
 
 /**
  * @prop typeName Type name like "Record" or "Record.id"
  */
 export function validate(val, typeName, prefix = '') {
+  if (typeName.endsWith('[]')) {
+    if (!isArray(val)) {
+      return [ `${prefix}: expected ${typeName}, received ${getType(val)}` ]
+    }
+
+    const childTypeName = typeName.substring(0, typeName.length - 2)
+    return val.reduce((acc, value) => acc.concat(...validate(value, childTypeName, prefix)), [])
+  }
+
   const type = getIn(Types, typeName)
   if (!type) {
     throw new Error(`validateSchema: unknown type ${typeName}`)

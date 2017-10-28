@@ -52,19 +52,22 @@ describe('DB', () => {
     let counter = 0
     const nextId = () => { counter += 1; return `${counter}` }
 
-    test('create file', async () => {
+    test('add files', async () => {
       const id = nextId()
-      await db.createFile(id, name, data)
+      expect(await db.isKnownFile(id)).toBe(false)
+      await db.addFiles([ { id, name, data } ])
       const files = await db.listFiles()
       expect(files.filter(file => file.id === id)).toEqual([ { id, name, size: data.length } ])
+      expect(await db.isKnownFile(id)).toBe(true)
     })
 
     test('read file', async () => {
       const id = nextId()
-      await db.createFile(id, name, data)
+      await db.addFiles([ { id, name, data } ])
 
       const file = await db.readFile(id)
-      expect(file.equals(data)).toBeTruthy()
+      expect(file.name).toBe(name)
+      expect(file.data.equals(data)).toBeTruthy()
     })
 
     test('remove unused files', async () => {
@@ -76,7 +79,7 @@ describe('DB', () => {
       const recordId = await db.createRecord('type', '', '')
 
       const fileId = nextId()
-      await db.createFile(fileId, name, data)
+      await db.addFiles([ { id: fileId, name, data } ])
       await db.addConnections(recordId, [ fileId ])
 
       expect(await db.removeUnusedFiles()).toBe(0)
@@ -85,6 +88,30 @@ describe('DB', () => {
       expect(await db.removeConnections(recordId)).toBe(1)
       expect(await db.removeUnusedFiles()).toBe(1)
       expect(await db.listFiles()).toHaveLength(0)
+    })
+  })
+
+  describe('Transaction', () => {
+    test('commit', async () => {
+      const id = await db.createRecord('type', '', '')
+
+      await expect(db.inTransaction(async () => {
+        await db.deleteRecord(id)
+        return id
+      })).resolves.toBe(id)
+
+      expect(await db.readRecord(id)).toBeUndefined()
+    })
+
+    test('rollback', async () => {
+      const id = await db.createRecord('type', '', '')
+      const error = new Error('test')
+
+      await expect(db.inTransaction(async () => {
+        await db.deleteRecord(id)
+        throw error
+      })).rejects.toBe(error)
+      expect(await db.readRecord(id)).not.toBeUndefined()
     })
   })
 })

@@ -203,7 +203,7 @@ function assertType(type) {
   throw new Error(`Uknown type ${type}`)
 }
 
-export default function parse(str, type) {
+export default function parse(str, type = 'Document') {
   assertType(type)
 
   const [ i, tree ] = parseFrom(str, 0, type, [])
@@ -234,6 +234,10 @@ export function select(tree, type) {
 
 export function selectLinks(tree) {
   return select(tree, 'Link').map(({ items: [ name, link ] }) => ({ name: name.items[0], link: link.items[0] }))
+}
+
+export function selectFileLinks(tree) {
+  return selectLinks(tree).map(({ link }) => link) // TODO implement
 }
 
 export function createLink(name, link) {

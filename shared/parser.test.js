@@ -85,12 +85,12 @@ describe('Parser', () => {
   })
 
   test('select', () => {
-    const links = select(parse(text, 'Document'), 'Link')
+    const links = select(parse(text), 'Link')
     expect(links).toMatchSnapshot()
   })
 
   test('selectLinks', () => {
-    const links = selectLinks(parse(text, 'Document'))
+    const links = selectLinks(parse(text))
     expect(links).toMatchSnapshot()
   })
 })

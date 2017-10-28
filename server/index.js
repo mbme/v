@@ -14,8 +14,7 @@ function getRequestBody(req) {
   return new Promise((resolve) => {
     const data = []
 
-    req.on('data', chunk => data.push(chunk))
-      .on('end', () => resolve(Buffer.concat(data)))
+    req.on('data', chunk => data.push(chunk)).on('end', () => resolve(Buffer.concat(data)))
   })
 }
 

@@ -6,9 +6,10 @@ describe('Validators', () => {
     expect(validate(0, 'positive-integer')).toHaveLength(1)
   })
 
-  test('string', () => {
+  test('string!', () => {
     expect(validate('test', 'string')).toHaveLength(0)
     expect(validate(1, 'string')).toHaveLength(1)
+    expect(validate('', 'string!')).toHaveLength(1)
   })
 
   test('buffer', () => {
@@ -65,5 +66,18 @@ describe('Validators', () => {
         [ '1', 'string' ]
       )
     }).not.toThrow()
+  })
+
+  test('validate array', () => {
+    expect(validate([
+      {
+        name: 'test',
+        data: Buffer.from([]),
+      },
+      {
+        name: 'other',
+        data: '',
+      },
+    ], 'File[]')).toHaveLength(1)
   })
 })

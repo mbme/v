@@ -1,69 +1,121 @@
 import { validateAndThrow } from 'shared/validators'
+import { selectFileLinks, parse } from 'shared/parser'
+import { uniq } from 'shared/utils'
+import crypto from 'crypto'
 import getDB from './db'
 
+function sha256(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex')
+}
+
+function extractFileIds(data) {
+  return uniq(selectFileLinks(parse(data)))
+}
+
+async function getNewFiles(db, ids, files) {
+  const newFiles = {}
+  files.forEach((file) => {
+    const id = sha256(file.data)
+
+    if (newFiles[id]) {
+      console.error(`WARN: duplicate file with id ${id}: ${file.name} & ${newFiles[id].name}`)
+      return
+    }
+
+    newFiles[id] = file
+  })
+
+  const filesToAdd = []
+  await Promise.all(ids.map(async (id) => {
+    if (await db.isKnownFile(id)) {
+      return
+    }
+
+    const file = newFiles[id]
+    if (!file) {
+      throw new Error(`Can't attach file with unknown id ${id}`)
+    }
+
+    filesToAdd.push({ id, name: file.name, data: file.data })
+  }))
+
+  if (Object.keys(newFiles).length !== filesToAdd.length) {
+    console.error('WARN: there are redundant new files')
+  }
+
+  return filesToAdd
+}
+
 const actions = {
-  LIST_RECORDS: ({ type }) => {
+  LIST_RECORDS: (db, { type }) => {
     validateAndThrow(
       [ type, 'Record.type' ],
     )
 
-    return db => db.listRecords(type)
+    return db.listRecords(type)
   },
 
-  CREATE_RECORD: ({ type, name, data }) => {
+  CREATE_RECORD: async (db, { type, name, data }, files) => {
     validateAndThrow(
       [ type, 'Record.type' ],
       [ name, 'Record.name' ],
       [ data, 'Record.data' ],
+      [ files, 'File[]' ],
     )
 
-    return db => db.createRecord(type, name, data)
+    const fileIds = extractFileIds(data)
+    const filesToAdd = await getNewFiles(db, fileIds, files)
+
+    return db.inTransaction(async () => {
+      await db.addFiles(filesToAdd)
+
+      const id = await db.createRecord(type, name, data)
+
+      await db.addConnections(id, fileIds)
+
+      return id
+    })
   },
 
-  UPDATE_RECORD: ({ id, name, data }) => {
+  UPDATE_RECORD: async (db, { id, name, data }, files) => {
     validateAndThrow(
       [ id, 'Record.id' ],
       [ name, 'Record.name' ],
       [ data, 'Record.data' ],
+      [ files, 'File[]' ],
     )
 
-    return db => db.updateRecord(id, name, data)
+    const fileIds = extractFileIds(data)
+    const filesToAdd = await getNewFiles(db, fileIds, files)
+
+    return db.inTransaction(async () => {
+      await db.updateRecord(id, name, data)
+
+      await db.addFiles(filesToAdd)
+      await db.removeConnections(id)
+      await db.addConnections(id, fileIds)
+      await db.removeUnusedFiles()
+    })
   },
 
-  DELETE_RECORD: ({ id }) => {
+  DELETE_RECORD: (db, { id }) => {
     validateAndThrow(
       [ id, 'Record.id' ],
     )
 
-    return db => db.deleteRecord(id)
+    return db.inTransaction(async () => {
+      await db.deleteRecord(id)
+      await db.removeConnections(id)
+      await db.removeUnusedFiles()
+    })
   },
 
-  CREATE_FILE: ({ recordId, name, data }) => {
+  READ_FILE: (db, { id }) => {
     validateAndThrow(
-      [ recordId, 'Record.id' ],
-      [ name, 'File.name' ],
-      [ data, 'File.data' ],
+      [ id, 'file-id' ],
     )
 
-    return db => db.createFile(recordId, name, data).then(() => {})
-  },
-
-  READ_FILE: ({ recordId, name }) => {
-    validateAndThrow(
-      [ recordId, 'Record.id' ],
-      [ name, 'File.name' ],
-    )
-
-    return db => db.readFile(recordId, name)
-  },
-
-  DELETE_FILE: ({ recordId, name }) => {
-    validateAndThrow(
-      [ recordId, 'Record.id' ],
-      [ name, 'File.name' ],
-    )
-
-    return db => db.deleteFile(recordId, name).then(() => {})
+    return db.readFile(id)
   },
 }
 
@@ -71,14 +123,14 @@ export default async function createProcessor() {
   const db = await getDB()
 
   return {
-    async processAction({ name, data }) {
+    async processAction({ name, data, files }) {
       const action = actions[name]
       if (!action) {
         throw new Error(`unknown action: ${name}`)
       }
 
       try {
-        return await action(data)(db)
+        return await action(db, data, files)
       } catch (e) {
         console.error(`action ${name} processing error:`, e)
         throw e

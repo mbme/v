@@ -82,6 +82,21 @@ function dbAPI(db) {
   }
 
   return {
+    async inTransaction(actions) {
+      await run('BEGIN TRANSACTION')
+
+      return actions().then(
+        async (result) => {
+          await run('COMMIT TRANSACTION')
+          return result
+        },
+        async (e) => {
+          await run('ROLLBACK TRANSACTION')
+          throw e
+        },
+      )
+    },
+
     listRecords(type) {
       return selectAll('SELECT id, type, name, data FROM records WHERE type = ?', [ type ])
     },
@@ -108,27 +123,30 @@ function dbAPI(db) {
       return selectAll('SELECT id, name, length(data) AS size FROM files', [])
     },
 
-    /**
-     * @param {Buffer} data
-     */
-    createFile(fileId, name, data) {
-      return run('INSERT INTO files(id, name, data) VALUES (?, ?, ?)', [ fileId, name, data ])
+    // TODO run in transaction
+    async addFiles(files) {
+      const stmt = await prepare('INSERT INTO files(id, name, data) VALUES(?, ?, ?)')
+
+      await Promise.all(files.map(({ id, name, data }) => statementRun(stmt, [ id, name, data ])))
     },
 
     readFile(fileId) {
-      return get('SELECT data FROM files WHERE id = ?', [ fileId ]).then(file => file ? file.data : file)
+      return get('SELECT name, data FROM files WHERE id = ?', [ fileId ])
+    },
+
+    isKnownFile(fileId) {
+      return get('SELECT 1 FROM files WHERE id = ?', [ fileId ]).then(result => !!result)
     },
 
     removeUnusedFiles() {
       return run('DELETE FROM files WHERE id NOT IN (SELECT DISTINCT fileId FROM records_files)').then(extractChanges)
     },
 
+    // TODO run in transaction
     async addConnections(recordId, fileIds) {
       const stmt = await prepare('INSERT INTO records_files(recordId, fileId) VALUES(?, ?)')
 
-      for (const fileId of fileIds) { // eslint-disable-line no-restricted-syntax
-        await statementRun(stmt, [ recordId, fileId ]) // eslint-disable-line no-await-in-loop
-      }
+      await Promise.all(fileIds.map(fileId => statementRun(stmt, [ recordId, fileId ])))
     },
 
     removeConnections(recordId) {
