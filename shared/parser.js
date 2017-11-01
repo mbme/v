@@ -203,7 +203,7 @@ function assertType(type) {
   throw new Error(`Uknown type ${type}`)
 }
 
-export default function parse(str, type = 'Document') {
+export function parse(str, type = 'Document') {
   assertType(type)
 
   const [ i, tree ] = parseFrom(str, 0, type, [])
@@ -240,6 +240,6 @@ export function selectFileLinks(tree) {
   return selectLinks(tree).map(({ link }) => link) // TODO implement
 }
 
-export function createLink(name, link) {
-  return `[${name}](${link})`
-}
+export const createLink = (name, link) => `[${name}](${link})`
+
+export const createFileLink = createLink // TODO implement

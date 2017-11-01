@@ -1,62 +1,54 @@
-function processError(res) {
-  if (res.status === 400) {
-    return res.json().then(({ error }) => {
-      throw new Error(error)
+export default function createApiClient(baseUrl = '') {
+  function apiRequest(action, data, files = []) {
+    const formData = new FormData()
+    formData.append('name', action)
+    formData.append('data', JSON.stringify(data))
+    files.forEach((file, i) => formData.append(`file${i}`, file.data, file.name))
+
+    return fetch(`${baseUrl}/api`, {
+      method: 'POST',
+      body: formData,
+    }).then((res) => {
+      if (!res.ok) {
+        return res.json().then((body) => {
+          if (body) {
+            throw new Error(body.error)
+          }
+
+          throw new Error(`Server returned ${res.status} ${res.statusText}`)
+        })
+      }
+
+      return res.json().then(body => body.data)
     })
   }
 
-  return res
-}
-
-export default function createApiClient(baseUrl = '') {
-  function apiUrl(path) {
-    return baseUrl + '/api' + path
-  }
-
-  function apiRequest(action, data) {
-    return fetch(
-      apiUrl(''),
-      {
-        method: 'POST',
-        body: JSON.stringify({ name: action, data }),
-      }
-    )
-      .then(processError)
-      .then(res => res.json())
-      .then(resObj => resObj.data)
-  }
-
   return {
-    createFile(recordId, name, file) {
-      return fetch(
-        apiUrl(`/files/${recordId}/${name}`),
-        {
-          method: 'POST',
-          body: file,
-        }
-      ).then(processError)
-    },
+    readFile(id) {
+      return fetch(`${baseUrl}/api?fileId=${id}`)
+        .then((res) => {
+          if (res.status === 404) {
+            return null
+          }
 
-    readFile(recordId, name) {
-      return fetch(apiUrl(`/files/${recordId}/${name}`))
-        .then(processError)
-        .then(res => res.status === 404 ? null : res.buffer())
-    },
+          if (!res.ok) {
+            throw new Error(`Server returned ${res.status} ${res.statusText}`)
+          }
 
-    deleteFile(recordId, name) {
-      return fetch(apiUrl(`/files/${recordId}/${name}`), { method: 'DELETE' }).then(processError)
+          return res.buffer()
+        })
     },
 
     listRecords(type) {
       return apiRequest('LIST_RECORDS', { type })
     },
 
-    createRecord(type, name, data) {
-      return apiRequest('CREATE_RECORD', { type, name, data })
+    createRecord(type, name, data, newFiles = []) {
+      return apiRequest('CREATE_RECORD', { type, name, data }, newFiles)
     },
 
-    updateRecord(id, name, data) {
-      return apiRequest('UPDATE_RECORD', { id, name, data })
+    updateRecord(id, name, data, newFiles = []) {
+      return apiRequest('UPDATE_RECORD', { id, name, data }, newFiles)
     },
 
     deleteRecord(id) {

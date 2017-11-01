@@ -10,9 +10,11 @@ require('babel-register')({
 const isProduction = process.env.NODE_ENV === 'production'
 const isDevelopment = !isProduction
 
+global.__DEVELOPMENT__ = isDevelopment
+
 const startServer = require('../server').default
 
-startServer(8080, isDevelopment).then(() => {
+startServer(8080).then(() => {
   if (!isDevelopment) {
     return
   }

@@ -1,17 +1,19 @@
 import fs from 'fs'
 import path from 'path'
 import startServer from 'server'
+import { createFileLink } from 'shared/parser'
+import { sha256 } from 'server/utils'
 import createApiClient from './api'
 
 global.fetch = require('node-fetch')
-
-const port = 8079
+global.FormData = require('form-data')
 
 describe('API client', () => {
   let server
   let api
 
   beforeAll(async () => {
+    const port = 8079
     server = await startServer(port)
     api = createApiClient(`http://localhost:${port}`)
   })
@@ -20,33 +22,27 @@ describe('API client', () => {
     server.close(done)
   })
 
-  const newRecord = () => api.createRecord('note', 'name', 'some data')
-
   it('should manage files', async () => {
     const buffer = fs.readFileSync(path.join(__dirname, '../package.json'))
-    const recordId = await newRecord()
     const name = 'super text.json'
+    const fileId = sha256(buffer)
+    const link = createFileLink(name, fileId)
 
-    // create file
-    await api.createFile(recordId, name, buffer)
+    const recordId = await api.createRecord('note', 'name', `data ${link}`, [ { name, data: buffer } ])
+    expect(buffer.equals(await api.readFile(fileId))).toBeTruthy()
 
-    // read file
-    const file = await api.readFile(recordId, name)
-    expect(buffer.equals(file)).toBeTruthy()
-
-    // delete file
-    await api.deleteFile(recordId, name)
-    await expect(api.readFile(recordId, name)).resolves.toBeNull()
+    await api.updateRecord(recordId, 'name', 'data')
+    await expect(api.readFile(fileId)).resolves.toBeNull()
   })
 
   it('should manage records', async () => {
     // create record
-    const id = await newRecord()
+    const id = await api.createRecord('note', 'name', 'some data')
     expect(id).toBeDefined()
 
     // list records
     const records = await api.listRecords('note')
-    await newRecord()
+    await api.createRecord('note', 'name', 'some data')
     const newRecords = await api.listRecords('note')
     expect(newRecords.length).toBe(records.length + 1)
 
@@ -62,6 +58,6 @@ describe('API client', () => {
   })
 
   it('should return an error', async () => {
-    await expect(api.updateRecord(99999999, 'note', 'new name', 'new data')).rejects.toBeDefined()
+    await expect(api.updateRecord(99999999, 'new name', 'new data')).rejects.toBeDefined()
   })
 })

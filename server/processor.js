@@ -1,16 +1,10 @@
 import { validateAndThrow } from 'shared/validators'
 import { selectFileLinks, parse } from 'shared/parser'
 import { uniq } from 'shared/utils'
-import crypto from 'crypto'
+import { sha256 } from './utils'
 import getDB from './db'
 
-function sha256(buffer) {
-  return crypto.createHash('sha256').update(buffer).digest('hex')
-}
-
-function extractFileIds(data) {
-  return uniq(selectFileLinks(parse(data)))
-}
+const extractFileIds = data => uniq(selectFileLinks(parse(data)))
 
 async function getNewFiles(db, ids, files) {
   const newFiles = {}
@@ -123,7 +117,7 @@ export default async function createProcessor() {
   const db = await getDB()
 
   return {
-    async processAction({ name, data, files }) {
+    async processAction({ name, data, files = [] }) {
       const action = actions[name]
       if (!action) {
         throw new Error(`unknown action: ${name}`)

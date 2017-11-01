@@ -1,4 +1,4 @@
-import parse, { select, selectLinks } from './parser'
+import { parse, select, selectLinks } from './parser'
 
 global.__DEVELOPMENT__ = false // suppress warnings
 

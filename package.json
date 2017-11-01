@@ -8,12 +8,12 @@
   "main": "index.js",
   "dependencies": {
     "babel-register": "^6.24.1",
-    "express": "^4.15.2",
+    "busboy": "^0.2.14",
     "feather-icons": "^3.2.2",
     "fela": "^6.0.1",
     "fela-combine-arrays": "^1.0.0",
     "fela-preset-web": "^6.0.0",
-    "file-type": "^7.0.1",
+    "form-data": "^2.3.1",
     "lodash.debounce": "^4.0.8",
     "node-fetch": "^1.7.3",
     "prop-types": "^15.5.10",
@@ -36,7 +36,6 @@
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-react-display-name": "^6.23.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.4.0",
     "eslint": "^4.7.2",
@@ -46,10 +45,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.2.0",
     "jest": "^21.1.0",
-    "raw-loader": "^0.5.1",
-    "webpack": "^3.6.0",
-    "webpack-dev-middleware": "^1.10.2",
-    "webpack-hot-middleware": "^2.19.1"
+    "webpack": "^3.6.0"
   },
   "scripts": {
     "build": "",
@@ -88,7 +84,6 @@
       "transform-class-properties",
       "syntax-jsx",
       "transform-react-jsx",
-      "transform-react-display-name",
       [
         "module-resolver",
         {
