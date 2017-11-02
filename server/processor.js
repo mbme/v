@@ -83,7 +83,9 @@ const actions = {
     const filesToAdd = await getNewFiles(db, fileIds, files)
 
     return db.inTransaction(async () => {
-      await db.updateRecord(id, name, data)
+      if (!await db.updateRecord(id, name, data)) {
+        throw new Error(`Record ${id} doesn't exist`)
+      }
 
       await db.addFiles(filesToAdd)
       await db.removeConnections(id)
@@ -98,8 +100,9 @@ const actions = {
     )
 
     return db.inTransaction(async () => {
-      await db.deleteRecord(id)
-      await db.removeConnections(id)
+      if (!await db.deleteRecord(id)) {
+        throw new Error(`Record ${id} doesn't exist`)
+      }
       await db.removeUnusedFiles()
     })
   },
@@ -117,18 +120,13 @@ export default async function createProcessor() {
   const db = await getDB()
 
   return {
-    async processAction({ name, data, files = [] }) {
+    processAction({ name, data, files = [] }) {
       const action = actions[name]
       if (!action) {
-        throw new Error(`unknown action: ${name}`)
+        return Promise.reject(new Error(`unknown action: ${name}`))
       }
 
-      try {
-        return await action(db, data, files)
-      } catch (e) {
-        console.error(`action ${name} processing error:`, e)
-        throw e
-      }
+      return action(db, data, files)
     },
 
     close() {

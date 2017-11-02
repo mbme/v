@@ -32,14 +32,14 @@ describe('DB', () => {
     test('update record', async () => {
       const newName = 'newName'
       const newData = 'newData'
-      expect(await db.updateRecord(id, newName, newData)).toBeUndefined()
+      expect(await db.updateRecord(id, newName, newData)).toBe(true)
 
       const record = await db.readRecord(id)
       expect(record).toEqual({ id, type, name: newName, data: newData })
     })
 
     test('delete record', async () => {
-      expect(await db.deleteRecord(id)).toBeUndefined()
+      expect(await db.deleteRecord(id)).toBe(true)
       expect(await db.readRecord(id)).toBeUndefined()
       expect(await db.listRecords(type)).toHaveLength(0)
     })

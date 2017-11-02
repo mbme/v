@@ -1,6 +1,9 @@
 import sqlite3 from 'sqlite3'
 
 const SQL_INIT_DB = `
+  PRAGMA foreign_keys = ON;
+  PRAGMA auto_vacuum = FULL;
+
   CREATE TABLE IF NOT EXISTS records (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       type TEXT NOT NULL,
@@ -19,18 +22,9 @@ const SQL_INIT_DB = `
       recordId INTEGER NOT NULL,
       fileId TEXT NOT NULL,
       CONSTRAINT unique_connection UNIQUE (recordId, fileId)
+      CONSTRAINT fk_recordId FOREIGN KEY(recordId) REFERENCES records(id) ON DELETE CASCADE
   );
 `
-
-function expectSingleChange({ changes }) {
-  if (changes !== 1) {
-    throw new Error(`Expected single change, but there were ${changes} changes`)
-  }
-}
-
-function extractChanges({ changes }) {
-  return changes
-}
 
 function dbAPI(db) {
   function run(sql, args) {
@@ -110,11 +104,11 @@ function dbAPI(db) {
     },
 
     updateRecord(id, name, data) {
-      return run('UPDATE records set name = ?, data = ? WHERE id = ?', [ name, data, id ]).then(expectSingleChange)
+      return run('UPDATE records set name = ?, data = ? WHERE id = ?', [ name, data, id ]).then(({ changes }) => changes === 1)
     },
 
     deleteRecord(id) {
-      return run('DELETE FROM records where id = ?', [ id ]).then(expectSingleChange)
+      return run('DELETE FROM records where id = ?', [ id ]).then(({ changes }) => changes === 1)
     },
 
     // ----------- FILES ----------------------------------
@@ -139,7 +133,7 @@ function dbAPI(db) {
     },
 
     removeUnusedFiles() {
-      return run('DELETE FROM files WHERE id NOT IN (SELECT DISTINCT fileId FROM records_files)').then(extractChanges)
+      return run('DELETE FROM files WHERE id NOT IN (SELECT DISTINCT fileId FROM records_files)').then(({ changes }) => changes)
     },
 
     // TODO run in transaction
@@ -150,7 +144,7 @@ function dbAPI(db) {
     },
 
     removeConnections(recordId) {
-      return run('DELETE FROM records_files WHERE recordId = ?', [ recordId ]).then(extractChanges)
+      return run('DELETE FROM records_files WHERE recordId = ?', [ recordId ]).then(({ changes }) => changes)
     },
 
     close() {
