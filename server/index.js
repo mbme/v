@@ -7,8 +7,6 @@ import Busboy from 'busboy'
 
 import createProcessor from './processor'
 
-// TODO webpack-dev-server
-
 function readAction(req) {
   const files = []
   let name

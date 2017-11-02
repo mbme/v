@@ -22,7 +22,7 @@ router.useRoutes(routes)
 const store = createStore(
   rootReducer,
   applyMiddleware(
-    reduxThunk.withExtraArgument(createApiClient('http://localhost:8080')),
+    reduxThunk.withExtraArgument(createApiClient()),
     routerMiddleware(router),
   ),
 )
