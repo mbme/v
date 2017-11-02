@@ -2,9 +2,7 @@
 
 /* eslint-disable global-require */
 
-require('babel-register')({
-  plugins: [ 'transform-es2015-modules-commonjs' ],
-})
+require('babel-register')
 
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -20,6 +18,7 @@ startServer(8080).then(() => {
   }
 
   global.fetch = require('node-fetch')
+  global.FormData = require('form-data')
   const fs = require('fs')
   const path = require('path')
   const createApiClient = require('../shared/api').default

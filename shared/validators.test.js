@@ -1,74 +1,75 @@
+import { expect } from 'chai'
 import { validate, validateAndThrow } from './validators'
 
 describe('Validators', () => {
-  test('positive-integer', () => {
-    expect(validate(2, 'positive-integer')).toHaveLength(0)
-    expect(validate(0, 'positive-integer')).toHaveLength(1)
+  it('positive-integer', () => {
+    expect(validate(2, 'positive-integer')).to.be.empty
+    expect(validate(0, 'positive-integer')).to.have.lengthOf(1)
   })
 
-  test('string!', () => {
-    expect(validate('test', 'string')).toHaveLength(0)
-    expect(validate(1, 'string')).toHaveLength(1)
-    expect(validate('', 'string!')).toHaveLength(1)
+  it('string!', () => {
+    expect(validate('test', 'string')).to.be.empty
+    expect(validate(1, 'string')).to.have.lengthOf(1)
+    expect(validate('', 'string!')).to.have.lengthOf(1)
   })
 
-  test('buffer', () => {
-    expect(validate(Buffer.from([]), 'buffer')).toHaveLength(0)
-    expect(validate('test', 'buffer')).toHaveLength(1)
+  it('buffer', () => {
+    expect(validate(Buffer.from([]), 'buffer')).to.be.empty
+    expect(validate('test', 'buffer')).to.have.lengthOf(1)
   })
 
-  test('Record', () => {
+  it('Record', () => {
     expect(validate({
       id: 2,
       type: 'note',
       name: 'test',
       data: '',
-    }, 'Record')).toHaveLength(0)
+    }, 'Record')).to.be.empty
 
     expect(validate({
       id: -2,
       type: 'other',
       name: 2,
       data: '',
-    }, 'Record')).toHaveLength(3)
+    }, 'Record')).to.have.lengthOf(3)
 
-    expect(validate('test', 'Record')).toHaveLength(1)
+    expect(validate('test', 'Record')).to.have.lengthOf(1)
   })
 
-  test('File', () => {
+  it('File', () => {
     expect(validate({
       name: 'test',
       data: Buffer.from([]),
-    }, 'File')).toHaveLength(0)
+    }, 'File')).to.be.empty
 
     expect(validate({
       name: 2,
       data: '',
-    }, 'File')).toHaveLength(2)
+    }, 'File')).to.have.lengthOf(2)
 
-    expect(validate(null, 'File')).toHaveLength(1)
+    expect(validate(null, 'File')).to.have.lengthOf(1)
   })
 
-  test('Record.id', () => {
-    expect(validate(2, 'Record.id')).toHaveLength(0)
-    expect(validate(-2, 'Record.id')).toHaveLength(1)
+  it('Record.id', () => {
+    expect(validate(2, 'Record.id')).to.be.empty
+    expect(validate(-2, 'Record.id')).to.have.lengthOf(1)
   })
 
-  test('validateAndThrow', () => {
+  it('validateAndThrow', () => {
     expect(() => {
       validateAndThrow(
         [ 1, 'string' ],
       )
-    }).toThrow()
+    }).to.throw()
 
     expect(() => {
       validateAndThrow(
         [ '1', 'string' ]
       )
-    }).not.toThrow()
+    }).not.to.throw()
   })
 
-  test('validate array', () => {
+  it('validate array', () => {
     expect(validate([
       {
         name: 'test',
@@ -78,6 +79,6 @@ describe('Validators', () => {
         name: 'other',
         data: '',
       },
-    ], 'File[]')).toHaveLength(1)
+    ], 'File[]')).to.have.lengthOf(1)
   })
 })

@@ -3,7 +3,6 @@ const webpack = require('webpack')
 
 module.exports = {
   entry: [
-    'webpack-hot-middleware/client',
     'react-hot-loader/patch',
     './client/index.jsx',
   ],
@@ -26,8 +25,25 @@ module.exports = {
           },
           {
             loader: 'babel-loader',
-            query: {
+            options: {
               cacheDirectory: true,
+              babelrc: false,
+              presets: [
+                [
+                  'env',
+                  {
+                    targets: { browsers: [ 'last 2 Chrome versions', 'last 2 Firefox versions' ] },
+                    modules: false,
+                  },
+                ],
+              ],
+              plugins: [
+                'transform-object-rest-spread',
+                'transform-class-properties',
+                'syntax-jsx',
+                'transform-react-jsx',
+                [ 'module-resolver', { root: [ '.' ] } ],
+              ],
             },
           },
         ],
@@ -49,4 +65,8 @@ module.exports = {
     }),
   ],
   devtool: 'cheap-module-eval-source-map',
+  devServer: {
+    port: 8000,
+    hot: true,
+  },
 }

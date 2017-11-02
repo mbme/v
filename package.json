@@ -8,6 +8,7 @@
   "main": "index.js",
   "dependencies": {
     "babel-register": "^6.24.1",
+    "better-sqlite3": "^4.0.3",
     "busboy": "^0.2.14",
     "feather-icons": "^3.2.2",
     "fela": "^6.0.1",
@@ -24,13 +25,11 @@
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "sqlite3": "^3.1.12",
     "universal-router": "^4.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-eslint": "^8.0.0",
-    "babel-jest": "^21.0.2",
     "babel-loader": "^7.0.0",
     "babel-plugin-module-resolver": "^2.7.1",
     "babel-plugin-syntax-jsx": "^6.18.0",
@@ -38,21 +37,24 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.4.0",
+    "chai": "^4.1.2",
+    "chai-jest-snapshot": "^1.3.0",
     "eslint": "^4.7.2",
     "eslint-config-airbnb": "^16.0.0",
     "eslint-import-resolver-babel-module": "^3.0.0",
     "eslint-plugin-import": "^2.6.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.2.0",
-    "jest": "^21.1.0",
-    "webpack": "^3.6.0"
+    "mocha": "^4.0.1",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.3"
   },
   "scripts": {
     "build": "",
-    "dev": "node bin/server.js",
+    "dev": "node bin/server.js & webpack-dev-server --hot",
     "dev:debug": "node --inspect bin/server.js",
     "start": "NODE_ENV=production node bin/server.js",
-    "test": "jest",
+    "test": "mocha --require babel-register **/*.test.js",
     "lint": "eslint . --ext js,jsx"
   },
   "babel": {
@@ -61,24 +63,11 @@
         "env",
         {
           "targets": {
-            "node": "current",
-            "browsers": [
-              "last 2 Chrome versions",
-              "last 2 Firefox versions"
-            ]
-          },
-          "debug": false,
-          "modules": false
+            "node": "current"
+          }
         }
       ]
     ],
-    "env": {
-      "test": {
-        "plugins": [
-          "transform-es2015-modules-commonjs"
-        ]
-      }
-    },
     "plugins": [
       "transform-object-rest-spread",
       "transform-class-properties",
@@ -94,11 +83,6 @@
       ]
     ]
   },
-  "jest": {
-    "globals": {
-      "__DEVELOPMENT__": true
-    }
-  },
   "eslintConfig": {
     "parser": "babel-eslint",
     "parserOptions": {
@@ -109,14 +93,41 @@
       }
     },
     "env": {
-      "node": true,
-      "browser": true,
-      "es6": true,
-      "jest": true
+      "es6": true
     },
     "globals": {
       "__DEVELOPMENT__": true
     },
+    "overrides": [
+      {
+        "files": [
+          "client/**/*.js",
+          "client/**/*.jsx"
+        ],
+        "env": {
+          "browser": true
+        }
+      },
+      {
+        "files": [
+          "server/**/*.js"
+        ],
+        "env": {
+          "node": true
+        }
+      },
+      {
+        "files": [
+          "**/*.test.js"
+        ],
+        "env": {
+          "mocha": true
+        },
+        "rules": {
+          "no-unused-expressions": 0
+        }
+      }
+    ],
     "extends": [
       "airbnb"
     ],

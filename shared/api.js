@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 export default function createApiClient(baseUrl = '') {
   function apiRequest(action, data, files = []) {
     const formData = new FormData()

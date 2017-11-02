@@ -112,7 +112,7 @@ const Grammar = {
   }),
 }
 
-if (__DEVELOPMENT__) { // validate grammar
+if (global.__DEVELOPMENT__) { // validate grammar
   Object.entries(Grammar).forEach(([ type, rule ]) => {
     rule.children.forEach(childType => !!Grammar[childType] || console.error(`WARN: ${type} has unknown child "${childType}"`))
   })
@@ -208,7 +208,7 @@ export function parse(str, type = 'Document') {
 
   const [ i, tree ] = parseFrom(str, 0, type, [])
 
-  if (__DEVELOPMENT__ && i !== str.length) {
+  if (global.__DEVELOPMENT__ && i !== str.length) {
     console.error(`WARN: rule ${type} covers ${i} out of ${str.length} chars`)
   }
 

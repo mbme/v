@@ -67,7 +67,7 @@ export default async function startServer(port = 8080) {
   const STATIC_DIR = path.join(__dirname, '../static')
   const DIST_DIR = path.join(__dirname, '../dist')
 
-  const processor = await createProcessor()
+  const processor = createProcessor()
 
   // POST /api
   // GET /api&fileId=asdfsadfasd
@@ -81,7 +81,7 @@ export default async function startServer(port = 8080) {
       if (url.pathname === '/api') {
         if (req.method === 'POST') {
           const action = await readAction(req)
-          const response = await processor.processAction(action)
+          const response = processor.processAction(action)
           res.writeHead(200)
           res.write(JSON.stringify({ data: response }))
           res.end()
@@ -95,7 +95,7 @@ export default async function startServer(port = 8080) {
             return
           }
 
-          const response = await processor.processAction({
+          const response = processor.processAction({
             name: 'READ_FILE',
             data: {
               id: url.query.fileId,

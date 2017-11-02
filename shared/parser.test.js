@@ -1,6 +1,16 @@
+import chai, { expect } from 'chai'
+import chaiJestSnapshot from 'chai-jest-snapshot'
 import { parse, select, selectLinks } from './parser'
 
-global.__DEVELOPMENT__ = false // suppress warnings
+chai.use(chaiJestSnapshot)
+
+before(() => {
+  chaiJestSnapshot.resetSnapshotRegistry()
+})
+
+beforeEach(function setupSnapshots() {
+  chaiJestSnapshot.configureUsingMochaContext(this)
+})
 
 const text = `
 # Header
@@ -26,71 +36,71 @@ One more paragraph. [link](http://link.to/123?321)
 `
 
 describe('Parser', () => {
-  test('Italic', () => {
-    expect(parse('_test_', 'Italic')).toMatchSnapshot()
-    expect(parse('_ test \\_ and so on *_test*_', 'Italic')).toMatchSnapshot()
+  it('Italic', () => {
+    expect(parse('_test_', 'Italic')).to.matchSnapshot()
+    expect(parse('_ test \\_ and so on *_test*_', 'Italic')).to.matchSnapshot()
     expect(parse(
       `_te
       st_`,
       'Italic',
-    )).toBeNull()
+    )).to.be.null
   })
 
-  test('Bold', () => {
-    expect(parse('*test*', 'Bold')).toMatchSnapshot()
-    expect(parse('* test \\* \\ _and*_ so on*', 'Bold')).toMatchSnapshot()
+  it('Bold', () => {
+    expect(parse('*test*', 'Bold')).to.matchSnapshot()
+    expect(parse('* test \\* \\ _and*_ so on*', 'Bold')).to.matchSnapshot()
     expect(parse(
       `*te
       st*`,
       'Bold',
-    )).toBeNull()
+    )).to.be.null
   })
 
-  test('Mono', () => {
-    expect(parse('`test`', 'Mono')).toMatchSnapshot()
-    expect(parse('` test \\` \\ _and*_ so on*`', 'Mono')).toMatchSnapshot()
+  it('Mono', () => {
+    expect(parse('`test`', 'Mono')).to.matchSnapshot()
+    expect(parse('` test \\` \\ _and*_ so on*`', 'Mono')).to.matchSnapshot()
     expect(parse(
       `\`te
       st\``,
       'Mono',
-    )).toBeNull()
+    )).to.be.null
   })
 
-  test('Header', () => {
-    expect(parse('# AHAHAH *test oh no* !', 'Header')).toMatchSnapshot()
+  it('Header', () => {
+    expect(parse('# AHAHAH *test oh no* !', 'Header')).to.matchSnapshot()
     expect(parse(
       `# AHAHAH *test oh no* !
       there is no empty line
       `,
       'Header',
-    )).toBeNull()
+    )).to.be.null
   })
 
-  test('Link', () => {
-    expect(parse('[awesome link](http://amazing.com)', 'Link')).toMatchSnapshot()
+  it('Link', () => {
+    expect(parse('[awesome link](http://amazing.com)', 'Link')).to.matchSnapshot()
   })
 
-  test('Paragraph', () => {
+  it('Paragraph', () => {
     expect(parse(
       `
       AHAHAH *test oh no!
       go go _power cows_ \`code\`
       `,
       'Paragraph',
-    )).toMatchSnapshot()
+    )).to.matchSnapshot()
   })
 
-  test('Document', () => {
-    expect(parse(text, 'Document')).toMatchSnapshot()
+  it('Document', () => {
+    expect(parse(text, 'Document')).to.matchSnapshot()
   })
 
-  test('select', () => {
+  it('select', () => {
     const links = select(parse(text), 'Link')
-    expect(links).toMatchSnapshot()
+    expect(links).to.matchSnapshot()
   })
 
-  test('selectLinks', () => {
+  it('selectLinks', () => {
     const links = selectLinks(parse(text))
-    expect(links).toMatchSnapshot()
+    expect(links).to.matchSnapshot()
   })
 })

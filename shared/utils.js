@@ -92,40 +92,6 @@ export function extend(proto, props) {
   return Object.create(proto, propertiesObject)
 }
 
-export function createSubject(initialValue) {
-  const subscribers = []
-
-  let currentValue = initialValue
-
-  return {
-    get value() {
-      return currentValue
-    },
-
-    next(value) {
-      currentValue = value
-      subscribers.forEach(cb => cb(value))
-    },
-
-    subscribe(cb) {
-      subscribers.push(cb)
-
-      return () => this.unsubscribe(cb)
-    },
-
-    unsubscribe(cb) {
-      const pos = subscribers.indexOf(cb)
-      if (pos > -1) {
-        subscribers.splice(pos, 1)
-      }
-    },
-
-    unsubscribeAll() {
-      subscribers.length = 0
-    },
-  }
-}
-
 export function uniq(arr, getKey = val => val) {
   const result = []
   const keys = []

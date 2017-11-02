@@ -1,13 +1,11 @@
 import fs from 'fs'
+import { expect } from 'chai'
 import getDB from './db'
 
 describe('DB', () => {
-  let db
+  const db = getDB()
 
-  beforeAll(async () => {
-    db = await getDB()
-  })
-  afterAll(() => db.close())
+  after(() => db.close())
 
   describe('records', () => {
     const type = 'type'
@@ -15,33 +13,33 @@ describe('DB', () => {
     const data = 'data'
 
     let id
-    test('create record', async () => {
-      id = await db.createRecord(type, name, data)
+    it('create record', () => {
+      id = db.createRecord(type, name, data)
     })
 
-    test('list records', async () => {
-      expect(await db.listRecords('12312313131')).toHaveLength(0)
-      expect(await db.listRecords(type)).toHaveLength(1)
+    it('list records', () => {
+      expect(db.listRecords('12312313131')).to.be.empty
+      expect(db.listRecords(type)).to.have.lengthOf(1)
     })
 
-    test('read record', async () => {
-      const record = await db.readRecord(id)
-      expect(record).toEqual({ id, type, name, data })
+    it('read record', () => {
+      const record = db.readRecord(id)
+      expect(record).to.deep.equal({ id, type, name, data })
     })
 
-    test('update record', async () => {
+    it('update record', () => {
       const newName = 'newName'
       const newData = 'newData'
-      expect(await db.updateRecord(id, newName, newData)).toBe(true)
+      expect(db.updateRecord(id, newName, newData)).to.be.true
 
-      const record = await db.readRecord(id)
-      expect(record).toEqual({ id, type, name: newName, data: newData })
+      const record = db.readRecord(id)
+      expect(record).to.deep.equal({ id, type, name: newName, data: newData })
     })
 
-    test('delete record', async () => {
-      expect(await db.deleteRecord(id)).toBe(true)
-      expect(await db.readRecord(id)).toBeUndefined()
-      expect(await db.listRecords(type)).toHaveLength(0)
+    it('delete record', () => {
+      expect(db.deleteRecord(id)).to.be.true
+      expect(db.readRecord(id)).to.be.undefined
+      expect(db.listRecords(type)).to.be.empty
     })
   })
 
@@ -52,66 +50,69 @@ describe('DB', () => {
     let counter = 0
     const nextId = () => { counter += 1; return `${counter}` }
 
-    test('add files', async () => {
+    it('add files', () => {
       const id = nextId()
-      expect(await db.isKnownFile(id)).toBe(false)
-      await db.addFiles([ { id, name, data } ])
-      const files = await db.listFiles()
-      expect(files.filter(file => file.id === id)).toEqual([ { id, name, size: data.length } ])
-      expect(await db.isKnownFile(id)).toBe(true)
+      expect(db.isKnownFile(id)).to.be.false
+
+      db.addFiles([ { id, name, data } ])
+      const file = db.readFile(id)
+      expect(file.name).to.be.equal(name)
+      expect(data.equals(file.data)).to.be.true
+      expect(db.isKnownFile(id)).to.be.true
     })
 
-    test('read file', async () => {
+    it('read file', () => {
       const id = nextId()
-      await db.addFiles([ { id, name, data } ])
+      db.addFiles([ { id, name, data } ])
 
-      const file = await db.readFile(id)
-      expect(file.name).toBe(name)
-      expect(file.data.equals(data)).toBeTruthy()
+      const file = db.readFile(id)
+      expect(file.name).to.equal(name)
+      expect(file.data.equals(data)).to.be.true
     })
 
-    test('remove unused files', async () => {
-      expect(await db.removeUnusedFiles()).toBe(2)
-      expect(await db.listFiles()).toHaveLength(0)
+    it('remove unused files', () => {
+      expect(db.removeUnusedFiles()).to.equal(2)
     })
 
-    test('connections', async () => {
-      const recordId = await db.createRecord('type', '', '')
+    it('connections', () => {
+      const recordId = db.createRecord('type', '', '')
 
       const fileId = nextId()
-      await db.addFiles([ { id: fileId, name, data } ])
-      await db.addConnections(recordId, [ fileId ])
+      db.addFiles([ { id: fileId, name, data } ])
+      db.addConnections(recordId, [ fileId ])
 
-      expect(await db.removeUnusedFiles()).toBe(0)
-      expect(await db.listFiles()).toHaveLength(1)
+      expect(db.removeUnusedFiles()).to.equal(0)
+      expect(db.isKnownFile(fileId)).to.be.true
 
-      expect(await db.removeConnections(recordId)).toBe(1)
-      expect(await db.removeUnusedFiles()).toBe(1)
-      expect(await db.listFiles()).toHaveLength(0)
+      expect(db.removeConnections(recordId)).to.equal(1)
+      expect(db.removeUnusedFiles()).to.equal(1)
+      expect(db.isKnownFile(fileId)).to.be.false
     })
   })
 
   describe('Transaction', () => {
-    test('commit', async () => {
-      const id = await db.createRecord('type', '', '')
+    it('commit', () => {
+      const id = db.createRecord('type', '', '')
 
-      await expect(db.inTransaction(async () => {
-        await db.deleteRecord(id)
+      expect(db.inTransaction(() => {
+        db.deleteRecord(id)
         return id
-      })).resolves.toBe(id)
+      })).to.equal(id)
 
-      expect(await db.readRecord(id)).toBeUndefined()
+      expect(db.readRecord(id)).to.be.undefined
     })
 
-    test('rollback', async () => {
-      const id = await db.createRecord('type', '', '')
+    it('rollback', () => {
+      const id = db.createRecord('type', '', '')
       const error = new Error('test')
 
-      await expect(db.inTransaction(async () => {
-        await db.deleteRecord(id)
-        throw error
-      })).rejects.toBe(error)
-      expect(await db.readRecord(id)).not.toBeUndefined()
+      expect(() => {
+        db.inTransaction(() => {
+          db.deleteRecord(id)
+          throw error
+        })
+      }).to.throw(error)
+      expect(db.readRecord(id)).to.be.ok
     })
   })
 })

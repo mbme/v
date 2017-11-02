@@ -1,34 +1,21 @@
-import { isObject, isFunction, createSubject, createArray } from './utils'
+import { expect } from 'chai'
+import { isObject, isFunction, createArray } from './utils'
 
 describe('Utils', () => {
-  test('isObject', () => {
-    expect(isObject(null)).toBe(false)
-    expect(isObject({})).toBe(true)
+  it('isObject', () => {
+    expect(isObject(null)).to.be.false
+    expect(isObject({})).to.be.true
   })
 
-  test('isFunction', () => {
-    expect(isFunction(() => true)).toBe(true)
-    expect(isFunction(async () => true)).toBe(true)
-    expect(isFunction(function testIsFunction() {})).toBe(true)
-    expect(isFunction(async function testIsFunction() { return true })).toBe(true)
+  it('isFunction', () => {
+    expect(isFunction(() => true)).to.be.true
+    expect(isFunction(async () => true)).to.be.true
+    expect(isFunction(function testIsFunction() {})).to.be.true
+    expect(isFunction(async function testIsFunction() { return true })).to.be.true
   })
 
-  test('createSubject', () => {
-    const o = createSubject(1)
-
-    const cb = jest.fn()
-    const unsubscribe = o.subscribe(cb)
-    cb(o.value)
-
-    o.next(2)
-    unsubscribe()
-    o.next(3)
-
-    expect(cb.mock.calls).toEqual([ [ 1 ], [ 2 ] ])
-  })
-
-  test('createArray', () => {
-    expect(createArray(3, 0)).toEqual([ 0, 0, 0 ])
-    expect(createArray(3, i => i)).toEqual([ 0, 1, 2 ])
+  it('createArray', () => {
+    expect(createArray(3, 0)).to.deep.equal([ 0, 0, 0 ])
+    expect(createArray(3, i => i)).to.deep.equal([ 0, 1, 2 ])
   })
 })

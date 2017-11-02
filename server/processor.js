@@ -1,12 +1,13 @@
+import crypto from 'crypto'
 import { validateAndThrow } from 'shared/validators'
 import { selectFileLinks, parse } from 'shared/parser'
 import { uniq } from 'shared/utils'
-import { sha256 } from './utils'
 import getDB from './db'
 
 const extractFileIds = data => uniq(selectFileLinks(parse(data)))
+export const sha256 = buffer => crypto.createHash('sha256').update(buffer).digest('hex')
 
-async function getNewFiles(db, ids, files) {
+function getNewFiles(db, ids, files) {
   const newFiles = {}
   files.forEach((file) => {
     const id = sha256(file.data)
@@ -20,8 +21,8 @@ async function getNewFiles(db, ids, files) {
   })
 
   const filesToAdd = []
-  await Promise.all(ids.map(async (id) => {
-    if (await db.isKnownFile(id)) {
+  ids.forEach((id) => {
+    if (db.isKnownFile(id)) {
       return
     }
 
@@ -31,7 +32,7 @@ async function getNewFiles(db, ids, files) {
     }
 
     filesToAdd.push({ id, name: file.name, data: file.data })
-  }))
+  })
 
   if (Object.keys(newFiles).length !== filesToAdd.length) {
     console.error('WARN: there are redundant new files')
@@ -49,7 +50,7 @@ const actions = {
     return db.listRecords(type)
   },
 
-  CREATE_RECORD: async (db, { type, name, data }, files) => {
+  CREATE_RECORD: (db, { type, name, data }, files) => {
     validateAndThrow(
       [ type, 'Record.type' ],
       [ name, 'Record.name' ],
@@ -58,20 +59,20 @@ const actions = {
     )
 
     const fileIds = extractFileIds(data)
-    const filesToAdd = await getNewFiles(db, fileIds, files)
+    const filesToAdd = getNewFiles(db, fileIds, files)
 
-    return db.inTransaction(async () => {
-      await db.addFiles(filesToAdd)
+    return db.inTransaction(() => {
+      db.addFiles(filesToAdd)
 
-      const id = await db.createRecord(type, name, data)
+      const id = db.createRecord(type, name, data)
 
-      await db.addConnections(id, fileIds)
+      db.addConnections(id, fileIds)
 
       return id
     })
   },
 
-  UPDATE_RECORD: async (db, { id, name, data }, files) => {
+  UPDATE_RECORD: (db, { id, name, data }, files) => {
     validateAndThrow(
       [ id, 'Record.id' ],
       [ name, 'Record.name' ],
@@ -80,17 +81,17 @@ const actions = {
     )
 
     const fileIds = extractFileIds(data)
-    const filesToAdd = await getNewFiles(db, fileIds, files)
+    const filesToAdd = getNewFiles(db, fileIds, files)
 
-    return db.inTransaction(async () => {
-      if (!await db.updateRecord(id, name, data)) {
+    return db.inTransaction(() => {
+      if (!db.updateRecord(id, name, data)) {
         throw new Error(`Record ${id} doesn't exist`)
       }
 
-      await db.addFiles(filesToAdd)
-      await db.removeConnections(id)
-      await db.addConnections(id, fileIds)
-      await db.removeUnusedFiles()
+      db.addFiles(filesToAdd)
+      db.removeConnections(id)
+      db.addConnections(id, fileIds)
+      db.removeUnusedFiles()
     })
   },
 
@@ -99,11 +100,11 @@ const actions = {
       [ id, 'Record.id' ],
     )
 
-    return db.inTransaction(async () => {
-      if (!await db.deleteRecord(id)) {
+    return db.inTransaction(() => {
+      if (!db.deleteRecord(id)) {
         throw new Error(`Record ${id} doesn't exist`)
       }
-      await db.removeUnusedFiles()
+      db.removeUnusedFiles()
     })
   },
 
@@ -116,14 +117,14 @@ const actions = {
   },
 }
 
-export default async function createProcessor() {
-  const db = await getDB()
+export default function createProcessor() {
+  const db = getDB()
 
   return {
     processAction({ name, data, files = [] }) {
       const action = actions[name]
       if (!action) {
-        return Promise.reject(new Error(`unknown action: ${name}`))
+        throw new Error(`unknown action: ${name}`)
       }
 
       return action(db, data, files)
