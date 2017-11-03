@@ -22,17 +22,13 @@ function readAction(req) {
 
   busboy.on('field', (fieldName, val) => {
     if (fieldName === 'name') {
-      if (name) {
-        console.error('WARN: duplicate field "name"')
-      }
+      name && console.error('WARN: duplicate field "name"')
       name = val
       return
     }
 
     if (fieldName === 'data') {
-      if (data) {
-        console.error('WARN: duplicate field "data"')
-      }
+      data && console.error('WARN: duplicate field "data"')
       data = val
       return
     }

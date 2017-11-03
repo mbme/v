@@ -1,110 +1,107 @@
 module.exports = {
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "ecmaVersion": 8,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
-  },
-  "env": {
-    "es6": true
-  },
-  "globals": {
-    "__DEVELOPMENT__": true
-  },
-  "overrides": [
-    {
-      "files": [
-        "client/**/*.js",
-        "client/**/*.jsx"
-      ],
-      "env": {
-        "browser": true
-      }
+  parser: 'babel-eslint',
+  parserOptions: {
+    ecmaVersion: 8,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
     },
+  },
+  env: {
+    es6: true,
+  },
+  globals: {
+    __DEVELOPMENT__: true,
+  },
+  overrides: [
     {
-      "files": [
-        "server/**/*.js"
+      files: [
+        'client/**/*.js',
+        'client/**/*.jsx',
       ],
-      "env": {
-        "node": true
-      }
-    },
-    {
-      "files": [
-        "**/*.test.js"
-      ],
-      "env": {
-        "mocha": true
+      env: {
+        browser: true,
       },
-      "rules": {
-        "no-unused-expressions": 0
-      }
-    }
+    },
+    {
+      files: [
+        'server/**/*.js',
+      ],
+      env: {
+        node: true,
+      },
+    },
+    {
+      files: [
+        '**/*.test.js',
+      ],
+      env: {
+        mocha: true,
+      },
+      rules: {
+        'no-unused-expressions': 0,
+      },
+    },
   ],
-  "extends": [
-    "airbnb"
-  ],
-  "plugins": [
-    "react"
-  ],
-  "rules": {
-    "max-len": 0,
-    "no-console": 0,
-    "no-confusing-arrow": 0,
-    "no-unused-expressions": [
-      "error",
+  extends: [ 'airbnb' ],
+  plugins: [ 'react' ],
+  rules: {
+    'max-len': 0,
+    'no-console': 0,
+    'no-confusing-arrow': 0,
+    'no-unused-expressions': [
+      'error',
       {
-        "allowTernary": true
-      }
+        allowTernary: true,
+        allowShortCircuit: true,
+      },
     ],
-    "no-underscore-dangle": [
-      "error",
+    'no-underscore-dangle': [
+      'error',
       {
-        "allow": [
-          "__DEVELOPMENT__"
-        ]
-      }
+        allow: [
+          '__DEVELOPMENT__',
+        ],
+      },
     ],
-    "prefer-arrow-callback": 0,
-    "prefer-template": 0,
-    "comma-dangle": [
-      "error",
-      "always-multiline"
+    'prefer-arrow-callback': 0,
+    'prefer-template': 0,
+    'comma-dangle': [
+      'error',
+      'always-multiline',
     ],
-    "semi": [
-      "error",
-      "never"
+    'semi': [
+      'error',
+      'never',
     ],
-    "quote-props": [
-      "error",
-      "consistent-as-needed"
+    'quote-props': [
+      'error',
+      'consistent-as-needed',
     ],
-    "react/require-default-props": 0,
-    "react/forbid-prop-types": 0,
-    "react/sort-comp": 0,
-    "jsx-a11y/anchor-is-valid": 0,
-    "jsx-a11y/click-events-have-key-events": 0,
-    "function-paren-newline": [
-      "error",
-      "consistent"
+    'react/require-default-props': 0,
+    'react/forbid-prop-types': 0,
+    'react/sort-comp': 0,
+    'jsx-a11y/anchor-is-valid': 0,
+    'jsx-a11y/click-events-have-key-events': 0,
+    'function-paren-newline': [
+      'error',
+      'consistent',
     ],
-    "object-curly-newline": [
-      "error",
+    'object-curly-newline': [
+      'error',
       {
-        "multiline": true,
-        "consistent": true
-      }
+        multiline: true,
+        consistent: true,
+      },
     ],
-    "array-bracket-spacing": [
-      "error",
-      "always"
-    ]
+    'array-bracket-spacing': [
+      'error',
+      'always',
+    ],
   },
-  "settings": {
-    "import/resolver": {
-      "babel-module": {}
-    }
-  }
+  settings: {
+    'import/resolver': {
+      'babel-module': {},
+    },
+  },
 }
