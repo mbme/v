@@ -78,14 +78,4 @@ module.exports = {
   ].filter(plugin => !!plugin),
 
   devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
-
-  devServer: {
-    port: 8000,
-    hot: true,
-    historyApiFallback: true,
-    contentBase: [ path.join(__dirname, 'static') ],
-    proxy: {
-      '/api': 'http://localhost:8080',
-    },
-  },
 }

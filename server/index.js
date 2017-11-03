@@ -144,9 +144,8 @@ export default async function startServer(port = 8080) {
   })
 
   return new Promise((resolve) => {
-    console.log('Starting server...')
     server.listen(port, () => {
-      console.log('Server listening on: http://localhost:%s', port)
+      console.log('Server listening on http://localhost:%s', port)
       resolve(server)
     })
   })
