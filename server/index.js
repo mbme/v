@@ -61,7 +61,7 @@ function getFile(dir, name) {
   return fs.readFileSync(path.join(dir, name))
 }
 
-export default async function startServer(port = 8080) {
+export default async function startServer(port) {
   const STATIC_DIR = path.join(__dirname, '../static')
   const DIST_DIR = path.join(__dirname, '../dist')
 
@@ -121,7 +121,7 @@ export default async function startServer(port = 8080) {
         return
       }
 
-      // return files from /static or /dist without subdirectories
+      // return files from /static or /dist without subdirectories, use index.html as fallback
       const fileName = url.path.substring(1) || 'index.html'
       const file = getFile(STATIC_DIR, fileName) || getFile(DIST_DIR, fileName) || getFile(DIST_DIR, 'index.html')
       if (file) {
@@ -144,9 +144,6 @@ export default async function startServer(port = 8080) {
   })
 
   return new Promise((resolve) => {
-    server.listen(port, () => {
-      console.log('Server listening on http://localhost:%s', port)
-      resolve(server)
-    })
+    server.listen(port, () => resolve(server))
   })
 }

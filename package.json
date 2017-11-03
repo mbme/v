@@ -52,9 +52,9 @@
   },
   "scripts": {
     "build": "NODE_ENV=production webpack",
-    "dev": "node bin/dev-server",
-    "dev:debug": "node --inspect bin/server",
     "start": "NODE_ENV=production node bin/server",
+    "dev": "node bin/dev-server",
+    "gen-data": "node bin/gen-data",
     "test": "mocha --require babel-register **/*.test.js",
     "lint": "eslint . --ext js,jsx"
   },
