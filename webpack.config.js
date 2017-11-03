@@ -1,19 +1,25 @@
 const path = require('path')
 const webpack = require('webpack')
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 module.exports = {
   entry: [
+    'babel-polyfill',
     'react-hot-loader/patch',
     './client/index.jsx',
   ],
+
   output: {
     publicPath: '/',
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
   },
+
   resolve: {
     extensions: [ '.js', '.jsx', '.json' ],
   },
+
   module: {
     rules: [
       {
@@ -32,7 +38,10 @@ module.exports = {
                 [
                   'env',
                   {
-                    targets: { browsers: [ 'last 2 Chrome versions', 'last 2 Firefox versions' ] },
+                    targets: {
+                      browsers: [ 'last 2 Chrome versions', 'last 2 Firefox versions' ],
+                      uglify: isProduction,
+                    },
                     modules: false,
                   },
                 ],
@@ -54,8 +63,11 @@ module.exports = {
       },
     ],
   },
+
   plugins: [
-    new webpack.optimize.ModuleConcatenationPlugin(),
+    isProduction && new webpack.optimize.ModuleConcatenationPlugin(),
+    isProduction && new webpack.optimize.UglifyJsPlugin(),
+
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
@@ -63,8 +75,10 @@ module.exports = {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       },
     }),
-  ],
-  devtool: 'cheap-module-eval-source-map',
+  ].filter(plugin => !!plugin),
+
+  devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
+
   devServer: {
     port: 8000,
     hot: true,

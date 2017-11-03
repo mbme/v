@@ -53,7 +53,7 @@ function readAction(req) {
 }
 
 function getFile(dir, name) {
-  const names = fs.readDirSync(dir)
+  const names = fs.readdirSync(dir)
   if (!names.includes(name)) {
     return null
   }
@@ -122,7 +122,8 @@ export default async function startServer(port = 8080) {
       }
 
       // return files from /static or /dist without subdirectories
-      const file = getFile(STATIC_DIR, url.path) || getFile(DIST_DIR, url.path)
+      const fileName = url.path.substring(1) || 'index.html'
+      const file = getFile(STATIC_DIR, fileName) || getFile(DIST_DIR, fileName) || getFile(DIST_DIR, 'index.html')
       if (file) {
         res.writeHead(200)
         res.end(file)
