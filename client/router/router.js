@@ -24,7 +24,7 @@ export default function createRouter() {
             return { render: route.render, init: route.init, params }
           }
 
-          return null
+          return undefined
         },
       })
 

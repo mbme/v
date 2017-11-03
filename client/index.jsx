@@ -28,7 +28,7 @@ const store = createStore(
 )
 store.dispatch(propagateCurrentLocation()) // use current location
 
-const renderer = createRenderer({ plugins: webPreset, enhancers: [ combineArrays() ] })
+const renderer = createRenderer({ plugins: webPreset, enhancers: [ combineArrays([ 'extend' ]) ] })
 
 function render() {
   ReactDOM.render(
