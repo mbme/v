@@ -7,6 +7,15 @@ import Busboy from 'busboy'
 
 import createProcessor from './processor'
 
+const MIME = {
+  css: 'text/css',
+  html: 'text/html',
+  json: 'application/json',
+}
+
+const withContentType = type => MIME[type] ? { 'Content-Type': MIME[type] } : {}
+const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
+
 function readAction(req) {
   const files = []
   let name
@@ -48,19 +57,31 @@ function readAction(req) {
   })
 }
 
-function getFile(dir, name) {
-  const names = fs.readdirSync(dir)
-  if (!names.includes(name)) {
-    return null
+const STATIC_DIR = path.join(__dirname, '../static')
+const DIST_DIR = path.join(__dirname, '../dist')
+
+const readFile = (dir, name) => fs.readdirSync(dir).includes(name) ? fs.readFileSync(path.join(dir, name)) : null
+
+// return files from /static or /dist without subdirectories, use index.html as fallback
+function getStaticFile(name, fallback = 'index.html') {
+  if (name) {
+    const data = readFile(STATIC_DIR, name) || readFile(DIST_DIR, name)
+
+    if (data) {
+      return { name, data }
+    }
   }
 
-  return fs.readFileSync(path.join(dir, name))
+  const data = readFile(STATIC_DIR, fallback)
+
+  if (data) {
+    return { name: fallback, data }
+  }
+
+  return null
 }
 
 export default async function startServer(port) {
-  const STATIC_DIR = path.join(__dirname, '../static')
-  const DIST_DIR = path.join(__dirname, '../dist')
-
   const processor = createProcessor()
 
   // POST /api
@@ -76,9 +97,8 @@ export default async function startServer(port) {
         if (req.method === 'POST') {
           const action = await readAction(req)
           const response = processor.processAction(action)
-          res.writeHead(200)
-          res.write(JSON.stringify({ data: response }))
-          res.end()
+          res.writeHead(200, withContentType('json'))
+          res.end(JSON.stringify({ data: response }))
           return
         }
 
@@ -97,18 +117,19 @@ export default async function startServer(port) {
           })
 
           if (response) {
-            res.writeHead(200, { 'Content-Disposition': `inline; filename=${response.name}` })
-            res.write(response.data)
+            res.writeHead(200, { 'Content-Disposition': `inline; filename=${response.name}`, ...withContentType(getFileType(response.name)) })
+            res.end(response.data)
           } else {
             res.writeHead(404)
+            res.end()
           }
 
-          res.end()
           return
         }
 
         res.writeHead(405)
         res.end()
+        return
       }
 
       if (req.method !== 'GET') {
@@ -117,26 +138,26 @@ export default async function startServer(port) {
         return
       }
 
-      // return files from /static or /dist without subdirectories, use index.html as fallback
-      const fileName = url.path.substring(1) || 'index.html'
-      const file = getFile(STATIC_DIR, fileName) || getFile(DIST_DIR, fileName) || getFile(DIST_DIR, 'index.html')
+
+      const file = getStaticFile(url.path.substring(1))
+
       if (file) {
-        res.writeHead(200)
-        res.end(file)
+        res.writeHead(200, withContentType(getFileType(file.name)))
+        res.end(file.data)
       } else {
         res.writeHead(404)
         res.end()
       }
     } catch (e) {
       console.error(e)
-      res.writeHead(400)
+      res.writeHead(400, withContentType('json'))
       res.end(JSON.stringify({ error: e.toString() }))
+    } finally {
+      const hrend = process.hrtime(start)
+      const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000)
+
+      console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms)
     }
-
-    const hrend = process.hrtime(start)
-    const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000)
-
-    console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms)
   })
 
   return new Promise((resolve) => {
