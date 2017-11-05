@@ -20,7 +20,7 @@ export default class AttachFileButton extends PureComponent {
   render() {
     return [
       <IconButton key="attachBtn" type="paperclip" onClick={this.onClick} />,
-      <form key="fileInput" className="hidden" ref={(ref) => { this.formRef = ref }}>
+      <form key="fileInput" hidden ref={(ref) => { this.formRef = ref }}>
         <input type="file" multiple onChange={this.onFilesSelected} />
       </form>,
     ]

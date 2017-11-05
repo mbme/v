@@ -2,11 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
-import { Provider as FelaProvider } from 'react-fela'
-import { createRenderer } from 'fela'
-import combineArrays from 'fela-combine-arrays'
-import webPreset from 'fela-preset-web'
-
 import { createStore, applyMiddleware } from 'redux'
 import reduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
@@ -28,15 +23,11 @@ const store = createStore(
 )
 store.dispatch(propagateCurrentLocation()) // use current location
 
-const renderer = createRenderer({ plugins: webPreset, enhancers: [ combineArrays([ 'extend' ]) ] })
-
 function render() {
   ReactDOM.render(
     <Provider store={store}>
       <AppContainer>
-        <FelaProvider renderer={renderer}>
-          <App />
-        </FelaProvider>
+        <App />
       </AppContainer>
     </Provider>,
     document.getElementById('root')

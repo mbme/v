@@ -1,53 +1,24 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link, Heading, ViewContainer } from 'client/components'
-import { styled, mixins } from 'client/utils'
-
+import styles from 'client/styles'
+import { Link } from 'client/components'
 
 export function NotFoundView() {
   return (
-    <ViewContainer>
-      <Heading>NOT FOUND</Heading>
-    </ViewContainer>
+    <div className="ViewContainer">
+      <div className={styles.Heading}>NOT FOUND</div>
+    </div>
   )
 }
 
 export function LoadingView() {
   return (
-    <ViewContainer>
-      <Heading>LOADING...</Heading>
-    </ViewContainer>
+    <div className="ViewContainer">
+      <div className={styles.Heading}>LOADING...</div>
+    </div>
   )
 }
-
-const AppContainer = styled('AppContainer', {
-  margin: '0 auto',
-  maxWidth: '42rem',
-})
-
-const Navbar = styled('Navbar', {
-  textAlign: 'center',
-  extend: [
-    ...mixins.margins('vertical', 'medium'),
-  ],
-})
-
-const NavbarLink = styled('NavbarLink', ({ selected }) => ({
-  display: 'inline-block',
-  margin: '0 ',
-  color: 'blue',
-  cursor: 'pointer',
-  extend: [
-    ...mixins.margins('horizontal', 'medium'),
-    {
-      condition: selected,
-      style: {
-        borderBottom: '2px solid blue',
-      },
-    },
-  ],
-}), Link)
 
 class App extends PureComponent {
   static propTypes = {
@@ -94,11 +65,11 @@ class App extends PureComponent {
     const route = this.props.routingSequence[0]
 
     return (
-      <Navbar>
-        <NavbarLink to={{ name: 'notes' }} selected={route === 'notes'}>Notes</NavbarLink>
-        <NavbarLink to={{ name: 'todos' }} selected={route === 'todos'}>Todos</NavbarLink>
-        <NavbarLink to={{ name: 'one' }} selected={route === 'one'}>One</NavbarLink>
-      </Navbar>
+      <nav className="text-center">
+        <Link to={{ name: 'notes' }} className={styles.cx('NavLink', route === 'notes' && 'is-selected')}>Notes</Link>
+        <Link to={{ name: 'todos' }} className={styles.cx('NavLink', route === 'todos' && 'is-selected')}>Todos</Link>
+        <Link to={{ name: 'one' }} className={styles.cx('NavLink', route === 'one' && 'is-selected')}>One</Link>
+      </nav>
     )
   }
 
@@ -108,10 +79,10 @@ class App extends PureComponent {
     const currentView = isLoading ? <LoadingView /> : (view || <NotFoundView />)
 
     return (
-      <AppContainer>
+      <div className="AppContainer">
         {this.renderNavbar()}
         {currentView}
-      </AppContainer>
+      </div>
     )
   }
 }

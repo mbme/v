@@ -1,23 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import { styled, mixins } from 'client/utils'
-
-const StyledTextarea = styled('StyledTextarea', {
-  backgroundColor: '#ffffff',
-  display: 'block',
-  width: '100%',
-  minHeight: '300px',
-  ...mixins.border,
-
-  resize: 'none',
-  overflowY: 'hidden',
-
-  extend: [
-    ...mixins.paddings('all', 'medium'),
-  ],
-}, 'textarea')
-
 export default class Textarea extends PureComponent {
   static propTypes = {
     name: PropTypes.string.isRequired,
@@ -68,8 +51,9 @@ export default class Textarea extends PureComponent {
     const { name, value, onChange } = this.props
 
     return (
-      <StyledTextarea
-        innerRef={(ref) => { this.ref = ref }}
+      <textarea
+        className="StyledTextarea with-border"
+        ref={(ref) => { this.ref = ref }}
         name={name}
         value={value}
         onChange={e => onChange(e.target.value)}

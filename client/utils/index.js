@@ -1,5 +1,3 @@
-export { styled, theme, mixins, createCondition } from './styled'
-
 export function readFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()

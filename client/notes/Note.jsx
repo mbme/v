@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { ViewContainer, Link, Heading, Paper, Toolbar, IconButton } from 'client/components'
+import styles from 'client/styles'
+import { Link, Toolbar, IconButton } from 'client/components'
 import DeleteNoteButton from './DeleteNoteButton'
 
 function renderMarkup(data) {
@@ -22,13 +23,13 @@ function NoteView({ note }) {
   )
 
   return (
-    <ViewContainer>
+    <div className="ViewContainer">
       <Toolbar left={deleteBtn} right={editBtn} />
-      <Paper>
-        <Heading>{note.name}</Heading>
+      <div className={styles.Paper}>
+        <div className={styles.Heading}>{note.name}</div>
         {renderMarkup(note.data)}
-      </Paper>
-    </ViewContainer>
+      </div>
+    </div>
   )
 }
 NoteView.propTypes = {

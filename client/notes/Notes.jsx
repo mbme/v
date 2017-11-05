@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 
 import debounce from 'lodash.debounce'
 import { fuzzySearch } from 'shared/utils'
-import { ViewContainer, Toolbar, FlatButton, Link, Input, Section, Text, Paper } from 'client/components'
+import styles from 'client/styles'
+import { Toolbar, Link, Input } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
 class NotesView extends Component {
@@ -18,10 +19,8 @@ class NotesView extends Component {
     const visibleNotes = this.props.notes.filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
 
     return visibleNotes.map(({ id, name }) => (
-      <Link key={id} to={{ name: 'note', params: { id } }}>
-        <Section side="vertical">
-          <Paper>{name}</Paper>
-        </Section>
+      <Link key={id} to={{ name: 'note', params: { id } }} className="Section">
+        <div className={styles.Paper}>{name}</div>
       </Link>
     ))
   }
@@ -33,14 +32,14 @@ class NotesView extends Component {
 
     const addBtn = (
       <Link to={{ name: 'add-note' }}>
-        <FlatButton>Add</FlatButton>
+        <button className={styles.FlatButton}>Add</button>
       </Link>
     )
 
     return (
-      <ViewContainer>
+      <div className="ViewContainer">
         <Toolbar right={addBtn} />
-        <Section side="bottom">
+        <div className="Section">
           <Input
             name="filter"
             defaultValue={this.props.filter}
@@ -48,12 +47,12 @@ class NotesView extends Component {
             onChange={this.onFilterChange}
             autoFocus
           />
-        </Section>
-        <Text center>
+        </div>
+        <div className="text-center">
           {notes.length} items
-        </Text>
+        </div>
         {notes}
-      </ViewContainer>
+      </div>
     )
   }
 }

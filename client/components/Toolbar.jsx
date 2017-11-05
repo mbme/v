@@ -1,32 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { styled, theme } from 'client/utils'
-import { Flex } from 'client/components'
-
-const ToolbarContainer = styled('ToolbarContainer', {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: theme.toolbarHeight,
-})
-
-const Content = styled('Content', {
-  display: 'flex',
-  flexWrap: 'nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  height: '100%',
-})
 
 export default function Toolbar({ left, right }) {
   return (
-    <ToolbarContainer>
-      <Content>
-        <Flex>{left}</Flex>
-        <Flex>{right}</Flex>
-      </Content>
-    </ToolbarContainer>
+    <div className="ToolbarContainer">
+      <div className="ToolbarContent">
+        <div className="flex">{left}</div>
+        <div className="flex">{right}</div>
+      </div>
+    </div>
   )
 }
 

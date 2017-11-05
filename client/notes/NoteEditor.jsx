@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { createFileLink } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
-import { ViewContainer, Textarea, Toolbar, FlatButton, Input, Section } from 'client/components'
+import styles from 'client/styles'
+import { Textarea, Toolbar, Input } from 'client/components'
 import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
 import AttachFileButton from './AttachFileButton'
@@ -63,24 +64,24 @@ class NoteEditorView extends PureComponent {
     ]
 
     const rightIcons = [
-      <FlatButton key="cancel" onClick={() => this.closeEditor(id)}>Cancel</FlatButton>,
+      <button className={styles.FlatButton} key="cancel" onClick={() => this.closeEditor(id)}>Cancel</button>,
       id
-        ? <FlatButton key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</FlatButton>
-        : <FlatButton key="create" onClick={this.onCreate} disabled={!this.hasChanges()}>Create</FlatButton>,
+        ? <button className={styles.FlatButton} key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</button>
+        : <button className={styles.FlatButton} key="create" onClick={this.onCreate} disabled={!this.hasChanges()}>Create</button>,
     ]
 
     return (
-      <ViewContainer>
+      <div className="ViewContainer">
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <Section side="bottom">
+        <div className="Section">
           <Input name="name" value={name} onChange={this.onNameChange} autoFocus />
-        </Section>
+        </div>
 
-        <Section side="bottom">
+        <div className="Section">
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref }} />
-        </Section>
-      </ViewContainer>
+        </div>
+      </div>
     )
   }
 }

@@ -1,17 +1,5 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { styled, mixins } from 'client/utils'
-
-const StyledInput = styled('StyledInput', {
-  backgroundColor: '#ffffff',
-  display: 'block',
-  width: '100%',
-  ...mixins.border,
-
-  extend: [
-    ...mixins.paddings('all', 'small'),
-  ],
-}, 'input')
 
 export default class Input extends PureComponent {
   static propTypes = {
@@ -36,8 +24,9 @@ export default class Input extends PureComponent {
   render() {
     const { name, value, defaultValue, placeholder, onChange } = this.props
     return (
-      <StyledInput
-        innerRef={(ref) => { this.ref = ref }}
+      <input
+        className="StyledInput with-border"
+        ref={(ref) => { this.ref = ref }}
         type="text"
         name={name}
         value={value}
