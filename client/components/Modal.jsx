@@ -1,7 +1,30 @@
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import styles from 'client/styles'
+import { Button } from 'client/components'
+import s from 'client/styles'
+
+const ModalContainer = {
+  backgroundColor: 'rgba(255,255,255,.65)',
+  position: 'absolute',
+  zIndex: 10,
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'flex-start',
+}
+
+const ModalStyles = {
+  backgroundColor: 'var(--bg-light)',
+  marginTop: '17vh',
+  width: '375px',
+  padding: 'var(--spacing-medium)',
+  ...s.withBorder,
+}
 
 export class Modal extends PureComponent {
   static propTypes = {
@@ -23,8 +46,8 @@ export class Modal extends PureComponent {
 
   render() {
     return ReactDOM.createPortal(
-      <div className="ModalContainer" onClick={this.onModalClick}>
-        <div className="StyledModal with-border">{this.props.children}</div>
+      <div className={s.cx(ModalContainer)} onClick={this.onModalClick}>
+        <div className={s.cx(ModalStyles)}>{this.props.children}</div>
       </div>,
       this.modalRootEl,
     )
@@ -34,10 +57,10 @@ export class Modal extends PureComponent {
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (
     <Modal onCancel={onCancel}>
-      <div className="Section">{children}</div>
+      <div className="section">{children}</div>
       <div className="flex flex-end">
-        <button className={styles.FlatButton} onClick={onCancel}>CANCEL</button>
-        <button className={styles.RaisedButton} onClick={onConfirmed}>{confirmation}</button>
+        <Button onClick={onCancel}>CANCEL</Button>
+        <Button raised onClick={onConfirmed}>{confirmation}</Button>
       </div>
     </Modal>
   )

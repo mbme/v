@@ -8,6 +8,7 @@
   --line-height: 1.45;
   --color: #333;
   --bg-color: #fafafa;
+  --bg-light: #fff;
 
   --spacing-xxlarge: 8rem;
   --spacing-xlarge: 4rem;
@@ -283,6 +284,8 @@ summary {
   text-align: center;
 }
 
+/* UTILS */
+
 .flex {
   display: flex;
   justify-content: center;
@@ -292,124 +295,6 @@ summary {
   justify-content: flex-end;
 }
 
-.with-border {
-  border: 1px solid rgba(0,0,0,.09);
-  boxShadow: 0 1px 4px rgba(0,0,0,.04);
-}
-
-.Section {
+.section {
   margin-bottom: var(--spacing-medium);
-}
-
-.ViewContainer {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding-top: var(--toolbar-height);
-}
-
-.Paper {
-  background-color: #fff;
-  border-radius: 2px;
-  padding: var(--spacing-medium)
-}
-
-.heading {
-  font-weight: bold;
-  font-size: var(--font-size-large);
-}
-
-.ModalContainer {
-  background-color: rgba(255,255,255,.65);
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.StyledModal {
-  background-color: #fff;
-  margin-top: 17vh;
-  width: 375px;
-  padding: var(--spacing-medium)
-}
-
-.StyledInput {
-  background-color: #fff;
-  display: block;
-  width: 100%;
-  padding: var(--spacing-small);
-}
-
-.StyledTextarea {
-  background-color: #fff;
-  display: block;
-  width: 100%;
-  padding: var(--spacing-medium);
-
-  resize: none;
-  minHeight: 300px;
-  overflow-y: hidden;
-}
-
-.ToolbarContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--tolbar-height);
-}
-
-.ToolbarContent {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
-}
-
-.CleanButton {
-  border: 0 none;
-  border-radius: 2;
-  cursor: pointer;
-  user-select: none;
-  background-color: inherit;
-  padding: var(--spacing-fine) var(--spacing-medium);
-}
-.CleanButton[disabled] {
-  cursor: auto;
-  filter: invert(80%);
-}
-
-.FlatButton {
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  transition: background-color 100ms linear;
-}
-.FlatButton:not([disabled]):hover {
-  background-color: gray;
-}
-
-.AppContainer {
-  margin: 0 auto;
-  max-width: 42rem;
-}
-.AppContainer nav {
-  margin: var(--spacing-medium) 0;
-}
-.AppContainer .NavLink {
-  display: inline-block;
-  margin: 0;
-  color: blue;
-  cursor: pointer;
-  margin: 0 var(--spacing-medium);
-}
-.AppContainer .NavLink.is-selected {
-  border-bottom: 2px solid blue;
 }

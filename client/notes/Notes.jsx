@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 
 import debounce from 'lodash.debounce'
 import { fuzzySearch } from 'shared/utils'
-import styles from 'client/styles'
-import { Toolbar, Link, Input } from 'client/components'
+import s from 'client/styles'
+import { Button, Toolbar, Link, Input } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
 class NotesView extends Component {
@@ -19,8 +19,12 @@ class NotesView extends Component {
     const visibleNotes = this.props.notes.filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
 
     return visibleNotes.map(({ id, name }) => (
-      <Link key={id} to={{ name: 'note', params: { id } }} className="Section">
-        <div className={styles.Paper}>{name}</div>
+      <Link
+        key={id}
+        to={{ name: 'note', params: { id } }}
+        className={s.cx('section', s.Paper)}
+      >
+        {name}
       </Link>
     ))
   }
@@ -32,14 +36,14 @@ class NotesView extends Component {
 
     const addBtn = (
       <Link to={{ name: 'add-note' }}>
-        <button className={styles.FlatButton}>Add</button>
+        <Button>Add</Button>
       </Link>
     )
 
     return (
-      <div className="ViewContainer">
+      <div className={s.ViewContainer}>
         <Toolbar right={addBtn} />
-        <div className="Section">
+        <div className="section">
           <Input
             name="filter"
             defaultValue={this.props.filter}

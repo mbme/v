@@ -1,24 +1,39 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import styles from 'client/styles'
+import s from 'client/styles'
 import { Link } from 'client/components'
 
 export function NotFoundView() {
   return (
-    <div className="ViewContainer">
-      <div className={styles.Heading}>NOT FOUND</div>
+    <div className={s.ViewContainer}>
+      <div className={s.Heading}>NOT FOUND</div>
     </div>
   )
 }
 
 export function LoadingView() {
   return (
-    <div className="ViewContainer">
-      <div className={styles.Heading}>LOADING...</div>
+    <div className={s.ViewContainer}>
+      <div className={s.Heading}>LOADING...</div>
     </div>
   )
 }
+
+const AppContainer = {
+  margin: '0 auto',
+  maxWidth: '42rem',
+}
+
+const NavLink = isSelected => ({
+  display: 'inline-block',
+  cursor: 'pointer',
+  margin: '0 var(--spacing-medium)',
+  color: 'blue',
+  ...s.if(isSelected, {
+    borderBottom: '2px solid blue',
+  }),
+})
 
 class App extends PureComponent {
   static propTypes = {
@@ -66,9 +81,9 @@ class App extends PureComponent {
 
     return (
       <nav className="text-center">
-        <Link to={{ name: 'notes' }} className={styles.cx('NavLink', route === 'notes' && 'is-selected')}>Notes</Link>
-        <Link to={{ name: 'todos' }} className={styles.cx('NavLink', route === 'todos' && 'is-selected')}>Todos</Link>
-        <Link to={{ name: 'one' }} className={styles.cx('NavLink', route === 'one' && 'is-selected')}>One</Link>
+        <Link to={{ name: 'notes' }} className={s.cx(NavLink(route === 'notes'))}>Notes</Link>
+        <Link to={{ name: 'todos' }} className={s.cx(NavLink(route === 'todos'))}>Todos</Link>
+        <Link to={{ name: 'one' }} className={s.cx(NavLink(route === 'one'))}>One</Link>
       </nav>
     )
   }
@@ -79,7 +94,7 @@ class App extends PureComponent {
     const currentView = isLoading ? <LoadingView /> : (view || <NotFoundView />)
 
     return (
-      <div className="AppContainer">
+      <div className={s.cx(AppContainer)}>
         {this.renderNavbar()}
         {currentView}
       </div>

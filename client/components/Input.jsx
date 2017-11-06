@@ -1,5 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import s from 'client/styles'
+
+const Styles = {
+  backgroundColor: 'var(--bg-light)',
+  display: 'block',
+  width: '100%',
+  padding: 'var(--spacing-small)',
+  ...s.withBorder,
+}
 
 export default class Input extends PureComponent {
   static propTypes = {
@@ -25,7 +34,7 @@ export default class Input extends PureComponent {
     const { name, value, defaultValue, placeholder, onChange } = this.props
     return (
       <input
-        className="StyledInput with-border"
+        className={s.cx(Styles)}
         ref={(ref) => { this.ref = ref }}
         type="text"
         name={name}
