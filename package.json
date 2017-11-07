@@ -5,7 +5,15 @@
   "author": "mbme",
   "license": "GPL-3.0",
   "private": true,
-  "main": "index.js",
+  "main": "",
+  "scripts": {
+    "build": "rm -f dist/* && NODE_ENV=production webpack",
+    "start": "NODE_ENV=production node bin/server",
+    "dev": "node bin/dev-server & webpack-dev-server",
+    "gen-data": "node bin/gen-data",
+    "test": "mocha --require babel-register **/*.test.js",
+    "lint": "eslint . --ext js,jsx"
+  },
   "dependencies": {
     "babel-register": "^6.24.1",
     "better-sqlite3": "^4.0.3",
@@ -27,13 +35,13 @@
     "babel-core": "^6.24.1",
     "babel-eslint": "^8.0.0",
     "babel-loader": "^7.0.0",
+    "babel-minify-webpack-plugin": "^0.2.0",
     "babel-plugin-module-resolver": "^2.7.1",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.4.0",
     "chai": "^4.1.2",
     "chai-jest-snapshot": "^1.3.0",
     "eslint": "^4.7.2",
@@ -48,30 +56,11 @@
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.3"
   },
-  "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "start": "NODE_ENV=production node bin/server",
-    "dev": "node bin/dev-server & webpack-dev-server",
-    "gen-data": "node bin/gen-data",
-    "test": "mocha --require babel-register **/*.test.js",
-    "lint": "eslint . --ext js,jsx"
-  },
   "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ]
-    ],
     "plugins": [
+      "transform-es2015-modules-commonjs",
       "transform-object-rest-spread",
       "transform-class-properties",
-      "syntax-jsx",
-      "transform-react-jsx",
       [
         "module-resolver",
         {
