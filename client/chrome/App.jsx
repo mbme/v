@@ -25,7 +25,7 @@ const AppContainer = {
   maxWidth: '42rem',
 }
 
-const NavLink = isSelected => ({
+const NavLink = isSelected => s.cx({
   display: 'inline-block',
   cursor: 'pointer',
   margin: '0 var(--spacing-medium)',
@@ -81,9 +81,9 @@ class App extends PureComponent {
 
     return (
       <nav className="text-center">
-        <Link to={{ name: 'notes' }} className={s.cx(NavLink(route === 'notes'))}>Notes</Link>
-        <Link to={{ name: 'todos' }} className={s.cx(NavLink(route === 'todos'))}>Todos</Link>
-        <Link to={{ name: 'one' }} className={s.cx(NavLink(route === 'one'))}>One</Link>
+        <Link to={{ name: 'notes' }} className={NavLink(route === 'notes')}>Notes</Link>
+        <Link to={{ name: 'todos' }} className={NavLink(route === 'todos')}>Todos</Link>
+        <Link to={{ name: 'one' }} className={NavLink(route === 'one')}>One</Link>
       </nav>
     )
   }

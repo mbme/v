@@ -54,6 +54,7 @@ body {
 
   background-color: var(--bg-color); /* 2 */
   color: var(--color);
+  padding: var(--spacing-medium);
 }
 
 /* Suppress the focus outline on elements that cannot be accessed via keyboard. */

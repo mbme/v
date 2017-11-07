@@ -7,7 +7,7 @@ import Icon from './Icon'
 
 const CleanButton = disabled => ({
   border: '0 none',
-  borderRadius: 2,
+  borderRadius: '2px',
   cursor: 'pointer',
   userSelect: 'none',
   backgroundColor: 'inherit',
@@ -20,7 +20,7 @@ const CleanButton = disabled => ({
 })
 
 const FlatButton = disabled => ({
-  ...CleanButton(disabled, false),
+  ...CleanButton(disabled),
 
   textTransform: 'uppercase',
   letterSpacing: '1.2px',
@@ -39,7 +39,7 @@ const RaisedButton = disabled => ({
 })
 
 export function Button({ onClick, disabled, raised, children }) {
-  const className = raised ? RaisedButton(disabled) : FlatButton(disabled)
+  const className = s.cx(raised ? RaisedButton(disabled) : FlatButton(disabled))
   return (
     <button className={className} onClick={onClick} disabled={disabled}>{children}</button>
   )

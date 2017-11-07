@@ -1366,6 +1366,12 @@ crypto-browserify@^3.11.0:
     public-encrypt "^4.0.0"
     randombytes "^2.0.0"
 
+css-in-js-utils@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/css-in-js-utils/-/css-in-js-utils-2.0.0.tgz#5af1dd70f4b06b331f48d22a3d86e0786c0b9435"
+  dependencies:
+    hyphenate-style-name "^1.0.2"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -2020,6 +2026,33 @@ feather-icons@^3.2.2:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/feather-icons/-/feather-icons-3.3.0.tgz#510d1b37cd99463f2439fc7c673577b8398ac2f2"
 
+fela-dom@^6.0.5:
+  version "6.0.5"
+  resolved "https://registry.yarnpkg.com/fela-dom/-/fela-dom-6.0.5.tgz#fe4eb3308b94ba3194df3bf1cc0f75cf647bb5b4"
+  dependencies:
+    fela-tools "^5.0.12"
+    fela-utils "^7.0.4"
+
+fela-tools@^5.0.12:
+  version "5.0.12"
+  resolved "https://registry.yarnpkg.com/fela-tools/-/fela-tools-5.0.12.tgz#9311bc6e1e4d4139d35d9277908e74d6a41e113f"
+  dependencies:
+    css-in-js-utils "2.0.0"
+    fela-utils "^7.0.4"
+
+fela-utils@^7.0.4:
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/fela-utils/-/fela-utils-7.0.4.tgz#26dd1d6b11a0fedc8920bfa62538672ed846fd5e"
+  dependencies:
+    css-in-js-utils "2.0.0"
+
+fela@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/fela/-/fela-6.0.4.tgz#f1403d8b718122b98aec2020eca8512acbd80998"
+  dependencies:
+    css-in-js-utils "2.0.0"
+    fela-utils "^7.0.4"
+
 figures@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-2.0.0.tgz#3ab1a2d2a62c8bfb431a0c94cb797a2fce27c962"
@@ -2429,6 +2462,10 @@ http-signature@~1.1.0:
 https-browserify@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-0.0.1.tgz#3f91365cabe60b77ed0ebba24b454e3e09d95a82"
+
+hyphenate-style-name@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.2.tgz#31160a36930adaf1fc04c6074f7eb41465d4ec4b"
 
 iconv-lite@0.4.19, iconv-lite@^0.4.17, iconv-lite@~0.4.13:
   version "0.4.19"

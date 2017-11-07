@@ -10,6 +10,9 @@ import createApiClient from 'shared/api'
 import { createRouter, routes, routerMiddleware, propagateCurrentLocation } from './router'
 import rootReducer from './reducers'
 import App from './chrome/App'
+import { init as initStyles } from './styles'
+
+initStyles()
 
 const router = createRouter()
 router.useRoutes(routes)
