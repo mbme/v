@@ -3,11 +3,8 @@ import path from 'path'
 import { expect } from 'chai'
 import startServer from 'server'
 import { createFileLink } from 'shared/parser'
-import { sha256 } from 'server/processor'
+import { sha256 } from 'server/utils'
 import createApiClient from './api'
-
-global.fetch = require('node-fetch')
-global.FormData = require('form-data')
 
 describe('API client', () => {
   let server

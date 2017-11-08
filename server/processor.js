@@ -1,11 +1,10 @@
-import crypto from 'crypto'
 import { validateAndThrow } from 'shared/validators'
 import { selectFileLinks, parse } from 'shared/parser'
 import { uniq } from 'shared/utils'
+import { sha256 } from 'server/utils'
 import getDB from './db'
 
 const extractFileIds = data => uniq(selectFileLinks(parse(data)))
-export const sha256 = buffer => crypto.createHash('sha256').update(buffer).digest('hex')
 
 function getNewFiles(db, ids, files) {
   const newFiles = {}

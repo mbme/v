@@ -12,6 +12,7 @@ module.exports = {
   },
   globals: {
     __DEVELOPMENT__: true,
+    __CLIENT__: true,
   },
   overrides: [
     {

@@ -5,6 +5,7 @@ import urlParser from 'url'
 
 import Busboy from 'busboy'
 
+import { readStream } from 'server/utils'
 import createProcessor from './processor'
 
 const MIME = {
@@ -24,9 +25,7 @@ function readAction(req) {
   const busboy = new Busboy({ headers: req.headers })
 
   busboy.on('file', (fieldName, file, fileName) => {
-    const fileData = []
-    file.on('data', chunk => fileData.push(chunk))
-    file.on('end', () => files.push({ name: fileName, data: Buffer.concat(fileData) }))
+    readStream(file).then(fileData => files.push({ name: fileName, data: fileData }))
   })
 
   busboy.on('field', (fieldName, val) => {
