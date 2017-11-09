@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import { expect } from 'chai'
 import startServer from 'server'
 import { createFileLink } from 'shared/parser'
@@ -21,7 +19,7 @@ describe('API client', () => {
   })
 
   it('should manage files', async () => {
-    const buffer = fs.readFileSync(path.join(__dirname, '../package.json'))
+    const buffer = Buffer.from('test file content')
     const name = 'super text.json'
     const fileId = sha256(buffer)
     const link = createFileLink(name, fileId)

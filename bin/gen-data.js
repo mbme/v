@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
-/* eslint-disable import/no-extraneous-dependencies */
-
 require('babel-register')
-
-global.fetch = require('node-fetch')
-global.FormData = require('form-data')
 
 const fs = require('fs')
 const path = require('path')

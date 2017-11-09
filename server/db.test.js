@@ -1,4 +1,3 @@
-import fs from 'fs'
 import { expect } from 'chai'
 import getDB from './db'
 
@@ -44,8 +43,8 @@ describe('DB', () => {
   })
 
   describe('files', () => {
-    const name = 'package.json'
-    const data = fs.readFileSync(name)
+    const name = 'some file.json'
+    const data = Buffer.from('test file content')
 
     let counter = 0
     const nextId = () => { counter += 1; return `${counter}` }

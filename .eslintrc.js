@@ -62,6 +62,7 @@ module.exports = {
       {
         allow: [
           '__DEVELOPMENT__',
+          '__CLIENT__',
         ],
       },
     ],
@@ -99,6 +100,12 @@ module.exports = {
     'array-bracket-spacing': [
       'error',
       'always',
+    ],
+    'no-restricted-syntax': [
+      'error',
+      'ForInStatement',
+      'LabeledStatement',
+      'WithStatement',
     ],
   },
   settings: {

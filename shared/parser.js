@@ -237,9 +237,9 @@ export function selectLinks(tree) {
 }
 
 export function selectFileLinks(tree) {
-  return selectLinks(tree).map(({ link }) => link) // TODO implement
+  return selectLinks(tree).map(({ link }) => link) // FIXME implement
 }
 
 export const createLink = (name, link) => `[${name}](${link})`
 
-export const createFileLink = createLink // TODO implement
+export const createFileLink = createLink // FIXME implement
