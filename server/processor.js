@@ -120,7 +120,7 @@ export default function createProcessor() {
   const db = getDB()
 
   return {
-    processAction({ name, data, files = [] }) {
+    processAction({ action: { name, data }, files = [] }) {
       const action = actions[name]
       if (!action) {
         throw new Error(`unknown action: ${name}`)

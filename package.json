@@ -17,7 +17,6 @@
   "dependencies": {
     "babel-register": "^6.24.1",
     "better-sqlite3": "^4.0.3",
-    "busboy": "^0.2.14",
     "feather-icons": "^3.2.2",
     "fela": "^6.0.4",
     "fela-dom": "^6.0.5",

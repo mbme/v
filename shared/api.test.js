@@ -10,7 +10,7 @@ describe('API client', () => {
 
   before(async () => {
     const port = 8079
-    server = await startServer(port)
+    server = await startServer(port, { html5historyFallback: false, requestLogger: false })
     api = createApiClient(`http://localhost:${port}`)
   })
 

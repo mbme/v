@@ -3,20 +3,20 @@
 
 import { serialize } from 'shared/serializer'
 
-const CONTENT_TYPE = 'multipart/v-data'
+export const CONTENT_TYPE = 'multipart/v-data'
 
-function nodeApiPOST(url, action, files) {
+function nodeApiPOST(url, action, files = []) {
   const { readStream } = require('server/utils')
 
   const data = serialize(action, files)
   return new Promise((resolve, reject) => {
-    const { protocol, hostname, port, pathname, search } = require('url').parse(url)
-    const request = require('https').request({
+    const { protocol, hostname, port, pathname } = require('url').parse(url)
+    const request = require('http').request({
       method: 'POST',
       protocol,
       hostname,
       port,
-      path: pathname + search,
+      path: pathname,
       headers: {
         'Content-Type': CONTENT_TYPE,
         'Content-Length': data.length,
@@ -44,8 +44,8 @@ function nodeApiGET(url) {
   const { readStream } = require('server/utils')
 
   return new Promise((resolve, reject) => {
-    require('https').get(url, (resp) => {
-      if (resp.status === 200) {
+    require('http').get(url, (resp) => {
+      if (resp.statusCode === 200) {
         resolve(readStream(resp))
         return
       }
@@ -62,7 +62,7 @@ function nodeApiGET(url) {
   })
 }
 
-function browserApiPOST(url, action, files) {
+function browserApiPOST(url, action, files = []) {
   const data = serialize(action, files)
 
   return fetch(url, {

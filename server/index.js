@@ -3,9 +3,9 @@ import path from 'path'
 import http from 'http'
 import urlParser from 'url'
 
-import Busboy from 'busboy'
-
 import { readStream } from 'server/utils'
+import { CONTENT_TYPE } from 'shared/api'
+import { parse } from 'shared/serializer'
 import createProcessor from './processor'
 
 const MIME = {
@@ -16,45 +16,6 @@ const MIME = {
 
 const withContentType = type => MIME[type] ? { 'Content-Type': MIME[type] } : {}
 const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
-
-function readAction(req) {
-  const files = []
-  let name
-  let data
-
-  const busboy = new Busboy({ headers: req.headers })
-
-  busboy.on('file', (fieldName, file, fileName) => {
-    readStream(file).then(fileData => files.push({ name: fileName, data: fileData }))
-  })
-
-  busboy.on('field', (fieldName, val) => {
-    if (fieldName === 'name') {
-      name && console.error('WARN: duplicate field "name"')
-      name = val
-      return
-    }
-
-    if (fieldName === 'data') {
-      data && console.error('WARN: duplicate field "data"')
-      data = val
-      return
-    }
-
-    console.error(`WARN: unexpected field "${fieldName}"`)
-  })
-
-  return new Promise((resolve, reject) => {
-    busboy.on('finish', () => {
-      if (name && data) {
-        resolve({ name, data: JSON.parse(data), files })
-      } else {
-        reject(new Error(`"name" is present: ${!!name}, "data" is present: ${!!data}`))
-      }
-    })
-    req.pipe(busboy)
-  })
-}
 
 const STATIC_DIR = path.join(__dirname, '../static')
 const DIST_DIR = path.join(__dirname, '../dist')
@@ -80,7 +41,7 @@ function getStaticFile(name, fallback = 'index.html') {
   return null
 }
 
-export default async function startServer(port) {
+export default async function startServer(port, { html5historyFallback = true, requestLogger = true }) {
   const processor = createProcessor()
 
   // POST /api
@@ -94,8 +55,31 @@ export default async function startServer(port) {
 
       if (url.pathname === '/api') {
         if (req.method === 'POST') {
-          const action = await readAction(req)
-          const response = processor.processAction(action)
+          // validate content-type
+          if (req.headers['content-type'] !== CONTENT_TYPE) {
+            res.writeHead(415)
+            res.end()
+            return
+          }
+
+          // ensure there is a content-length
+          const expectedLength = parseInt(req.headers['content-length'], 10)
+          if (Number.isNaN(expectedLength)) {
+            res.writeHead(411)
+            res.end()
+            return
+          }
+
+          const buffer = await readStream(req)
+
+          // ensure we read all the data
+          if (buffer.length !== expectedLength) {
+            res.writeHead(400)
+            res.end()
+            return
+          }
+
+          const response = processor.processAction(parse(buffer))
           res.writeHead(200, withContentType('json'))
           res.end(JSON.stringify({ data: response }))
           return
@@ -109,9 +93,11 @@ export default async function startServer(port) {
           }
 
           const response = processor.processAction({
-            name: 'READ_FILE',
-            data: {
-              id: url.query.fileId,
+            action: {
+              name: 'READ_FILE',
+              data: {
+                id: url.query.fileId,
+              },
             },
           })
 
@@ -127,6 +113,12 @@ export default async function startServer(port) {
         }
 
         res.writeHead(405)
+        res.end()
+        return
+      }
+
+      if (!html5historyFallback) {
+        res.writeHead(404)
         res.end()
         return
       }
@@ -148,14 +140,14 @@ export default async function startServer(port) {
         res.end()
       }
     } catch (e) {
-      console.error(e)
+      requestLogger && console.error(e)
       res.writeHead(400, withContentType('json'))
       res.end(JSON.stringify({ error: e.toString() }))
     } finally {
       const hrend = process.hrtime(start)
       const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000)
 
-      console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms)
+      requestLogger && console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms)
     }
   })
 

@@ -2,6 +2,9 @@
 // TODO use buffer.writeUInt32BE
 // TODO write number of items in the beginning
 
+// We use custom parser/serializer instead of multipart/form-data because multipart requests
+// are too complicated to send using node's http client.
+
 const SEPARATOR = ' '
 export const ENCODING = 'utf8'
 
