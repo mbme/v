@@ -20,7 +20,8 @@ const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
 const STATIC_DIR = path.join(__dirname, '../static')
 const DIST_DIR = path.join(__dirname, '../dist')
 
-const readFile = (dir, name) => fs.readdirSync(dir).includes(name) ? fs.readFileSync(path.join(dir, name)) : null
+// FIXME async
+const readFile = (dir, name) => fs.existsSync(dir) && fs.readdirSync(dir).includes(name) ? fs.readFileSync(path.join(dir, name)) : null
 
 // return files from /static or /dist without subdirectories, use index.html as fallback
 function getStaticFile(name, fallback = 'index.html') {
@@ -41,7 +42,7 @@ function getStaticFile(name, fallback = 'index.html') {
   return null
 }
 
-export default async function startServer(port, { html5historyFallback = true, requestLogger = true }) {
+export default async function startServer(port, options = { html5historyFallback: true, requestLogger: true }) {
   const processor = createProcessor()
 
   // POST /api
@@ -117,7 +118,7 @@ export default async function startServer(port, { html5historyFallback = true, r
         return
       }
 
-      if (!html5historyFallback) {
+      if (!options.html5historyFallback) {
         res.writeHead(404)
         res.end()
         return
@@ -140,14 +141,16 @@ export default async function startServer(port, { html5historyFallback = true, r
         res.end()
       }
     } catch (e) {
-      requestLogger && console.error(e)
+      options.requestLogger && console.error(e)
       res.writeHead(400, withContentType('json'))
       res.end(JSON.stringify({ error: e.toString() }))
     } finally {
       const hrend = process.hrtime(start)
       const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000)
 
-      requestLogger && console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms)
+      if (options.requestLogger) {
+        console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms)
+      }
     }
   })
 
