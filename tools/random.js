@@ -1,5 +1,5 @@
 /* eslint-disable no-continue */
-import { capitalize, createArray } from './utils'
+import { capitalize, createArray } from 'shared/utils'
 
 // TODO handle few separators in a row
 

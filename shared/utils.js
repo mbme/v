@@ -1,23 +1,9 @@
-export function getType(elem) {
-  return Object.prototype.toString.call(elem).slice(8, -1)
-}
+export const getType = elem => Object.prototype.toString.call(elem).slice(8, -1)
 
-export function isObject(elem) {
-  return getType(elem) === 'Object'
-}
-
-export function isArray(elem) {
-  return getType(elem) === 'Array'
-}
-
-export function isFunction(elem) {
-  const type = getType(elem)
-  return type === 'Function' || type === 'AsyncFunction'
-}
-
-export function isString(elem) {
-  return getType(elem) === 'String'
-}
+export const isObject = elem => getType(elem) === 'Object'
+export const isArray = elem => getType(elem) === 'Array'
+export const isString = elem => getType(elem) === 'String'
+export const isFunction = elem => [ 'Function', 'AsyncFunction' ].includes(getType(elem))
 
 /**
  * Check if needle fuzzy matches haystack.
@@ -53,9 +39,7 @@ export function fuzzySearch(needle, haystack) {
   return true
 }
 
-export function capitalize(str) {
-  return str[0].toUpperCase() + str.substring(1)
-}
+export const capitalize = str => str[0].toUpperCase() + str.substring(1)
 
 export function createArray(size, val) {
   const arr = Array(size)
@@ -75,9 +59,7 @@ function getInRec(obj, [ prop, ...rest ]) {
   return getInRec(obj[prop], rest)
 }
 
-export function getIn(obj, propName) {
-  return getInRec(obj, propName.split('.'))
-}
+export const getIn = (obj, path) => getInRec(obj, path.split('.'))
 
 /**
  * Create new object with specified prototype `proto` and custom `props`
@@ -99,13 +81,22 @@ export function uniq(arr, getKey = val => val) {
   arr.forEach((item) => {
     const key = getKey(item)
 
-    if (keys.includes(key)) {
-      return
+    if (!keys.includes(key)) {
+      result.push(item)
+      keys.push(key)
     }
-
-    result.push(item)
-    keys.push(key)
   })
 
   return result
 }
+
+// TODO remove
+export const groupBy = (arr, getKey) => arr.reduce((acc, value) => {
+  const key = getKey(value)
+  const group = acc[key] || []
+  group.push(value)
+
+  acc[key] = group
+
+  return acc
+}, {})

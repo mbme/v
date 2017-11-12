@@ -6,7 +6,7 @@ const fs = require('fs')
 const path = require('path')
 
 const createApiClient = require('../shared/api').default
-const { createTextGenerator } = require('../shared/random')
+const { createTextGenerator } = require('../tools/random')
 const { createArray } = require('../shared/utils')
 
 function genData(port, recordsCount = 23) {

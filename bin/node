@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+require('babel-register')
+
+const path = require('path')
+
+require(path.join(process.cwd(), process.argv[2]))

@@ -1,5 +1,5 @@
-import Router from 'universal-router' // eslint-disable-line import/extensions
-import generateUrls from 'universal-router/generateUrls' // eslint-disable-line import/extensions
+import Router from 'universal-router'
+import generateUrls from 'universal-router/generateUrls'
 
 export default function createRouter() {
   let router
