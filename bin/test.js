@@ -23,14 +23,16 @@ for (const testFile of testFiles) {
     testPlans.push({ file: testFile, ...testPlan })
   }
 }
-console.log('')
 
 async function executeTestPlans() {
+  console.log('')
+
   for (const testPlan of testPlans) {
     console.log(testPlan.file)
     testPlan.before && await Promise.resolve(testPlan.before())
     await runTests(path.join(basePath, testPlan.file), testPlan.tests)
     testPlan.after && await Promise.resolve(testPlan.after())
+    console.log('')
   }
 }
 

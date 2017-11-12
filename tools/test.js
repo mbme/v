@@ -3,6 +3,7 @@
 
 import fs from 'fs'
 import assert from 'assert'
+import { readJSON, writeJSON, deleteFile } from 'server/utils'
 
 let beforeCb
 let tests = []
@@ -29,8 +30,6 @@ export const before = (cb) => { beforeCb = cb }
 export const after = (cb) => { afterCb = cb }
 
 async function runTest({ name, fn }, oldSnapshots) {
-  console.log(`  # ${name}`)
-
   let okAsserts = 0
   let snapshotPos = 0
   const snapshots = []
@@ -77,7 +76,7 @@ async function runTest({ name, fn }, oldSnapshots) {
       },
     }))
 
-    console.log(`  ${okAsserts} ok (${snapshotPos} snapshots)\n`)
+    console.log(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '')
     return snapshots
   } catch (e) {
     console.error(`  ${name} failed\n`, e)
@@ -88,7 +87,7 @@ async function runTest({ name, fn }, oldSnapshots) {
 export async function runTests(file, testConfigs) {
   const snapshotsFile = file + '.snap.json'
   const snapshotsFileExists = fs.existsSync(snapshotsFile)
-  const oldSnapshots = snapshotsFileExists ? JSON.parse(fs.readFileSync(snapshotsFile, 'utf8')) : {}
+  const oldSnapshots = snapshotsFileExists ? await readJSON(snapshotsFile) : {}
 
   const newSnapshots = {}
   for (const testConfig of testConfigs) {
@@ -99,8 +98,8 @@ export async function runTests(file, testConfigs) {
   }
 
   if (Object.values(newSnapshots).length) {
-    fs.writeFileSync(snapshotsFile, JSON.stringify(newSnapshots, null, 2), 'utf8')
+    await writeJSON(snapshotsFile, newSnapshots)
   } else if (snapshotsFileExists) {
-    fs.unlinkSync(snapshotsFile)
+    await deleteFile(snapshotsFile)
   }
 }

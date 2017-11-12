@@ -11,5 +11,5 @@ const port = 8080
 
 startServer(port).then(() => {
   console.log(`api server http://localhost:${port}`)
-  genData(port, 30)
+  return genData(port, 30)
 })
