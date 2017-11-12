@@ -32,17 +32,6 @@ module.exports = {
         node: true,
       },
     },
-    {
-      files: [
-        '**/*.test.js',
-      ],
-      env: {
-        mocha: true,
-      },
-      rules: {
-        'no-unused-expressions': 0,
-      },
-    },
   ],
   extends: [ 'airbnb' ],
   plugins: [ 'react' ],

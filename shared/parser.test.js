@@ -1,4 +1,4 @@
-import test from 'tools/test'
+import { test } from 'tools/test'
 import { parse, select, selectLinks } from './parser'
 
 const text = `

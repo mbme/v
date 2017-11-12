@@ -1,4 +1,4 @@
-import test from 'tools/test'
+import { test } from 'tools/test'
 import { serialize, parse, ENCODING } from './serializer'
 
 const buffer = Buffer.from('test file')

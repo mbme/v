@@ -1,4 +1,4 @@
-/* eslint-disable import/no-dynamic-require, global-require */
+/* eslint-disable import/no-dynamic-require, global-require, no-await-in-loop */
 import path from 'path'
 import { walkSync } from 'server/utils'
 import { collectTests, runTests } from 'tools/test'
@@ -13,19 +13,25 @@ const testFiles = walkSync(basePath)
 const testPlans = []
 for (const testFile of testFiles) {
   console.log(`+ ${testFile}`)
-  const tests = collectTests(() => require(testFile))
-  const only = tests.find(test => test.only)
+  const testPlan = collectTests(() => require(testFile))
+  const only = testPlan.tests.find(test => test.only)
   if (only) {
     testPlans.length = 0
     testPlans.push({ file: testFile, tests: [ only ] })
     break
   } else {
-    testPlans.push({ file: testFile, tests })
+    testPlans.push({ file: testFile, ...testPlan })
   }
 }
 console.log('')
 
-for (const testPlan of testPlans) {
-  console.log(testPlan.file)
-  runTests(path.join(basePath, testPlan.file), testPlan.tests)
+async function executeTestPlans() {
+  for (const testPlan of testPlans) {
+    console.log(testPlan.file)
+    testPlan.before && await Promise.resolve(testPlan.before())
+    await runTests(path.join(basePath, testPlan.file), testPlan.tests)
+    testPlan.after && await Promise.resolve(testPlan.after())
+  }
 }
+
+executeTestPlans()

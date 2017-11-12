@@ -1,117 +1,111 @@
-import { expect } from 'chai'
+import { test, before, after } from 'tools/test'
 import getDB from './db'
 
-describe('DB', () => {
-  const db = getDB()
+let db
+before(() => { db = getDB() })
+after(() => db.close())
 
-  after(() => db.close())
+test('records', (assert) => {
+  const type = 'type'
+  const name = 'name'
+  const data = 'data'
 
-  describe('records', () => {
-    const type = 'type'
-    const name = 'name'
-    const data = 'data'
+  const id = db.createRecord(type, name, data)
 
-    let id
-    it('create record', () => {
-      id = db.createRecord(type, name, data)
-    })
+  // list records
+  assert.equal(db.listRecords('12312313131').length, 0)
+  assert.equal(db.listRecords(type).length, 1)
 
-    it('list records', () => {
-      expect(db.listRecords('12312313131')).to.be.empty
-      expect(db.listRecords(type)).to.have.lengthOf(1)
-    })
+  // read record
+  {
+    const record = db.readRecord(id)
+    assert.deepEqual(record, { id, type, name, data })
+  }
 
-    it('read record', () => {
-      const record = db.readRecord(id)
-      expect(record).to.deep.equal({ id, type, name, data })
-    })
+  // update record
+  {
+    const newName = 'newName'
+    const newData = 'newData'
+    assert.equal(db.updateRecord(id, newName, newData), true)
 
-    it('update record', () => {
-      const newName = 'newName'
-      const newData = 'newData'
-      expect(db.updateRecord(id, newName, newData)).to.be.true
+    const record = db.readRecord(id)
+    assert.deepEqual(record, { id, type, name: newName, data: newData })
+  }
 
-      const record = db.readRecord(id)
-      expect(record).to.deep.equal({ id, type, name: newName, data: newData })
-    })
+  // delete record
+  assert.equal(db.deleteRecord(id), true)
+  assert.equal(db.readRecord(id), undefined)
+  assert.equal(db.listRecords(type).length, 0)
+})
 
-    it('delete record', () => {
-      expect(db.deleteRecord(id)).to.be.true
-      expect(db.readRecord(id)).to.be.undefined
-      expect(db.listRecords(type)).to.be.empty
-    })
-  })
+test('files', (assert) => {
+  const name = 'some file.json'
+  const data = Buffer.from('test file content')
 
-  describe('files', () => {
-    const name = 'some file.json'
-    const data = Buffer.from('test file content')
+  let counter = 0
+  const nextId = () => { counter += 1; return `${counter}` }
 
-    let counter = 0
-    const nextId = () => { counter += 1; return `${counter}` }
+  { // add files
+    const id = nextId()
+    assert.equal(db.isKnownFile(id), false)
 
-    it('add files', () => {
-      const id = nextId()
-      expect(db.isKnownFile(id)).to.be.false
+    db.addFiles([ { id, name, data } ])
+    const file = db.readFile(id)
+    assert.equal(file.name, name)
+    assert.equal(data.equals(file.data), true)
+    assert.equal(db.isKnownFile(id), true)
+  }
 
-      db.addFiles([ { id, name, data } ])
-      const file = db.readFile(id)
-      expect(file.name).to.be.equal(name)
-      expect(data.equals(file.data)).to.be.true
-      expect(db.isKnownFile(id)).to.be.true
-    })
+  { // read file
+    const id = nextId()
+    db.addFiles([ { id, name, data } ])
 
-    it('read file', () => {
-      const id = nextId()
-      db.addFiles([ { id, name, data } ])
+    const file = db.readFile(id)
+    assert.equal(file.name, name)
+    assert.equal(file.data.equals(data), true)
+  }
 
-      const file = db.readFile(id)
-      expect(file.name).to.equal(name)
-      expect(file.data.equals(data)).to.be.true
-    })
+  // remove unused files
+  assert.equal(db.removeUnusedFiles(), 2)
 
-    it('remove unused files', () => {
-      expect(db.removeUnusedFiles()).to.equal(2)
-    })
+  { // connections
+    const recordId = db.createRecord('type', '', '')
 
-    it('connections', () => {
-      const recordId = db.createRecord('type', '', '')
+    const fileId = nextId()
+    db.addFiles([ { id: fileId, name, data } ])
+    db.addConnections(recordId, [ fileId ])
 
-      const fileId = nextId()
-      db.addFiles([ { id: fileId, name, data } ])
-      db.addConnections(recordId, [ fileId ])
+    assert.equal(db.removeUnusedFiles(), 0)
+    assert.equal(db.isKnownFile(fileId), true)
 
-      expect(db.removeUnusedFiles()).to.equal(0)
-      expect(db.isKnownFile(fileId)).to.be.true
+    assert.equal(db.removeConnections(recordId), 1)
+    assert.equal(db.removeUnusedFiles(), 1)
+    assert.equal(db.isKnownFile(fileId), false)
+  }
+})
 
-      expect(db.removeConnections(recordId)).to.equal(1)
-      expect(db.removeUnusedFiles()).to.equal(1)
-      expect(db.isKnownFile(fileId)).to.be.false
-    })
-  })
+test('Transaction', (assert) => {
+  { // commit
+    const id = db.createRecord('type', '', '')
 
-  describe('Transaction', () => {
-    it('commit', () => {
-      const id = db.createRecord('type', '', '')
+    assert.equal(db.inTransaction(() => {
+      db.deleteRecord(id)
+      return id
+    }), id)
 
-      expect(db.inTransaction(() => {
+    assert.equal(db.readRecord(id), undefined)
+  }
+
+  { // rollback
+    const id = db.createRecord('type', '', '')
+    const error = new Error('test')
+
+    assert.throws(() => {
+      db.inTransaction(() => {
         db.deleteRecord(id)
-        return id
-      })).to.equal(id)
-
-      expect(db.readRecord(id)).to.be.undefined
-    })
-
-    it('rollback', () => {
-      const id = db.createRecord('type', '', '')
-      const error = new Error('test')
-
-      expect(() => {
-        db.inTransaction(() => {
-          db.deleteRecord(id)
-          throw error
-        })
-      }).to.throw(error)
-      expect(db.readRecord(id)).to.be.ok
-    })
-  })
+        throw error
+      })
+    }, error)
+    assert.equal(!!db.readRecord(id), true)
+  }
 })

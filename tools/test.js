@@ -1,23 +1,34 @@
+/* eslint-disable no-await-in-loop */
 // TODO ensure uniq test names inside files
 
 import fs from 'fs'
 import assert from 'assert'
 
-let tests
+let beforeCb
+let tests = []
+let afterCb
 
 export function collectTests(cb) {
-  tests = []
   cb()
-  const result = tests
-  tests = null
+
+  const result = {
+    tests,
+    before: beforeCb,
+    after: afterCb,
+  }
+
+  beforeCb = null
+  tests = []
+  afterCb = null
+
   return result
 }
 
-export default function test(name, fn, only = false) {
-  tests.push({ name, fn, only })
-}
+export const test = (name, fn, only = false) => tests.push({ name, fn, only })
+export const before = (cb) => { beforeCb = cb }
+export const after = (cb) => { afterCb = cb }
 
-function runTest({ name, fn }, oldSnapshots) {
+async function runTest({ name, fn }, oldSnapshots) {
   console.log(`  # ${name}`)
 
   let okAsserts = 0
@@ -25,7 +36,7 @@ function runTest({ name, fn }, oldSnapshots) {
   const snapshots = []
 
   try {
-    fn({
+    await Promise.resolve(fn({
       equal(actual, expected) {
         if (actual === expected) {
           okAsserts += 1
@@ -56,15 +67,15 @@ function runTest({ name, fn }, oldSnapshots) {
         okAsserts += 1
       },
 
-      throws(block) {
+      throws(block, error) {
         try {
           block()
           assert.fail('Expected to throw')
         } catch (e) {
-          // everything is fine
+          error && assert.equal(e, error)
         }
       },
-    })
+    }))
 
     console.log(`  ${okAsserts} ok (${snapshotPos} snapshots)\n`)
     return snapshots
@@ -74,14 +85,14 @@ function runTest({ name, fn }, oldSnapshots) {
   }
 }
 
-export function runTests(file, testConfigs) {
+export async function runTests(file, testConfigs) {
   const snapshotsFile = file + '.snap.json'
   const snapshotsFileExists = fs.existsSync(snapshotsFile)
   const oldSnapshots = snapshotsFileExists ? JSON.parse(fs.readFileSync(snapshotsFile, 'utf8')) : {}
 
   const newSnapshots = {}
   for (const testConfig of testConfigs) {
-    const snapshots = runTest(testConfig, oldSnapshots[testConfig.name] || [])
+    const snapshots = await runTest(testConfig, oldSnapshots[testConfig.name] || [])
     if (snapshots.length) {
       newSnapshots[testConfig.name] = snapshots
     }
