@@ -55,6 +55,15 @@ function runTest({ name, fn }, oldSnapshots) {
         snapshotPos += 1
         okAsserts += 1
       },
+
+      throws(block) {
+        try {
+          block()
+          assert.fail('Expected to throw')
+        } catch (e) {
+          // everything is fine
+        }
+      },
     })
 
     console.log(`  ${okAsserts} ok (${snapshotPos} snapshots)\n`)

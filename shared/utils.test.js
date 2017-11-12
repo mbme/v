@@ -1,21 +1,19 @@
-import { expect } from 'chai'
+import test from 'tools/test'
 import { isObject, isFunction, createArray } from './utils'
 
-describe('Utils', () => {
-  it('isObject', () => {
-    expect(isObject(null)).to.be.false
-    expect(isObject({})).to.be.true
-  })
+test('isObject', (assert) => {
+  assert.equal(isObject(null), false)
+  assert.equal(isObject({}), true)
+})
 
-  it('isFunction', () => {
-    expect(isFunction(() => true)).to.be.true
-    expect(isFunction(async () => true)).to.be.true
-    expect(isFunction(function testIsFunction() {})).to.be.true
-    expect(isFunction(async function testIsFunction() { return true })).to.be.true
-  })
+test('isFunction', (assert) => {
+  assert.equal(isFunction(() => true), true)
+  assert.equal(isFunction(async () => true), true)
+  assert.equal(isFunction(function testIsFunction() {}), true)
+  assert.equal(isFunction(async function testIsFunction() { return true }), true)
+})
 
-  it('createArray', () => {
-    expect(createArray(3, 0)).to.deep.equal([ 0, 0, 0 ])
-    expect(createArray(3, i => i)).to.deep.equal([ 0, 1, 2 ])
-  })
+test('createArray', (assert) => {
+  assert.deepEqual(createArray(3, 0), [ 0, 0, 0 ])
+  assert.deepEqual(createArray(3, i => i), [ 0, 1, 2 ])
 })

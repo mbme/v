@@ -6,7 +6,7 @@ import { collectTests, runTests } from 'tools/test'
 const basePath = path.join(__dirname, '..')
 const testFiles = walkSync(basePath)
   .map(filePath => path.relative(basePath, filePath))
-  .filter(relPath => relPath.endsWith('serializer.test.js'))
+  .filter(relPath => relPath.endsWith('parser.test.js'))
 
 const testPlans = []
 for (const testFile of testFiles) {

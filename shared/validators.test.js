@@ -1,84 +1,73 @@
-import { expect } from 'chai'
+import test from 'tools/test'
 import { validate, validateAndThrow } from './validators'
 
-describe('Validators', () => {
-  it('positive-integer', () => {
-    expect(validate(2, 'positive-integer')).to.be.empty
-    expect(validate(0, 'positive-integer')).to.have.lengthOf(1)
-  })
+test('positive-integer', (assert) => {
+  assert.equal(validate(2, 'positive-integer').length, 0)
+  assert.equal(validate(0, 'positive-integer').length, 1)
+})
 
-  it('string!', () => {
-    expect(validate('test', 'string')).to.be.empty
-    expect(validate(1, 'string')).to.have.lengthOf(1)
-    expect(validate('', 'string!')).to.have.lengthOf(1)
-  })
+test('string!', (assert) => {
+  assert.equal(validate('test', 'string').length, 0)
+  assert.equal(validate(1, 'string').length, 1)
+  assert.equal(validate('', 'string!').length, 1)
+})
 
-  it('buffer', () => {
-    expect(validate(Buffer.from([]), 'buffer')).to.be.empty
-    expect(validate('test', 'buffer')).to.have.lengthOf(1)
-  })
+test('buffer', (assert) => {
+  assert.equal(validate(Buffer.from([]), 'buffer').length, 0)
+  assert.equal(validate('test', 'buffer').length, 1)
+})
 
-  it('Record', () => {
-    expect(validate({
-      id: 2,
-      type: 'note',
-      name: 'test',
-      data: '',
-    }, 'Record')).to.be.empty
+test('Record', (assert) => {
+  assert.equal(validate({
+    id: 2,
+    type: 'note',
+    name: 'test',
+    data: '',
+  }, 'Record').length, 0)
 
-    expect(validate({
-      id: -2,
-      type: 'other',
-      name: 2,
-      data: '',
-    }, 'Record')).to.have.lengthOf(3)
+  assert.equal(validate({
+    id: -2,
+    type: 'other',
+    name: 2,
+    data: '',
+  }, 'Record').length, 3)
 
-    expect(validate('test', 'Record')).to.have.lengthOf(1)
-  })
+  assert.equal(validate('test', 'Record').length, 1)
+})
 
-  it('File', () => {
-    expect(validate({
+test('File', (assert) => {
+  assert.equal(validate({
+    name: 'test',
+    data: Buffer.from([]),
+  }, 'File').length, 0)
+
+  assert.equal(validate({
+    name: 2,
+    data: '',
+  }, 'File').length, 2)
+
+  assert.equal(validate(null, 'File').length, 1)
+})
+
+test('Record.id', (assert) => {
+  assert.equal(validate(2, 'Record.id').length, 0)
+  assert.equal(validate(-2, 'Record.id').length, 1)
+})
+
+test('validateAndThrow', (assert) => {
+  assert.throws(() => validateAndThrow([ 1, 'string' ]))
+  assert.equal(validateAndThrow([ '1', 'string' ]), undefined)
+})
+
+test('validate array', (assert) => {
+  assert.equal(validate([
+    {
       name: 'test',
       data: Buffer.from([]),
-    }, 'File')).to.be.empty
-
-    expect(validate({
-      name: 2,
+    },
+    {
+      name: 'other',
       data: '',
-    }, 'File')).to.have.lengthOf(2)
-
-    expect(validate(null, 'File')).to.have.lengthOf(1)
-  })
-
-  it('Record.id', () => {
-    expect(validate(2, 'Record.id')).to.be.empty
-    expect(validate(-2, 'Record.id')).to.have.lengthOf(1)
-  })
-
-  it('validateAndThrow', () => {
-    expect(() => {
-      validateAndThrow(
-        [ 1, 'string' ],
-      )
-    }).to.throw()
-
-    expect(() => {
-      validateAndThrow(
-        [ '1', 'string' ]
-      )
-    }).not.to.throw()
-  })
-
-  it('validate array', () => {
-    expect(validate([
-      {
-        name: 'test',
-        data: Buffer.from([]),
-      },
-      {
-        name: 'other',
-        data: '',
-      },
-    ], 'File[]')).to.have.lengthOf(1)
-  })
+    },
+  ], 'File[]').length, 1)
 })

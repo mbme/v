@@ -1,0 +1,251 @@
+{
+  "Italic": [
+    {
+      "type": "Italic",
+      "items": [
+        "test"
+      ]
+    },
+    {
+      "type": "Italic",
+      "items": [
+        " test _ and so on ",
+        {
+          "type": "Bold",
+          "items": [
+            "_test"
+          ]
+        }
+      ]
+    }
+  ],
+  "Bold": [
+    {
+      "type": "Bold",
+      "items": [
+        "test"
+      ]
+    },
+    {
+      "type": "Bold",
+      "items": [
+        " test * \\ ",
+        {
+          "type": "Italic",
+          "items": [
+            "and*"
+          ]
+        },
+        " so on"
+      ]
+    }
+  ],
+  "Mono": [
+    {
+      "type": "Mono",
+      "items": [
+        "test"
+      ]
+    },
+    {
+      "type": "Mono",
+      "items": [
+        " test ` \\ _and*_ so on*"
+      ]
+    },
+    null
+  ],
+  "Header": [
+    {
+      "type": "Header",
+      "items": [
+        " AHAHAH *test oh no* !"
+      ]
+    }
+  ],
+  "Link": [
+    {
+      "type": "Link",
+      "items": [
+        {
+          "type": "LinkName",
+          "items": [
+            "awesome link"
+          ]
+        },
+        {
+          "type": "LinkAddress",
+          "items": [
+            "http://amazing.com"
+          ]
+        }
+      ]
+    }
+  ],
+  "Paragraph": [
+    {
+      "type": "Paragraph",
+      "items": [
+        "\n    AHAHAH *test oh no!\n    go go ",
+        {
+          "type": "Italic",
+          "items": [
+            "power cows"
+          ]
+        },
+        " ",
+        {
+          "type": "Mono",
+          "items": [
+            "code"
+          ]
+        },
+        "\n    "
+      ]
+    }
+  ],
+  "Document": [
+    {
+      "type": "Document",
+      "items": [
+        {
+          "type": "Paragraph",
+          "items": [
+            "\n# Header"
+          ]
+        },
+        "\n",
+        {
+          "type": "Paragraph",
+          "items": [
+            "\nblock\n# so not a header"
+          ]
+        },
+        "\n",
+        {
+          "type": "Paragraph",
+          "items": [
+            "\n* test\n* test"
+          ]
+        },
+        "\n",
+        {
+          "type": "Paragraph",
+          "items": [
+            "\nParagraph and something else. sentence\ntest ",
+            {
+              "type": "Bold",
+              "items": [
+                "bold"
+              ]
+            },
+            " ",
+            {
+              "type": "Italic",
+              "items": [
+                "italic"
+              ]
+            },
+            " ",
+            {
+              "type": "Italic",
+              "items": [
+                {
+                  "type": "Bold",
+                  "items": [
+                    "bold italic"
+                  ]
+                }
+              ]
+            },
+            " ",
+            {
+              "type": "Mono",
+              "items": [
+                "code"
+              ]
+            }
+          ]
+        },
+        "\n",
+        {
+          "type": "Paragraph",
+          "items": [
+            "\n",
+            {
+              "type": "Mono",
+              "items": []
+            },
+            "`js\n code block\n",
+            {
+              "type": "Mono",
+              "items": []
+            },
+            "`"
+          ]
+        },
+        "\n",
+        {
+          "type": "Paragraph",
+          "items": [
+            "\n> some blockquote\n> quote"
+          ]
+        },
+        "\n",
+        {
+          "type": "Paragraph",
+          "items": [
+            "\nOne more paragraph. ",
+            {
+              "type": "Link",
+              "items": [
+                {
+                  "type": "LinkName",
+                  "items": [
+                    "link"
+                  ]
+                },
+                {
+                  "type": "LinkAddress",
+                  "items": [
+                    "http://link.to/123?321"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "\n\n"
+      ]
+    }
+  ],
+  "select": [
+    [
+      {
+        "type": "Link",
+        "items": [
+          {
+            "type": "LinkName",
+            "items": [
+              "link"
+            ]
+          },
+          {
+            "type": "LinkAddress",
+            "items": [
+              "http://link.to/123?321"
+            ]
+          }
+        ]
+      }
+    ]
+  ],
+  "selectLinks": [
+    [
+      {
+        "name": "link",
+        "link": "http://link.to/123?321"
+      }
+    ]
+  ]
+}

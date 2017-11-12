@@ -1,8 +1,7 @@
-import { expect } from 'chai'
+import test from 'tools/test'
 import { getWords } from './random'
 
-describe('Random', () => {
-  it('getWords', () => {
-    expect(getWords('Split it, not; dr. go!')).to.deep.equal([ 'split', 'it', ',', 'not', ';', 'dr.', 'go', '!' ])
-  })
+
+test('getWords', (assert) => {
+  assert.deepEqual(getWords('Split it, not; dr. go!'), [ 'split', 'it', ',', 'not', ';', 'dr.', 'go', '!' ])
 })
