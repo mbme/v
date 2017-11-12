@@ -3,10 +3,12 @@ import path from 'path'
 import { walkSync } from 'server/utils'
 import { collectTests, runTests } from 'tools/test'
 
+const filter = process.argv.length > 3 ? process.argv[3] : ''
+
 const basePath = path.join(__dirname, '..')
 const testFiles = walkSync(basePath)
   .map(filePath => path.relative(basePath, filePath))
-  .filter(relPath => relPath.endsWith('parser.test.js'))
+  .filter(relPath => relPath.endsWith('.test.js') && relPath.includes(filter))
 
 const testPlans = []
 for (const testFile of testFiles) {
