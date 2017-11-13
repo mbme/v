@@ -12,7 +12,8 @@
     "dev": "NODE_PATH=. bin/node bin/dev-server & webpack-dev-server",
     "gen-data": "NODE_PATH=. bin/node bin/gen-data",
     "test": "NODE_PATH=. bin/node bin/test",
-    "lint": "NODE_PATH=. eslint . --ext js,jsx"
+    "lint": "NODE_PATH=. eslint . --ext js,jsx",
+    "cloc": "cloc . --exclude-dir=node_modules,.git"
   },
   "dependencies": {
     "babel-register": "^6.24.1",
