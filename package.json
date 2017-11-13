@@ -8,12 +8,12 @@
   "main": "",
   "scripts": {
     "build": "rm -f dist/* && NODE_ENV=production webpack",
-    "start": "NODE_PATH=. NODE_ENV=production bin/node bin/server",
-    "dev": "webpack --watch & NODE_PATH=. bin/node bin/dev-server",
-    "gen-data": "NODE_PATH=. bin/node bin/gen-data",
-    "test": "NODE_PATH=. bin/node bin/test",
+    "start": "NODE_PATH=. NODE_ENV=production bin/node.js bin/server",
+    "dev": "webpack --watch & NODE_PATH=. bin/node.js bin/dev-server",
+    "gen-data": "NODE_PATH=. bin/node.js bin/gen-data",
+    "test": "NODE_PATH=. bin/node.js bin/test",
     "lint": "NODE_PATH=. eslint . --ext js,jsx",
-    "cloc": "cloc . --exclude-dir=node_modules,.git"
+    "cloc": "cloc --vcs=git --exclude-ext=json,md -v *"
   },
   "dependencies": {
     "babel-register": "^6.24.1",
