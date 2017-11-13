@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rm -f dist/* && NODE_ENV=production webpack",
     "start": "NODE_PATH=. NODE_ENV=production bin/node bin/server",
-    "dev": "NODE_PATH=. bin/node bin/dev-server & webpack-dev-server",
+    "dev": "webpack --watch & NODE_PATH=. bin/node bin/dev-server",
     "gen-data": "NODE_PATH=. bin/node bin/gen-data",
     "test": "NODE_PATH=. bin/node bin/test",
     "lint": "NODE_PATH=. eslint . --ext js,jsx",
@@ -25,7 +25,6 @@
     "prop-types": "^15.5.10",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "react-hot-loader": "3.0.0-beta.7",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
@@ -46,8 +45,7 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.2.0",
-    "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.9.3"
+    "webpack": "^3.6.0"
   },
   "babel": {
     "plugins": [

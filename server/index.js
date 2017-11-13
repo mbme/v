@@ -19,8 +19,12 @@ const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
 const STATIC_DIR = path.join(__dirname, '../static')
 const DIST_DIR = path.join(__dirname, '../dist')
 
-// FIXME async
-const getFile = async (dir, name) => await existsFile(dir) && await listFiles(dir).includes(name) ? readFile(path.join(dir, name)) : null
+async function getFile(dir, name) {
+  if (!await existsFile(dir)) return null
+  if (!await listFiles(dir).then(files => files.includes(name))) return null
+
+  return readFile(path.join(dir, name))
+}
 
 // return files from /static or /dist without subdirectories, use index.html as fallback
 async function getStaticFile(name, fallback = 'index.html') {

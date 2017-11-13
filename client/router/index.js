@@ -1,4 +1,10 @@
-export { default as routerMiddleware } from './middleware'
+import routerMiddleware from './middleware'
+import routes from './routes'
+import createRouter from './router'
+
 export { propagateCurrentLocation } from './actions'
-export { default as createRouter } from './router'
-export { default as routes } from './routes'
+
+const router = createRouter()
+router.useRoutes(routes)
+
+export default routerMiddleware(router)
