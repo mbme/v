@@ -4,6 +4,7 @@
 
 // We use custom parser/serializer instead of multipart/form-data because multipart requests
 // are too complicated to send using node's http client.
+// FORMAT: [length action_string [length fileName length file]*]
 
 const SEPARATOR = ' '
 export const ENCODING = 'utf8'
