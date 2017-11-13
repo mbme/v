@@ -11,8 +11,7 @@
     "start": "NODE_ENV=production node bin/server",
     "dev": "node bin/dev-server & webpack-dev-server",
     "gen-data": "node bin/gen-data",
-    "test": "NODE_PATH=. mocha --require babel-register **/*.test.js",
-    "test1": "NODE_PATH=. bin/node bin/test.js",
+    "test": "NODE_PATH=. bin/node bin/test.js",
     "lint": "NODE_PATH=. eslint . --ext js,jsx"
   },
   "dependencies": {

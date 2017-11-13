@@ -1,9 +1,8 @@
-import fs from 'fs'
 import path from 'path'
 import http from 'http'
 import urlParser from 'url'
 
-import { readStream } from 'server/utils'
+import { readStream, existsFile, listFiles, readFile } from 'server/utils'
 import { CONTENT_TYPE } from 'shared/api'
 import { parse } from 'shared/serializer'
 import createProcessor from './processor'
@@ -21,19 +20,19 @@ const STATIC_DIR = path.join(__dirname, '../static')
 const DIST_DIR = path.join(__dirname, '../dist')
 
 // FIXME async
-const readFile = (dir, name) => fs.existsSync(dir) && fs.readdirSync(dir).includes(name) ? fs.readFileSync(path.join(dir, name)) : null
+const getFile = async (dir, name) => await existsFile(dir) && await listFiles(dir).includes(name) ? readFile(path.join(dir, name)) : null
 
 // return files from /static or /dist without subdirectories, use index.html as fallback
-function getStaticFile(name, fallback = 'index.html') {
+async function getStaticFile(name, fallback = 'index.html') {
   if (name) {
-    const data = readFile(STATIC_DIR, name) || readFile(DIST_DIR, name)
+    const data = await getFile(STATIC_DIR, name) || await getFile(DIST_DIR, name)
 
     if (data) {
       return { name, data }
     }
   }
 
-  const data = readFile(STATIC_DIR, fallback)
+  const data = await getFile(STATIC_DIR, fallback)
 
   if (data) {
     return { name: fallback, data }
@@ -131,7 +130,7 @@ export default async function startServer(port, options = { html5historyFallback
       }
 
 
-      const file = getStaticFile(url.path.substring(1))
+      const file = await getStaticFile(url.path.substring(1))
 
       if (file) {
         res.writeHead(200, withContentType(getFileType(file.name)))

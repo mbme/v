@@ -29,6 +29,11 @@ export function walkSync(dir, skipDir = [ '.git', 'node_modules' ]) {
   return fileList
 }
 
+export const listFiles = promisify(fs.readdir)
+
+// use sync version here cause fs.exists has been deprecated
+export const existsFile = name => Promise.resolve(fs.existsSync(name))
+
 export const readFile = promisify(fs.readFile)
 export const readText = name => readFile(name, 'utf8')
 export const readJSON = async name => JSON.parse(await readText(name))
