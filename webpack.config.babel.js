@@ -18,6 +18,7 @@ module.exports = {
 
   resolve: {
     extensions: [ '.js', '.jsx', '.json' ],
+    modules: [ path.resolve(__dirname), 'node_modules' ],
   },
 
   module: {
@@ -36,7 +37,6 @@ module.exports = {
               'transform-class-properties',
               'syntax-jsx',
               'transform-react-jsx',
-              [ 'module-resolver', { root: [ '.' ] } ],
             ],
           },
         },

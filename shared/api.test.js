@@ -1,5 +1,6 @@
 import { test, before, after } from 'tools/test'
 import startServer from 'server'
+import nodeApiClient from 'server/apiClient'
 import { createFileLink } from 'shared/parser'
 import { sha256 } from 'server/utils'
 import createApiClient from './api'
@@ -10,7 +11,7 @@ let api
 before(async () => {
   const port = 8079
   server = await startServer(port, { html5historyFallback: false, requestLogger: false })
-  api = createApiClient(`http://localhost:${port}`)
+  api = createApiClient(`http://localhost:${port}`, nodeApiClient)
 })
 
 after(() => new Promise(resolve => server.close(resolve)))

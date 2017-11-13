@@ -1,18 +1,15 @@
-#!/usr/bin/env node
+import path from 'path'
 
-require('babel-register')
+import createApiClient from 'shared/api'
+import { createArray } from 'shared/utils'
+import { createTextGenerator } from 'tools/random'
+import { readText } from 'server/utils'
+import nodeApiClient from 'server/apiClient'
 
-const path = require('path')
-
-const createApiClient = require('../shared/api').default
-const { createTextGenerator } = require('../tools/random')
-const { createArray } = require('../shared/utils')
-const { readText } = require('../server/utils')
-
-async function genData(port, recordsCount = 23) {
-  const text = await readText(path.join(__dirname, '../shared/text.txt'))
+export default async function genData(port, recordsCount = 23) {
+  const text = await readText(path.join(__dirname, '../tools/text.txt'))
   const generator = createTextGenerator(text)
-  const api = createApiClient(`http://localhost:${port}`)
+  const api = createApiClient(`http://localhost:${port}`, nodeApiClient)
 
   const promises = createArray(recordsCount, () => {
     const name = generator.generateSentence(1, 8)
@@ -32,5 +29,3 @@ async function genData(port, recordsCount = 23) {
 if (require.main === module) { // if called from command line
   genData(8080)
 }
-
-module.exports = genData

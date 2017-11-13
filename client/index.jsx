@@ -7,6 +7,7 @@ import reduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 
 import createApiClient from 'shared/api'
+import browserApiClient from './utils/apiClient'
 import { createRouter, routes, routerMiddleware, propagateCurrentLocation } from './router'
 import rootReducer from './reducers'
 import App from './chrome/App'
@@ -20,7 +21,7 @@ router.useRoutes(routes)
 const store = createStore(
   rootReducer,
   applyMiddleware(
-    reduxThunk.withExtraArgument(createApiClient()),
+    reduxThunk.withExtraArgument(createApiClient('', browserApiClient)),
     routerMiddleware(router),
   ),
 )

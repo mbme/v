@@ -8,10 +8,10 @@
   "main": "",
   "scripts": {
     "build": "rm -f dist/* && NODE_ENV=production webpack",
-    "start": "NODE_ENV=production node bin/server",
-    "dev": "node bin/dev-server & webpack-dev-server",
-    "gen-data": "node bin/gen-data",
-    "test": "NODE_PATH=. bin/node bin/test.js",
+    "start": "NODE_PATH=. NODE_ENV=production bin/node bin/server",
+    "dev": "NODE_PATH=. bin/node bin/dev-server & webpack-dev-server",
+    "gen-data": "NODE_PATH=. bin/node bin/gen-data",
+    "test": "NODE_PATH=. bin/node bin/test",
     "lint": "NODE_PATH=. eslint . --ext js,jsx"
   },
   "dependencies": {
