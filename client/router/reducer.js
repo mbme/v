@@ -32,7 +32,7 @@ export default function router(state = defaultState, action) {
         ...defaultState,
         pathname: action.pathname,
         search: action.search,
-        query: parseQuery(action.search.trim()),
+        query: parseQuery(action.search),
         isPush: action.isPush,
         isLoading: true,
       }

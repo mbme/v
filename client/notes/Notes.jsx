@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import debounce from 'lodash.debounce'
 import { fuzzySearch } from 'shared/utils'
 import s from 'client/styles'
 import { Button, Toolbar, Link, Input } from 'client/components'
@@ -29,7 +28,17 @@ class NotesView extends Component {
     ))
   }
 
-  onFilterChange = debounce(this.props.setFilter, 300)
+  updateTimoutId = null
+  onFilterChange = (filter) => {
+    if (filter.trim() === this.props.filter) return
+
+    window.clearTimeout(this.updateTimoutId)
+    this.updateTimoutId = window.setTimeout(this.props.setFilter, 300, filter)
+  }
+
+  componentWillUnmount() {
+    window.clearTimeout(this.updateTimoutId)
+  }
 
   render() {
     const notes = this.getVisibleNotes()
@@ -67,9 +76,8 @@ const mapStateToProps = ({ notes, router }) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  setFilter(rawFilter) {
-    const filter = rawFilter.trim()
-    const params = filter ? { filter } : null
+  setFilter(filter) {
+    const params = filter.trim().length ? { filter } : null
     dispatch(routerActions.replace({ name: 'notes', params }))
   },
 })

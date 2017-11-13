@@ -21,7 +21,6 @@
     "feather-icons": "^3.2.2",
     "fela": "^6.0.4",
     "fela-dom": "^6.0.5",
-    "lodash.debounce": "^4.0.8",
     "prop-types": "^15.5.10",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
