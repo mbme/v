@@ -1,4 +1,4 @@
-import { test } from 'tools/test'
+import { test, before, after } from 'tools/test'
 import { parse, select, selectLinks } from './parser'
 
 const text = `
@@ -23,6 +23,9 @@ test *bold* _italic_ _*bold italic*_ \`code\`
 One more paragraph. [link](http://link.to/123?321)
 
 `
+
+before(() => { global.__DEVELOPMENT__ = false }) // suppress warnings
+after(() => { global.__DEVELOPMENT__ = true })
 
 test('Italic', (assert) => {
   assert.matchSnapshot(parse('_test_', 'Italic'))

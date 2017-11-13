@@ -1,4 +1,4 @@
-import { serialize } from 'shared/serializer'
+import { serialize } from 'shared/protocol'
 import { CONTENT_TYPE } from 'shared/api'
 
 function POST(url, action, files = []) {

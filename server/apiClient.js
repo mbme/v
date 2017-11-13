@@ -1,7 +1,7 @@
 import http from 'http'
 import urlParser from 'url'
 import { readStream } from 'server/utils'
-import { serialize } from 'shared/serializer'
+import { serialize } from 'shared/protocol'
 import { CONTENT_TYPE } from 'shared/api'
 
 function POST(url, action, files = []) {

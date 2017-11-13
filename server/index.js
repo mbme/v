@@ -4,7 +4,7 @@ import urlParser from 'url'
 
 import { readStream, existsFile, listFiles, readFile } from 'server/utils'
 import { CONTENT_TYPE } from 'shared/api'
-import { parse } from 'shared/serializer'
+import { parse } from 'shared/protocol'
 import createProcessor from './processor'
 
 const MIME = {

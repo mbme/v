@@ -1,5 +1,5 @@
 import { test } from 'tools/test'
-import { serialize, parse, ENCODING } from './serializer'
+import { serialize, parse, ENCODING } from './protocol'
 
 const buffer = Buffer.from('test file')
 const name = 'super text.json'
