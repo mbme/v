@@ -12,12 +12,11 @@ const testFiles = walkSync(basePath)
 
 const testPlans = []
 for (const testFile of testFiles) {
-  console.log(`+ ${testFile}`)
   const testPlan = collectTests(() => require(testFile))
   const only = testPlan.tests.find(test => test.only)
   if (only) {
     testPlans.length = 0
-    testPlans.push({ file: testFile, tests: [ only ] })
+    testPlans.push({ file: testFile, ...testPlan })
     break
   } else {
     testPlans.push({ file: testFile, ...testPlan })
@@ -25,13 +24,13 @@ for (const testFile of testFiles) {
 }
 
 async function executeTestPlans() {
-  console.log('')
-
   for (const testPlan of testPlans) {
     console.log(testPlan.file)
+
     testPlan.before && await Promise.resolve(testPlan.before())
     await runTests(path.join(basePath, testPlan.file), testPlan.tests)
     testPlan.after && await Promise.resolve(testPlan.after())
+
     console.log('')
   }
 }
