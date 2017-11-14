@@ -29,3 +29,22 @@ yarn lint
 yarn cloc
 
 ```
+
+### Syntax
+
+* header1 `# Header`
+* header2 `## Header`
+
+* link `[link name](http url)`
+* file link `[link name](file-id)`
+* image `[link name](!file-id)`
+
+* bold `_text_`
+* italic `*text*`
+* mono `\`text\``
+* striketrough `~text~`
+
+* blockquote
+* code
+* list
+

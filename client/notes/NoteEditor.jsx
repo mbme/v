@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { createFileLink } from 'shared/parser'
+import { createLink } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
 import { Button, Textarea, Toolbar, Input } from 'client/components'
 import s from 'client/styles'
@@ -50,7 +50,7 @@ class NoteEditorView extends PureComponent {
 
     const hashes = await Promise.all(files.map(file => readFile(file).then(sha256)))
 
-    this.textAreaRef.insert(files.map((file, i) => createFileLink(file.name, hashes[i])).join(' '))
+    this.textAreaRef.insert(files.map((file, i) => createLink(file.name, hashes[i])).join(' '))
     this.textAreaRef.focus()
   }
 

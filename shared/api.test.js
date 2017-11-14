@@ -1,7 +1,7 @@
 import { test, before, after } from 'tools/test'
 import startServer from 'server'
 import nodeApiClient from 'server/apiClient'
-import { createFileLink } from 'shared/parser'
+import { createLink } from 'shared/parser'
 import { sha256 } from 'server/utils'
 import createApiClient from './api'
 
@@ -20,7 +20,7 @@ test('should manage files', async (assert) => {
   const buffer = Buffer.from('test file content')
   const name = 'super text.json'
   const fileId = sha256(buffer)
-  const link = createFileLink(name, fileId)
+  const link = createLink(name, fileId)
 
   const recordId = await api.createRecord('note', 'name', `data ${link}`, [ { name, data: buffer } ])
   assert.equal(buffer.equals(await api.readFile(fileId)), true)

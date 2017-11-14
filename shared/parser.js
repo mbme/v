@@ -1,8 +1,7 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
 import { isString } from 'shared/utils'
 
-// TODO preprocess: replace \r\n with \n
-// TODO blockquote, code, list, secondary header
+// TODO blockquote, code, list, secondary header, striketrough
 
 const isChar = char => (str, i) => str[i] === char
 const isNewline = isChar('\n')
@@ -145,6 +144,11 @@ export function parseFrom(str, pos, type, context) {
       continue outer
     }
 
+    if (str[i] === '\r') { // ignore \r
+      i += 1
+      continue outer
+    }
+
     if (rule.isEnd(str, i)) {
       ended = true
       i += skipEnd
@@ -232,14 +236,9 @@ export function select(tree, type) {
   return result
 }
 
-export function selectLinks(tree) {
-  return select(tree, 'Link').map(({ items: [ name, link ] }) => ({ name: name.items[0], link: link.items[0] }))
-}
+export const selectLinks = tree => select(tree, 'Link').map(({ items: [ name, link ] }) => ({ name: name.items[0], link: link.items[0] }))
 
-export function selectFileLinks(tree) {
-  return selectLinks(tree).map(({ link }) => link) // FIXME implement
-}
+const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
 
+export const selectFileLinks = tree => selectLinks(tree).map(({ link }) => link).filter(isSha256)
 export const createLink = (name, link) => `[${name}](${link})`
-
-export const createFileLink = createLink // FIXME implement
