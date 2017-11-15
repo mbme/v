@@ -1,8 +1,6 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
 import { isString } from 'shared/utils'
 
-// TODO blockquote, code, list, secondary header, striketrough
-
 const isChar = char => (str, i) => str[i] === char
 const isNewline = isChar('\n')
 

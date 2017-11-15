@@ -7,7 +7,7 @@ you can almost be certain that there's a huge quantum of bullshit being dumped o
 Physicist Devashish Singh
 ```
 
-### npm scripts
+### Build Scripts
 
 ```sh
 # prod mode
@@ -37,14 +37,25 @@ yarn cloc
 
 * link `[link name](http url)`
 * file link `[link name](file-id)`
-* image `[link name](!file-id)`
+* image `![link name](http url)`
+* image file `![link name](file-id)`
 
 * bold `_text_`
 * italic `*text*`
 * mono `\`text\``
 * striketrough `~text~`
+* lower `text_1`
+* upper `text^1`
 
-* blockquote
-* code
-* list
+* blockquote `> quote`
+* code:
+\`\`\`
+// Code here
+\`\`\`
+* list `* list item`
+
+
+maybe later:
+* line break (2 spaces at the end of the line)
+* footnotes `^[ note text]`
 
