@@ -31,31 +31,43 @@ yarn cloc
 ```
 
 ### Syntax
+based on org-mode and markdown
 
 * header1 `# Header`
 * header2 `## Header`
 
-* link `[link name](http url)`
-* file link `[link name](file-id)`
-* image `![link name](http url)`
-* image file `![link name](file-id)`
 
-* bold `_text_`
-* italic `*text*`
-* mono `\`text\``
+`$ref = http://link | file-id`
+
+* link `[[$ref][link name]]`
+* image `[[image:$ref][alt text]]`
+
+* bold `*text*`
+* mono `` `text` ``
 * striketrough `~text~`
-* lower `text_1`
-* upper `text^1`
+* superscript `text^{1}`
+* subscript `text_{2}`
 
-* blockquote `> quote`
+* unordered list `* list item`
+* ordered list `- list item`
+
 * code:
-\`\`\`
+````
+```js
 // Code here
-\`\`\`
-* list `* list item`
+```
+````
+
+* blockquote:
+````
+```quote
+Quote here
+```
+````
 
 
 maybe later:
 * line break (2 spaces at the end of the line)
-* footnotes `^[ note text]`
-
+* tables
+* footnotes `^[note text]`
+* italic `_text_`

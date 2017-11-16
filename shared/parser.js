@@ -7,20 +7,10 @@ const isNewline = isChar('\n')
 const declareType = type => ({ skip: [ 0, 0 ], children: [], isBreak: () => false, isValid: () => true, ...type })
 
 const Grammar = {
-  Italic: declareType({
-    skip: [ 1, 1 ],
-    children: [ 'Bold' ],
-    escapeChar: '_',
-    isStart: (str, pos, context) => str[pos] === '_' && !context.includes('Italic'),
-    isBreak: isNewline,
-    isEnd: isChar('_'),
-  }),
-
   Bold: declareType({
     skip: [ 1, 1 ],
-    children: [ 'Italic' ],
     escapeChar: '*',
-    isStart: (str, pos, context) => str[pos] === '*' && !context.includes('Bold'),
+    isStart: isChar('*'),
     isBreak: isNewline,
     isEnd: isChar('*'),
   }),
@@ -59,7 +49,7 @@ const Grammar = {
   }),
 
   Paragraph: declareType({
-    children: [ 'Bold', 'Italic', 'Mono', 'Link' ],
+    children: [ 'Bold', 'Mono', 'Link' ],
     isStart: (str, pos) => pos === 0 || (str[pos] === '\n' && str[pos - 1] === '\n'),
     isEnd(str, pos) {
       if (pos === str.length) {

@@ -12,6 +12,7 @@
     "dev": "webpack --watch & NODE_PATH=. bin/node.js bin/dev-server",
     "gen-data": "NODE_PATH=. bin/node.js bin/gen-data",
     "test": "NODE_PATH=. bin/node.js bin/test",
+    "test-update": "UPDATE_SNAPSHOTS=true yarn test",
     "lint": "NODE_PATH=. eslint . --ext js,jsx",
     "cloc": "cloc --vcs=git --exclude-ext=json,md -v *"
   },

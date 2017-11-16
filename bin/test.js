@@ -4,6 +4,7 @@ import { walkSync } from 'server/utils'
 import { collectTests, runTests } from 'tools/test'
 
 const filter = process.argv.length > 3 ? process.argv[3] : ''
+const updateSnapshots = process.env.UPDATE_SNAPSHOTS === 'true'
 
 const basePath = path.join(__dirname, '..')
 const testFiles = walkSync(basePath)
@@ -28,7 +29,7 @@ async function executeTestPlans() {
     console.log(testPlan.file)
 
     testPlan.before && await Promise.resolve(testPlan.before())
-    await runTests(path.join(basePath, testPlan.file), testPlan.tests)
+    await runTests(path.join(basePath, testPlan.file), testPlan.tests, updateSnapshots)
     testPlan.after && await Promise.resolve(testPlan.after())
 
     console.log('')

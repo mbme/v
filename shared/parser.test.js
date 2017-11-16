@@ -11,7 +11,7 @@ block
 * test
 
 Paragraph and something else. sentence
-test *bold* _italic_ _*bold italic*_ \`code\`
+test *bold* \`code\`
 
 \`\`\`js
  code block
@@ -27,19 +27,9 @@ One more paragraph. [link](http://link.to/123?321)
 before(() => { global.__DEVELOPMENT__ = false }) // suppress warnings
 after(() => { global.__DEVELOPMENT__ = true })
 
-test('Italic', (assert) => {
-  assert.matchSnapshot(parse('_test_', 'Italic'))
-  assert.matchSnapshot(parse('_ test \\_ and so on *_test*_', 'Italic'))
-  assert.equal(parse(
-    `_te
-    st_`,
-    'Italic',
-  ), null)
-})
-
 test('Bold', (assert) => {
   assert.matchSnapshot(parse('*test*', 'Bold'))
-  assert.matchSnapshot(parse('* test \\* \\ _and*_ so on*', 'Bold'))
+  assert.matchSnapshot(parse('* test \\* and* so on', 'Bold'))
   assert.equal(parse(
     `*te
     st*`,
@@ -49,7 +39,7 @@ test('Bold', (assert) => {
 
 test('Mono', (assert) => {
   assert.matchSnapshot(parse('`test`', 'Mono'))
-  assert.matchSnapshot(parse('` test \\` \\ _and*_ so on*`', 'Mono'))
+  assert.matchSnapshot(parse('` test \\` and` so on', 'Mono'))
   assert.matchSnapshot(parse(
     `\`te
     st\``,

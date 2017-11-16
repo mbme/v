@@ -29,7 +29,7 @@ export const test = (name, fn, only = false) => _tests.push({ name, fn, only })
 export const before = (cb) => { _beforeCb = cb }
 export const after = (cb) => { _afterCb = cb }
 
-async function runTest({ name, fn }, oldSnapshots) {
+async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
   let okAsserts = 0
   let snapshotPos = 0
   const snapshots = []
@@ -58,7 +58,12 @@ async function runTest({ name, fn }, oldSnapshots) {
 
       matchSnapshot(actual) {
         if (snapshotPos < oldSnapshots.length) {
-          assert.deepStrictEqual(actual, oldSnapshots[snapshotPos])
+          try {
+            assert.deepStrictEqual(actual, oldSnapshots[snapshotPos])
+          } catch (e) {
+            if (!updateSnapshots) throw e
+            console.log(`  ${name}: updating snapshot`)
+          }
         }
 
         snapshots.push(actual)
@@ -79,12 +84,12 @@ async function runTest({ name, fn }, oldSnapshots) {
     console.log(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '')
     return snapshots
   } catch (e) {
-    console.error(`  ${name} failed\n`, e)
+    console.error(`  ${name} failed\n`, e.message)
     return oldSnapshots
   }
 }
 
-export async function runTests(file, tests) {
+export async function runTests(file, tests, updateSnapshots) {
   if (uniq(tests, ({ name }) => name).length !== tests.length) {
     throw new Error(`${file} contains tests with similar names`)
   }
@@ -95,7 +100,7 @@ export async function runTests(file, tests) {
 
   const newSnapshots = {}
   for (const t of tests) {
-    const snapshots = await runTest(t, oldSnapshots[t.name] || [])
+    const snapshots = await runTest(t, oldSnapshots[t.name] || [], updateSnapshots)
     if (snapshots.length) {
       newSnapshots[t.name] = snapshots
     }

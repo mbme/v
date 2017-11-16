@@ -1,24 +1,4 @@
 {
-  "Italic": [
-    {
-      "type": "Italic",
-      "items": [
-        "test"
-      ]
-    },
-    {
-      "type": "Italic",
-      "items": [
-        " test _ and so on ",
-        {
-          "type": "Bold",
-          "items": [
-            "_test"
-          ]
-        }
-      ]
-    }
-  ],
   "Bold": [
     {
       "type": "Bold",
@@ -29,14 +9,7 @@
     {
       "type": "Bold",
       "items": [
-        " test * \\ ",
-        {
-          "type": "Italic",
-          "items": [
-            "and*"
-          ]
-        },
-        " so on"
+        " test * and"
       ]
     }
   ],
@@ -50,7 +23,7 @@
     {
       "type": "Mono",
       "items": [
-        " test ` \\ _and*_ so on*"
+        " test ` and"
       ]
     },
     null
@@ -86,14 +59,7 @@
     {
       "type": "Paragraph",
       "items": [
-        "\n    AHAHAH *test oh no!\n    go go ",
-        {
-          "type": "Italic",
-          "items": [
-            "power cows"
-          ]
-        },
-        " ",
+        "\n    AHAHAH *test oh no!\n    go go _power cows_ ",
         {
           "type": "Mono",
           "items": [
@@ -137,25 +103,6 @@
               "type": "Bold",
               "items": [
                 "bold"
-              ]
-            },
-            " ",
-            {
-              "type": "Italic",
-              "items": [
-                "italic"
-              ]
-            },
-            " ",
-            {
-              "type": "Italic",
-              "items": [
-                {
-                  "type": "Bold",
-                  "items": [
-                    "bold italic"
-                  ]
-                }
               ]
             },
             " ",
