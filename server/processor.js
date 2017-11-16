@@ -1,10 +1,7 @@
 import { validateAndThrow } from 'shared/validators'
-import { selectFileLinks, parse } from 'shared/parser'
-import { uniq } from 'shared/utils'
+import { extractFileIds, parse } from 'shared/parser'
 import { sha256 } from 'server/utils'
 import getDB from './db'
-
-const extractFileIds = data => uniq(selectFileLinks(parse(data)))
 
 function getNewFiles(db, ids, files) {
   const newFiles = {}
@@ -57,7 +54,7 @@ const actions = {
       [ files, 'File[]' ],
     )
 
-    const fileIds = extractFileIds(data)
+    const fileIds = extractFileIds(parse(data))
     const filesToAdd = getNewFiles(db, fileIds, files)
 
     return db.inTransaction(() => {
@@ -79,7 +76,7 @@ const actions = {
       [ files, 'File[]' ],
     )
 
-    const fileIds = extractFileIds(data)
+    const fileIds = extractFileIds(parse(data))
     const filesToAdd = getNewFiles(db, fileIds, files)
 
     return db.inTransaction(() => {

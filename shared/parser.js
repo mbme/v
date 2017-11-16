@@ -1,5 +1,5 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
-import { isString } from 'shared/utils'
+import { isString, uniq } from 'shared/utils'
 
 const isChar = char => (str, i) => str[i] === char
 const isNewline = isChar('\n')
@@ -219,5 +219,16 @@ export const selectLinks = tree => select(tree, 'Link').map(({ items: [ link, na
 
 const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
 
-export const selectFileLinks = tree => selectLinks(tree).map(({ link }) => link).filter(isSha256)
+const linkPrefixes = [ 'image:' ]
+function removeLinkPrefixes(link) {
+  for (const prefix of linkPrefixes) {
+    if (link.startsWith(prefix)) {
+      return link.substring(prefix.length)
+    }
+  }
+
+  return link
+}
+
+export const extractFileIds = tree => uniq(selectLinks(tree).map(({ link }) => removeLinkPrefixes(link)).filter(isSha256))
 export const createLink = (name, link) => `[[${link}][${name}]]`
