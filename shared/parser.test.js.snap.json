@@ -41,15 +41,15 @@
       "type": "Link",
       "items": [
         {
-          "type": "LinkName",
+          "type": "LinkPart",
           "items": [
-            "awesome link"
+            "http://amazing.com"
           ]
         },
         {
-          "type": "LinkAddress",
+          "type": "LinkPart",
           "items": [
-            "http://amazing.com"
+            "awesome link"
           ]
         }
       ]
@@ -147,15 +147,15 @@
               "type": "Link",
               "items": [
                 {
-                  "type": "LinkName",
+                  "type": "LinkPart",
                   "items": [
-                    "link"
+                    "http://link.to/123?321"
                   ]
                 },
                 {
-                  "type": "LinkAddress",
+                  "type": "LinkPart",
                   "items": [
-                    "http://link.to/123?321"
+                    "link"
                   ]
                 }
               ]
@@ -172,15 +172,15 @@
         "type": "Link",
         "items": [
           {
-            "type": "LinkName",
+            "type": "LinkPart",
             "items": [
-              "link"
+              "http://link.to/123?321"
             ]
           },
           {
-            "type": "LinkAddress",
+            "type": "LinkPart",
             "items": [
-              "http://link.to/123?321"
+              "link"
             ]
           }
         ]

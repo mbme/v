@@ -20,7 +20,7 @@ test *bold* \`code\`
 > some blockquote
 > quote
 
-One more paragraph. [link](http://link.to/123?321)
+One more paragraph. [[http://link.to/123?321][link]]
 
 `
 
@@ -58,7 +58,7 @@ test('Header', (assert) => {
 })
 
 test('Link', (assert) => {
-  assert.matchSnapshot(parse('[awesome link](http://amazing.com)', 'Link'))
+  assert.matchSnapshot(parse('[[http://amazing.com][awesome link]]', 'Link'))
 })
 
 test('Paragraph', (assert) => {

@@ -23,7 +23,7 @@ const Grammar = {
     isEnd: isChar('`'),
   }),
 
-  LinkName: declareType({
+  LinkPart: declareType({
     skip: [ 1, 1 ],
     escapeChar: ']',
     isStart: isChar('['),
@@ -31,21 +31,12 @@ const Grammar = {
     isEnd: isChar(']'),
   }),
 
-  LinkAddress: declareType({
-    skip: [ 1, 0 ],
-    escapeChar: ')',
-    isStart: isChar('('),
-    isBreak: isNewline,
-    isEnd: isChar(')'),
-  }),
-
   Link: declareType({
-    skip: [ 0, 1 ],
-    escapeChar: ')',
-    children: [ 'LinkName', 'LinkAddress' ],
+    skip: [ 1, 1 ],
+    children: [ 'LinkPart' ],
     isStart: isChar('['),
-    isEnd: isChar(')'),
-    isValid: ({ items }) => items.length === 2 && items[0].type === 'LinkName' && items[1].type === 'LinkAddress',
+    isEnd: isChar(']'),
+    isValid: ({ items }) => items.length === 2 && items[0].type === 'LinkPart' && items[1].type === 'LinkPart',
   }),
 
   Paragraph: declareType({
@@ -224,9 +215,9 @@ export function select(tree, type) {
   return result
 }
 
-export const selectLinks = tree => select(tree, 'Link').map(({ items: [ name, link ] }) => ({ name: name.items[0], link: link.items[0] }))
+export const selectLinks = tree => select(tree, 'Link').map(({ items: [ link, name ] }) => ({ name: name.items[0], link: link.items[0] }))
 
 const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
 
 export const selectFileLinks = tree => selectLinks(tree).map(({ link }) => link).filter(isSha256)
-export const createLink = (name, link) => `[${name}](${link})`
+export const createLink = (name, link) => `[[${link}][${name}]]`
