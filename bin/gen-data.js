@@ -1,29 +1,61 @@
 import path from 'path'
 
 import createApiClient from 'shared/api'
-import { createArray } from 'shared/utils'
+import { createArray, randomInt, shuffle } from 'shared/utils'
+import { createImageLink } from 'shared/parser'
 import { createTextGenerator } from 'tools/random'
-import { readText } from 'server/utils'
+import { readText, listFiles, readFile, sha256 } from 'server/utils'
 import nodeApiClient from 'server/apiClient'
 
+async function listImage(basePath) {
+  const files = await listFiles(basePath)
+  const images = files.filter(name => name.match(/\.(jpg|jpeg)$/i))
+
+  return Promise.all(images.map(async (name) => {
+    const data = await readFile(path.join(basePath, name))
+    const link = createImageLink(name, sha256(data))
+
+    return { link, file: { name, data } }
+  }))
+}
+
+async function genText(generator, images) {
+  const name = generator.sentence(1, 8)
+
+  const data = createArray(
+    randomInt(1, 7), // paragraphs
+    () => {
+      const sentences = createArray(
+        randomInt(1, 7), // sentences
+        () => generator.sentence(),
+      )
+
+      if (Math.random() < 0.34) {
+        const image = images[randomInt(0, images.length, false)]
+        sentences.push(` ${image.link} `)
+      }
+
+      return shuffle(sentences).join(' ')
+    }
+  ).join('\n\n')
+
+  return { name: name.substring(0, name.length - 1), data }
+}
+
 export default async function genData(port, recordsCount = 23) {
-  const text = await readText(path.join(__dirname, '../tools/text.txt'))
-  const generator = createTextGenerator(text)
   const api = createApiClient(`http://localhost:${port}`, nodeApiClient)
 
-  const promises = createArray(recordsCount, () => {
-    const name = generator.generateSentence(1, 8)
-    const data = generator.generateText()
-    return api.createRecord('note', name.substring(0, name.length - 1), data)
-  })
+  const resourcesPath = path.join(__dirname, '../resources')
+  const images = await listImage(resourcesPath)
+  const text = await readText(path.join(resourcesPath, 'text.txt'))
+  const generator = createTextGenerator(text)
 
-  await Promise.all(promises).then(
-    () => console.log('Generated %s fake records', recordsCount),
-    (err) => {
-      console.log('Failed to generate fake records:')
-      console.log(err)
-    }
-  )
+  await Promise.all(createArray(recordsCount, async () => {
+    const { name, data } = await genText(generator, images)
+    return api.createRecord('note', name, data, images.map(image => image.file))
+  }))
+
+  console.log('Generated %s fake records', recordsCount)
 }
 
 if (require.main === module) { // if called from command line

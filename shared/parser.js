@@ -232,3 +232,4 @@ function removeLinkPrefixes(link) {
 
 export const extractFileIds = tree => uniq(selectLinks(tree).map(({ link }) => removeLinkPrefixes(link)).filter(isSha256))
 export const createLink = (name, link) => `[[${link}][${name}]]`
+export const createImageLink = (name, link) => createLink(name, `image:${link}`)

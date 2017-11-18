@@ -100,3 +100,21 @@ export const groupBy = (arr, getKey) => arr.reduce((acc, value) => {
 
   return acc
 }, {})
+
+// inclusive ? [min, max] : [min, max)
+export const randomInt = (min, max, inclusive = true) => Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0)) + min) // eslint-disable-line no-mixed-operators
+
+export function shuffle(array) {
+  const result = array.slice(0)
+
+  for (let i = 0; i < array.length; i += 1) {
+    const index = randomInt(i, array.length, false)
+
+    // swap items
+    const item = result[index]
+    result[index] = result[i]
+    result[i] = item
+  }
+
+  return result
+}

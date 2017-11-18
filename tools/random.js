@@ -1,5 +1,5 @@
 /* eslint-disable no-continue */
-import { capitalize, createArray } from 'shared/utils'
+import { capitalize } from 'shared/utils'
 
 // TODO handle few separators in a row
 
@@ -21,13 +21,8 @@ function hasSkipWordAt(text, pos) {
   return false
 }
 
-function isSeparator(char) {
-  return char === '.' || char === '?' || char === '!'
-}
-
-function isPunctuation(char) {
-  return char === ',' || char === ';' || char === ':'
-}
+const isSeparator = char => char === '.' || char === '?' || char === '!'
+const isPunctuation = char => char === ',' || char === ';' || char === ':'
 
 export function getSentences(text) {
   const sentences = []
@@ -149,10 +144,6 @@ function calculateTextStats(text) {
   return stats
 }
 
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min) // eslint-disable-line no-mixed-operators
-}
-
 /**
  * wordsDistribution: [[word, probability]]
  */
@@ -206,26 +197,11 @@ function genSentence(stats) {
   return sentence + pickWord(stats.separators)
 }
 
-function genParagraph(stats, sentences) {
-  return createArray(sentences, () => genSentence(stats)).join(' ')
-}
-
-function genText(stats, paragraphs) {
-  return createArray(
-    paragraphs,
-    () => genParagraph(stats, randomInt(1, 10)),
-  ).join('\n\n')
-}
-
 export function createTextGenerator(corpus) {
   const stats = calculateTextStats(corpus)
 
   return {
-    generateText(minParagpahs = 1, maxParagraphs = 7) {
-      return genText(stats, randomInt(minParagpahs, maxParagraphs))
-    },
-
-    generateSentence(minWords = 1, maxWords = 20, maxTries = 100) {
+    sentence(minWords = 1, maxWords = 20, maxTries = 100) {
       let sentence = genSentence(stats)
 
       for (let tries = 0; tries < maxTries; tries += 1) {
