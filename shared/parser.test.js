@@ -72,6 +72,7 @@ test('Paragraph', (assert) => {
 })
 
 test('Document', (assert) => {
+  assert.equal(parse('', 'Document') !== null, true)
   assert.matchSnapshot(parse(text, 'Document'))
 })
 

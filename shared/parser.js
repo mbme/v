@@ -215,13 +215,16 @@ export function select(tree, type) {
   return result
 }
 
-export const selectLinks = tree => select(tree, 'Link').map(({ items: [ link, name ] }) => ({ name: name.items[0], link: link.items[0] }))
+export const selectLinks = tree => select(tree, 'Link').map(({ items: [ link, name ] }) => ({ link: link.items[0], name: name.items[0] }))
 
 const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
 
-const linkPrefixes = [ 'image:' ]
-function removeLinkPrefixes(link) {
-  for (const prefix of linkPrefixes) {
+const prefixes = {
+  image: 'image:',
+}
+const hasKnownPrefix = link => Object.values(prefixes).reduce((acc, prefix) => acc || link.startsWith(prefix), false)
+export function removeLinkPrefixes(link) {
+  for (const prefix of Object.values(prefixes)) {
     if (link.startsWith(prefix)) {
       return link.substring(prefix.length)
     }
@@ -233,3 +236,14 @@ function removeLinkPrefixes(link) {
 export const extractFileIds = tree => uniq(selectLinks(tree).map(({ link }) => removeLinkPrefixes(link)).filter(isSha256))
 export const createLink = (name, link) => `[[${link}][${name}]]`
 export const createImageLink = (name, link) => createLink(name, `image:${link}`)
+
+const isType = type => item => item.type === type
+
+export const types = {
+  isParagraph: isType('Paragraph'),
+  isHeader: isType('Header'),
+  isLink: item => item.type === 'Link' && !hasKnownPrefix(item.items[0].items[0]),
+  isImage: item => item.type === 'Link' && item.items[0].items[0].startsWith(prefixes.image),
+  isMono: isType('Mono'),
+  isBold: isType('Bold'),
+}

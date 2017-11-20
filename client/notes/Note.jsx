@@ -1,14 +1,59 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { parse, types, removeLinkPrefixes } from 'shared/parser'
 import s from 'client/styles'
 import { Link, Toolbar, IconButton } from 'client/components'
 import DeleteNoteButton from './DeleteNoteButton'
 
+function renderParagraph(items) {
+  return items.map((item) => {
+    if (types.isImage(item)) {
+      const id = removeLinkPrefixes(item.items[0].items[0])
+      const url = `/api?fileId=${id}`
+      return (
+        <img alt={item.items[1].items[0]} src={url} />
+      )
+    }
+
+    if (types.isLink(item)) {
+      return (
+        <a href={item.items[0].items[0]}>{item.items[1].items[0]}</a>
+      )
+    }
+
+    if (types.isMono(item)) {
+      return (
+        <code>{item.items[0]}</code>
+      )
+    }
+
+    if (types.isBold(item)) {
+      return (
+        <strong>{item.items[0]}</strong>
+      )
+    }
+
+    return item
+  })
+}
+
 function renderMarkup(data) {
-  return data.split('\n\n').map(
-    (paragraph, i) => <p key={i} style={{ textIndent: '1rem' }}>{paragraph}</p> // eslint-disable-line react/no-array-index-key
-  )
+  return parse(data).items.map((item) => {
+    if (types.isHeader(item)) {
+      return (
+        <h1>{item.items}</h1>
+      )
+    }
+
+    if (types.isParagraph(item)) {
+      return (
+        <p>{renderParagraph(item.items)}</p>
+      )
+    }
+
+    return item
+  })
 }
 
 function NoteView({ note }) {
