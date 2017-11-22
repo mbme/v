@@ -5,7 +5,7 @@ import { createArray, randomInt, shuffle } from 'shared/utils'
 import { createImageLink } from 'shared/parser'
 import { createTextGenerator } from 'tools/random'
 import { readText, listFiles, readFile, sha256 } from 'server/utils'
-import nodeApiClient from 'server/apiClient'
+import network from 'server/network'
 
 async function listImage(basePath) {
   const files = await listFiles(basePath)
@@ -43,7 +43,7 @@ async function genText(generator, images) {
 }
 
 export default async function genData(port, recordsCount = 23) {
-  const api = createApiClient(`http://localhost:${port}`, nodeApiClient)
+  const api = createApiClient(`http://localhost:${port}`, network)
 
   const resourcesPath = path.join(__dirname, '../resources')
   const images = await listImage(resourcesPath)

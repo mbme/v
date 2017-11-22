@@ -1,84 +1,87 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { parse, types, removeLinkPrefixes } from 'shared/parser'
+import { parse } from 'shared/parser'
 import s from 'client/styles'
 import { Link, Toolbar, IconButton } from 'client/components'
 import DeleteNoteButton from './DeleteNoteButton'
 
-function renderParagraph(items) {
-  return items.map((item) => {
-    if (types.isImage(item)) {
-      const id = removeLinkPrefixes(item.items[0].items[0])
-      const url = `/api?fileId=${id}`
+function renderItem(item, apiClient) {
+  switch (item.type) {
+    case 'Document':
+      return item.items.map(childItem => renderItem(childItem, apiClient))
+
+    case 'Header':
       return (
-        <img alt={item.items[1].items[0]} src={url} />
+        <h1>{item.text}</h1>
+      )
+
+    case 'Paragraph':
+      return (
+        <p>{item.items.map(childItem => renderItem(childItem, apiClient))}</p>
+      )
+
+    case 'Mono':
+      return (
+        <code>{item.text}</code>
+      )
+
+    case 'Bold':
+      return (
+        <strong>{item.text}</strong>
+      )
+
+    case 'Link': {
+      const url = item.link.isInternal ? apiClient.getFileUrl(item.link.address) : item.link.address
+
+      if (item.link.type === 'image') {
+        return (
+          <img alt={item.link.name} src={url} />
+        )
+      }
+
+      return (
+        <a href={url}>{item.link.name}</a>
       )
     }
 
-    if (types.isLink(item)) {
-      return (
-        <a href={item.items[0].items[0]}>{item.items[1].items[0]}</a>
-      )
-    }
-
-    if (types.isMono(item)) {
-      return (
-        <code>{item.items[0]}</code>
-      )
-    }
-
-    if (types.isBold(item)) {
-      return (
-        <strong>{item.items[0]}</strong>
-      )
-    }
-
-    return item
-  })
+    default:
+      return item
+  }
 }
 
-function renderMarkup(data) {
-  return parse(data).items.map((item) => {
-    if (types.isHeader(item)) {
-      return (
-        <h1>{item.items}</h1>
-      )
-    }
+class NoteView extends PureComponent {
+  static propTypes = {
+    note: PropTypes.object.isRequired,
+  }
 
-    if (types.isParagraph(item)) {
-      return (
-        <p>{renderParagraph(item.items)}</p>
-      )
-    }
+  static contextTypes = {
+    apiClient: PropTypes.object.isRequired,
+  }
 
-    return item
-  })
-}
+  render() {
+    const { note } = this.props
 
-function NoteView({ note }) {
-  const deleteBtn = (
-    <DeleteNoteButton key="delete" id={note.id} />
-  )
+    const deleteBtn = (
+      <DeleteNoteButton key="delete" id={note.id} />
+    )
 
-  const editBtn = (
-    <Link to={{ name: 'note-editor', params: { id: note.id } }}>
-      <IconButton type="edit-2" />
-    </Link>
-  )
+    const editBtn = (
+      <Link to={{ name: 'note-editor', params: { id: note.id } }}>
+        <IconButton type="edit-2" />
+      </Link>
+    )
 
-  return (
-    <div className={s.ViewContainer}>
-      <Toolbar left={deleteBtn} right={editBtn} />
-      <div className={s.Paper}>
-        <div className={s.Heading}>{note.name}</div>
-        {renderMarkup(note.data)}
+    return (
+      <div className={s.ViewContainer}>
+        <Toolbar left={deleteBtn} right={editBtn} />
+        <div className={s.Paper}>
+          <div className={s.Heading}>{note.name}</div>
+          {renderItem(parse(note.data), this.context.apiClient)}
+        </div>
       </div>
-    </div>
-  )
-}
-NoteView.propTypes = {
-  note: PropTypes.object.isRequired,
+    )
+  }
 }
 
 const mapStateToProps = ({ notes }, { id }) => ({

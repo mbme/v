@@ -1,11 +1,15 @@
 export const CONTENT_TYPE = 'multipart/v-data'
 
-export default function createApiClient(baseUrl, apiClient) {
-  const apiPOST = apiClient.POST.bind(null, `${baseUrl}/api`)
+export default function createApiClient(baseUrl, network) {
+  const apiPOST = network.POST.bind(null, `${baseUrl}/api`)
 
   return {
+    getFileUrl(fileId) {
+      return `${baseUrl}/api?fileId=${fileId}`
+    },
+
     readFile(fileId) {
-      return apiClient.GET(`${baseUrl}/api?fileId=${fileId}`)
+      return network.GET(this.getFileUrl(fileId))
     },
 
     listRecords(type) {

@@ -42,6 +42,11 @@ class App extends PureComponent {
     isLoading: PropTypes.bool.isRequired,
     routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
     view: PropTypes.node,
+    apiClient: PropTypes.object.isRequired,
+  }
+
+  static childContextTypes = {
+    apiClient: PropTypes.object.isRequired,
   }
 
   scrollPos = {}
@@ -54,6 +59,10 @@ class App extends PureComponent {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual'
     }
+  }
+
+  getChildContext() {
+    return { apiClient: this.props.apiClient }
   }
 
   componentWillUpdate(nextProps) {
