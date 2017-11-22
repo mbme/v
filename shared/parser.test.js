@@ -1,5 +1,5 @@
 import { test, before, after } from 'tools/test'
-import { parse, select, selectLinks } from './parser'
+import { parse, select } from './parser'
 
 const text = `
 # Header
@@ -78,10 +78,5 @@ test('Document', (assert) => {
 
 test('select', (assert) => {
   const links = select(parse(text), 'Link')
-  assert.matchSnapshot(links)
-})
-
-test('selectLinks', (assert) => {
-  const links = selectLinks(parse(text))
   assert.matchSnapshot(links)
 })

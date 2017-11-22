@@ -2,57 +2,39 @@
   "Bold": [
     {
       "type": "Bold",
-      "items": [
-        "test"
-      ]
+      "text": "test"
     },
     {
       "type": "Bold",
-      "items": [
-        " test * and"
-      ]
+      "text": " test * and"
     }
   ],
   "Mono": [
     {
       "type": "Mono",
-      "items": [
-        "test"
-      ]
+      "text": "test"
     },
     {
       "type": "Mono",
-      "items": [
-        " test ` and"
-      ]
+      "text": " test ` and"
     },
     null
   ],
   "Header": [
     {
       "type": "Header",
-      "items": [
-        " AHAHAH *test oh no* !"
-      ]
+      "text": " AHAHAH *test oh no* !"
     }
   ],
   "Link": [
     {
       "type": "Link",
-      "items": [
-        {
-          "type": "LinkPart",
-          "items": [
-            "http://amazing.com"
-          ]
-        },
-        {
-          "type": "LinkPart",
-          "items": [
-            "awesome link"
-          ]
-        }
-      ]
+      "link": {
+        "type": "common",
+        "name": "awesome link",
+        "address": "http://amazing.com",
+        "isInternal": false
+      }
     }
   ],
   "Paragraph": [
@@ -62,9 +44,7 @@
         "\n    AHAHAH *test oh no!\n    go go _power cows_ ",
         {
           "type": "Mono",
-          "items": [
-            "code"
-          ]
+          "text": "code"
         },
         "\n    "
       ]
@@ -101,16 +81,12 @@
             "\nParagraph and something else. sentence\ntest ",
             {
               "type": "Bold",
-              "items": [
-                "bold"
-              ]
+              "text": "bold"
             },
             " ",
             {
               "type": "Mono",
-              "items": [
-                "code"
-              ]
+              "text": "code"
             }
           ]
         },
@@ -120,13 +96,11 @@
           "items": [
             "\n",
             {
-              "type": "Mono",
-              "items": []
+              "type": "Mono"
             },
             "`js\n code block\n",
             {
-              "type": "Mono",
-              "items": []
+              "type": "Mono"
             },
             "`"
           ]
@@ -145,20 +119,12 @@
             "\nOne more paragraph. ",
             {
               "type": "Link",
-              "items": [
-                {
-                  "type": "LinkPart",
-                  "items": [
-                    "http://link.to/123?321"
-                  ]
-                },
-                {
-                  "type": "LinkPart",
-                  "items": [
-                    "link"
-                  ]
-                }
-              ]
+              "link": {
+                "type": "common",
+                "name": "link",
+                "address": "http://link.to/123?321",
+                "isInternal": false
+              }
             }
           ]
         },
@@ -170,28 +136,12 @@
     [
       {
         "type": "Link",
-        "items": [
-          {
-            "type": "LinkPart",
-            "items": [
-              "http://link.to/123?321"
-            ]
-          },
-          {
-            "type": "LinkPart",
-            "items": [
-              "link"
-            ]
-          }
-        ]
-      }
-    ]
-  ],
-  "selectLinks": [
-    [
-      {
-        "name": "link",
-        "link": "http://link.to/123?321"
+        "link": {
+          "type": "common",
+          "name": "link",
+          "address": "http://link.to/123?321",
+          "isInternal": false
+        }
       }
     ]
   ]

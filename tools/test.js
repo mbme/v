@@ -59,7 +59,10 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
       matchSnapshot(actual) {
         if (snapshotPos < oldSnapshots.length) {
           try {
-            assert.deepStrictEqual(actual, oldSnapshots[snapshotPos])
+            assert.equal(
+              JSON.stringify(actual, null, 2),
+              JSON.stringify(oldSnapshots[snapshotPos], null, 2),
+            )
           } catch (e) {
             if (!updateSnapshots) throw e
             console.log(`  ${name}: updating snapshot`)

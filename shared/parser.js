@@ -1,10 +1,23 @@
 /* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
-import { isString, uniq } from 'shared/utils'
+import { isString, uniq, isSha256 } from 'shared/utils'
 
 const isChar = char => (str, i) => str[i] === char
 const isNewline = isChar('\n')
+const postprocessTextItem = tree => ({ type: tree.type, text: tree.items[0] })
 
-const declareType = type => ({ skip: [ 0, 0 ], children: [], isBreak: () => false, isValid: () => true, ...type })
+const declareType = type => ({
+  skip: [ 0, 0 ],
+  children: [],
+  isBreak: () => false,
+  isValid: () => true,
+  postprocess: tree => tree,
+  ...type,
+})
+
+const LinkTypes = {
+  image: 'image:',
+  common: '',
+}
 
 const Grammar = {
   Bold: declareType({
@@ -13,6 +26,7 @@ const Grammar = {
     isStart: isChar('*'),
     isBreak: isNewline,
     isEnd: isChar('*'),
+    postprocess: postprocessTextItem,
   }),
 
   Mono: declareType({
@@ -21,6 +35,7 @@ const Grammar = {
     isStart: isChar('`'),
     isBreak: isNewline,
     isEnd: isChar('`'),
+    postprocess: postprocessTextItem,
   }),
 
   LinkPart: declareType({
@@ -29,6 +44,7 @@ const Grammar = {
     isStart: isChar('['),
     isBreak: isNewline,
     isEnd: isChar(']'),
+    postprocess: postprocessTextItem,
   }),
 
   Link: declareType({
@@ -37,6 +53,26 @@ const Grammar = {
     isStart: isChar('['),
     isEnd: isChar(']'),
     isValid: ({ items }) => items.length === 2 && items[0].type === 'LinkPart' && items[1].type === 'LinkPart',
+    postprocess(tree) {
+      const [ addressItem, nameItem ] = tree.items
+
+      for (const [ linkType, prefix ] of Object.entries(LinkTypes)) {
+        if (addressItem.text.startsWith(prefix)) {
+          const address = addressItem.text.substring(prefix.length)
+          return {
+            type: tree.type,
+            link: {
+              type: linkType,
+              name: nameItem.text,
+              address,
+              isInternal: isSha256(address),
+            },
+          }
+        }
+      }
+
+      throw new Error('unreachable')
+    },
   }),
 
   Paragraph: declareType({
@@ -81,6 +117,7 @@ const Grammar = {
       return true
     },
     isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
+    postprocess: postprocessTextItem,
   }),
 
   Document: declareType({
@@ -175,7 +212,7 @@ export function parseFrom(str, pos, type, context) {
 
   const length = i - pos
 
-  return [ length, tree ]
+  return [ length, rule.postprocess(tree) ]
 }
 
 function assertType(type) {
@@ -210,40 +247,12 @@ export function select(tree, type) {
     result.push(tree)
   }
 
-  tree.items.forEach(child => result.push(...select(child, type)))
+  (tree.items || []).forEach(child => result.push(...select(child, type)))
 
   return result
 }
 
-export const selectLinks = tree => select(tree, 'Link').map(({ items: [ link, name ] }) => ({ link: link.items[0], name: name.items[0] }))
+export const extractFileIds = tree => uniq(select(tree, 'Link').map(({ link }) => link.isInternal ? link.address : null).filter(Boolean))
 
-const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
-
-const prefixes = {
-  image: 'image:',
-}
-const hasKnownPrefix = link => Object.values(prefixes).reduce((acc, prefix) => acc || link.startsWith(prefix), false)
-export function removeLinkPrefixes(link) {
-  for (const prefix of Object.values(prefixes)) {
-    if (link.startsWith(prefix)) {
-      return link.substring(prefix.length)
-    }
-  }
-
-  return link
-}
-
-export const extractFileIds = tree => uniq(selectLinks(tree).map(({ link }) => removeLinkPrefixes(link)).filter(isSha256))
 export const createLink = (name, link) => `[[${link}][${name}]]`
 export const createImageLink = (name, link) => createLink(name, `image:${link}`)
-
-const isType = type => item => item.type === type
-
-export const types = {
-  isParagraph: isType('Paragraph'),
-  isHeader: isType('Header'),
-  isLink: item => item.type === 'Link' && !hasKnownPrefix(item.items[0].items[0]),
-  isImage: item => item.type === 'Link' && item.items[0].items[0].startsWith(prefixes.image),
-  isMono: isType('Mono'),
-  isBold: isType('Bold'),
-}

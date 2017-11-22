@@ -118,3 +118,5 @@ export function shuffle(array) {
 
   return result
 }
+
+export const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
