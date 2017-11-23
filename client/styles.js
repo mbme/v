@@ -38,7 +38,8 @@ const Paper = {
 
 const Heading = {
   fontWeight: 'bold',
-  fontSize: 'var(--font-size-large)',
+  fontSize: 'var(--font-size-xlarge)',
+  marginBottom: 'var(--spacing-medium)',
 }
 
 const ViewContainer = {

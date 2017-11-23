@@ -60,25 +60,25 @@
             "\n# Header"
           ]
         },
-        "\n",
+        "\n\n",
         {
           "type": "Paragraph",
           "items": [
-            "\nblock\n# so not a header"
+            "block\n# so not a header"
           ]
         },
-        "\n",
+        "\n\n",
         {
           "type": "Paragraph",
           "items": [
-            "\n* test\n* test"
+            "* test\n* test"
           ]
         },
-        "\n",
+        "\n\n",
         {
           "type": "Paragraph",
           "items": [
-            "\nParagraph and something else. sentence\ntest ",
+            "Paragraph and something else. sentence\ntest ",
             {
               "type": "Bold",
               "text": "bold"
@@ -90,11 +90,10 @@
             }
           ]
         },
-        "\n",
+        "\n\n",
         {
           "type": "Paragraph",
           "items": [
-            "\n",
             {
               "type": "Mono"
             },
@@ -105,18 +104,18 @@
             "`"
           ]
         },
-        "\n",
+        "\n\n",
         {
           "type": "Paragraph",
           "items": [
-            "\n> some blockquote\n> quote"
+            "> some blockquote\n> quote"
           ]
         },
-        "\n",
+        "\n\n",
         {
           "type": "Paragraph",
           "items": [
-            "\nOne more paragraph. ",
+            "One more paragraph. ",
             {
               "type": "Link",
               "link": {

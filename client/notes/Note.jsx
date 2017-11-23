@@ -6,19 +6,40 @@ import s from 'client/styles'
 import { Link, Toolbar, IconButton } from 'client/components'
 import DeleteNoteButton from './DeleteNoteButton'
 
+const Title = s.cx({
+  textAlign: 'center',
+  letterSpacing: '1.4px',
+}, s.Heading)
+
+const Document = s.cx({
+  padding: 'var(--spacing-medium)',
+})
+
+const Paragraph = s.cx({
+  marginBottom: 'var(--spacing-medium)',
+  textIndent: 'var(--spacing-medium)',
+})
+
+const Image = s.cx({
+  marginBottom: 'var(--spacing-medium)',
+  padding: 'var(--spacing-medium)',
+})
+
 function renderItem(item, apiClient) {
   switch (item.type) {
-    case 'Document':
-      return item.items.map(childItem => renderItem(childItem, apiClient))
+    case 'Document': {
+      const children = item.items.map(childItem => renderItem(childItem, apiClient))
+      return React.createElement('div', { className: Document }, ...children)
+    }
+
+    case 'Paragraph': {
+      const children = item.items.map(childItem => renderItem(childItem, apiClient))
+      return React.createElement('p', { className: Paragraph }, ...children)
+    }
 
     case 'Header':
       return (
         <h1>{item.text}</h1>
-      )
-
-    case 'Paragraph':
-      return (
-        <p>{item.items.map(childItem => renderItem(childItem, apiClient))}</p>
       )
 
     case 'Mono':
@@ -36,7 +57,7 @@ function renderItem(item, apiClient) {
 
       if (item.link.type === 'image') {
         return (
-          <img alt={item.link.name} src={url} />
+          <img className={Image} alt={item.link.name} src={url} />
         )
       }
 
@@ -76,7 +97,7 @@ class NoteView extends PureComponent {
       <div className={s.ViewContainer}>
         <Toolbar left={deleteBtn} right={editBtn} />
         <div className={s.Paper}>
-          <div className={s.Heading}>{note.name}</div>
+          <div className={Title}>{note.name}</div>
           {renderItem(parse(note.data), this.context.apiClient)}
         </div>
       </div>

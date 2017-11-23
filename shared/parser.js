@@ -77,18 +77,14 @@ const Grammar = {
 
   Paragraph: declareType({
     children: [ 'Bold', 'Mono', 'Link' ],
-    isStart: (str, pos) => pos === 0 || (str[pos] === '\n' && str[pos - 1] === '\n'),
+    isStart: (str, pos) => pos === 0 || (str[pos] !== '\n' && str[pos - 1] === '\n'),
     isEnd(str, pos) {
       if (pos === str.length) {
         return true
       }
 
-      if (str[pos] !== '\n') {
-        return false
-      }
-
-
-      if (pos + 1 === str.length || str[pos + 1] === '\n') {
+      const ending = str.slice(pos, pos + 2)
+      if (ending === '\n' || ending === '\n\n') {
         return true
       }
 
@@ -99,7 +95,7 @@ const Grammar = {
   Header: declareType({
     skip: [ 1, 0 ],
     isStart: (str, pos) => {
-      if (str[pos] !== '#' && str[pos + 1] !== ' ') {
+      if (str.slice(pos, pos + 2) !== '# ') {
         return false
       }
 
@@ -108,9 +104,12 @@ const Grammar = {
       }
 
       const newLinePos = str.indexOf('\n', pos)
+      if (newLinePos === -1) {
+        return true
+      }
 
       // check if there is an empty line after header
-      if (newLinePos !== -1 && newLinePos + 1 < str.length && str[newLinePos + 1] !== '\n') {
+      if (newLinePos + 1 < str.length && str[newLinePos + 1] !== '\n') {
         return false
       }
 
