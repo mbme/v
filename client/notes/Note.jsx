@@ -16,14 +16,12 @@ const Document = s.cx({
 })
 
 const Paragraph = s.cx({
-  marginBottom: 'var(--spacing-medium)',
   textIndent: 'var(--spacing-medium)',
-})
+}, 'section')
 
 const Image = s.cx({
-  marginBottom: 'var(--spacing-medium)',
   padding: 'var(--spacing-medium)',
-})
+}, 'section')
 
 function renderItem(item, apiClient) {
   switch (item.type) {

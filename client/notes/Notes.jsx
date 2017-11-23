@@ -7,6 +7,10 @@ import s from 'client/styles'
 import { Button, Toolbar, Link, Input } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
+const NoteItem = s.cx({
+  cursor: 'pointer',
+}, 'section', s.Paper)
+
 class NotesView extends Component {
   static propTypes = {
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -21,7 +25,7 @@ class NotesView extends Component {
       <Link
         key={id}
         to={{ name: 'note', params: { id } }}
-        className={s.cx('section', s.Paper)}
+        className={NoteItem}
       >
         {name}
       </Link>
