@@ -13,7 +13,7 @@ function POST(url, action, files = []) {
     body: data,
   }).then((res) => {
     if (res.status === 400) {
-      return res.json().then(body => new Error(body.error))
+      return res.json().then((body) => { throw new Error(body.error) })
     }
 
     if (res.status !== 200) {

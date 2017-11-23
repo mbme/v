@@ -71,7 +71,7 @@ export function validate(val, typeName, prefix = '') {
 export function validateAndThrow(...rules) {
   const results = []
 
-  rules.forEach(([ val, typeName ]) => results.push(...validate(val, typeName)))
+  rules.forEach(([ val, typeName ]) => results.push(...validate(val, typeName, typeName)))
 
   if (results.length) {
     throw results
