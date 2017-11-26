@@ -25,9 +25,9 @@ export function listNotes() {
   }
 }
 
-export function updateNote(id, name, data) {
+export function updateNote(id, name, data, newFiles) {
   return async (dispatch, getState, client) => {
-    await client.updateRecord(id, name, data)
+    await client.updateRecord(id, name, data, newFiles)
 
     dispatch(markNotesListOutdated())
   }
@@ -41,9 +41,9 @@ export function deleteNote(id) {
   }
 }
 
-export function createNote(name, data) {
+export function createNote(name, data, newFiles) {
   return async (dispatch, getState, client) => {
-    const id = await client.createRecord(NOTE_TYPE, name, data)
+    const id = await client.createRecord(NOTE_TYPE, name, data, newFiles)
 
     dispatch(markNotesListOutdated())
 

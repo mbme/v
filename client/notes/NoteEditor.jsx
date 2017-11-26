@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { createLink } from 'shared/parser'
+import { createLink, extractFileIds, parse } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
 import { Button, Textarea, Toolbar, Input } from 'client/components'
 import s from 'client/styles'
@@ -25,6 +25,8 @@ class NoteEditorView extends PureComponent {
     data: this.props.data,
   }
 
+  files = {}
+
   textAreaRef = null
 
   hasChanges = () => this.state.name !== this.props.name || this.state.data !== this.props.data
@@ -34,13 +36,19 @@ class NoteEditorView extends PureComponent {
   closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' })
 
   onSave = async () => {
-    await this.props.updateNote(this.props.id, this.state.name, this.state.data)
+    await this.props.updateNote(this.props.id, this.state.name, this.state.data, this.getAttachments())
     this.closeEditor(this.props.id)
   }
 
   onCreate = async () => {
-    const id = await this.props.createNote(this.state.name, this.state.data)
+    const id = await this.props.createNote(this.state.name, this.state.data, this.getAttachments())
     this.closeEditor(id)
+  }
+
+  getAttachments() {
+    const ids = extractFileIds(parse(this.state.data))
+    // TODO filter out known files
+    return Object.entries(this.files).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file)
   }
 
   onFilesSelected = async (files) => {
@@ -48,9 +56,17 @@ class NoteEditorView extends PureComponent {
       return
     }
 
-    const hashes = await Promise.all(files.map(file => readFile(file).then(sha256)))
+    const links = []
+    await Promise.all(files.map(async (file) => {
+      const data = await readFile(file)
+      const hash = await sha256(data)
 
-    this.textAreaRef.insert(files.map((file, i) => createLink(file.name, hashes[i])).join(' '))
+      links.push(createLink(file.name, hash))
+
+      this.files[hash] = { name: file.name, data }
+    }))
+
+    this.textAreaRef.insert(links.join(' '))
     this.textAreaRef.focus()
   }
 

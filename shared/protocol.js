@@ -11,8 +11,20 @@ export const ENCODING = 'utf8'
 
 const str2buffer = str => Buffer.from(str, ENCODING)
 const serializeItem = buffer => [ str2buffer(String(buffer.length)), str2buffer(SEPARATOR), buffer ]
-const serializeItems = buffers => Buffer.concat(buffers.reduce((acc, buffer) => acc.push(...serializeItem(buffer)) && acc, []))
-export const serialize = (action, files) => serializeItems(files.reduce((acc, file) => acc.push(str2buffer(file.name), file.data) && acc, [ str2buffer(JSON.stringify(action)) ]))
+const serializeItems = (buffers) => {
+  const items = buffers.reduce((acc, buffer) => {
+    acc.push(...serializeItem(buffer))
+    return acc
+  }, [])
+  return Buffer.concat(items)
+}
+export const serialize = (action, files) => serializeItems(files.reduce(
+  (acc, file) => {
+    acc.push(str2buffer(file.name), Buffer.from(file.data))
+    return acc
+  },
+  [ str2buffer(JSON.stringify(action)) ],
+))
 
 function getItems(buffer) {
   const items = []
