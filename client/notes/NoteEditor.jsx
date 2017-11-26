@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { createLink, extractFileIds, parse } from 'shared/parser'
+import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
 import { Button, Textarea, Toolbar, Input } from 'client/components'
 import s from 'client/styles'
@@ -9,6 +9,8 @@ import * as routerActions from 'client/router/actions'
 import * as notesActions from './actions'
 import AttachFileButton from './AttachFileButton'
 import DeleteNoteButton from './DeleteNoteButton'
+
+const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false)
 
 class NoteEditorView extends PureComponent {
   static propTypes = {
@@ -61,7 +63,7 @@ class NoteEditorView extends PureComponent {
       const data = await readFile(file)
       const hash = await sha256(data)
 
-      links.push(createLink(file.name, hash))
+      links.push((isImage(file.name) ? createImageLink : createLink)(file.name, hash))
 
       this.files[hash] = { name: file.name, data }
     }))
