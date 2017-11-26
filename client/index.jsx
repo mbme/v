@@ -10,21 +10,28 @@ import network from './utils/network'
 import routerMiddleware, { propagateCurrentLocation } from './router'
 import rootReducer from './reducers'
 import App from './chrome/App'
-import { showToast } from './chrome/actions'
+import { showToast, showLocker } from './chrome/actions'
 import { init as initStyles } from './styles'
 
 initStyles()
 
-let onPOSTError
+let store
 const apiClient = createApiClient('', {
   ...network,
-  POST: (...args) => network.POST(...args).catch((e) => {
-    onPOSTError(e)
-    throw e
-  }),
+  POST: async (...args) => {
+    store.dispatch(showLocker(true))
+    try {
+      return await network.POST(...args)
+    } catch (e) {
+      store.dispatch(showToast(e.toString()))
+      throw e
+    } finally {
+      store.dispatch(showLocker(false))
+    }
+  },
 })
 
-const store = createStore(
+store = createStore(
   rootReducer,
   applyMiddleware(
     reduxThunk.withExtraArgument(apiClient),
@@ -32,7 +39,6 @@ const store = createStore(
   ),
 )
 store.dispatch(propagateCurrentLocation()) // use current location
-onPOSTError = e => store.dispatch(showToast(e.toString()))
 
 ReactDOM.render(
   <Provider store={store}>

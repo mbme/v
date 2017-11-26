@@ -22,6 +22,8 @@ function cx(...args) {
   }, []).join(' ')
 }
 
+const animation = keyframe => renderer.renderKeyframe(() => keyframe)
+
 const withBorder = {
   border: '1px solid rgba(0,0,0,.09)',
   boxShadow: '0 1px 4px rgba(0,0,0,.04)',
@@ -53,5 +55,6 @@ export default {
   ViewContainer: cx(ViewContainer),
   withBorder,
   cx,
+  animation,
   if: (condition, styles, altStyles = {}) => condition ? styles : altStyles,
 }

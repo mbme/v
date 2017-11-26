@@ -4,19 +4,12 @@ import { connect } from 'react-redux'
 import s from 'client/styles'
 import { Link } from 'client/components'
 import { showToast } from './actions'
+import ProgressLocker from './ProgressLocker'
 
 export function NotFoundView() {
   return (
     <div className={s.ViewContainer}>
       <div className={s.Heading}>NOT FOUND</div>
-    </div>
-  )
-}
-
-export function LoadingView() {
-  return (
-    <div className={s.ViewContainer}>
-      <div className={s.Heading}>LOADING...</div>
     </div>
   )
 }
@@ -61,6 +54,7 @@ class App extends PureComponent {
     apiClient: PropTypes.object.isRequired,
     toast: PropTypes.node,
     showToast: PropTypes.func.isRequired,
+    showLocker: PropTypes.bool.isRequired,
   }
 
   static childContextTypes = {
@@ -123,9 +117,9 @@ class App extends PureComponent {
   }
 
   render() {
-    const { view, isLoading, toast } = this.props
+    const { view, isLoading, toast, showLocker } = this.props
 
-    const currentView = isLoading ? <LoadingView /> : (view || <NotFoundView />)
+    const currentView = isLoading ? null : (view || <NotFoundView />)
 
     return (
       <div className={AppContainer}>
@@ -134,6 +128,7 @@ class App extends PureComponent {
         <div className={ToastContainer}>
           {toast}
         </div>
+        {showLocker && <ProgressLocker />}
       </div>
     )
   }
@@ -146,6 +141,7 @@ const mapStateToProps = ({ router, chrome }) => ({
   view: router.view,
   routingSequence: router.routingSequence,
   toast: chrome.toast,
+  showLocker: router.isLoading || chrome.showLocker,
 })
 
 const mapDispatchToProps = {

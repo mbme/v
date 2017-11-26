@@ -285,11 +285,11 @@ summary {
   display: none !important;
 }
 
+/* UTILS */
+
 .text-center {
   text-align: center;
 }
-
-/* UTILS */
 
 .flex {
   display: flex;

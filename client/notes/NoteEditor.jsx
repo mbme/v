@@ -6,6 +6,7 @@ import { readFile, sha256 } from 'client/utils'
 import { Button, Textarea, Toolbar, Input } from 'client/components'
 import s from 'client/styles'
 import * as routerActions from 'client/router/actions'
+import { showLocker } from 'client/chrome/actions'
 import * as notesActions from './actions'
 import AttachFileButton from './AttachFileButton'
 import DeleteNoteButton from './DeleteNoteButton'
@@ -20,6 +21,7 @@ class NoteEditorView extends PureComponent {
     push: PropTypes.func.isRequired,
     createNote: PropTypes.func.isRequired,
     updateNote: PropTypes.func.isRequired,
+    showLocker: PropTypes.func.isRequired,
   }
 
   state = {
@@ -58,6 +60,8 @@ class NoteEditorView extends PureComponent {
       return
     }
 
+    this.props.showLocker(true)
+
     const links = []
     await Promise.all(files.map(async (file) => {
       const data = await readFile(file)
@@ -67,6 +71,8 @@ class NoteEditorView extends PureComponent {
 
       this.files[hash] = { name: file.name, data }
     }))
+
+    this.props.showLocker(false)
 
     this.textAreaRef.insert(links.join(' '))
     this.textAreaRef.focus()
@@ -118,6 +124,7 @@ const mapDispatchToProps = {
   updateNote: notesActions.updateNote,
   createNote: notesActions.createNote,
   push: routerActions.push,
+  showLocker,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NoteEditorView)
