@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import s from 'client/styles'
 import { Link } from 'client/components'
+import { showToast } from './actions'
 
 export function NotFoundView() {
   return (
@@ -20,10 +21,25 @@ export function LoadingView() {
   )
 }
 
-const AppContainer = {
+const AppContainer = s.cx({
   margin: '0 auto',
-  maxWidth: '42rem',
-}
+  maxWidth: 'var(--max-width)',
+})
+
+const ToastContainer = s.cx({
+  position: 'fixed',
+  bottom: '0',
+  width: '100%',
+  maxWidth: 'var(--max-width)',
+  backgroundColor: '#323232',
+  color: '#ffffff',
+  borderRadius: '2px',
+  textAlign: 'center',
+  padding: 'var(--spacing-medium)',
+  ':empty': {
+    display: 'none',
+  },
+})
 
 const NavLink = isSelected => s.cx({
   display: 'inline-block',
@@ -43,6 +59,8 @@ class App extends PureComponent {
     routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
     view: PropTypes.node,
     apiClient: PropTypes.object.isRequired,
+    toast: PropTypes.node,
+    showToast: PropTypes.func.isRequired,
   }
 
   static childContextTypes = {
@@ -50,6 +68,7 @@ class App extends PureComponent {
   }
 
   scrollPos = {}
+  toastTimeout = null
 
   constructor(props) {
     super(props)
@@ -69,6 +88,12 @@ class App extends PureComponent {
     if (this.props.pathname !== nextProps.pathname) {
       // save scroll pos
       this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
+    }
+
+    // hide toast in few seconds
+    if (nextProps.toast && this.props.toast !== nextProps.toast) {
+      clearTimeout(this.toastTimeout)
+      this.toastTimeout = setTimeout(() => this.props.showToast(null), 8000)
     }
   }
 
@@ -98,25 +123,33 @@ class App extends PureComponent {
   }
 
   render() {
-    const { view, isLoading } = this.props
+    const { view, isLoading, toast } = this.props
 
     const currentView = isLoading ? <LoadingView /> : (view || <NotFoundView />)
 
     return (
-      <div className={s.cx(AppContainer)}>
+      <div className={AppContainer}>
         {this.renderNavbar()}
         {currentView}
+        <div className={ToastContainer}>
+          {toast}
+        </div>
       </div>
     )
   }
 }
 
-const mapStateToProps = ({ router }) => ({
+const mapStateToProps = ({ router, chrome }) => ({
   pathname: router.pathname,
   isPush: router.isPush,
   isLoading: router.isLoading,
   view: router.view,
   routingSequence: router.routingSequence,
+  toast: chrome.toast,
 })
 
-export default connect(mapStateToProps)(App)
+const mapDispatchToProps = {
+  showToast,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)

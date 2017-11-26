@@ -25,6 +25,7 @@
   --font-size-fine: 0.75rem;
 
   --toolbar-height: 50px;
+  --max-width: 42rem;
 }
 
 *,

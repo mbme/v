@@ -63,11 +63,12 @@ class NoteEditorView extends PureComponent {
       <AttachFileButton key="attach" onSelected={this.onFilesSelected} />,
     ]
 
+    const isValid = name && this.hasChanges()
     const rightIcons = [
       <Button key="cancel" onClick={() => this.closeEditor(id)}>Cancel</Button>,
       id
-        ? <Button key="save" onClick={this.onSave} disabled={!this.hasChanges()}>Save</Button>
-        : <Button key="create" onClick={this.onCreate} disabled={!this.hasChanges()}>Create</Button>,
+        ? <Button key="save" onClick={this.onSave} disabled={!isValid}>Save</Button>
+        : <Button key="create" onClick={this.onCreate} disabled={!isValid}>Create</Button>,
     ]
 
     return (

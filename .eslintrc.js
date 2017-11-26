@@ -1,18 +1,15 @@
 module.exports = {
   parser: 'babel-eslint',
-  parserOptions: {
-    ecmaVersion: 8,
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
-  },
-  env: {
-    es6: true,
-  },
   globals: {
     __DEVELOPMENT__: true,
     __CLIENT__: true,
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        paths: [ __dirname ],
+      },
+    },
   },
   overrides: [
     {
@@ -33,8 +30,7 @@ module.exports = {
       },
     },
   ],
-  extends: [ 'airbnb' ],
-  plugins: [ 'react' ],
+  extends: [ 'airbnb', 'plugin:import/errors', 'plugin:import/warnings' ],
   rules: {
     'max-len': 0,
     'no-console': 0,
@@ -65,10 +61,7 @@ module.exports = {
       'error',
       'never',
     ],
-    'quote-props': [
-      'error',
-      'consistent-as-needed',
-    ],
+    'quote-props': 0,
     'react/require-default-props': 0,
     'react/forbid-prop-types': 0,
     'react/sort-comp': 0,
@@ -96,12 +89,5 @@ module.exports = {
       'LabeledStatement',
       'WithStatement',
     ],
-  },
-  settings: {
-    'import/resolver': {
-      node: {
-        paths: [ __dirname ],
-      },
-    },
   },
 }

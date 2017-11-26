@@ -1,5 +1,3 @@
-/* eslint-disable quote-props */
-
 import { createRenderer } from 'fela'
 import { render } from 'fela-dom'
 import { isString, isObject } from 'shared/utils'
