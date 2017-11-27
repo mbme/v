@@ -65,7 +65,7 @@ class NotesView extends Component {
             autoFocus
           />
         </div>
-        <div className="text-center">
+        <div className="text-center section">
           {notes.length} items
         </div>
         {notes}

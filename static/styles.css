@@ -25,13 +25,13 @@
   --font-size-small: 0.875rem;
   --font-size-fine: 0.75rem;
 
-  --max-width: 42rem;
+  --max-width: 40rem;
 }
 
 @media (max-width: 767px) {
   :root {
     --line-height: 1.30;
-    --font-size: 18px;
+    --font-size: 16px;
   }
 }
 
@@ -43,6 +43,7 @@
 
 html {
   font-family: var(--font-family-base);
+  font-size: var(--font-size);
   line-height: var(--line-height);
   overflow-y: scroll;
 }
@@ -223,6 +224,7 @@ textarea {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
+  color: inherit;
 }
 
 button,

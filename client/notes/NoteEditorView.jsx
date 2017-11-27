@@ -10,7 +10,7 @@ import { showLocker } from 'client/chrome/actions'
 import * as notesActions from './actions'
 import AttachFileButton from './AttachFileButton'
 import DeleteNoteButton from './DeleteNoteButton'
-import Note from './Note'
+import Note, { Title } from './Note'
 
 const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false)
 
@@ -103,7 +103,7 @@ class NoteEditorView extends PureComponent {
         <Toolbar left={leftIcons} right={rightIcons} />
 
         <div className="section" hidden={preview}>
-          <Input name="name" value={name} onChange={this.onNameChange} autoFocus />
+          <Input className={Title} name="name" value={name} onChange={this.onNameChange} autoFocus />
         </div>
 
         <div className="section" hidden={preview}>

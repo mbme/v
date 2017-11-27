@@ -18,6 +18,7 @@ export default class Input extends PureComponent {
     defaultValue: PropTypes.string,
     placeholder: PropTypes.string,
     onChange: PropTypes.func.isRequired,
+    className: PropTypes.string,
   }
 
   ref = null
@@ -31,10 +32,10 @@ export default class Input extends PureComponent {
   }
 
   render() {
-    const { name, value, defaultValue, placeholder, onChange } = this.props
+    const { className, name, value, defaultValue, placeholder, onChange } = this.props
     return (
       <input
-        className={s.cx(Styles)}
+        className={s.cx(Styles, className)}
         ref={(ref) => { this.ref = ref }}
         type="text"
         name={name}

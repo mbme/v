@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { parse } from 'shared/parser'
 import s from 'client/styles'
 
-const Title = s.cx({
+export const Title = s.cx({
   textAlign: 'center',
   letterSpacing: '1.4px',
 }, s.Heading)
@@ -14,24 +14,20 @@ const Document = s.cx({
   textAlign: 'justify',
 })
 
-const Paragraph = s.cx({
-  textIndent: 'var(--spacing-medium)',
-}, 'section')
-
 const Image = s.cx({
-  padding: 'var(--spacing-medium)',
+  padding: 'var(--spacing-medium) 0',
 }, 'section')
 
 function renderItem(item, apiClient) {
   switch (item.type) {
     case 'Document': {
       const children = item.items.map(childItem => renderItem(childItem, apiClient))
-      return React.createElement('div', { className: Document }, ...children)
+      return React.createElement('article', { className: Document }, ...children)
     }
 
     case 'Paragraph': {
       const children = item.items.map(childItem => renderItem(childItem, apiClient))
-      return React.createElement('p', { className: Paragraph }, ...children)
+      return React.createElement('p', {}, ...children)
     }
 
     case 'Header':
@@ -81,7 +77,7 @@ export default class Note extends PureComponent {
   render() {
     return (
       <div className={s.Paper}>
-        <div className={Title}>{this.props.name}</div>
+        <h1 className={Title}>{this.props.name}</h1>
         {renderItem(parse(this.props.data), this.context.apiClient)}
       </div>
     )
