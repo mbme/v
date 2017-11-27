@@ -108,7 +108,7 @@ class App extends PureComponent {
     const route = this.props.routingSequence[0]
 
     return (
-      <nav className="text-center">
+      <nav className="text-center section">
         <Link to={{ name: 'notes' }} className={NavLink(route === 'notes')}>Notes</Link>
         <Link to={{ name: 'todos' }} className={NavLink(route === 'todos')}>Todos</Link>
         <Link to={{ name: 'one' }} className={NavLink(route === 'one')}>One</Link>

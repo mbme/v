@@ -5,7 +5,8 @@
     "Segoe UI", Roboto, Oxygen, /* Windows, Android, KDE */
     Ubuntu, Cantarell, "Fira Sans", /* Ubuntu, Gnome, Firefox OS */
     "Droid Sans", "Helvetica Neue", sans-serif; /* Old Android */
-  --line-height: 1.45;
+  --line-height: 1.35;
+  --font-size: 24px;
   --color: #333;
   --bg-color: #fafafa;
   --bg-light: #fff;
@@ -24,8 +25,14 @@
   --font-size-small: 0.875rem;
   --font-size-fine: 0.75rem;
 
-  --toolbar-height: 50px;
   --max-width: 42rem;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --line-height: 1.30;
+    --font-size: 18px;
+  }
 }
 
 *,
@@ -48,10 +55,11 @@ html {
 body {
   margin: 0; /* 1 */
   font-family: var(--font-family-base);
-  font-size: 1rem;
+  font-size: var(--font-size);
   font-weight: 400;
   line-height: var(--line-height);
   text-align: left; /* 3 */
+  text-rendering: optimizeLegibility;
 
   background-color: var(--bg-color); /* 2 */
   color: var(--color);

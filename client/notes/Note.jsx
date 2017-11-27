@@ -1,10 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { parse } from 'shared/parser'
 import s from 'client/styles'
-import { Link, Toolbar, IconButton } from 'client/components'
-import DeleteNoteButton from './DeleteNoteButton'
 
 const Title = s.cx({
   textAlign: 'center',
@@ -13,6 +10,8 @@ const Title = s.cx({
 
 const Document = s.cx({
   padding: 'var(--spacing-medium)',
+  hyphens: 'auto',
+  textAlign: 'justify',
 })
 
 const Paragraph = s.cx({
@@ -69,9 +68,10 @@ function renderItem(item, apiClient) {
   }
 }
 
-class NoteView extends PureComponent {
+export default class Note extends PureComponent {
   static propTypes = {
-    note: PropTypes.object.isRequired,
+    name: PropTypes.string.isRequired,
+    data: PropTypes.string.isRequired,
   }
 
   static contextTypes = {
@@ -79,32 +79,11 @@ class NoteView extends PureComponent {
   }
 
   render() {
-    const { note } = this.props
-
-    const deleteBtn = (
-      <DeleteNoteButton key="delete" id={note.id} />
-    )
-
-    const editBtn = (
-      <Link to={{ name: 'note-editor', params: { id: note.id } }}>
-        <IconButton type="edit-2" />
-      </Link>
-    )
-
     return (
-      <div className={s.ViewContainer}>
-        <Toolbar left={deleteBtn} right={editBtn} />
-        <div className={s.Paper}>
-          <div className={Title}>{note.name}</div>
-          {renderItem(parse(note.data), this.context.apiClient)}
-        </div>
+      <div className={s.Paper}>
+        <div className={Title}>{this.props.name}</div>
+        {renderItem(parse(this.props.data), this.context.apiClient)}
       </div>
     )
   }
 }
-
-const mapStateToProps = ({ notes }, { id }) => ({
-  note: notes.notes.find(note => note.id === id),
-})
-
-export default connect(mapStateToProps)(NoteView)

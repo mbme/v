@@ -3,13 +3,14 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
-import { Button, Textarea, Toolbar, Input } from 'client/components'
+import { Button, Textarea, Toolbar, Input, IconButton } from 'client/components'
 import s from 'client/styles'
 import * as routerActions from 'client/router/actions'
 import { showLocker } from 'client/chrome/actions'
 import * as notesActions from './actions'
 import AttachFileButton from './AttachFileButton'
 import DeleteNoteButton from './DeleteNoteButton'
+import Note from './Note'
 
 const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false)
 
@@ -25,6 +26,7 @@ class NoteEditorView extends PureComponent {
   }
 
   state = {
+    preview: false,
     name: this.props.name,
     data: this.props.data,
   }
@@ -79,12 +81,13 @@ class NoteEditorView extends PureComponent {
   }
 
   render() {
-    const { name, data } = this.state
+    const { preview, name, data } = this.state
     const { id } = this.props
 
     const leftIcons = [
       id && <DeleteNoteButton key="delete" id={id} />,
       <AttachFileButton key="attach" onSelected={this.onFilesSelected} />,
+      <IconButton key="preview" title="Preview" type={preview ? 'eye-off' : 'eye'} onClick={() => this.setState({ preview: !preview })} />,
     ]
 
     const isValid = name && this.hasChanges()
@@ -99,13 +102,15 @@ class NoteEditorView extends PureComponent {
       <div className={s.ViewContainer}>
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <div className="section">
+        <div className="section" hidden={preview}>
           <Input name="name" value={name} onChange={this.onNameChange} autoFocus />
         </div>
 
-        <div className="section">
+        <div className="section" hidden={preview}>
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref }} />
         </div>
+
+        {preview && <Note name={name} data={data} />}
       </div>
     )
   }

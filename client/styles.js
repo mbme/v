@@ -43,10 +43,8 @@ const Heading = {
 }
 
 const ViewContainer = {
-  position: 'relative',
   display: 'flex',
   flexDirection: 'column',
-  paddingTop: 'var(--toolbar-height)',
 }
 
 export default {

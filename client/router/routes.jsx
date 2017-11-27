@@ -3,9 +3,9 @@
 import React from 'react'
 
 import { ConfirmationDialog, Icon } from 'client/components'
-import NotesView from 'client/notes/Notes'
-import NoteView from 'client/notes/Note'
-import NoteEditorView from 'client/notes/NoteEditor'
+import NotesView from 'client/notes/NotesView'
+import NoteView from 'client/notes/NoteView'
+import NoteEditorView from 'client/notes/NoteEditorView'
 import * as notesActions from 'client/notes/actions'
 
 async function initNote(store, params) {

@@ -4,7 +4,7 @@ import MinifyPlugin from 'babel-minify-webpack-plugin'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-module.exports = {
+export default {
   entry: './client/index.jsx',
 
   output: {

@@ -20,7 +20,7 @@ class DeleteNoteButton extends PureComponent {
 
   render() {
     return [
-      <IconButton key="deleteBtn" type="trash-2" onClick={() => this.setState({ showConfirmation: true })} />,
+      <IconButton key="deleteBtn" title="Delete note" type="trash-2" onClick={() => this.setState({ showConfirmation: true })} />,
       this.state.showConfirmation && (
         <ConfirmationDialog
           key="deleteNoteDialog"

@@ -49,12 +49,13 @@ Button.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-export function IconButton({ type, onClick }) {
+export function IconButton({ type, title, onClick }) {
   return (
-    <button className={s.cx(FlatButton(false))} onClick={onClick}><Icon type={type} /></button>
+    <button className={s.cx(FlatButton(false))} title={title} onClick={onClick}><Icon type={type} /></button>
   )
 }
 IconButton.propTypes = {
   type: PropTypes.string.isRequired,
+  title: PropTypes.string,
   onClick: PropTypes.func,
 }
