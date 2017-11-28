@@ -11,8 +11,8 @@ const SQL_INIT_DB = `
       type TEXT NOT NULL,
       name TEXT NOT NULL,
       data TEXT NOT NULL,
-      created_ts INTEGER NOT NULL,
-      updated_ts INTEGER NOT NULL
+      createdTs INTEGER NOT NULL,
+      updatedTs INTEGER NOT NULL
   );
   CREATE INDEX Record_ix_type ON records(type);
 
@@ -55,21 +55,21 @@ function dbAPI(db) {
     },
 
     listRecords(type) {
-      return db.prepare('SELECT id, type, name, data FROM records WHERE type = ?').all(type)
+      return db.prepare('SELECT id, type, name, data, updatedTs FROM records WHERE type = ?').all(type)
     },
 
     createRecord(type, name, data) {
       const ts = unixTs()
-      return db.prepare('INSERT INTO records(type, name, data, created_ts, updated_ts) VALUES (?, ?, ?, ?, ?)').run(type, name, data, ts, ts).lastInsertROWID
+      return db.prepare('INSERT INTO records(type, name, data, createdTs, updatedTs) VALUES (?, ?, ?, ?, ?)').run(type, name, data, ts, ts).lastInsertROWID
     },
 
     readRecord(id) {
-      return db.prepare('SELECT id, type, name, data FROM records WHERE id = ?').get(id)
+      return db.prepare('SELECT id, type, name, data, updatedTs FROM records WHERE id = ?').get(id)
     },
 
     updateRecord(id, name, data) {
       const ts = unixTs()
-      return db.prepare('UPDATE records set name = ?, data = ?, updated_ts = ? WHERE id = ?').run(name, data, ts, id).changes === 1
+      return db.prepare('UPDATE records set name = ?, data = ?, updatedTs = ? WHERE id = ?').run(name, data, ts, id).changes === 1
     },
 
     deleteRecord(id) {

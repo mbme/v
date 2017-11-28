@@ -19,7 +19,7 @@ test('records', (assert) => {
   // read record
   {
     const record = db.readRecord(id)
-    assert.deepEqual(record, { id, type, name, data })
+    assert.deepEqual(record, { id, type, name, data, updatedTs: record.updatedTs })
   }
 
   // update record
@@ -29,7 +29,7 @@ test('records', (assert) => {
     assert.equal(db.updateRecord(id, newName, newData), true)
 
     const record = db.readRecord(id)
-    assert.deepEqual(record, { id, type, name: newName, data: newData })
+    assert.deepEqual(record, { id, type, name: newName, data: newData, updatedTs: record.updatedTs })
   }
 
   // delete record
