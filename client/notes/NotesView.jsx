@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import { fuzzySearch } from 'shared/utils'
 import s from 'client/styles'
-import { Button, Toolbar, Link, Input } from 'client/components'
+import { Button, Toolbar, Link, LightInput } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
 const NoteItem = s.cx({
@@ -53,18 +53,19 @@ class NotesView extends Component {
       </Link>
     )
 
+    const left = (
+      <LightInput
+        name="filter"
+        defaultValue={this.props.filter}
+        placeholder="Filter notes"
+        onChange={this.onFilterChange}
+        autoFocus
+      />
+    )
+
     return (
       <div className={s.ViewContainer}>
-        <Toolbar right={addBtn} />
-        <div className="section">
-          <Input
-            name="filter"
-            defaultValue={this.props.filter}
-            placeholder="Filter notes"
-            onChange={this.onFilterChange}
-            autoFocus
-          />
-        </div>
+        <Toolbar left={left} right={addBtn} />
         <div className="text-center section">
           {notes.length} items
         </div>

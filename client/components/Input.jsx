@@ -3,14 +3,26 @@ import PropTypes from 'prop-types'
 import s from 'client/styles'
 
 const Styles = {
-  backgroundColor: 'var(--bg-light)',
   display: 'block',
   width: '100%',
+}
+
+const FormInputStyles = {
+  ...Styles,
+  backgroundColor: 'var(--bg-light)',
   padding: 'var(--spacing-small)',
   ...s.withBorder,
 }
 
-export default class Input extends PureComponent {
+const LightInputStyles = {
+  ...Styles,
+  border: '0 none',
+  borderBottom: s.withBorder.border,
+  backgroundColor: 'inherit',
+  padding: 'var(--spacing-fine) var(--spacing-small)',
+}
+
+class Input extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
     name: PropTypes.string.isRequired,
@@ -35,7 +47,7 @@ export default class Input extends PureComponent {
     const { className, name, value, defaultValue, placeholder, onChange } = this.props
     return (
       <input
-        className={s.cx(Styles, className)}
+        className={className}
         ref={(ref) => { this.ref = ref }}
         type="text"
         name={name}
@@ -46,4 +58,20 @@ export default class Input extends PureComponent {
       />
     )
   }
+}
+
+export function FormInput({ className, ...other }) {
+  return <Input className={s.cx(className, FormInputStyles)} {...other} />
+}
+
+FormInput.propTypes = {
+  className: PropTypes.string,
+}
+
+export function LightInput({ className, ...other }) {
+  return <Input className={s.cx(className, LightInputStyles)} {...other} />
+}
+
+LightInput.propTypes = {
+  className: PropTypes.string,
 }

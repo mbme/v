@@ -1,6 +1,6 @@
 export { default as Link } from './Link'
 export { default as Textarea } from './Textarea'
-export { default as Input } from './Input'
+export { LightInput, FormInput } from './Input'
 export { Modal, ConfirmationDialog } from './Modal'
 export { default as Icon } from './Icon'
 export { default as Toolbar } from './Toolbar'

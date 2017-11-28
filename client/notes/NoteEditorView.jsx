@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
-import { Button, Textarea, Toolbar, Input, IconButton } from 'client/components'
+import { Button, Textarea, Toolbar, FormInput, IconButton } from 'client/components'
 import s from 'client/styles'
 import * as routerActions from 'client/router/actions'
 import { showLocker } from 'client/chrome/actions'
@@ -103,7 +103,7 @@ class NoteEditorView extends PureComponent {
         <Toolbar left={leftIcons} right={rightIcons} />
 
         <div className="section" hidden={preview}>
-          <Input className={Title} name="name" value={name} onChange={this.onNameChange} autoFocus />
+          <FormInput className={Title} name="name" value={name} onChange={this.onNameChange} autoFocus />
         </div>
 
         <div className="section" hidden={preview}>
