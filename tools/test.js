@@ -85,10 +85,10 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
     }))
 
     console.log(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '')
-    return snapshots
+    return [ snapshots, true ]
   } catch (e) {
     console.error(`  ${name} failed\n`, e.message)
-    return oldSnapshots
+    return [ oldSnapshots, false ]
   }
 }
 
@@ -102,8 +102,13 @@ export async function runTests(file, tests, updateSnapshots) {
   const oldSnapshots = snapshotsFileExists ? await readJSON(snapshotsFile) : {}
 
   const newSnapshots = {}
+  let failures = 0
+
   for (const t of tests) {
-    const snapshots = await runTest(t, oldSnapshots[t.name] || [], updateSnapshots)
+    const [ snapshots, success ] = await runTest(t, oldSnapshots[t.name] || [], updateSnapshots)
+
+    if (!success) failures += 1
+
     if (snapshots.length) {
       newSnapshots[t.name] = snapshots
     }
@@ -114,4 +119,6 @@ export async function runTests(file, tests, updateSnapshots) {
   } else if (snapshotsFileExists) {
     await deleteFile(snapshotsFile)
   }
+
+  return failures
 }

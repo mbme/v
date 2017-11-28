@@ -27,15 +27,19 @@ for (const testFile of testFiles) {
 }
 
 async function executeTestPlans() {
+  let failures = 0
+
   for (const testPlan of testPlans) {
     console.log(testPlan.file)
 
     testPlan.before && await Promise.resolve(testPlan.before())
-    await runTests(path.join(basePath, testPlan.file), testPlan.tests, updateSnapshots)
+    failures += await runTests(path.join(basePath, testPlan.file), testPlan.tests, updateSnapshots)
     testPlan.after && await Promise.resolve(testPlan.after())
 
     console.log('')
   }
+
+  console.log(failures ? `Failures: ${failures}` : 'Success!', '\n')
 }
 
 executeTestPlans()
