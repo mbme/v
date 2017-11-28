@@ -25,12 +25,7 @@ const LightInputStyles = {
 class Input extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
-    name: PropTypes.string.isRequired,
-    value: PropTypes.string,
-    defaultValue: PropTypes.string,
-    placeholder: PropTypes.string,
     onChange: PropTypes.func.isRequired,
-    className: PropTypes.string,
   }
 
   ref = null
@@ -44,17 +39,12 @@ class Input extends PureComponent {
   }
 
   render() {
-    const { className, name, value, defaultValue, placeholder, onChange } = this.props
+    const { onChange, ...other } = this.props
     return (
       <input
-        className={className}
         ref={(ref) => { this.ref = ref }}
-        type="text"
-        name={name}
-        value={value}
-        defaultValue={defaultValue}
-        placeholder={placeholder}
         onChange={e => onChange(e.target.value)}
+        {...other}
       />
     )
   }

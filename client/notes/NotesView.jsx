@@ -1,35 +1,42 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import { fuzzySearch } from 'shared/utils'
 import s from 'client/styles'
-import { Button, Toolbar, Link, LightInput } from 'client/components'
+import { Button, Toolbar, Link, LightInput, genOptions } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
 const NoteItem = s.cx({
   cursor: 'pointer',
 }, 'section', s.Paper)
 
-class NotesView extends Component {
+const sortOptions = {
+  recent: 'Recently updated',
+  alphabetical: 'Alphabetical',
+}
+
+const comparators = {
+  recent: (n1, n2) => n2.updatedTs - n1.updatedTs,
+  alphabetical: (n1, n2) => n1.name.toLowerCase() > n2.name.toLowerCase() ? 1 : -1,
+}
+
+class NotesView extends PureComponent {
   static propTypes = {
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
     setFilter: PropTypes.func.isRequired,
   }
 
-  getVisibleNotes() {
-    const visibleNotes = this.props.notes.filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
+  state = {
+    sortBy: 'recent',
+  }
 
-    return visibleNotes.map(({ id, name }) => (
-      <Link
-        key={id}
-        to={{ name: 'note', params: { id } }}
-        className={NoteItem}
-      >
-        {name}
-      </Link>
-    ))
+  getVisibleNotes() {
+    return this.props.notes
+      .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
+      .sort(comparators[this.state.sortBy])
+      .map(note => <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={NoteItem}>{note.name}</Link>)
   }
 
   updateTimoutId = null
@@ -53,15 +60,28 @@ class NotesView extends Component {
       </Link>
     )
 
-    const left = (
-      <LightInput
-        name="filter"
-        defaultValue={this.props.filter}
-        placeholder="Filter notes"
-        onChange={this.onFilterChange}
-        autoFocus
-      />
-    )
+    const left = [
+      (
+        <LightInput
+          key="filter"
+          name="filter"
+          defaultValue={this.props.filter}
+          placeholder="Filter notes"
+          onChange={this.onFilterChange}
+          autoFocus
+        />
+      ),
+      (
+        <select
+          key="sortBy"
+          name="sortBy"
+          value={this.state.sortBy}
+          onChange={e => this.setState({ sortBy: e.target.value })}
+        >
+          {genOptions(sortOptions)}
+        </select>
+      ),
+    ]
 
     return (
       <div className={s.ViewContainer}>
