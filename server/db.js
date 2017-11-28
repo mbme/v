@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3'
+import { unixTs } from 'shared/utils'
 
 const SQL_INIT_DB = `
   PRAGMA journal_mode = WAL;
@@ -9,7 +10,9 @@ const SQL_INIT_DB = `
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       type TEXT NOT NULL,
       name TEXT NOT NULL,
-      data TEXT NOT NULL
+      data TEXT NOT NULL,
+      created_ts INTEGER NOT NULL,
+      updated_ts INTEGER NOT NULL
   );
   CREATE INDEX Record_ix_type ON records(type);
 
@@ -56,7 +59,8 @@ function dbAPI(db) {
     },
 
     createRecord(type, name, data) {
-      return db.prepare('INSERT INTO records(type, name, data) VALUES (?, ?, ?)').run(type, name, data).lastInsertROWID
+      const ts = unixTs()
+      return db.prepare('INSERT INTO records(type, name, data, created_ts, updated_ts) VALUES (?, ?, ?, ?, ?)').run(type, name, data, ts, ts).lastInsertROWID
     },
 
     readRecord(id) {
@@ -64,7 +68,8 @@ function dbAPI(db) {
     },
 
     updateRecord(id, name, data) {
-      return db.prepare('UPDATE records set name = ?, data = ? WHERE id = ?').run(name, data, id).changes === 1
+      const ts = unixTs()
+      return db.prepare('UPDATE records set name = ?, data = ?, updated_ts = ? WHERE id = ?').run(name, data, ts, id).changes === 1
     },
 
     deleteRecord(id) {

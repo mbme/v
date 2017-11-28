@@ -120,3 +120,5 @@ export function shuffle(array) {
 }
 
 export const isSha256 = str => /^[a-f0-9]{64}$/i.test(str)
+
+export const unixTs = () => Math.floor(Date.now() / 1000)
