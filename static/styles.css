@@ -14,6 +14,9 @@
   --bg-color: #fafafa;
   --bg-light: #fff;
 
+  --border: 1px solid rgba(0,0,0,.09);
+  --box-shadow: 0 1px 4px rgba(0,0,0,.04);
+
   --spacing-xxlarge: 8rem;
   --spacing-xlarge: 4rem;
   --spacing-large: 2rem;
@@ -297,6 +300,8 @@ summary {
 select {
   cursor: pointer;
   background: inherit;
+  border: var(--border);
+  box-shadow: var(--box-shadow);
 }
 
 /* Always hide an element with the `hidden` HTML attribute (from PureCSS). */

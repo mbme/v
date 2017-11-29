@@ -25,8 +25,8 @@ function cx(...args) {
 const animation = keyframe => renderer.renderKeyframe(() => keyframe)
 
 const withBorder = {
-  border: '1px solid rgba(0,0,0,.09)',
-  boxShadow: '0 1px 4px rgba(0,0,0,.04)',
+  border: 'var(--border)',
+  boxShadow: 'var(--box-shadow)',
 }
 
 const Paper = {
