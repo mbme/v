@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { fuzzySearch } from 'shared/utils'
+import { fuzzySearch, formatUnixTs } from 'shared/utils'
 import s from 'client/styles'
 import { Button, Toolbar, Link, LightInput, Select } from 'client/components'
 import * as routerActions from 'client/router/actions'
@@ -10,6 +10,12 @@ import * as routerActions from 'client/router/actions'
 const NoteItem = s.cx({
   cursor: 'pointer',
 }, 'section', s.Paper)
+
+const Time = s.cx({
+  fontSize: 'var(--font-size-fine)',
+  color: 'var(--color-secondary)',
+  marginRight: 'var(--spacing-small)',
+})
 
 const sortOptions = {
   recent: 'Recently updated',
@@ -36,7 +42,12 @@ class NotesView extends PureComponent {
     return this.props.notes
       .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
       .sort(comparators[this.state.sortBy])
-      .map(note => <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={NoteItem}>{note.name}</Link>)
+      .map(note => (
+        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={NoteItem}>
+          <time className={Time}>{formatUnixTs(note.updatedTs)}</time>
+          {note.name}
+        </Link>
+      ))
   }
 
   updateTimoutId = null

@@ -7,7 +7,10 @@
     "Droid Sans", "Helvetica Neue", sans-serif; /* Old Android */
   --line-height: 1.35;
   --font-size: 24px;
+
   --color: #333;
+  --color-secondary: #BDBDBD;
+
   --bg-color: #fafafa;
   --bg-light: #fff;
 
