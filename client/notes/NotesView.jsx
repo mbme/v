@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import { fuzzySearch } from 'shared/utils'
 import s from 'client/styles'
-import { Button, Toolbar, Link, LightInput, genOptions } from 'client/components'
+import { Button, Toolbar, Link, LightInput, Select } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
 const NoteItem = s.cx({
@@ -72,14 +72,14 @@ class NotesView extends PureComponent {
         />
       ),
       (
-        <select
+        <Select
           key="sortBy"
           name="sortBy"
+          className="margin-horizontal-small"
           value={this.state.sortBy}
-          onChange={e => this.setState({ sortBy: e.target.value })}
-        >
-          {genOptions(sortOptions)}
-        </select>
+          onChange={sortBy => this.setState({ sortBy })}
+          options={sortOptions}
+        />
       ),
     ]
 

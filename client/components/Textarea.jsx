@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import s from 'client/styles'
 
-const Styles = {
+const Styles = s.cx({
   backgroundColor: 'var(--bg-light)',
   display: 'block',
   width: '100%',
@@ -12,7 +12,7 @@ const Styles = {
   minHeight: '300px',
   overflowY: 'hidden',
   ...s.withBorder,
-}
+})
 
 export default class Textarea extends PureComponent {
   static propTypes = {
@@ -65,7 +65,7 @@ export default class Textarea extends PureComponent {
 
     return (
       <textarea
-        className={s.cx(Styles)}
+        className={Styles}
         ref={(ref) => { this.ref = ref }}
         name={name}
         value={value}

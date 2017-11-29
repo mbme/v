@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Button } from 'client/components'
 import s from 'client/styles'
 
-const ModalContainer = {
+const ModalContainer = s.cx({
   backgroundColor: 'rgba(255,255,255,.65)',
   position: 'absolute',
   zIndex: 10,
@@ -16,15 +16,15 @@ const ModalContainer = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'flex-start',
-}
+})
 
-const ModalStyles = {
+const ModalStyles = s.cx({
   backgroundColor: 'var(--bg-light)',
   marginTop: '17vh',
   width: '375px',
   padding: 'var(--spacing-medium)',
   ...s.withBorder,
-}
+})
 
 export class Modal extends PureComponent {
   static propTypes = {
@@ -46,8 +46,8 @@ export class Modal extends PureComponent {
 
   render() {
     return ReactDOM.createPortal(
-      <div className={s.cx(ModalContainer)} onClick={this.onModalClick}>
-        <div className={s.cx(ModalStyles)}>{this.props.children}</div>
+      <div className={ModalContainer} onClick={this.onModalClick}>
+        <div className={ModalStyles}>{this.props.children}</div>
       </div>,
       this.modalRootEl,
     )

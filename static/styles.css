@@ -282,12 +282,18 @@ progress {
 }
 
 /* Correct element displays */
+
 output {
   display: inline-block;
 }
 
 summary {
   display: list-item; /* Add the correct display in all browsers */
+}
+
+select {
+  cursor: pointer;
+  background: inherit;
 }
 
 /* Always hide an element with the `hidden` HTML attribute (from PureCSS). */
@@ -304,6 +310,7 @@ summary {
 .flex {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .flex-end {
@@ -312,4 +319,9 @@ summary {
 
 .section {
   margin-bottom: var(--spacing-medium);
+}
+
+.margin-horizontal-small {
+  margin-left: var(--spacing-small);
+  margin-right: var(--spacing-small);
 }
