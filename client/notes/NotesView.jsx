@@ -54,7 +54,7 @@ class NotesView extends PureComponent {
 
     const addBtn = (
       <Link to={{ name: 'add-note' }}>
-        <Button>Add</Button>
+        <Button primary>Add</Button>
       </Link>
     )
 

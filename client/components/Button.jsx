@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import s from 'client/styles'
 import Icon from './Icon'
 
-const CleanButton = disabled => ({
+const CleanButton = (disabled, primary) => ({
   border: '0 none',
   borderRadius: '2px',
   cursor: 'pointer',
@@ -15,10 +15,14 @@ const CleanButton = disabled => ({
     cursor: 'auto',
     filter: 'invert(80%)',
   }),
+
+  ...s.if(primary && !disabled, {
+    color: 'var(--color-primary)',
+  }),
 })
 
-const FlatButton = disabled => ({
-  ...CleanButton(disabled),
+const FlatButton = (disabled, primary) => ({
+  ...CleanButton(disabled, primary),
 
   textTransform: 'uppercase',
   letterSpacing: '1.2px',
@@ -26,15 +30,15 @@ const FlatButton = disabled => ({
 
   ...s.if(!disabled, {
     ':hover': {
-      backgroundColor: 'gray',
+      boxShadow: 'var(--box-shadow)',
     },
   }),
 })
 
-const RaisedButton = disabled => s.cx(CleanButton(disabled), 'with-border')
+const RaisedButton = (disabled, primary) => s.cx(CleanButton(disabled, primary), 'with-border')
 
-export function Button({ onClick, disabled, raised, children }) {
-  const className = s.cx(raised ? RaisedButton(disabled) : FlatButton(disabled))
+export function Button({ onClick, disabled, raised, primary, children }) {
+  const className = s.cx(raised ? RaisedButton(disabled, primary) : FlatButton(disabled, primary))
   return (
     <button className={className} onClick={onClick} disabled={disabled}>{children}</button>
   )
@@ -43,6 +47,7 @@ Button.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   raised: PropTypes.bool,
+  primary: PropTypes.bool,
   children: PropTypes.node.isRequired,
 }
 

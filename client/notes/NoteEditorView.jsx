@@ -4,9 +4,8 @@ import { connect } from 'react-redux'
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser'
 import { readFile, sha256 } from 'client/utils'
 import { Button, Textarea, Toolbar, FormInput, IconButton } from 'client/components'
-import s from 'client/styles'
 import * as routerActions from 'client/router/actions'
-import { showLocker } from 'client/chrome/actions'
+import * as chromeActions from 'client/chrome/actions'
 import * as notesActions from './actions'
 import AttachFileButton from './AttachFileButton'
 import DeleteNoteButton from './DeleteNoteButton'
@@ -94,8 +93,8 @@ class NoteEditorView extends PureComponent {
     const rightIcons = [
       <Button key="cancel" onClick={() => this.closeEditor(id)}>Cancel</Button>,
       id
-        ? <Button key="save" onClick={this.onSave} disabled={!isValid}>Save</Button>
-        : <Button key="create" onClick={this.onCreate} disabled={!isValid}>Create</Button>,
+        ? <Button key="save" primary onClick={this.onSave} disabled={!isValid}>Save</Button>
+        : <Button key="create" primary onClick={this.onCreate} disabled={!isValid}>Create</Button>,
     ]
 
     return (
@@ -128,8 +127,8 @@ const mapStateToProps = ({ notes }, { id }) => {
 const mapDispatchToProps = {
   updateNote: notesActions.updateNote,
   createNote: notesActions.createNote,
+  showLocker: chromeActions.showLocker,
   push: routerActions.push,
-  showLocker,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NoteEditorView)

@@ -9,13 +9,15 @@
   --font-size: 24px;
 
   --color: #333;
+  --color-primary: #e66164;
   --color-secondary: #BDBDBD;
+  --color-link: #54B2D8;
 
   --bg-color: #fafafa;
   --bg-light: #fff;
 
   --border: 1px solid rgba(0,0,0,.09);
-  --box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  --box-shadow: 0 2px 4px rgba(0,0,0,.2);
 
   --spacing-xxlarge: 8rem;
   --spacing-xlarge: 4rem;
@@ -175,11 +177,11 @@ sup { top: -.5em; }
 
 /* Links */
 a {
-  color: blue;
+  color: var(--color-link);
   text-decoration: none;
 }
 a:hover {
-  color: blue;
+  color: var(--color-link);
   text-decoration: none;
 }
 

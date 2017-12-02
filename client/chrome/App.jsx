@@ -37,9 +37,9 @@ const ToastContainer = s.cx({
 const NavLink = isSelected => s.cx({
   display: 'inline-block',
   margin: '0 var(--spacing-medium)',
-  color: 'blue',
+  color: 'var(--color-link)',
   ...s.if(isSelected, {
-    borderBottom: '2px solid blue',
+    borderBottom: '2px solid var(--color-link)',
   }),
 })
 

@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import s from 'client/styles'
 import { Link, Toolbar, IconButton } from 'client/components'
 import DeleteNoteButton from './DeleteNoteButton'
 import Note from './Note'
