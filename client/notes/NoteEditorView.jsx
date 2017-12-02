@@ -99,7 +99,7 @@ class NoteEditorView extends PureComponent {
     ]
 
     return (
-      <div className={s.ViewContainer}>
+      <div className="view-container">
         <Toolbar left={leftIcons} right={rightIcons} />
 
         <div className="section" hidden={preview}>

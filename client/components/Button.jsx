@@ -31,10 +31,7 @@ const FlatButton = disabled => ({
   }),
 })
 
-const RaisedButton = disabled => ({
-  ...CleanButton(disabled),
-  ...s.withBorder,
-})
+const RaisedButton = disabled => s.cx(CleanButton(disabled), 'with-border')
 
 export function Button({ onClick, disabled, raised, children }) {
   const className = s.cx(raised ? RaisedButton(disabled) : FlatButton(disabled))

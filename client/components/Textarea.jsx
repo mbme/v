@@ -11,8 +11,7 @@ const Styles = s.cx({
   resize: 'none',
   minHeight: '300px',
   overflowY: 'hidden',
-  ...s.withBorder,
-})
+}, 'with-border')
 
 export default class Textarea extends PureComponent {
   static propTypes = {

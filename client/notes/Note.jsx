@@ -6,10 +6,9 @@ import s from 'client/styles'
 export const Title = s.cx({
   textAlign: 'center',
   letterSpacing: '1.4px',
-}, s.Heading)
+}, 'heading')
 
 const Document = s.cx({
-  padding: 'var(--spacing-medium)',
   hyphens: 'auto',
   textAlign: 'justify',
 })
@@ -76,7 +75,7 @@ export default class Note extends PureComponent {
 
   render() {
     return (
-      <div className={s.Paper}>
+      <div>
         <h1 className={Title}>{this.props.name}</h1>
         {renderItem(parse(this.props.data), this.context.apiClient)}
       </div>

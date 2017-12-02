@@ -7,17 +7,16 @@ const Styles = {
   width: '100%',
 }
 
-const FormInputStyles = {
+const FormInputStyles = s.cx({
   ...Styles,
   backgroundColor: 'var(--bg-light)',
   padding: 'var(--spacing-small)',
-  ...s.withBorder,
-}
+}, 'with-border')
 
 const LightInputStyles = {
   ...Styles,
   border: '0 none',
-  borderBottom: s.withBorder.border,
+  borderBottom: 'var(--border)',
   backgroundColor: 'inherit',
   padding: 'var(--spacing-fine) var(--spacing-small)',
 }

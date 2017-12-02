@@ -25,7 +25,7 @@ class NoteView extends PureComponent {
     )
 
     return (
-      <div className={s.ViewContainer}>
+      <div className="view-container">
         <Toolbar left={deleteBtn} right={editBtn} />
         <Note name={note.name} data={note.data} />
       </div>

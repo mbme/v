@@ -4,28 +4,19 @@ import { connect } from 'react-redux'
 
 import { fuzzySearch, formatUnixTs } from 'shared/utils'
 import s from 'client/styles'
-import { Button, Toolbar, Link, LightInput, Select } from 'client/components'
+import { Button, Toolbar, Link, LightInput } from 'client/components'
 import * as routerActions from 'client/router/actions'
 
-const NoteItem = s.cx({
-  cursor: 'pointer',
-}, 'section', s.Paper)
+const Counter = s.cx({
+  marginLeft: 'var(--spacing-small)',
+  whiteSpace: 'nowrap',
+})
 
 const Time = s.cx({
-  fontSize: 'var(--font-size-fine)',
-  color: 'var(--color-secondary)',
   marginRight: 'var(--spacing-small)',
 })
 
-const sortOptions = {
-  recent: 'Recently updated',
-  alphabetical: 'Alphabetical',
-}
-
-const comparators = {
-  recent: (n1, n2) => n2.updatedTs - n1.updatedTs,
-  alphabetical: (n1, n2) => n1.name.toLowerCase() > n2.name.toLowerCase() ? 1 : -1,
-}
+const recent = (n1, n2) => n2.updatedTs - n1.updatedTs
 
 class NotesView extends PureComponent {
   static propTypes = {
@@ -34,17 +25,13 @@ class NotesView extends PureComponent {
     setFilter: PropTypes.func.isRequired,
   }
 
-  state = {
-    sortBy: 'recent',
-  }
-
   getVisibleNotes() {
     return this.props.notes
       .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
-      .sort(comparators[this.state.sortBy])
+      .sort(recent)
       .map(note => (
-        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={NoteItem}>
-          <time className={Time}>{formatUnixTs(note.updatedTs)}</time>
+        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className="section">
+          <small className={Time}>{formatUnixTs(note.updatedTs)}</small>
           {note.name}
         </Link>
       ))
@@ -83,23 +70,15 @@ class NotesView extends PureComponent {
         />
       ),
       (
-        <Select
-          key="sortBy"
-          name="sortBy"
-          className="margin-horizontal-small"
-          value={this.state.sortBy}
-          onChange={sortBy => this.setState({ sortBy })}
-          options={sortOptions}
-        />
+        <small key="counter" className={Counter}>
+          {notes.length} items
+        </small>
       ),
     ]
 
     return (
-      <div className={s.ViewContainer}>
+      <div className="view-container">
         <Toolbar left={left} right={addBtn} />
-        <div className="text-center section">
-          {notes.length} items
-        </div>
         {notes}
       </div>
     )

@@ -8,8 +8,8 @@ import ProgressLocker from './ProgressLocker'
 
 export function NotFoundView() {
   return (
-    <div className={s.ViewContainer}>
-      <div className={s.Heading}>NOT FOUND</div>
+    <div className="view-container">
+      <div className="heading">NOT FOUND</div>
     </div>
   )
 }
@@ -36,7 +36,6 @@ const ToastContainer = s.cx({
 
 const NavLink = isSelected => s.cx({
   display: 'inline-block',
-  cursor: 'pointer',
   margin: '0 var(--spacing-medium)',
   color: 'blue',
   ...s.if(isSelected, {

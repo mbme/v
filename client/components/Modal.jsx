@@ -1,12 +1,14 @@
+/* eslint-disable react/no-multi-comp */
+
 import React, { PureComponent } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { Button } from 'client/components'
 import s from 'client/styles'
 
-const ModalContainer = s.cx({
+const BackdropContainer = s.cx({
   backgroundColor: 'rgba(255,255,255,.65)',
-  position: 'absolute',
+  position: 'fixed',
   zIndex: 10,
   top: 0,
   right: 0,
@@ -18,13 +20,45 @@ const ModalContainer = s.cx({
   alignItems: 'flex-start',
 })
 
+const NoScroll = s.cx({
+  height: '100vh',
+  overflow: 'hidden',
+})
+
+export class Backdrop extends PureComponent {
+  static propTypes = {
+    children: PropTypes.node.isRequired,
+    onClick: PropTypes.func,
+    className: PropTypes.string,
+  }
+
+  componentDidMount() {
+    const { scrollTop } = document.documentElement
+    document.body.className = NoScroll
+    document.body.style = `margin-top: ${-scrollTop}px`
+  }
+
+  componentWillUnmount() {
+    document.body.className = ''
+    document.body.style = ''
+  }
+
+  render() {
+    const { className, onClick, children } = this.props
+    return (
+      <div className={s.cx(BackdropContainer, className)} onClick={onClick}>
+        {children}
+      </div>
+    )
+  }
+}
+
 const ModalStyles = s.cx({
   backgroundColor: 'var(--bg-light)',
   marginTop: '17vh',
-  width: '375px',
+  minWidth: '375px',
   padding: 'var(--spacing-medium)',
-  ...s.withBorder,
-})
+}, 'with-border')
 
 export class Modal extends PureComponent {
   static propTypes = {
@@ -46,9 +80,9 @@ export class Modal extends PureComponent {
 
   render() {
     return ReactDOM.createPortal(
-      <div className={ModalContainer} onClick={this.onModalClick}>
+      <Backdrop onClick={this.onModalClick}>
         <div className={ModalStyles}>{this.props.children}</div>
-      </div>,
+      </Backdrop>,
       this.modalRootEl,
     )
   }

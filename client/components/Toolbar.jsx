@@ -11,7 +11,7 @@ const Content = s.cx({
   top: 0,
   backgroundColor: 'var(--bg-color)',
   padding: 'var(--spacing-fine) 0',
-})
+}, 'section')
 
 export default function Toolbar({ left, right }) {
   return (

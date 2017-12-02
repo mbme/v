@@ -31,7 +31,7 @@
   --font-size-small: 0.875rem;
   --font-size-fine: 0.75rem;
 
-  --max-width: 40rem;
+  --max-width: 32rem;
 }
 
 @media (max-width: 767px) {
@@ -156,7 +156,8 @@ strong {
 }
 
 small {
-  font-size: 80%; /* Add the correct font size in all browsers */
+  font-size: var(--font-size-fine);
+  color: var(--color-secondary);
 }
 
 /* Prevent `sub` and `sup` elements from affecting the line height in all browsers. */
@@ -300,13 +301,29 @@ summary {
 select {
   cursor: pointer;
   background: inherit;
-  border: var(--border);
-  box-shadow: var(--box-shadow);
+  border: 0 none;
 }
 
 /* Always hide an element with the `hidden` HTML attribute (from PureCSS). */
 [hidden] {
   display: none !important;
+}
+
+/* COMMON */
+
+.section {
+  margin-bottom: var(--spacing-medium);
+}
+
+.heading {
+  font-weight: bold;
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-medium);
+}
+
+.view-container {
+  display: flex;
+  flex-direction: column;
 }
 
 /* UTILS */
@@ -325,11 +342,11 @@ select {
   justify-content: flex-end;
 }
 
-.section {
-  margin-bottom: var(--spacing-medium);
+.cursor-pointer {
+  cursor: pointer;
 }
 
-.margin-horizontal-small {
-  margin-left: var(--spacing-small);
-  margin-right: var(--spacing-small);
+.with-border {
+  border: var(--border);
+  box-shadow: var(--box-shadow);
 }
