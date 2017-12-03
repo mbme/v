@@ -10,7 +10,7 @@ let api
 
 before(async () => {
   const port = 8079
-  server = await startServer(port, { html5historyFallback: false, requestLogger: false })
+  server = await startServer(port, { html5historyFallback: false, requestLogger: false, dbFile: '/tmp/db', inMemDb: true })
   api = createApiClient(`http://localhost:${port}`, network)
 })
 

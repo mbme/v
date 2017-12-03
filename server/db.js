@@ -115,7 +115,7 @@ function dbAPI(db) {
   }
 }
 
-export default function getDB(file = '/tmp/db', memory = true) {
+export default function getDB(file, memory) {
   const db = new Database(file, { memory })
   db.exec(SQL_INIT_DB)
 

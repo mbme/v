@@ -3,6 +3,7 @@ import http from 'http'
 import urlParser from 'url'
 
 import { readStream, existsFile, listFiles, readFile } from 'server/utils'
+import { extend } from 'shared/utils'
 import { CONTENT_TYPE } from 'shared/api'
 import { parse } from 'shared/protocol'
 import createProcessor from './processor'
@@ -45,8 +46,18 @@ async function getStaticFile(name, fallback = 'index.html') {
   return null
 }
 
-export default async function startServer(port, options = { html5historyFallback: true, requestLogger: true }) {
-  const processor = createProcessor()
+const defaults = {
+  dbFile: '',
+  password: '',
+  inMemDb: true,
+  html5historyFallback: true,
+  requestLogger: true,
+}
+
+export default async function startServer(port, customOptions) {
+  const options = extend(defaults, customOptions)
+
+  const processor = createProcessor({ dbFile: options.dbFile, password: options.password, inMemDb: options.inMemDb })
 
   // POST /api
   // GET /api&fileId=asdfsadfasd

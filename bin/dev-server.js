@@ -1,4 +1,4 @@
-import server from 'server'
+import createServer from 'server'
 import webpack from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
 import webpackConfig from '../webpack.config.babel'
 import genData from './gen-data'
@@ -15,5 +15,5 @@ const compilationPromise = new Promise((resolve, reject) => {
 
 Promise.all([
   compilationPromise,
-  server(port).then(() => genData(port, 30)),
+  createServer(port, { dbFile: '/tmp/db', inMemDb: true }).then(() => genData(port, 30)),
 ]).then(() => console.log(`server http://localhost:${port}`))

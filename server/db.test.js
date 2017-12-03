@@ -2,7 +2,7 @@ import { test, before, after } from 'tools/test'
 import getDB from './db'
 
 let db
-before(() => { db = getDB() })
+before(() => { db = getDB('/tmp/db', true) })
 after(() => db.close())
 
 test('records', (assert) => {
