@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
+import readline from 'readline'
 import { promisify } from 'util'
 
 export const sha256 = buffer => crypto.createHash('sha256').update(buffer).digest('hex')
@@ -43,3 +44,12 @@ export const writeText = (name, data) => writeFile(name, data, 'utf8')
 export const writeJSON = (name, data) => writeText(name, JSON.stringify(data, null, 2))
 
 export const deleteFile = promisify(fs.unlink)
+
+export function ask(question) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+
+  return new Promise(resolve => rl.question(question, (answer) => {
+    resolve(answer)
+    rl.close()
+  }))
+}

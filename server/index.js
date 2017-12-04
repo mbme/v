@@ -48,8 +48,7 @@ async function getStaticFile(name, fallback = 'index.html') {
 
 const defaults = {
   dbFile: '',
-  password: '',
-  inMemDb: true,
+  inMemDb: false,
   html5historyFallback: true,
   requestLogger: true,
 }
@@ -57,7 +56,7 @@ const defaults = {
 export default async function startServer(port, customOptions) {
   const options = extend(defaults, customOptions)
 
-  const processor = await createProcessor({ dbFile: options.dbFile, password: options.password, inMemDb: options.inMemDb })
+  const processor = await createProcessor({ dbFile: options.dbFile, inMemDb: options.inMemDb })
 
   // POST /api
   // GET /api&fileId=asdfsadfasd
@@ -168,7 +167,15 @@ export default async function startServer(port, customOptions) {
     }
   })
 
+  const api = {
+    close() {
+      processor.close()
+
+      return new Promise(resolve => server.close(resolve))
+    },
+  }
+
   return new Promise((resolve) => {
-    server.listen(port, () => resolve(server))
+    server.listen(port, () => resolve(api))
   })
 }

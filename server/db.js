@@ -103,7 +103,7 @@ function dbAPI(db) {
     },
 
     close() {
-      return db.close()
+      db.close()
     },
   }
 }

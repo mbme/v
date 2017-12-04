@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS records (
     createdTs INTEGER NOT NULL,
     updatedTs INTEGER NOT NULL
 );
-CREATE INDEX Record_ix_type ON records(type);
+CREATE INDEX IF NOT EXISTS Record_ix_type ON records(type);
 
 CREATE TABLE IF NOT EXISTS files (
     id TEXT PRIMARY KEY,

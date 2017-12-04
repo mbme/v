@@ -13,7 +13,21 @@ const compilationPromise = new Promise((resolve, reject) => {
   })
 })
 
-Promise.all([
-  compilationPromise,
-  createServer(port, { dbFile: '/tmp/db', inMemDb: true }).then(() => genData(port, 30)),
-]).then(() => console.log(`server http://localhost:${port}`))
+async function run() {
+  const [ server ] = await Promise.all([
+    createServer(port, { dbFile: '/tmp/db', inMemDb: true }),
+    compilationPromise,
+  ])
+
+  await genData(port, 30)
+
+  console.log(`server http://localhost:${port}`)
+
+  process.on('SIGINT', async () => {
+    console.log('Stopping...')
+    await server.close()
+    process.exit(1)
+  })
+}
+
+run()
