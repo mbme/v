@@ -2,7 +2,7 @@ import { test, before, after } from 'tools/test'
 import getDB from './db'
 
 let db
-before(() => { db = getDB('/tmp/db', true) })
+before(async () => { db = await getDB('/tmp/db', true) })
 after(() => db.close())
 
 test('records', (assert) => {
@@ -108,4 +108,26 @@ test('Transaction', (assert) => {
     }, error)
     assert.equal(!!db.readRecord(id), true)
   }
+})
+
+test('kvs', (assert) => {
+  const namespace = 'type'
+  const key = 'name'
+  const value = 'data'
+
+  assert.equal(!!db.get(namespace, key), false)
+
+  // insert
+  db.set(namespace, key, value)
+  assert.equal(db.get(namespace, key).value, value)
+
+  { // update
+    const otherValue = 2
+    db.set(namespace, key, otherValue)
+    assert.equal(db.get(namespace, key).value, otherValue.toString())
+  }
+
+  // remove
+  db.remove(namespace, key)
+  assert.equal(!!db.get(namespace, key), false)
 })

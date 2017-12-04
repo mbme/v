@@ -57,7 +57,7 @@ const defaults = {
 export default async function startServer(port, customOptions) {
   const options = extend(defaults, customOptions)
 
-  const processor = createProcessor({ dbFile: options.dbFile, password: options.password, inMemDb: options.inMemDb })
+  const processor = await createProcessor({ dbFile: options.dbFile, password: options.password, inMemDb: options.inMemDb })
 
   // POST /api
   // GET /api&fileId=asdfsadfasd

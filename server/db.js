@@ -1,33 +1,7 @@
 import Database from 'better-sqlite3'
+import path from 'path'
 import { unixTs } from 'shared/utils'
-
-const SQL_INIT_DB = `
-  PRAGMA journal_mode = WAL;
-  PRAGMA foreign_keys = ON;
-  PRAGMA auto_vacuum = FULL;
-
-  CREATE TABLE IF NOT EXISTS records (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      type TEXT NOT NULL,
-      name TEXT NOT NULL,
-      data TEXT NOT NULL,
-      createdTs INTEGER NOT NULL,
-      updatedTs INTEGER NOT NULL
-  );
-  CREATE INDEX Record_ix_type ON records(type);
-
-  CREATE TABLE IF NOT EXISTS files (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      data BLOB NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS records_files (
-      recordId INTEGER NOT NULL REFERENCES records(id) ON DELETE CASCADE,
-      fileId TEXT NOT NULL REFERENCES files(id) ON DELETE CASCADE,
-      CONSTRAINT unique_connection UNIQUE (recordId, fileId)
-  );
-`
+import { readText } from 'server/utils'
 
 function dbAPI(db) {
   const begin = db.prepare('BEGIN')
@@ -73,7 +47,7 @@ function dbAPI(db) {
     },
 
     deleteRecord(id) {
-      return db.prepare('DELETE FROM records where id = ?').run(id).changes === 1
+      return db.prepare('DELETE FROM records WHERE id = ?').run(id).changes === 1
     },
 
     // ----------- FILES ----------------------------------
@@ -109,15 +83,34 @@ function dbAPI(db) {
       return db.prepare('DELETE FROM records_files WHERE recordId = ?').run(recordId).changes
     },
 
+    // --------------- KVS
+
+    get(namespace, key) {
+      return db.prepare('SELECT namespace, key, value FROM kvs WHERE namespace = ? AND key = ?').get(namespace, key)
+    },
+
+    set(namespace, key, value) {
+      this.inTransaction(() => {
+        const { changes } = db.prepare('UPDATE kvs set value = ? WHERE namespace = ? AND key = ?').run(value.toString(), namespace, key)
+        if (!changes) {
+          db.prepare('INSERT INTO kvs(namespace, key, value) VALUES(?, ?, ?)').run(namespace, key, value.toString())
+        }
+      })
+    },
+
+    remove(namespace, key) {
+      return db.prepare('DELETE FROM kvs WHERE namespace = ? AND key = ?').run(namespace, key).changes === 1
+    },
+
     close() {
       return db.close()
     },
   }
 }
 
-export default function getDB(file, memory) {
+export default async function getDB(file, memory) {
   const db = new Database(file, { memory })
-  db.exec(SQL_INIT_DB)
+  db.exec(await readText(path.join(__dirname, 'db.sql')))
 
   return dbAPI(db)
 }

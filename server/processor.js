@@ -113,8 +113,8 @@ const actions = {
   },
 }
 
-export default function createProcessor({ dbFile, password, inMemDb }) {
-  const db = getDB(dbFile, inMemDb)
+export default async function createProcessor({ dbFile, password, inMemDb }) {
+  const db = await getDB(dbFile, inMemDb)
 
   return {
     processAction({ action: { name, data }, files = [] }) {
