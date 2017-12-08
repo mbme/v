@@ -36,6 +36,17 @@ function getNewFiles(db, ids, files) {
 }
 
 const actions = {
+  AUTHORIZE: (db, { password } => {
+    validateAndThrow(
+      [ password, 'string' ],
+    )
+
+    // check password
+    if (db.get('security', 'password') !== sha256(password)) return null
+
+
+  }),
+
   LIST_RECORDS: (db, { type }) => {
     validateAndThrow(
       [ type, 'Record.type' ],
