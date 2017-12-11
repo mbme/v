@@ -86,7 +86,8 @@ function dbAPI(db) {
     // --------------- KVS
 
     get(namespace, key) {
-      return db.prepare('SELECT namespace, key, value FROM kvs WHERE namespace = ? AND key = ?').get(namespace, key)
+      const result = db.prepare('SELECT namespace, key, value FROM kvs WHERE namespace = ? AND key = ?').get(namespace, key)
+      return result ? result.value : null
     },
 
     set(namespace, key, value) {

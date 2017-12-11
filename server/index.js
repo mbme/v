@@ -4,7 +4,7 @@ import urlParser from 'url'
 
 import { readStream, existsFile, listFiles, readFile } from 'server/utils'
 import { extend } from 'shared/utils'
-import { CONTENT_TYPE } from 'shared/api'
+import { CONTENT_TYPE, AUTH_HEADER } from 'shared/api'
 import { parse } from 'shared/protocol'
 import createProcessor from './processor'
 
@@ -49,6 +49,7 @@ async function getStaticFile(name, fallback = 'index.html') {
 const defaults = {
   dbFile: '',
   inMemDb: false,
+  password: '',
   html5historyFallback: true,
   requestLogger: true,
 }
@@ -56,7 +57,7 @@ const defaults = {
 export default async function startServer(port, customOptions) {
   const options = extend(defaults, customOptions)
 
-  const processor = await createProcessor({ dbFile: options.dbFile, inMemDb: options.inMemDb })
+  const processor = await createProcessor({ dbFile: options.dbFile, inMemDb: options.inMemDb, password: options.password })
 
   // POST /api
   // GET /api&fileId=asdfsadfasd
@@ -68,6 +69,12 @@ export default async function startServer(port, customOptions) {
       const url = urlParser.parse(req.url, true)
 
       if (url.pathname === '/api') {
+        if (!processor.isValidAuth(req.headers[AUTH_HEADER])) {
+          res.writeHead(403)
+          res.end()
+          return
+        }
+
         if (req.method === 'POST') {
           // validate content-type
           if (req.headers['content-type'] !== CONTENT_TYPE) {

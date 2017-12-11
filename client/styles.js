@@ -8,9 +8,7 @@ export const init = () => render(renderer)
 
 function cx(...args) {
   return args.reduce((acc, val) => {
-    if (!val) {
-      return acc
-    }
+    if (!val) return acc
 
     if (isString(val)) {
       acc.push(val)

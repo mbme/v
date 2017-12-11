@@ -4,7 +4,25 @@ import crypto from 'crypto'
 import readline from 'readline'
 import { promisify } from 'util'
 
-export const sha256 = buffer => crypto.createHash('sha256').update(buffer).digest('hex')
+export const hash = hashType => buffer => crypto.createHash(hashType).update(buffer).digest('hex')
+export const sha256 = hash('sha256')
+
+export function aesEncrypt(text, password) {
+  const iv = crypto.randomBytes(16) // always 16 for AES
+
+  // password must be 256 bytes (32 characters)
+  const cipher = crypto.createCipheriv('aes-256-cbc', sha256(password).substring(0, 32), iv)
+
+  return iv.toString('hex') + ':' + cipher.update(text, 'utf8', 'hex') + cipher.final('hex')
+}
+
+export function aesDecrypt(text, password) {
+  const [ iv, encryptedText ] = text.split(':')
+
+  const decipher = crypto.createDecipheriv('aes-256-cbc', sha256(password).substring(0, 32), Buffer.from(iv, 'hex'))
+
+  return decipher.update(encryptedText, 'hex', 'utf8') + decipher.final('utf8')
+}
 
 export const readStream = stream => new Promise((resolve, reject) => {
   const body = []

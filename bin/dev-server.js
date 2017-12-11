@@ -1,4 +1,4 @@
-import createServer from 'server'
+import startServer from 'server'
 import webpack from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
 import webpackConfig from '../webpack.config.babel'
 import genData from './gen-data'
@@ -15,7 +15,7 @@ const compilationPromise = new Promise((resolve, reject) => {
 
 async function run() {
   const [ server ] = await Promise.all([
-    createServer(port, { dbFile: '/tmp/db', inMemDb: true }),
+    startServer(port, { dbFile: '/tmp/db', inMemDb: true }),
     compilationPromise,
   ])
 

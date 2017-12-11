@@ -42,4 +42,4 @@ async function executeTestPlans() {
   console.log(failures ? `Failures: ${failures}` : 'Success!', '\n')
 }
 
-executeTestPlans()
+executeTestPlans().catch(e => console.error('TEST RUNNER FAILED', e))

@@ -1,6 +1,6 @@
 import { validateAndThrow } from 'shared/validators'
 import { extractFileIds, parse } from 'shared/parser'
-import { sha256, existsFile, ask } from 'server/utils'
+import { sha256, aesDecrypt, existsFile } from 'server/utils'
 import getDB from './db'
 
 function getNewFiles(db, ids, files) {
@@ -36,17 +36,6 @@ function getNewFiles(db, ids, files) {
 }
 
 const actions = {
-  AUTHORIZE: (db, { password } => {
-    validateAndThrow(
-      [ password, 'string' ],
-    )
-
-    // check password
-    if (db.get('security', 'password') !== sha256(password)) return null
-
-
-  }),
-
   LIST_RECORDS: (db, { type }) => {
     validateAndThrow(
       [ type, 'Record.type' ],
@@ -119,21 +108,12 @@ const actions = {
   },
 }
 
-export default async function createProcessor({ dbFile, inMemDb }) {
+export default async function createProcessor({ dbFile, inMemDb, password }) {
   const dbFileExists = await existsFile(dbFile)
 
   const db = await getDB(dbFile, inMemDb)
 
-  if (!inMemDb && !dbFileExists) {
-    console.log("DB file doesn't exist, going to create a new one")
-
-    const password = await ask('Input password: ')
-    const p2 = await ask('Retype password: ')
-
-    if (password !== p2) throw new Error('Passwords must be equal')
-
-    if (!password) console.warn('WARN: password is empty')
-
+  if (!dbFileExists) {
     db.set('security', 'password', sha256(password))
   }
 
@@ -143,6 +123,15 @@ export default async function createProcessor({ dbFile, inMemDb }) {
       if (!action) throw new Error(`unknown action: ${name}`)
 
       return action(db, data, files)
+    },
+
+    // token: AES("valid <generation timestamp>", SHA256(password))
+    isValidAuth(token) {
+      try {
+        return /^valid \d+$/.test(aesDecrypt(token, db.get('security', 'password')))
+      } catch (ignored) {
+        return false
+      }
     },
 
     close() {

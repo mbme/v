@@ -119,12 +119,12 @@ test('kvs', (assert) => {
 
   // insert
   db.set(namespace, key, value)
-  assert.equal(db.get(namespace, key).value, value)
+  assert.equal(db.get(namespace, key), value)
 
   { // update
     const otherValue = 2
     db.set(namespace, key, otherValue)
-    assert.equal(db.get(namespace, key).value, otherValue.toString())
+    assert.equal(db.get(namespace, key), otherValue.toString())
   }
 
   // remove

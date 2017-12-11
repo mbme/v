@@ -1,20 +1,38 @@
 import { test, before, after } from 'tools/test'
 import startServer from 'server'
-import network from 'server/network'
+import createNetwork from 'server/network'
 import { createLink } from 'shared/parser'
 import { sha256 } from 'server/utils'
 import createApiClient from './api'
 
 let server
 let api
+const password = 'test'
 
 before(async () => {
   const port = 8079
-  server = await startServer(port, { html5historyFallback: false, requestLogger: false, dbFile: '/tmp/db', inMemDb: true })
-  api = createApiClient(`http://localhost:${port}`, network)
+  server = await startServer(port, { html5historyFallback: false, requestLogger: false, dbFile: '/tmp/db', inMemDb: true, password })
+  api = createApiClient(`http://localhost:${port}`, createNetwork())
+  await api.setPassword(password)
 })
 
-after(() => new Promise(resolve => server.close(resolve)))
+after(() => server.close())
+
+test('should handle auth', async (assert) => {
+  await api.setPassword('wrong password')
+
+  let failed = false
+  try {
+    await api.listRecords('note')
+  } catch (e) {
+    failed = true
+  }
+
+  // restore proper password
+  await api.setPassword(password)
+
+  assert.equal(failed, true)
+})
 
 test('should manage files', async (assert) => {
   const buffer = Buffer.from('test file content')

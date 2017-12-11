@@ -1,61 +1,67 @@
 import http from 'http'
 import urlParser from 'url'
-import { readStream } from 'server/utils'
+import { readStream, aesEncrypt, sha256 } from 'server/utils'
 import { serialize } from 'shared/protocol'
-import { CONTENT_TYPE } from 'shared/api'
+import { CONTENT_TYPE, AUTH_HEADER } from 'shared/api'
 
-function POST(url, action, files = []) {
-  const data = serialize(action, files)
-
+function request(method, url, headers, body) {
   return new Promise((resolve, reject) => {
-    const { protocol, hostname, port, pathname } = urlParser.parse(url)
-    const request = http.request({
-      method: 'POST',
+    const { protocol, hostname, port, pathname, search } = urlParser.parse(url)
+
+    http.request({
+      method,
       protocol,
       hostname,
       port,
-      path: pathname,
-      headers: {
+      path: pathname + (search || ''),
+      headers,
+    }, resolve).on('error', reject).end(body)
+  })
+}
+
+export default function createNetwork() {
+  let token = ''
+
+  return {
+    setPassword(password) {
+      token = aesEncrypt(`valid ${Date.now()}`, sha256(password))
+    },
+
+    POST(url, action, files = []) {
+      const data = serialize(action, files)
+
+      return request('POST', url, {
         'Content-Type': CONTENT_TYPE,
         'Content-Length': data.length,
-      },
-    }, async (resp) => {
-      const body = (await readStream(resp)).toString('utf8')
-      if (resp.statusCode === 200) {
-        resolve(JSON.parse(body).data)
-        return
-      }
+        [AUTH_HEADER]: token,
+      }, data).then(async (resp) => {
+        const body = (await readStream(resp)).toString('utf8')
+        if (resp.statusCode === 200) {
+          return JSON.parse(body).data
+        }
 
-      if (resp.statusCode === 400) {
-        reject(new Error(JSON.parse(body).error))
-        return
-      }
+        if (resp.statusCode === 400) {
+          throw new Error(JSON.parse(body).error)
+        }
 
-      reject(new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`))
-    })
-    request.on('error', reject)
-    request.end(data)
-  })
+        throw new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`)
+      })
+    },
+
+    GET(url) {
+      return request('GET', url, { [AUTH_HEADER]: token }).then((resp) => {
+        if (resp.statusCode === 200) {
+          return readStream(resp)
+        }
+
+        resp.resume() // consume response data to free up memory
+
+        if (resp.statusCode === 404) {
+          return null
+        }
+
+        return new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`)
+      })
+    },
+  }
 }
-
-function GET(url) {
-  return new Promise((resolve, reject) => {
-    http.get(url, (resp) => {
-      if (resp.statusCode === 200) {
-        resolve(readStream(resp))
-        return
-      }
-
-      resp.resume() // consume response data to free up memory
-
-      if (resp.statusCode === 404) {
-        resolve(null)
-        return
-      }
-
-      reject(new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`))
-    }).on('error', reject)
-  })
-}
-
-export default { POST, GET }
