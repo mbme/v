@@ -1,14 +1,15 @@
 import { serialize } from 'shared/protocol'
 import { CONTENT_TYPE, AUTH_HEADER } from 'shared/api'
-import { showToast, showLocker } from 'client/chrome/actions'
-import { sha256, aesEncrypt } from 'client/utils'
+import { showToast, showLocker, setAuthorized } from 'client/chrome/actions'
+import { sha256, text2buffer, aesEncrypt } from 'client/utils'
 
 export default function createNetwork(getStore) {
-  let token = ''
+  let token = sessionStorage.getItem('v-token')
 
   return {
     async setPassword(password) {
-      token = aesEncrypt(`valid ${Date.now()}`, await sha256(password))
+      token = await aesEncrypt(`valid ${Date.now()}`, await sha256(text2buffer(password)))
+      sessionStorage.setItem('v-token')
     },
 
     POST(url, action, files = []) {
@@ -26,6 +27,11 @@ export default function createNetwork(getStore) {
         },
         body: data,
       }).then((res) => {
+        if (res.status === 403) {
+          setAuthorized(false)
+          throw new Error('Access denied')
+        }
+
         if (res.status === 400) {
           return res.json().then((body) => { throw new Error(body.error) })
         }

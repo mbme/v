@@ -42,8 +42,9 @@ async function genText(generator, images) {
   return { name: name.substring(0, name.length - 1), data }
 }
 
-export default async function genData(port, recordsCount = 23) {
+export default async function genData(port, password, recordsCount = 23) {
   const api = createApiClient(`http://localhost:${port}`, createNetwork())
+  await api.setPassword(password)
 
   const resourcesPath = path.join(__dirname, '../resources')
   const images = await listImage(resourcesPath)
@@ -56,8 +57,4 @@ export default async function genData(port, recordsCount = 23) {
   }))
 
   console.log('Generated %s fake records', recordsCount)
-}
-
-if (require.main === module) { // if called from command line
-  genData(8080)
 }

@@ -1,8 +1,9 @@
-import { SHOW_TOAST, SHOW_LOCKER } from './actions'
+import { SHOW_TOAST, SHOW_LOCKER, SET_AUTHORIZED } from './actions'
 
 const defaultState = {
   toast: null,
   showLocker: false,
+  authorized: false,
 }
 
 export default function chrome(state = defaultState, action) {
@@ -17,6 +18,12 @@ export default function chrome(state = defaultState, action) {
       return {
         ...state,
         showLocker: action.show,
+      }
+
+    case SET_AUTHORIZED:
+      return {
+        ...state,
+        authorized: state.authorized,
       }
 
     default:

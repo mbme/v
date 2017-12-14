@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import s from 'client/styles'
 import { Link } from 'client/components'
 import { showToast } from './actions'
+import AuthView from './AuthView'
 import ProgressLocker from './ProgressLocker'
 
 export function NotFoundView() {
@@ -54,6 +55,7 @@ class App extends PureComponent {
     toast: PropTypes.node,
     showToast: PropTypes.func.isRequired,
     showLocker: PropTypes.bool.isRequired,
+    authorized: PropTypes.bool.isRequired,
   }
 
   static childContextTypes = {
@@ -111,12 +113,17 @@ class App extends PureComponent {
         <Link to={{ name: 'notes' }} className={NavLink(route === 'notes')}>Notes</Link>
         <Link to={{ name: 'todos' }} className={NavLink(route === 'todos')}>Todos</Link>
         <Link to={{ name: 'one' }} className={NavLink(route === 'one')}>One</Link>
+        <button>LOGOUT</button>
       </nav>
     )
   }
 
   render() {
-    const { view, isLoading, toast, showLocker } = this.props
+    const { view, isLoading, toast, showLocker, authorized } = this.props
+
+    if (!authorized) {
+      return <AuthView />
+    }
 
     const currentView = isLoading ? null : (view || <NotFoundView />)
 
@@ -141,6 +148,7 @@ const mapStateToProps = ({ router, chrome }) => ({
   routingSequence: router.routingSequence,
   toast: chrome.toast,
   showLocker: router.isLoading || chrome.showLocker,
+  authorized: chrome.authorized,
 })
 
 const mapDispatchToProps = {

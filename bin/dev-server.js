@@ -4,6 +4,7 @@ import webpackConfig from '../webpack.config.babel'
 import genData from './gen-data'
 
 const port = 8080
+const password = ''
 
 const compiler = webpack(webpackConfig)
 const compilationPromise = new Promise((resolve, reject) => {
@@ -15,11 +16,11 @@ const compilationPromise = new Promise((resolve, reject) => {
 
 async function run() {
   const [ server ] = await Promise.all([
-    startServer(port, { dbFile: '/tmp/db', inMemDb: true }),
+    startServer(port, { dbFile: '/tmp/db', inMemDb: true, password }),
     compilationPromise,
   ])
 
-  await genData(port, 30)
+  await genData(port, password, 30)
 
   console.log(`server http://localhost:${port}`)
 

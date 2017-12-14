@@ -16,9 +16,6 @@ yarn build && yarn start
 # dev mode
 yarn dev
 
-# generate fake data
-yarn gen-data
-
 # run tests
 yarn test
 
