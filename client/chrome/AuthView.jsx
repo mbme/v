@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import s from 'client/styles'
 import { Backdrop, FormInput } from 'client/components'
 import * as notesActions from 'client/notes/actions'
+import * as chromeActions from 'client/chrome/actions'
 
 const BackdropStyles = s.cx({
   backgroundColor: 'var(--bg-color)',
@@ -17,6 +18,7 @@ const InputStyles = s.cx({
 class AuthView extends PureComponent {
   static propTypes = {
     listNotes: PropTypes.func.isRequired,
+    setAuthorized: PropTypes.func.isRequired,
   }
 
   static contextTypes = {
@@ -39,7 +41,7 @@ class AuthView extends PureComponent {
     await this.context.apiClient.setPassword(password)
     try {
       await this.props.listNotes()
-      console.error('SUCCESS')
+      this.props.setAuthorized(true)
     } catch (e) {
       console.error(e)
     }
@@ -64,6 +66,7 @@ class AuthView extends PureComponent {
 
 const mapDispatchToProps = {
   listNotes: notesActions.listNotes,
+  setAuthorized: chromeActions.setAuthorized,
 }
 
 export default connect(null, mapDispatchToProps)(AuthView)
