@@ -9,7 +9,7 @@ export default function createNetwork(getStore) {
   return {
     async setPassword(password) {
       token = await aesEncrypt(`valid ${Date.now()}`, await sha256(text2buffer(password)))
-      sessionStorage.setItem('v-token')
+      sessionStorage.setItem('v-token', token)
     },
 
     POST(url, action, files = []) {

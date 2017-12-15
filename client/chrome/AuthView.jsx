@@ -36,7 +36,7 @@ class AuthView extends PureComponent {
   }
 
   async checkPassword(password) {
-    this.context.apiClient.setPassword(password)
+    await this.context.apiClient.setPassword(password)
     try {
       await this.props.listNotes()
       console.error('SUCCESS')

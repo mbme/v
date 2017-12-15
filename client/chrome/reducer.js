@@ -3,7 +3,7 @@ import { SHOW_TOAST, SHOW_LOCKER, SET_AUTHORIZED } from './actions'
 const defaultState = {
   toast: null,
   showLocker: false,
-  authorized: false,
+  authorized: true,
 }
 
 export default function chrome(state = defaultState, action) {

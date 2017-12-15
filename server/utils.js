@@ -4,14 +4,13 @@ import crypto from 'crypto'
 import readline from 'readline'
 import { promisify } from 'util'
 
-export const hash = hashType => buffer => crypto.createHash(hashType).update(buffer).digest('hex')
+export const hash = hashType => (buffer, encoding = 'hex') => crypto.createHash(hashType).update(buffer).digest(encoding)
 export const sha256 = hash('sha256')
 
 export function aesEncrypt(text, password) {
   const iv = crypto.randomBytes(16) // always 16 for AES
 
-  // password must be 256 bytes (32 characters)
-  const cipher = crypto.createCipheriv('aes-256-cbc', sha256(password).substring(0, 32), iv)
+  const cipher = crypto.createCipheriv('aes-256-cbc', sha256(password, null), iv)
 
   return iv.toString('hex') + ':' + cipher.update(text, 'utf8', 'hex') + cipher.final('hex')
 }
@@ -19,7 +18,7 @@ export function aesEncrypt(text, password) {
 export function aesDecrypt(text, password) {
   const [ iv, encryptedText ] = text.split(':')
 
-  const decipher = crypto.createDecipheriv('aes-256-cbc', sha256(password).substring(0, 32), Buffer.from(iv, 'hex'))
+  const decipher = crypto.createDecipheriv('aes-256-cbc', sha256(password, null), Buffer.from(iv, 'hex'))
 
   return decipher.update(encryptedText, 'hex', 'utf8') + decipher.final('utf8')
 }
