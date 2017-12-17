@@ -121,9 +121,7 @@ class App extends PureComponent {
   render() {
     const { view, isLoading, toast, showLocker, authorized } = this.props
 
-    if (!authorized) {
-      return <AuthView />
-    }
+    if (!authorized) return <AuthView />
 
     const currentView = isLoading ? null : (view || <NotFoundView />)
 

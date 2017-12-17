@@ -2,27 +2,32 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import s from 'client/styles'
+import { setPassword } from 'client/utils/network'
 import { Backdrop, FormInput } from 'client/components'
 import * as notesActions from 'client/notes/actions'
 import * as chromeActions from 'client/chrome/actions'
 
 const BackdropStyles = s.cx({
   backgroundColor: 'var(--bg-color)',
-  paddingTop: '35vh',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  paddingTop: '20vh',
 })
 
 const InputStyles = s.cx({
   width: '300px',
 })
 
+const Logo = s.cx({
+  width: '150px',
+  marginBottom: 'var(--spacing-medium)',
+})
+
 class AuthView extends PureComponent {
   static propTypes = {
     listNotes: PropTypes.func.isRequired,
     setAuthorized: PropTypes.func.isRequired,
-  }
-
-  static contextTypes = {
-    apiClient: PropTypes.object.isRequired,
   }
 
   state = {
@@ -38,7 +43,8 @@ class AuthView extends PureComponent {
   }
 
   async checkPassword(password) {
-    await this.context.apiClient.setPassword(password)
+    await setPassword(password)
+
     try {
       await this.props.listNotes()
       this.props.setAuthorized(true)
@@ -50,6 +56,7 @@ class AuthView extends PureComponent {
   render() {
     return (
       <Backdrop className={BackdropStyles}>
+        <img alt="logo" src="/logo.svg" className={Logo} />
         <FormInput
           className={InputStyles}
           name="password"

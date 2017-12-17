@@ -4,7 +4,7 @@ import urlParser from 'url'
 
 import { readStream, existsFile, listFiles, readFile } from 'server/utils'
 import { extend } from 'shared/utils'
-import { CONTENT_TYPE, AUTH_HEADER } from 'shared/api'
+import { CONTENT_TYPE } from 'shared/api'
 import { parse } from 'shared/protocol'
 import createProcessor from './processor'
 
@@ -12,6 +12,8 @@ const MIME = {
   css: 'text/css',
   html: 'text/html',
   json: 'application/json',
+  svg: 'image/svg+xml',
+  ico: 'image/x-icon',
 }
 
 const withContentType = type => MIME[type] ? { 'Content-Type': MIME[type] } : {}
@@ -25,6 +27,14 @@ async function getFile(dir, name) {
   if (!await listFiles(dir).then(files => files.includes(name))) return null
 
   return readFile(path.join(dir, name))
+}
+
+function extractToken(cookies) {
+  const [ tokenCookie ] = cookies.split(';').filter(c => c.startsWith('token='))
+
+  if (!tokenCookie) return ''
+
+  return decodeURIComponent(tokenCookie.substring(6))
 }
 
 // return files from /static or /dist without subdirectories, use index.html as fallback
@@ -69,7 +79,9 @@ export default async function startServer(port, customOptions) {
       const url = urlParser.parse(req.url, true)
 
       if (url.pathname === '/api') {
-        if (!processor.isValidAuth(req.headers[AUTH_HEADER])) {
+        const token = extractToken(req.headers.cookie || '')
+
+        if (!token || !processor.isValidAuth(token)) {
           res.writeHead(403)
           res.end()
           return

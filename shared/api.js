@@ -1,14 +1,9 @@
 export const CONTENT_TYPE = 'multipart/v-data'
-export const AUTH_HEADER = '-v-auth-token'
 
 export default function createApiClient(baseUrl, network) {
   const apiPOST = network.POST.bind(null, `${baseUrl}/api`)
 
   return {
-    async setPassword(password) {
-      return network.setPassword(password)
-    },
-
     getFileUrl(fileId) {
       return `${baseUrl}/api?fileId=${fileId}`
     },

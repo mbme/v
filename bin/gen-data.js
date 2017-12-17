@@ -43,8 +43,7 @@ async function genText(generator, images) {
 }
 
 export default async function genData(port, password, recordsCount = 23) {
-  const api = createApiClient(`http://localhost:${port}`, createNetwork())
-  await api.setPassword(password)
+  const api = createApiClient(`http://localhost:${port}`, createNetwork(password))
 
   const resourcesPath = path.join(__dirname, '../resources')
   const images = await listImage(resourcesPath)

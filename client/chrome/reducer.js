@@ -23,7 +23,7 @@ export default function chrome(state = defaultState, action) {
     case SET_AUTHORIZED:
       return {
         ...state,
-        authorized: state.authorized,
+        authorized: action.authorized,
       }
 
     default:

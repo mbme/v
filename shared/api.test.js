@@ -7,30 +7,21 @@ import createApiClient from './api'
 
 let server
 let api
-const password = 'test'
+const port = 8079
 
 before(async () => {
-  const port = 8079
+  const password = 'test'
+
   server = await startServer(port, { html5historyFallback: false, requestLogger: false, dbFile: '/tmp/db', inMemDb: true, password })
-  api = createApiClient(`http://localhost:${port}`, createNetwork())
-  await api.setPassword(password)
+  api = createApiClient(`http://localhost:${port}`, createNetwork(password))
 })
 
 after(() => server.close())
 
 test('should handle auth', async (assert) => {
-  await api.setPassword('wrong password')
+  const badApi = createApiClient(`http://localhost:${port}`, createNetwork('wrong password'))
 
-  let failed = false
-  try {
-    await api.listRecords('note')
-  } catch (e) {
-    failed = true
-  }
-
-  // restore proper password
-  await api.setPassword(password)
-
+  const failed = await badApi.listRecords('note').then(() => false, () => true)
   assert.equal(failed, true)
 })
 
