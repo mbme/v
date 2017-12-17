@@ -5,7 +5,6 @@ import s from 'client/styles'
 import { setPassword } from 'client/utils/network'
 import { Backdrop, FormInput } from 'client/components'
 import * as notesActions from 'client/notes/actions'
-import * as chromeActions from 'client/chrome/actions'
 
 const BackdropStyles = s.cx({
   backgroundColor: 'var(--bg-color)',
@@ -27,7 +26,6 @@ const Logo = s.cx({
 class AuthView extends PureComponent {
   static propTypes = {
     listNotes: PropTypes.func.isRequired,
-    setAuthorized: PropTypes.func.isRequired,
   }
 
   state = {
@@ -47,7 +45,7 @@ class AuthView extends PureComponent {
 
     try {
       await this.props.listNotes()
-      this.props.setAuthorized(true)
+      window.location.reload()
     } catch (e) {
       console.error(e)
     }
@@ -73,7 +71,6 @@ class AuthView extends PureComponent {
 
 const mapDispatchToProps = {
   listNotes: notesActions.listNotes,
-  setAuthorized: chromeActions.setAuthorized,
 }
 
 export default connect(null, mapDispatchToProps)(AuthView)
