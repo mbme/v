@@ -4,7 +4,4 @@ import createRouter from './router'
 
 export { propagateCurrentLocation } from './actions'
 
-const router = createRouter()
-router.useRoutes(routes)
-
-export default routerMiddleware(router)
+export default routerMiddleware(createRouter(routes))

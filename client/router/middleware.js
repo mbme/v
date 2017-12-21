@@ -1,4 +1,4 @@
-import { LOCATION_CHANGE, GO, GO_FORWARD, PUSH, REPLACE, GO_BACK, propagateCurrentLocation, replace, setView } from './actions'
+import { LOCATION_CHANGE, PUSH, REPLACE, propagateCurrentLocation, replace, setView } from './actions'
 
 export default function routerMiddleware(router) {
   return (store) => {
@@ -15,18 +15,6 @@ export default function routerMiddleware(router) {
         case REPLACE:
           window.history.replaceState(null, '', router.getUrl(action.name, action.params))
           store.dispatch(propagateCurrentLocation(true))
-          break
-
-        case GO:
-          window.history.go(action.pos)
-          break
-
-        case GO_BACK:
-          window.history.back()
-          break
-
-        case GO_FORWARD:
-          window.history.forward()
           break
 
         case LOCATION_CHANGE:
