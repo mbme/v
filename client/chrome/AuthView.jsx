@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import s from 'client/styles'
-import { setPassword } from 'client/utils/network'
+import { authorize } from 'client/utils/network'
 import { Backdrop, FormInput } from 'client/components'
 import * as notesActions from 'client/notes/actions'
 
@@ -35,13 +35,11 @@ class AuthView extends PureComponent {
   onPasswordChange = password => this.setState({ password })
 
   onKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      this.checkPassword(this.state.password)
-    }
+    if (e.key === 'Enter') this.checkPassword(this.state.password)
   }
 
   async checkPassword(password) {
-    await setPassword(password)
+    await authorize(password)
 
     try {
       await this.props.listNotes()

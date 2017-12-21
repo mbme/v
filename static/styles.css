@@ -13,7 +13,8 @@
   --color-secondary: #BDBDBD;
   --color-link: #54B2D8;
 
-  --bg-color: #fafafa;
+  /* --bg-color: #fafafa; */
+  --bg-color: #fff;
   --bg-light: #fff;
 
   --border: 1px solid rgba(0,0,0,.09);
@@ -351,4 +352,8 @@ select {
 .with-border {
   border: var(--border);
   box-shadow: var(--box-shadow);
+}
+
+.relative {
+  position: relative;
 }

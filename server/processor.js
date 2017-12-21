@@ -113,9 +113,7 @@ export default async function createProcessor({ dbFile, inMemDb, password }) {
 
   const db = await getDB(dbFile, inMemDb)
 
-  if (!dbFileExists) {
-    db.set('security', 'password', sha256(password))
-  }
+  if (!dbFileExists) db.set('security', 'password', sha256(password))
 
   return {
     processAction({ action: { name, data }, files = [] }) {

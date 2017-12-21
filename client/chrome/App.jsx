@@ -2,7 +2,8 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import s from 'client/styles'
-import { Link } from 'client/components'
+import { Link, IconButton } from 'client/components'
+import { deauthorize } from 'client/utils/network'
 import { showToast } from './actions'
 import AuthView from './AuthView'
 import ProgressLocker from './ProgressLocker'
@@ -42,6 +43,11 @@ const NavLink = isSelected => s.cx({
   ...s.if(isSelected, {
     borderBottom: '2px solid var(--color-link)',
   }),
+})
+
+const LogoutIcon = s.cx({
+  position: 'absolute',
+  right: '0',
 })
 
 class App extends PureComponent {
@@ -105,15 +111,20 @@ class App extends PureComponent {
     }
   }
 
+  logout = () => {
+    deauthorize()
+    window.location.reload()
+  }
+
   renderNavbar() {
     const route = this.props.routingSequence[0]
 
     return (
-      <nav className="text-center section">
+      <nav className="section relative">
         <Link to={{ name: 'notes' }} className={NavLink(route === 'notes')}>Notes</Link>
         <Link to={{ name: 'todos' }} className={NavLink(route === 'todos')}>Todos</Link>
         <Link to={{ name: 'one' }} className={NavLink(route === 'one')}>One</Link>
-        <button>LOGOUT</button>
+        <IconButton className={LogoutIcon} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
     )
   }

@@ -3,9 +3,13 @@ import { CONTENT_TYPE } from 'shared/api'
 import { sha256, text2buffer, aesEncrypt } from 'client/utils'
 import { showToast, showLocker, setAuthorized } from 'client/chrome/actions'
 
-export async function setPassword(password) {
+export async function authorize(password) {
   const token = await aesEncrypt(`valid ${Date.now()}`, await sha256(text2buffer(password)))
-  document.cookie = `token=${token}`
+  document.cookie = `token=${token}; path=/`
+}
+
+export async function deauthorize() {
+  document.cookie = 'token=0; path=/'
 }
 
 export default function createNetwork(getStore) {
