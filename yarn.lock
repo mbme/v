@@ -95,8 +95,8 @@ ajv@^4.9.1:
     json-stable-stringify "^1.0.1"
 
 ajv@^5.1.5, ajv@^5.2.3, ajv@^5.3.0:
-  version "5.5.1"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.1.tgz#b38bb8876d9e86bee994956a04e721e88b248eb2"
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.2.tgz#73b5eeca3fab653e3d3f9422b341ad42205dc965"
   dependencies:
     co "^4.6.0"
     fast-deep-equal "^1.0.0"
@@ -1511,6 +1511,10 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
+fast-loops@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fast-loops/-/fast-loops-1.0.0.tgz#2cdd7e0ff67343b2b5f5e627d855a50b4bed559a"
+
 fbjs@^0.8.16:
   version "0.8.16"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.16.tgz#5e67432f550dc41b572bf55847b8aca64e5337db"
@@ -1530,26 +1534,26 @@ feather-icons@^4.0.1:
     classnames "^2.2.5"
 
 fela-dom@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/fela-dom/-/fela-dom-7.0.0.tgz#58b49d038efc7a6f50e3050901fc588f32f2ed34"
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/fela-dom/-/fela-dom-7.0.1.tgz#b09255fceceec3c35f50305ee145e9bc0e3a72c4"
   dependencies:
-    fela-utils "^8.0.0"
-    lodash "^4.17.4"
+    fast-loops "^1.0.0"
+    fela-utils "^8.0.1"
 
-fela-utils@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/fela-utils/-/fela-utils-8.0.0.tgz#99768cbc3ef1a2d45ecc2e21dc9bfe697322451e"
+fela-utils@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/fela-utils/-/fela-utils-8.0.1.tgz#1eb46749370c6adb51629503b5ee7db955498737"
   dependencies:
     css-in-js-utils "^2.0.0"
-    lodash "^4.17.4"
+    fast-loops "^1.0.0"
 
 fela@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/fela/-/fela-6.1.0.tgz#c21f32bca8e68732072b5e50caabfda2fa3a119c"
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/fela/-/fela-6.1.1.tgz#c07bc704fc461a5b92f10ec6b20393c40b2144a1"
   dependencies:
     css-in-js-utils "2.0.0"
-    fela-utils "^8.0.0"
-    lodash "^4.17.4"
+    fast-loops "^1.0.0"
+    fela-utils "^8.0.1"
 
 figures@^2.0.0:
   version "2.0.0"
