@@ -36,6 +36,8 @@ function getNewFiles(db, ids, files) {
 }
 
 const actions = {
+  PING: () => 'PONG',
+
   LIST_RECORDS: (db, { type }) => {
     validateAndThrow(
       [ type, 'Record.type' ],

@@ -25,6 +25,11 @@ test('should handle auth', async (assert) => {
   assert.equal(failed, true)
 })
 
+test('should ping', async (assert) => {
+  const response = await api.ping()
+  assert.equal(response, 'PONG')
+})
+
 test('should manage files', async (assert) => {
   const buffer = Buffer.from('test file content')
   const name = 'super text.json'

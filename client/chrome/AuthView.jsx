@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import s from 'client/styles'
 import { authorize } from 'client/utils/platform'
 import { Backdrop, FormInput } from 'client/components'
-import * as notesActions from 'client/notes/actions'
+import * as chromeActions from './actions'
 
 const BackdropStyles = s.cx({
   backgroundColor: 'var(--bg-color)',
@@ -25,7 +25,7 @@ const Logo = s.cx({
 
 class AuthView extends PureComponent {
   static propTypes = {
-    listNotes: PropTypes.func.isRequired,
+    ping: PropTypes.func.isRequired,
   }
 
   state = {
@@ -42,7 +42,7 @@ class AuthView extends PureComponent {
     await authorize(password)
 
     try {
-      await this.props.listNotes()
+      await this.props.ping()
       window.location.reload()
     } catch (e) {
       console.error(e)
@@ -68,7 +68,7 @@ class AuthView extends PureComponent {
 }
 
 const mapDispatchToProps = {
-  listNotes: notesActions.listNotes,
+  ping: chromeActions.ping,
 }
 
 export default connect(null, mapDispatchToProps)(AuthView)

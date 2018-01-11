@@ -6,6 +6,10 @@ export default function createApiClient(baseUrl, network) {
   const apiPOST = network.POST.bind(null, `${baseUrl}/api`)
 
   return {
+    ping() {
+      return apiPOST({ name: 'PING' })
+    },
+
     getFileUrl(fileId) {
       return baseUrl + getFileUrl(fileId)
     },
