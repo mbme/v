@@ -13,7 +13,7 @@
     "test": "NODE_PATH=. bin/node.js bin/test",
     "test-update": "UPDATE_SNAPSHOTS=true yarn test",
     "lint": "NODE_PATH=. eslint . --ext js,jsx",
-    "cloc": "cloc --vcs=git --exclude-ext=json,md -v *"
+    "cloc": "cloc --vcs=git --exclude-ext=json,md,test.js -v *"
   },
   "dependencies": {
     "babel-register": "^6.24.1",

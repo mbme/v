@@ -132,3 +132,27 @@ export function formatUnixTs(ts) {
     date.getDate(),
   ].join('/')
 }
+
+export function createPubSub() {
+  const subs = new Map()
+
+  return {
+    on(name, handler) {
+      const eventSubs = subs.get(name) || new Set()
+      eventSubs.add(handler)
+      subs.set(name, eventSubs)
+    },
+
+    off(name, handler) {
+      const eventSubs = subs.get(name) || new Set()
+      eventSubs.delete(handler)
+      if (!eventSubs.length) {
+        subs.delete(name)
+      }
+    },
+
+    emit(name, params) {
+      (subs.get(name) || new Set()).forEach(handler => handler(params))
+    },
+  }
+}

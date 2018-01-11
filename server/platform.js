@@ -2,7 +2,7 @@ import http from 'http'
 import urlParser from 'url'
 import { readStream, aesEncrypt, sha256 } from 'server/utils'
 import { serialize } from 'shared/protocol'
-import { CONTENT_TYPE } from 'shared/api'
+import { CONTENT_TYPE } from 'shared/api-client'
 
 function request(method, url, headers, body) {
   return new Promise((resolve, reject) => {
@@ -23,34 +23,34 @@ export default function createNetwork(password) {
   const token = aesEncrypt(`valid ${Date.now()}`, sha256(password))
 
   return {
-    POST(url, action, files = []) {
+    async POST(url, action, files = []) {
       const data = serialize(action, files)
 
-      return request('POST', url, {
+      const resp = await request('POST', url, {
         'Content-Type': CONTENT_TYPE,
         'Content-Length': data.length,
         'Cookie': `token=${token}`,
-      }, data).then(async (resp) => {
-        const body = (await readStream(resp)).toString('utf8')
+      }, data)
 
-        if (resp.statusCode === 200) return JSON.parse(body).data
+      const body = (await readStream(resp)).toString('utf8')
 
-        if (resp.statusCode === 400) throw new Error(JSON.parse(body).error)
+      if (resp.statusCode === 200) return JSON.parse(body).data
 
-        throw new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`)
-      })
+      if (resp.statusCode === 400) throw new Error(JSON.parse(body).error)
+
+      throw new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`)
     },
 
-    GET(url) {
-      return request('GET', url, { 'Cookie': `token=${token}` }).then((resp) => {
-        if (resp.statusCode === 200) return readStream(resp)
+    async GET(url) {
+      const resp = await request('GET', url, { 'Cookie': `token=${token}` })
 
-        resp.resume() // consume response data to free up memory
+      if (resp.statusCode === 200) return readStream(resp)
 
-        if (resp.statusCode === 404) return null
+      resp.resume() // consume response data to free up memory
 
-        return new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`)
-      })
+      if (resp.statusCode === 404) return null
+
+      return new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`)
     },
   }
 }

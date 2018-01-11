@@ -1,9 +1,9 @@
 import { test, before, after } from 'tools/test'
 import startServer from 'server'
-import createNetwork from 'server/network'
+import createNetwork from 'server/platform'
 import { createLink } from 'shared/parser'
 import { sha256 } from 'server/utils'
-import createApiClient from './api'
+import createApiClient from './api-client'
 
 let server
 let api

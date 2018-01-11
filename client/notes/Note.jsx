@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import { getFileUrl } from 'shared/api-client'
 import { parse } from 'shared/parser'
 import s from 'client/styles'
 
@@ -17,15 +18,15 @@ const Image = s.cx({
   padding: 'var(--spacing-medium) 0',
 }, 'section')
 
-function renderItem(item, apiClient) {
+function renderItem(item) {
   switch (item.type) {
     case 'Document': {
-      const children = item.items.map(childItem => renderItem(childItem, apiClient))
+      const children = item.items.map(renderItem)
       return React.createElement('article', { className: Document }, ...children)
     }
 
     case 'Paragraph': {
-      const children = item.items.map(childItem => renderItem(childItem, apiClient))
+      const children = item.items.map(renderItem)
       return React.createElement('p', {}, ...children)
     }
 
@@ -45,7 +46,7 @@ function renderItem(item, apiClient) {
       )
 
     case 'Link': {
-      const url = item.link.isInternal ? apiClient.getFileUrl(item.link.address) : item.link.address
+      const url = item.link.isInternal ? getFileUrl(item.link.address) : item.link.address
 
       if (item.link.type === 'image') {
         return (
@@ -69,15 +70,11 @@ export default class Note extends PureComponent {
     data: PropTypes.string.isRequired,
   }
 
-  static contextTypes = {
-    apiClient: PropTypes.object.isRequired,
-  }
-
   render() {
     return (
       <div>
         <h1 className={Title}>{this.props.name}</h1>
-        {renderItem(parse(this.props.data), this.context.apiClient)}
+        {renderItem(parse(this.props.data))}
       </div>
     )
   }

@@ -54,7 +54,7 @@ export class Backdrop extends PureComponent {
 }
 
 const ModalStyles = s.cx({
-  backgroundColor: 'var(--bg-light)',
+  backgroundColor: 'var(--bg-color)',
   marginTop: '17vh',
   minWidth: '375px',
   padding: 'var(--spacing-medium)',

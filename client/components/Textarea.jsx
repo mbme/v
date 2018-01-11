@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import s from 'client/styles'
 
 const Styles = s.cx({
-  backgroundColor: 'var(--bg-light)',
+  backgroundColor: 'var(--bg-color)',
   display: 'block',
   width: '100%',
   padding: 'var(--spacing-medium)',

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import s from 'client/styles'
 import { Link, IconButton } from 'client/components'
-import { deauthorize } from 'client/utils/network'
+import { deauthorize } from 'client/utils/platform'
 import { showToast } from './actions'
 import AuthView from './AuthView'
 import ProgressLocker from './ProgressLocker'
@@ -48,6 +48,7 @@ const NavLink = isSelected => s.cx({
 const LogoutIcon = s.cx({
   position: 'absolute',
   right: '0',
+  top: '-5px',
 })
 
 class App extends PureComponent {
@@ -57,15 +58,10 @@ class App extends PureComponent {
     isLoading: PropTypes.bool.isRequired,
     routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
     view: PropTypes.node,
-    apiClient: PropTypes.object.isRequired,
     toast: PropTypes.node,
     showToast: PropTypes.func.isRequired,
     showLocker: PropTypes.bool.isRequired,
     authorized: PropTypes.bool.isRequired,
-  }
-
-  static childContextTypes = {
-    apiClient: PropTypes.object.isRequired,
   }
 
   scrollPos = {}
@@ -79,10 +75,6 @@ class App extends PureComponent {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual'
     }
-  }
-
-  getChildContext() {
-    return { apiClient: this.props.apiClient }
   }
 
   componentWillUpdate(nextProps) {

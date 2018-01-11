@@ -9,7 +9,7 @@ const Styles = {
 
 const FormInputStyles = s.cx({
   ...Styles,
-  backgroundColor: 'var(--bg-light)',
+  backgroundColor: 'var(--bg-color)',
   padding: 'var(--spacing-small)',
 }, 'with-border')
 

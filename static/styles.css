@@ -6,28 +6,23 @@
     Ubuntu, Cantarell, "Fira Sans", /* Ubuntu, Gnome, Firefox OS */
     "Droid Sans", "Helvetica Neue", sans-serif; /* Old Android */
   --line-height: 1.35;
-  --font-size: 24px;
+  --font-size: 22px;
 
   --color: #333;
   --color-primary: #e66164;
   --color-secondary: #BDBDBD;
   --color-link: #54B2D8;
 
-  /* --bg-color: #fafafa; */
   --bg-color: #fff;
-  --bg-light: #fff;
 
   --border: 1px solid rgba(0,0,0,.09);
   --box-shadow: 0 2px 4px rgba(0,0,0,.2);
 
-  --spacing-xxlarge: 8rem;
-  --spacing-xlarge: 4rem;
   --spacing-large: 2rem;
-  --spacing-medium: 1rem;
+  --spacing-medium: 1.25rem;
   --spacing-small: 0.5rem;
   --spacing-fine: 0.25rem;
 
-  --font-size-xxlarge: 3.157rem;
   --font-size-xlarge: 2.369rem;
   --font-size-large: 1.777rem;
   --font-size-medium: 1rem;
@@ -197,7 +192,7 @@ samp {
 
 pre {
   margin-top: 0; /* Remove browser default top margin */
-  margin-bottom: var(--spacing-medium); /* Reset browser default of `1em` to use `rem`s */
+  margin-bottom: var(--spacing-medium);
   overflow: auto; /* Don't allow content to break outside */
 }
 

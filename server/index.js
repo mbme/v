@@ -4,7 +4,7 @@ import urlParser from 'url'
 
 import { readStream, existsFile, listFiles, readFile } from 'server/utils'
 import { extend } from 'shared/utils'
-import { CONTENT_TYPE } from 'shared/api'
+import { CONTENT_TYPE } from 'shared/api-client'
 import { parse } from 'shared/protocol'
 import createProcessor from './processor'
 
