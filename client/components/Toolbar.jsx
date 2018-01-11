@@ -13,11 +13,13 @@ const Content = s.cx({
   padding: 'var(--spacing-fine) 0',
 }, 'section')
 
+const Cell = 'flex flex-center flex-vertical-center'
+
 export default function Toolbar({ left, right }) {
   return (
     <div className={Content}>
-      <div className="flex">{left}</div>
-      <div className="flex">{right}</div>
+      <div className={Cell}>{left}</div>
+      <div className={Cell}>{right}</div>
     </div>
   )
 }

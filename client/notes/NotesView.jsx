@@ -30,7 +30,7 @@ class NotesView extends PureComponent {
       .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
       .sort(recent)
       .map(note => (
-        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className="section">
+        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className="section flex">
           <small className={Time}>{formatUnixTs(note.updatedTs)}</small>
           {note.name}
         </Link>
@@ -54,7 +54,7 @@ class NotesView extends PureComponent {
 
     const addBtn = (
       <Link to={{ name: 'add-note' }}>
-        <Button primary>Add</Button>
+        <Button raised primary>Add</Button>
       </Link>
     )
 

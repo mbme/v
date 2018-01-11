@@ -332,12 +332,18 @@ select {
 
 .flex {
   display: flex;
+}
+
+.flex-center {
   justify-content: center;
-  align-items: center;
 }
 
 .flex-end {
   justify-content: flex-end;
+}
+
+.flex-vertical-center {
+  align-items: center;
 }
 
 .cursor-pointer {
