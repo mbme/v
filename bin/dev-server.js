@@ -24,11 +24,21 @@ async function run() {
 
   console.log(`server http://localhost:${port}`)
 
-  process.on('SIGINT', async () => {
-    console.log('Stopping...')
-    await server.close()
-    process.exit(1)
-  })
+  async function close() {
+    try {
+      await server.close()
+      process.exit(0)
+    } catch (e) {
+      console.error('Failed to stop server:', e)
+      process.exit(1)
+    }
+  }
+
+  process.on('SIGINT', close)
+  process.on('SIGTERM', close)
 }
 
-run()
+run().catch((e) => {
+  console.error('Failed to start server:', e)
+  process.exit(2)
+})
