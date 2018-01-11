@@ -75,6 +75,8 @@ export default async function startServer(port, customOptions) {
   const server = http.createServer(async (req, res) => {
     const start = process.hrtime()
 
+    res.setHeader('Referrer-Policy', 'no-referrer')
+
     try {
       const url = urlParser.parse(req.url, true)
 
