@@ -30,7 +30,7 @@ class NoteEditorView extends PureComponent {
     data: this.props.data,
   }
 
-  files = {}
+  localFiles = {}
 
   textAreaRef = null
 
@@ -53,7 +53,7 @@ class NoteEditorView extends PureComponent {
   getAttachments() {
     const ids = extractFileIds(parse(this.state.data))
     // TODO filter out known files
-    return Object.entries(this.files).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file)
+    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file)
   }
 
   onFilesSelected = async (files) => {
@@ -70,7 +70,12 @@ class NoteEditorView extends PureComponent {
 
       links.push((isImage(file.name) ? createImageLink : createLink)(file.name, hash))
 
-      this.files[hash] = { name: file.name, data }
+      if (!this.localFiles[hash]) {
+        this.localFiles = {
+          ...this.localFiles,
+          [hash]: { name: file.name, data, file },
+        }
+      }
     }))
 
     this.props.showLocker(false)
@@ -109,7 +114,7 @@ class NoteEditorView extends PureComponent {
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref }} />
         </div>
 
-        {preview && <Note name={name} data={data} />}
+        {preview && <Note name={name} data={data} localFiles={this.localFiles} />}
       </div>
     )
   }
