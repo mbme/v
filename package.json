@@ -11,7 +11,7 @@
     "start": "NODE_PATH=. NODE_ENV=production bin/node.js bin/server",
     "dev": "NODE_PATH=. bin/node.js bin/dev-server",
     "test": "NODE_PATH=. bin/node.js bin/test",
-    "test-update": "UPDATE_SNAPSHOTS=true yarn test",
+    "test-update": "yarn test --update-snapshots",
     "lint": "NODE_PATH=. eslint . --ext js,jsx",
     "cloc": "cloc --vcs=git --exclude-ext=json,md,test.js -v *"
   },

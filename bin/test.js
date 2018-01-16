@@ -3,8 +3,9 @@ import path from 'path'
 import { walkSync } from 'server/utils'
 import { collectTests, runTests } from 'tools/test'
 
-const filter = process.argv.length > 3 ? process.argv[3] : ''
-const updateSnapshots = process.env.UPDATE_SNAPSHOTS === 'true'
+const args = process.argv.slice(3)
+const filter = args.filter(arg => !arg.startsWith('--'))[0] || ''
+const updateSnapshots = args.includes('--update-snapshots')
 
 const basePath = path.join(__dirname, '..')
 const testFiles = walkSync(basePath)
