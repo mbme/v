@@ -19,7 +19,7 @@ const MIME = {
 const withContentType = type => MIME[type] ? { 'Content-Type': MIME[type] } : {}
 const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
 
-const STATIC_DIR = path.join(__dirname, '../static')
+const STATIC_DIR = path.join(__dirname, '../client/static')
 const DIST_DIR = path.join(__dirname, '../dist')
 
 async function getFile(dir, name) {
