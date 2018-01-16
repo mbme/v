@@ -4,8 +4,9 @@ import { existsFile, ask } from 'server/utils'
 async function run() {
   if (process.env.NODE_ENV !== 'production') console.warn('WARN: server should run in production mode')
 
-  const dbFile = process.env.QV_DB
-  if (!dbFile) throw new Error('QV_DB must contain db file path')
+  const args = process.argv.slice(3)
+  const dbFile = args[0]
+  if (!dbFile) throw new Error('db file path must be provided')
 
   let password = ''
   if (!await existsFile(dbFile)) {
