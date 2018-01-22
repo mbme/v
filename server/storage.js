@@ -1,11 +1,27 @@
-
+/**
+ * RecordType: 'note' | 'todo'
+ * File: { id: string, name: string, data: blob }
+ * Record: { type: RecordType, id: string, name: string, data: string }
+ */
 export default function createStorage(path) {
   const cache = {
-    records: {},
-    files: {},
-    byId: {},
-    kvs: {},
+    records: {}, // [Record.type]: { [Record.id]: Record }
+    byId: {}, // [Record.id]: Record
+    files: {}, // [File.id]: File
+    kvs: {}, // [namespace]: { [key]: value }
   }
+
+  const lock = {
+    locked: false,
+    queue: [],
+  }
+
+  async function unlocked() {
+    if (!lockQueue) return
+    await new Promise(resolve => lockQueue.push(resolve))
+  }
+
+
 
   // TODO fill cache
 
@@ -16,15 +32,40 @@ export default function createStorage(path) {
 
     // Records
 
-    listRecords(type) {
+    async listRecords(type) {
+      await unlocked()
+
       return cache.records[type]
     },
 
-    createRecord(type, name, data, newFiles) {
+    /**
+     * @param {RecordType} type
+     * @param {string} name
+     * @param {string} data
+     * @param {File[]} newFiles
+     */
+    async createRecord(type, name, data, newFiles) {
+      await unlocked()
 
+      // lock
+      try {
+
+        await Promise.all([
+          writeRecord(type, name, data),
+          ...newFiles.filter(file => !!cache.files[file.id]).map(writeFile), // FIXME
+        ])
+
+      } catch (e) {
+        console.error(e);
+        // remove redundant files
+      } finally {
+        // unlock
+      }
     },
 
     readRecord(id) {
+      await unlocked()
+
       return cache.byId[id]
       // TODO return
     },
