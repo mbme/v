@@ -1,7 +1,20 @@
 import { extractFileIds, parse } from 'shared/parser'
+import { uniq, extend } from 'shared/utils'
 import { sha256 } from 'server/utils'
 
+function prepareAttachments(attachments) {
+  const files = {}
+
+  for (const attachment of attachments) {
+    files[sha256(attachment.data)] = attachment
+  }
+
+  return files
+}
+
+
 /**
+ * RecordId: number // positive integer
  * RecordType: 'note' | 'todo'
  * Record: { type: RecordType, id: string, name: string, data: string, files: File[] }
  * File: { id: string, name: string }
@@ -36,10 +49,6 @@ export default function createStorage(path) {
     })
   }
 
-  function writeRecord(type, name, data) {
-
-  }
-
   function writeFile(id, name, data) {
 
   }
@@ -48,18 +57,85 @@ export default function createStorage(path) {
 
   }
 
+  async function removeUnusedFiles() {
+    const idsInUse = uniq(Object.values(cache.records).reduce((ids, record) => ids.push(...record.files.map(file => file.id)), []))
+    const allIds = Object.keys(cache.files)
+
+    const unusedIds = allIds.filter(fileId => !idsInUse.includes(fileId))
+
+    await Promise.all(unusedIds.map(async (fileId) => {
+      delete cache.files[fileId]
+      return removeFile(fileId).catch(err => console.error(`failed to remove redundant file ${fileId}`, err))
+    }))
+  }
+
+  function writeRecord(id, type, name, data) {
+
+  }
+
+  async function removeRecord(id) {
+
+
+    await removeUnusedFiles()
+  }
+
+
+  async function saveRecord(id, type, name, data, attachments) {
+    const prevRecord = cache.records[id]
+    if (prevRecord && prevRecord.type !== type) throw new Error(`Wrong type ${prevRecord.type}, should be ${type}`)
+
+    const fileIds = extractFileIds(parse(data))
+
+    const newIds = fileIds.filter(fileId => !cache.files[fileId])
+    if (newIds.length !== attachments.length) console.error('WARN: there are redundant new files')
+
+    const attachedFiles = prepareAttachments(attachments)
+
+    const unknownIds = newIds.filter(fileId => !attachedFiles[fileId])
+    if (unknownIds.length) throw new Error(`Can't attach files with unknown ids: ${unknownIds}`)
+
+    try {
+      // 1. write new files
+      const newFiles = await Promise.all(newIds.map(fileId => writeFile(fileId, attachedFiles[fileId].name, attachedFiles[fileId].data)))
+
+      // 2. write new record data
+      await writeRecord(id, type, name, data)
+
+      // 3. update files cache
+      for (const file of newFiles) {
+        cache.files[file.id] = file
+      }
+
+      const record = { id, type, name, data, files: fileIds.map(fileId => cache.files[fileId]) }
+
+      // 4. update records cache
+      cache.records[id] = record
+
+      // 5. remove unused files if needed
+      if (prevRecord) await removeUnusedFiles()
+
+      return record
+    } catch (e) {
+      console.error('failed to save record', e)
+
+      // remove leftover files
+      await Promise.all(newIds.map(removeFile)).catch(err => console.error('cleanup failed', err))
+
+      throw e
+    }
+  }
+
   // TODO fill cache
 
   return {
-    checkConsistency() {
-      throw new Error('NYI')
-    },
-
     // Records
 
-    // atomic
     listRecords(type) {
       return queue(async () => Object.values(cache.records).filter(record => record.type === type))
+    },
+
+    readRecord(id) {
+      return queue(() => cache.records[id])
     },
 
     /**
@@ -70,87 +146,75 @@ export default function createStorage(path) {
      */
     createRecord(type, name, data, attachments) {
       return queue(async () => {
-        const newFiles = {}
-        attachments.forEach((attachment) => {
-          newFiles[sha256(attachment.data)] = attachment
-        })
+        const id = Math.max(0, ...Object.keys(cache.records)) + 1
 
-        const newIds = extractFileIds(parse(data)).filter(id => !cache.files[id])
-
-        const unknownIds = newIds.filter(id => !newFiles[id])
-        if (unknownIds.length) throw new Error(`Can't attach files with unknown ids: ${unknownIds}`)
-
-        if (newIds.length !== attachments.length) {
-          console.error('WARN: there are redundant new files')
-        }
-
-        try {
-          const files = await Promise.all(newIds.map(id => writeFile(id, newFiles[id].name, newFiles[id].data)))
-
-          const id = await writeRecord(type, name, data)
-
-          // update cache
-          const record = { id, type, name, data, files }
-          cache.records[id] = record
-          files.forEach((file) => {
-            cache.files[file.id] = file
-          })
-
-          return id
-        } catch (e) {
-          console.error(e)
-
-          // remove leftover files
-          await Promise.all(newIds.map(removeFile))
-
-          throw e
-        }
+        return saveRecord(id, type, name, data, attachments)
       })
     },
 
-    readRecord(id) {
-      return queue(() => cache.records[id])
-    },
+    /**
+     * @param {RecordId} id
+     * @param {string} name
+     * @param {string} data
+     * @param {NewFile[]} attachments
+     */
+    updateRecord(id, name, data, attachments) {
+      return queue(() => {
+        const record = cache.records[id]
+        if (!record) throw new Error(`Record ${id} doesn't exist`)
 
-    updateRecord(id, name, data, newFiles) {
-
+        return saveRecord(id, record.type, name, data, attachments)
+      })
     },
 
     deleteRecord(id) {
+      return queue(() => {
+        if (!cache.records[id]) throw new Error(`Record ${id} doesn't exist`)
 
+        return removeRecord(id)
+      })
     },
 
     readFile(fileId) {
-      if (!cache.files[fileId]) {
-        return null
-      }
-      // TODO return
+      return queue(() => {
+        if (!cache.files[fileId]) return null
+
+        // TODO read file
+      })
     },
 
     // KVS
 
     get(namespace, key) {
-      if (!cache.kvs[namespace]) return undefined
-      return cache.kvs[namespace][key]
+      return queue(() => {
+        if (!cache.kvs[namespace]) return undefined
+
+        return cache.kvs[namespace][key]
+      })
     },
 
     set(namespace, key, value) {
-      if (!cache.kvs[namespace]) cache.kvs[namespace] = {}
-      cache.kvs[namespace][key] = value
+      return queue(async () => {
+        const kvs = extend(cache.kvs, {
+          [namespace]: {
+            ...cache.kvs[namespace],
+            [key]: value,
+          },
+        })
 
-      // TODO write
+        await writeKvs(kvs)
+
+        // update cache
+        cache.kvs = kvs
+      })
     },
 
     remove(namespace, key) {
-      if (!cache.kvs[namespace]) return
-
-      delete cache.kvs[namespace][key]
-
-      // TODO write
+      return this.set(namespace, key, undefined)
     },
 
     close() {
-      return new Promise(resolve => closeCb = resolve)
+      return new Promise((resolve) => { closeCb = resolve })
     },
   }
 }
