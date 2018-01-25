@@ -1,15 +1,48 @@
+import path from 'path'
 import { extractFileIds, parse } from 'shared/parser'
 import { uniq, extend } from 'shared/utils'
-import { sha256 } from 'server/utils'
+import * as utils from 'server/utils'
 
-function prepareAttachments(attachments) {
-  const files = {}
+function createStorageFs(baseDir) {
+  const filesBaseDir = path.join(baseDir, 'files')
 
-  for (const attachment of attachments) {
-    files[sha256(attachment.data)] = attachment
+  async function atomicWriteText(file, data) {
+    await utils.writeText(`${file}.atomic-temp`, data)
+    return utils.renameFile(`${file}.atomic-temp`, file)
   }
 
-  return files
+  return {
+    async writeAttachment(id, name, data) {
+      const file = path.join(filesBaseDir, `${id}_${name}`)
+      if (utils.existsFile(file)) throw new Error(`Attachment ${file} already exists`)
+
+      await utils.writeFile(file, data)
+    },
+
+    async removeAttachment(id, name) {
+      try {
+        await utils.deleteFile(path.join(baseDir, 'files', `${id}_${name}`))
+      } catch (e) {
+        console.error(`failed to remove attachment file ${id}`, e)
+      }
+    },
+
+    async readAttachment(id, name) {
+      return utils.readFile(path.join(baseDir, 'files', `${id}_${name}`))
+    },
+
+    async writeRecord(id, type, name, data) {
+      await atomicWriteText(path.join(baseDir, type, `${id}_${name}.mb`), data)
+    },
+
+    async removeRecord(id, type, name) {
+      await utils.deleteFile(path.join(baseDir, type, `${id}_${name}.mb`))
+    },
+
+    async writeKvs(kvs) {
+      await atomicWriteText(path.join(baseDir, 'kvs.json'), JSON.stringify(kvs, null, 2))
+    },
+  }
 }
 
 
@@ -19,8 +52,9 @@ function prepareAttachments(attachments) {
  * Record: { type: RecordType, id: string, name: string, data: string, files: File[] }
  * File: { id: string, name: string }
  * NewFile: { name: string, data: Buffer }
+ * Attachment: { id: string, name: string, data: Buffer }
  */
-export default function createStorage(path) {
+export default function createStorage(baseDir) {
   const cache = {
     records: {}, // [Record.type]: { [Record.id]: Record }
     files: {}, // [File.id]: File
@@ -30,6 +64,7 @@ export default function createStorage(path) {
   let immediateId = null
   let closeCb
   const _queue = []
+  const fs = createStorageFs(baseDir)
 
   async function processQueue() {
     while (_queue.length) {
@@ -49,14 +84,6 @@ export default function createStorage(path) {
     })
   }
 
-  function writeFile(id, name, data) {
-
-  }
-
-  function removeFile(id) {
-
-  }
-
   async function removeUnusedFiles() {
     const idsInUse = uniq(Object.values(cache.records).reduce((ids, record) => ids.push(...record.files.map(file => file.id)), []))
     const allIds = Object.keys(cache.files)
@@ -64,21 +91,10 @@ export default function createStorage(path) {
     const unusedIds = allIds.filter(fileId => !idsInUse.includes(fileId))
 
     await Promise.all(unusedIds.map(async (fileId) => {
+      await fs.removeAttachment(fileId, cache.files[fileId].name)
       delete cache.files[fileId]
-      return removeFile(fileId).catch(err => console.error(`failed to remove redundant file ${fileId}`, err))
     }))
   }
-
-  function writeRecord(id, type, name, data) {
-
-  }
-
-  async function removeRecord(id) {
-
-
-    await removeUnusedFiles()
-  }
-
 
   async function saveRecord(id, type, name, data, attachments) {
     const prevRecord = cache.records[id]
@@ -89,43 +105,51 @@ export default function createStorage(path) {
     const newIds = fileIds.filter(fileId => !cache.files[fileId])
     if (newIds.length !== attachments.length) console.error('WARN: there are redundant new files')
 
-    const attachedFiles = prepareAttachments(attachments)
+    const attachedFiles = {}
+    for (const attachment of attachments) {
+      attachedFiles[utils.sha256(attachment.data)] = attachment
+    }
 
     const unknownIds = newIds.filter(fileId => !attachedFiles[fileId])
     if (unknownIds.length) throw new Error(`Can't attach files with unknown ids: ${unknownIds}`)
 
+    let newFiles = [] // File[]
     try {
       // 1. write new files
-      const newFiles = await Promise.all(newIds.map(fileId => writeFile(fileId, attachedFiles[fileId].name, attachedFiles[fileId].data)))
+      newFiles = await Promise.all(newIds.map(async (fileId) => {
+        const file = attachedFiles[fileId]
+        await fs.writeAttachment(fileId, file.name, file.data)
+
+        return { id: fileId, name: file.name }
+      }))
 
       // 2. write new record data
-      await writeRecord(id, type, name, data)
-
-      // 3. update files cache
-      for (const file of newFiles) {
-        cache.files[file.id] = file
-      }
-
-      const record = { id, type, name, data, files: fileIds.map(fileId => cache.files[fileId]) }
-
-      // 4. update records cache
-      cache.records[id] = record
-
-      // 5. remove unused files if needed
-      if (prevRecord) await removeUnusedFiles()
-
-      return record
+      await fs.writeRecord(id, type, name, data)
     } catch (e) {
       console.error('failed to save record', e)
 
       // remove leftover files
-      await Promise.all(newIds.map(removeFile)).catch(err => console.error('cleanup failed', err))
+      await Promise.all(newFiles.map(file => fs.removeAttachment(file.id, file.name)))
 
       throw e
     }
+
+    // 3. update files cache
+    for (const file of newFiles) {
+      cache.files[file.id] = file
+    }
+
+    // 4. update records cache
+    const record = { id, type, name, data, files: fileIds.map(fileId => cache.files[fileId]) }
+    cache.records[id] = record
+
+    // 5. remove unused files if needed
+    if (prevRecord) await removeUnusedFiles()
+
+    return record
   }
 
-  // TODO fill cache
+  // FIXME fill cache
 
   return {
     // Records
@@ -168,18 +192,27 @@ export default function createStorage(path) {
     },
 
     deleteRecord(id) {
-      return queue(() => {
-        if (!cache.records[id]) throw new Error(`Record ${id} doesn't exist`)
+      return queue(async () => {
+        const record = cache.records[id]
+        if (!record) throw new Error(`Record ${id} doesn't exist`)
 
-        return removeRecord(id)
+        await fs.removeRecord(id, record.type, record.name)
+        await removeUnusedFiles()
       })
     },
 
+    /**
+     * @returns {Attachment?}
+     */
     readFile(fileId) {
-      return queue(() => {
-        if (!cache.files[fileId]) return null
+      return queue(async () => {
+        const attachment = cache.files[fileId]
+        if (!attachment) return null
 
-        // TODO read file
+        return {
+          ...attachment,
+          data: await fs.readAttachment(fileId, attachment.name),
+        }
       })
     },
 
@@ -202,7 +235,7 @@ export default function createStorage(path) {
           },
         })
 
-        await writeKvs(kvs)
+        await fs.writeKvs(kvs)
 
         // update cache
         cache.kvs = kvs

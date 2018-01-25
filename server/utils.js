@@ -61,6 +61,7 @@ export const writeText = (name, data) => writeFile(name, data, 'utf8')
 export const writeJSON = (name, data) => writeText(name, JSON.stringify(data, null, 2))
 
 export const deleteFile = promisify(fs.unlink)
+export const renameFile = promisify(fs.rename)
 
 export function ask(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout })

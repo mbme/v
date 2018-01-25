@@ -1,5 +1,5 @@
 import { test } from 'tools/test'
-import { serialize, parse, ENCODING } from './protocol'
+import { serialize, parse } from './protocol'
 
 const buffer = Buffer.from('test file')
 const name = 'super text.json'
@@ -8,7 +8,7 @@ const getFile = () => ({ name, data: buffer })
 test('serialization', (assert) => {
   const action = { name: 'TEST' }
   const files = [ getFile(), getFile() ]
-  assert.matchSnapshot(serialize(action, files).toString(ENCODING))
+  assert.matchSnapshot(serialize(action, files).toString('utf8'))
 })
 
 test('deserialization', (assert) => {

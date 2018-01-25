@@ -7,9 +7,8 @@
 // FORMAT: [length action_string [length fileName length file]*]
 
 const SEPARATOR = ' '
-export const ENCODING = 'utf8'
 
-const str2buffer = str => Buffer.from(str, ENCODING)
+const str2buffer = str => Buffer.from(str, 'utf8')
 const serializeItem = buffer => [ str2buffer(String(buffer.length)), str2buffer(SEPARATOR), buffer ]
 const serializeItems = (buffers) => {
   const items = buffers.reduce((acc, buffer) => {
@@ -34,9 +33,9 @@ function getItems(buffer) {
     // read item length
     const lengthEnd = buffer.indexOf(SEPARATOR, pos)
     if (lengthEnd <= pos) throw new Error('no length end')
-    const lengthStr = buffer.toString(ENCODING, pos, lengthEnd)
+    const lengthStr = buffer.toString('utf8', pos, lengthEnd)
     if (!lengthStr.match(/^\d+$/)) throw new Error('corrupted item length')
-    const length = parseInt(buffer.toString(ENCODING, pos, lengthEnd), 10)
+    const length = parseInt(buffer.toString('utf8', pos, lengthEnd), 10)
     pos = lengthEnd + 1
 
     // read item
@@ -51,14 +50,14 @@ function getItems(buffer) {
 
 export function parse(buffer) {
   const [ actionBuffer, ...filePartBuffers ] = getItems(buffer)
-  const action = JSON.parse(actionBuffer.toString(ENCODING))
+  const action = JSON.parse(actionBuffer.toString('utf8'))
 
   if (filePartBuffers.length % 2 !== 0) throw new Error('odd fileParts count')
 
   const files = []
   for (let i = 0; i < filePartBuffers.length; i += 2) {
     files.push({
-      name: filePartBuffers[i].toString(ENCODING),
+      name: filePartBuffers[i].toString('utf8'),
       data: filePartBuffers[i + 1],
     })
   }
