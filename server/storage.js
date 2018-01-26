@@ -61,26 +61,29 @@ export default function createStorage(baseDir) {
     kvs: {}, // [namespace]: { [key]: value }
   }
 
-  let immediateId = null
-  let closeCb
-  const _queue = []
+  const internal = {
+    immediateId: null,
+    onClose: null,
+    queue: [],
+  }
+
   const fs = createStorageFs(baseDir)
 
   async function processQueue() {
-    while (_queue.length) {
-      const action = _queue.shift()
+    while (internal.queue.length) {
+      const action = internal.queue.shift()
       await action().catch(e => console.error('queued action failed', e)) // eslint-disable-line no-await-in-loop
     }
-    immediateId = null
-    if (closeCb) closeCb()
+    internal.immediateId = null
+    if (internal.onClose) internal.onClose()
   }
 
   function queue(action) {
     return new Promise((resolve, reject) => {
-      if (closeCb) throw new Error('closing storage')
+      if (internal.onClose) throw new Error('closing storage')
 
-      _queue.push(() => action().then(resolve, reject))
-      if (!immediateId) immediateId = setImmediate(processQueue)
+      internal.queue.push(() => action().then(resolve, reject))
+      if (!internal.immediateId) internal.immediateId = setImmediate(processQueue)
     })
   }
 
@@ -247,7 +250,7 @@ export default function createStorage(baseDir) {
     },
 
     close() {
-      return new Promise((resolve) => { closeCb = resolve })
+      return new Promise((resolve) => { internal.onClose = resolve })
     },
   }
 }
