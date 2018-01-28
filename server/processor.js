@@ -1,39 +1,7 @@
-import { validateAndThrow } from 'shared/validators'
 import { extractFileIds, parse } from 'shared/parser'
+import { validateAndThrow } from 'server/validators'
 import { sha256, aesDecrypt, existsFile } from 'server/utils'
-import getDB from './db'
-
-function getNewFiles(db, ids, files) {
-  const newFiles = {}
-  files.forEach((file) => {
-    const id = sha256(file.data)
-
-    if (newFiles[id]) {
-      console.error(`WARN: duplicate file with id ${id}: ${file.name} & ${newFiles[id].name}`)
-      return
-    }
-
-    newFiles[id] = file
-  })
-
-  const filesToAdd = []
-  ids.forEach((id) => {
-    if (db.isKnownFile(id)) {
-      return
-    }
-
-    const file = newFiles[id]
-    if (!file) throw new Error(`Can't attach file with unknown id ${id}`)
-
-    filesToAdd.push({ id, name: file.name, data: file.data })
-  })
-
-  if (Object.keys(newFiles).length !== filesToAdd.length) {
-    console.error('WARN: there are redundant new files')
-  }
-
-  return filesToAdd
-}
+import createStorage from 'server/storage'
 
 const actions = {
   PING: () => 'PONG',
@@ -113,7 +81,7 @@ const actions = {
 export default async function createProcessor({ dbFile, inMemDb, password }) {
   const dbFileExists = await existsFile(dbFile)
 
-  const db = await getDB(dbFile, inMemDb)
+  const storage = await createStorage(dbFile)
 
   if (!dbFileExists) db.set('security', 'password', sha256(password))
 

@@ -1,4 +1,4 @@
-/* eslint-disable import/no-dynamic-require, global-require, no-await-in-loop */
+/* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path'
 import { walkSync } from 'server/utils'
 import { collectTests, runTests } from 'tools/test'

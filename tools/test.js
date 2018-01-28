@@ -1,4 +1,4 @@
-/* eslint-disable no-await-in-loop, no-underscore-dangle */
+/* eslint-disable no-underscore-dangle */
 
 import fs from 'fs'
 import assert from 'assert'

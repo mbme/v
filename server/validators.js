@@ -1,12 +1,11 @@
 import { getIn, getType, isString, isObject, isFunction, isArray } from 'shared/utils'
-
-const RECORD_TYPES = [ 'note' ]
+import { RECORD_TYPES } from 'server/storage'
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
   'record-type': val => RECORD_TYPES.includes(val),
   'string': isString,
-  'string!': val => isString(val) && val,
+  'string!': val => isString(val) && val, // not empty string
   'buffer': Buffer.isBuffer,
   'Record': {
     id: 'positive-integer',
@@ -18,7 +17,7 @@ const Types = {
     name: 'string!',
     data: 'buffer',
   },
-  'file-id': 'string!',
+  'file-id': 'string!', // FIXME sha256
 }
 
 /**

@@ -47,7 +47,15 @@ export function walkSync(dir, skipDir = [ '.git', 'node_modules' ]) {
   return fileList
 }
 
-export const listFiles = promisify(fs.readdir)
+export const listDirContent = promisify(fs.readdir)
+export const statFile = promisify(fs.lstat)
+export const isFile = filePath => statFile(filePath).then(stats => stats.isFile())
+export const isDirectory = filePath => statFile(filePath).then(stats => stats.isDirectory())
+export async function listFiles(filePath) {
+  const dirContent = await listDirContent(filePath)
+  const fileCheckResults = await Promise.all(dirContent.map(item => isFile(path.join(dirContent, item))))
+  return dirContent.filter((_, i) => fileCheckResults[i])
+}
 
 // use sync version here cause fs.exists has been deprecated
 export const existsFile = name => Promise.resolve(fs.existsSync(name))
@@ -62,6 +70,7 @@ export const writeJSON = (name, data) => writeText(name, JSON.stringify(data, nu
 
 export const deleteFile = promisify(fs.unlink)
 export const renameFile = promisify(fs.rename)
+export const mkdir = promisify(fs.mkdir)
 
 export function ask(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout })

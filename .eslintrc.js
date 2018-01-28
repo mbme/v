@@ -35,6 +35,7 @@ module.exports = {
     'max-len': 0,
     'no-console': 0,
     'no-confusing-arrow': 0,
+    'no-await-in-loop': 0,
     'no-unused-expressions': [
       'error',
       {
