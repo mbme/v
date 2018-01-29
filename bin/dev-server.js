@@ -16,7 +16,7 @@ const compilationPromise = new Promise((resolve, reject) => {
 
 async function run() {
   const [ server ] = await Promise.all([
-    startServer(port, { dbFile: '/tmp/db', inMemDb: true, password }),
+    startServer(port, { rootDir: '/tmp/db', password }),
     compilationPromise,
   ])
 

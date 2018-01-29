@@ -1,20 +1,18 @@
-import { extractFileIds, parse } from 'shared/parser'
 import { validateAndThrow } from 'server/validators'
-import { sha256, aesDecrypt, existsFile } from 'server/utils'
 import createStorage from 'server/storage'
 
 const actions = {
-  PING: () => 'PONG',
+  'PING': () => 'PONG',
 
-  LIST_RECORDS: (db, { type }) => {
+  'LIST_RECORDS': (storage, { type }) => {
     validateAndThrow(
       [ type, 'Record.type' ],
     )
 
-    return db.listRecords(type)
+    return storage.listRecords(type)
   },
 
-  CREATE_RECORD: (db, { type, name, data }, files) => {
+  'CREATE_RECORD': (storage, { type, name, data }, files) => {
     validateAndThrow(
       [ type, 'Record.type' ],
       [ name, 'Record.name' ],
@@ -22,21 +20,10 @@ const actions = {
       [ files, 'File[]' ],
     )
 
-    const fileIds = extractFileIds(parse(data))
-    const filesToAdd = getNewFiles(db, fileIds, files)
-
-    return db.inTransaction(() => {
-      db.addFiles(filesToAdd)
-
-      const id = db.createRecord(type, name, data)
-
-      db.addConnections(id, fileIds)
-
-      return id
-    })
+    return storage.createRecord(type, name, data, files)
   },
 
-  UPDATE_RECORD: (db, { id, name, data }, files) => {
+  'UPDATE_RECORD': (storage, { id, name, data }, files) => {
     validateAndThrow(
       [ id, 'Record.id' ],
       [ name, 'Record.name' ],
@@ -44,66 +31,40 @@ const actions = {
       [ files, 'File[]' ],
     )
 
-    const fileIds = extractFileIds(parse(data))
-    const filesToAdd = getNewFiles(db, fileIds, files)
-
-    return db.inTransaction(() => {
-      if (!db.updateRecord(id, name, data)) throw new Error(`Record ${id} doesn't exist`)
-
-      db.addFiles(filesToAdd)
-      db.removeConnections(id)
-      db.addConnections(id, fileIds)
-      db.removeUnusedFiles()
-    })
+    return storage.updateRecord(id, name, data, files)
   },
 
-  DELETE_RECORD: (db, { id }) => {
+  'DELETE_RECORD': (storage, { id }) => {
     validateAndThrow(
       [ id, 'Record.id' ],
     )
 
-    return db.inTransaction(() => {
-      if (!db.deleteRecord(id)) throw new Error(`Record ${id} doesn't exist`)
-
-      db.removeUnusedFiles()
-    })
+    return storage.deleteRecord(id)
   },
 
-  READ_FILE: (db, { id }) => {
+  'READ_FILE': (storage, { id }) => {
     validateAndThrow(
       [ id, 'file-id' ],
     )
 
-    return db.readFile(id)
+    return storage.readFile(id)
   },
 }
 
-export default async function createProcessor({ dbFile, inMemDb, password }) {
-  const dbFileExists = await existsFile(dbFile)
-
-  const storage = await createStorage(dbFile)
-
-  if (!dbFileExists) db.set('security', 'password', sha256(password))
+export default async function createProcessor({ rootDir }) {
+  console.log('root dir: ', rootDir)
+  const storage = await createStorage(rootDir)
 
   return {
     processAction({ action: { name, data }, files = [] }) {
       const action = actions[name]
       if (!action) throw new Error(`unknown action: ${name}`)
 
-      return action(db, data, files)
-    },
-
-    // token: AES("valid <generation timestamp>", SHA256(password))
-    isValidAuth(token) {
-      try {
-        return /^valid \d+$/.test(aesDecrypt(token, db.get('security', 'password')))
-      } catch (ignored) {
-        return false
-      }
+      return action(storage, data, files)
     },
 
     close() {
-      db.close()
+      return storage.close()
     },
   }
 }

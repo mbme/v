@@ -47,13 +47,27 @@ export function walkSync(dir, skipDir = [ '.git', 'node_modules' ]) {
   return fileList
 }
 
+export function rmrfSync(dir) {
+  for (const file of fs.readdirSync(dir)) {
+    const filePath = path.join(dir, file)
+
+    if (fs.statSync(filePath).isDirectory()) {
+      rmrfSync(filePath)
+    } else {
+      fs.unlinkSync(filePath)
+    }
+  }
+
+  fs.rmdirSync(dir)
+}
+
 export const listDirContent = promisify(fs.readdir)
 export const statFile = promisify(fs.lstat)
 export const isFile = filePath => statFile(filePath).then(stats => stats.isFile())
 export const isDirectory = filePath => statFile(filePath).then(stats => stats.isDirectory())
 export async function listFiles(filePath) {
   const dirContent = await listDirContent(filePath)
-  const fileCheckResults = await Promise.all(dirContent.map(item => isFile(path.join(dirContent, item))))
+  const fileCheckResults = await Promise.all(dirContent.map(item => isFile(path.join(filePath, item))))
   return dirContent.filter((_, i) => fileCheckResults[i])
 }
 

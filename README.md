@@ -7,6 +7,12 @@ you can almost be certain that there's a huge quantum of bullshit being dumped o
 Physicist Devashish Singh
 ```
 
+### Dir structure
+```
+/${record_type}/${id}_${name}
+/files/${id}_${name}
+```
+
 ### Build Scripts
 
 ```sh

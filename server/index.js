@@ -2,7 +2,7 @@ import path from 'path'
 import http from 'http'
 import urlParser from 'url'
 
-import { readStream, existsFile, listFiles, readFile } from 'server/utils'
+import { readStream, existsFile, listFiles, readFile, sha256, aesDecrypt } from 'server/utils'
 import { extend } from 'shared/utils'
 import { CONTENT_TYPE } from 'shared/api-client'
 import { parse } from 'shared/protocol'
@@ -57,8 +57,7 @@ async function getStaticFile(name, fallback = 'index.html') {
 }
 
 const defaults = {
-  dbFile: '',
-  inMemDb: false,
+  rootDir: '',
   password: '',
   html5historyFallback: true,
   requestLogger: true,
@@ -67,7 +66,16 @@ const defaults = {
 export default async function startServer(port, customOptions) {
   const options = extend(defaults, customOptions)
 
-  const processor = await createProcessor({ dbFile: options.dbFile, inMemDb: options.inMemDb, password: options.password })
+  const processor = await createProcessor({ rootDir: options.rootDir })
+
+  // token: AES("valid <generation timestamp>", SHA256(password))
+  function isValidAuth(token) {
+    try {
+      return /^valid \d+$/.test(aesDecrypt(token || '', sha256(options.password)))
+    } catch (ignored) {
+      return false
+    }
+  }
 
   // POST /api
   // GET /api&fileId=asdfsadfasd
@@ -81,9 +89,7 @@ export default async function startServer(port, customOptions) {
       const url = urlParser.parse(req.url, true)
 
       if (url.pathname === '/api') {
-        const token = extractToken(req.headers.cookie || '')
-
-        if (!token || !processor.isValidAuth(token)) {
+        if (!isValidAuth(extractToken(req.headers.cookie || ''))) {
           res.writeHead(403)
           res.end()
           return
@@ -114,7 +120,7 @@ export default async function startServer(port, customOptions) {
             return
           }
 
-          const response = processor.processAction(parse(buffer))
+          const response = await processor.processAction(parse(buffer))
           res.writeHead(200, withContentType('json'))
           res.end(JSON.stringify({ data: response }))
           return
@@ -127,7 +133,7 @@ export default async function startServer(port, customOptions) {
             return
           }
 
-          const response = processor.processAction({
+          const response = await processor.processAction({
             action: {
               name: 'READ_FILE',
               data: {
@@ -189,10 +195,10 @@ export default async function startServer(port, customOptions) {
   })
 
   const api = {
-    close() {
-      processor.close()
+    async close() {
+      await processor.close()
 
-      return new Promise(resolve => server.close(resolve))
+      await new Promise(resolve => server.close(resolve))
     },
   }
 

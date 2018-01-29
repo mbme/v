@@ -4,6 +4,7 @@ export const isObject = elem => getType(elem) === 'Object'
 export const isArray = elem => getType(elem) === 'Array'
 export const isString = elem => getType(elem) === 'String'
 export const isFunction = elem => [ 'Function', 'AsyncFunction' ].includes(getType(elem))
+export const isAsyncFunction = elem => getType(elem) === 'AsyncFunction'
 
 /**
  * Check if needle fuzzy matches haystack.
@@ -88,6 +89,17 @@ export function uniq(arr, getKey = val => val) {
   })
 
   return result
+}
+
+export function flatten(arr) {
+  return arr.reduce((acc, item) => {
+    if (isArray(item)) {
+      acc.push(...item)
+    } else {
+      acc.push(item)
+    }
+    return acc
+  }, [])
 }
 
 // TODO remove

@@ -1,6 +1,6 @@
 import path from 'path'
 import { extractFileIds, parse } from 'shared/parser'
-import { uniq, extend, isSha256 } from 'shared/utils'
+import { uniq, flatten, isSha256, isAsyncFunction } from 'shared/utils'
 import * as utils from 'server/utils'
 import { validate } from 'server/validators'
 
@@ -9,21 +9,21 @@ export const RECORD_TYPES = [ 'note' ]
 // TODO size, createTs, updateTs
 // TODO use Map instead of objects
 
-function createStorageFs(baseDir) {
+function createStorageFs(rootDir) {
   async function atomicWriteText(file, data) {
     await utils.writeText(`${file}.atomic-temp`, data)
     return utils.renameFile(`${file}.atomic-temp`, file)
   }
 
-  const getAttachmentPath = (id, name) => path.join(baseDir, 'files', `${id}_${name}`)
-  const getRecordPath = (id, type, name) => path.join(baseDir, type, `${id}_${name}.mb`)
+  const getAttachmentPath = (id, name) => path.join(rootDir, 'files', `${id}_${name}`)
+  const getRecordPath = (id, type, name) => path.join(rootDir, type, `${id}_${name}.mb`)
 
   return {
     async initDirs() {
       const dirs = [
-        baseDir,
-        path.join(baseDir, 'files'),
-        ...RECORD_TYPES.map(type => path.join(baseDir, type)),
+        rootDir,
+        path.join(rootDir, 'files'),
+        ...RECORD_TYPES.map(type => path.join(rootDir, type)),
       ]
 
       for (const dir of dirs) {
@@ -37,7 +37,7 @@ function createStorageFs(baseDir) {
     },
 
     async listAttachments() {
-      const files = await utils.listFiles(path.join(baseDir, 'files'))
+      const files = await utils.listFiles(path.join(rootDir, 'files'))
       return files.reduce((acc, fileName) => {
         const [ id, name ] = fileName.split('_')
 
@@ -54,10 +54,7 @@ function createStorageFs(baseDir) {
     },
 
     async writeAttachment(id, name, data) {
-      const file = getAttachmentPath(id, name)
-      if (utils.existsFile(file)) throw new Error(`Attachment ${file} already exists`)
-
-      await utils.writeFile(file, data)
+      await utils.writeFile(getAttachmentPath(id, name), data)
     },
 
     async removeAttachment(id, name) {
@@ -73,7 +70,7 @@ function createStorageFs(baseDir) {
     },
 
     async listRecords(attachments) {
-      const fileNames = await Promise.all(RECORD_TYPES.map(type => utils.listFiles(path.join(baseDir, type))))
+      const fileNames = await Promise.all(RECORD_TYPES.map(type => utils.listFiles(path.join(rootDir, type))))
 
       const records = {}
 
@@ -84,13 +81,19 @@ function createStorageFs(baseDir) {
           const [ idStr, name ] = fileName.split('_')
           const id = parseInt(idStr, 10)
 
+          if (!name.endsWith('.mb')) {
+            console.error(`skipping ${type}/${name}`)
+            continue // eslint-disable-line no-continue
+          }
+          const recordName = name.substring(0, name.length - 3)
+
           // FIXME add validateFew method
-          const validationErrors = [ ...validate(id, 'Record.id'), ...validate(name, 'Record.name') ]
+          const validationErrors = [ ...validate(id, 'Record.id'), ...validate(recordName, 'Record.name') ]
 
           if (validationErrors.length) {
             console.error(`validation failed for ${type}/${fileName}`, validationErrors)
           } else {
-            records[id] = { type, id, name, data: null, files: null }
+            records[id] = { type, id, name: recordName, data: null, files: null }
           }
         }
       }
@@ -112,14 +115,6 @@ function createStorageFs(baseDir) {
     async removeRecord(id, type, name) {
       await utils.deleteFile(getRecordPath(id, type, name))
     },
-
-    async writeKvs(kvs) {
-      await atomicWriteText(path.join(baseDir, 'kvs.json'), JSON.stringify(kvs, null, 2))
-    },
-
-    async readKvs() {
-      return utils.readJSON(path.join(baseDir, 'kvs.json'))
-    },
   }
 }
 
@@ -137,19 +132,25 @@ function createQueue() {
     if (onClose) onClose()
   }
 
+  const runQueue = () => {
+    if (!immediateId) immediateId = setImmediate(processQueue)
+  }
+
   return {
     push(action) {
+      if (!isAsyncFunction(action)) throw new Error('action must be async function')
+
       return new Promise((resolve, reject) => {
         if (onClose) throw new Error('closing storage')
 
         queue.push(() => action().then(resolve, reject))
-
-        if (!immediateId) immediateId = setImmediate(processQueue)
+        runQueue()
       })
     },
 
     close(cb) {
       onClose = cb
+      runQueue()
     },
   }
 }
@@ -162,16 +163,14 @@ function createQueue() {
  * NewFile: { name: string, data: Buffer }
  * Attachment: { id: string, name: string, data: Buffer }
  */
-export default async function createStorage(baseDir) {
-  const fs = createStorageFs(baseDir)
+export default async function createStorage(rootDir) {
+  const fs = createStorageFs(rootDir)
   await fs.initDirs()
 
   const cache = {
     records: {}, //  [Record.id]: Record
     files: {}, // [File.id]: File
-    kvs: {}, //  [namespace]: { [key]: value }
   }
-  cache.kvs = await fs.readKvs()
   cache.files = await fs.listAttachments()
   cache.records = await fs.listRecords(cache.files)
   console.log(`Storage initialized: ${Object.keys(cache.records).length} records, ${Object.keys(cache.files).length} files`)
@@ -179,7 +178,7 @@ export default async function createStorage(baseDir) {
   const queue = createQueue()
 
   async function removeUnusedFiles() {
-    const idsInUse = uniq(Object.values(cache.records).reduce((ids, record) => ids.push(...record.files.map(file => file.id)), []))
+    const idsInUse = uniq(flatten(Object.values(cache.records).map(record => record.files.map(file => file.id))))
     const allIds = Object.keys(cache.files)
 
     const unusedIds = allIds.filter(fileId => !idsInUse.includes(fileId))
@@ -244,10 +243,16 @@ export default async function createStorage(baseDir) {
   }
 
   return {
+    /**
+     * @returns {Promise<Record[]>}
+     */
     listRecords(type) {
       return queue.push(async () => Object.values(cache.records).filter(record => record.type === type))
     },
 
+    /**
+     * @returns {Promise<Record?>}
+     */
     readRecord(id) {
       return queue.push(async () => {
         const record = cache.records[id]
@@ -262,6 +267,7 @@ export default async function createStorage(baseDir) {
      * @param {string} name
      * @param {string} data
      * @param {NewFile[]} attachments
+     * @returns {Promise<Record>}
      */
     createRecord(type, name, data, attachments) {
       return queue.push(async () => {
@@ -276,9 +282,10 @@ export default async function createStorage(baseDir) {
      * @param {string} name
      * @param {string} data
      * @param {NewFile[]} attachments
+     * @returns {Promise<Record>}
      */
     updateRecord(id, name, data, attachments) {
-      return queue.push(() => {
+      return queue.push(async () => {
         const record = cache.records[id]
         if (!record) throw new Error(`Record ${id} doesn't exist`)
 
@@ -292,12 +299,14 @@ export default async function createStorage(baseDir) {
         if (!record) throw new Error(`Record ${id} doesn't exist`)
 
         await fs.removeRecord(id, record.type, record.name)
+        delete cache.records[id]
+
         await removeUnusedFiles()
       })
     },
 
     /**
-     * @returns {Attachment?}
+     * @returns {Promise<Attachment?>}
      */
     readFile(fileId) {
       return queue.push(async () => {
@@ -309,36 +318,6 @@ export default async function createStorage(baseDir) {
           data: await fs.readAttachment(fileId, attachment.name),
         }
       })
-    },
-
-    // KVS
-
-    get(namespace, key) {
-      return queue.push(() => {
-        if (!cache.kvs[namespace]) return undefined
-
-        return cache.kvs[namespace][key]
-      })
-    },
-
-    set(namespace, key, value) {
-      return queue.push(async () => {
-        const kvs = extend(cache.kvs, {
-          [namespace]: {
-            ...cache.kvs[namespace],
-            [key]: value,
-          },
-        })
-
-        await fs.writeKvs(kvs)
-
-        // update cache
-        cache.kvs = kvs
-      })
-    },
-
-    remove(namespace, key) {
-      return this.set(namespace, key, undefined)
     },
 
     close() {
