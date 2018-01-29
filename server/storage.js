@@ -11,8 +11,6 @@ export const RECORD_TYPES = [ 'note' ]
 
 function createStorageFs(rootDir) {
   async function atomicWriteText(file, data) {
-    await utils.writeText(`${file}.atomic-temp`, data)
-    return utils.renameFile(`${file}.atomic-temp`, file)
   }
 
   const getAttachmentPath = (id, name) => path.join(rootDir, 'files', `${id}_${name}`)
@@ -81,7 +79,7 @@ function createStorageFs(rootDir) {
           const [ idStr, name ] = fileName.split('_')
           const id = parseInt(idStr, 10)
 
-          if (!name.endsWith('.mb')) {
+          if (!name.endsWith('.mb')) { // FIXME improve filename parsing
             console.error(`skipping ${type}/${name}`)
             continue // eslint-disable-line no-continue
           }
@@ -109,7 +107,11 @@ function createStorageFs(rootDir) {
     },
 
     async writeRecord(id, type, name, data) {
-      await atomicWriteText(getRecordPath(id, type, name), data)
+      const file = getRecordPath(id, type, name)
+
+      // write into temp file and then rename temp file to achieve "atomic" file writes
+      await utils.writeText(`${file}.atomic-temp`, data)
+      await utils.renameFile(`${file}.atomic-temp`, file)
     },
 
     async removeRecord(id, type, name) {
