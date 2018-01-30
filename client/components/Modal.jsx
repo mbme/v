@@ -92,7 +92,7 @@ export function ConfirmationDialog({ children, confirmation, onConfirmed, onCanc
   return (
     <Modal onCancel={onCancel}>
       <div className="section">{children}</div>
-      <div className="flex flex-end flex-vertical-center">
+      <div className="flex flex-end flex-align-center">
         <Button onClick={onCancel}>CANCEL</Button>
         <Button raised primary onClick={onConfirmed}>{confirmation}</Button>
       </div>

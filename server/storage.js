@@ -6,13 +6,10 @@ import { validate } from 'server/validators'
 
 export const RECORD_TYPES = [ 'note' ]
 
-// TODO size, createTs, updateTs
+// TODO file size, updatedTs
 // TODO use Map instead of objects
 
 function createStorageFs(rootDir) {
-  async function atomicWriteText(file, data) {
-  }
-
   const getAttachmentPath = (id, name) => path.join(rootDir, 'files', `${id}_${name}`)
   const getRecordPath = (id, type, name) => path.join(rootDir, type, `${id}_${name}.mb`)
 
@@ -40,8 +37,8 @@ function createStorageFs(rootDir) {
         const [ id, name ] = fileName.split('_')
 
         if (name && isSha256(id)) {
-          // TODO ensure id === sha256(readFile(fileName))
-          // TODO check if id already in acc
+          // FIXME ensure id === sha256(readFile(fileName))
+          if (acc[id]) throw new Error(`Duplicate file with id ${id}: ${name}`)
           acc[id] = { id, name }
         } else {
           console.error(`WARN: attachments dir contains unexpected file ${fileName}`)
@@ -70,7 +67,7 @@ function createStorageFs(rootDir) {
     async listRecords(attachments) {
       const fileNames = await Promise.all(RECORD_TYPES.map(type => utils.listFiles(path.join(rootDir, type))))
 
-      const records = {}
+      const records = []
 
       for (let i = 0; i < RECORD_TYPES.length; i += 1) {
         const type = RECORD_TYPES[i]
@@ -91,27 +88,44 @@ function createStorageFs(rootDir) {
           if (validationErrors.length) {
             console.error(`validation failed for ${type}/${fileName}`, validationErrors)
           } else {
-            records[id] = { type, id, name: recordName, data: null, files: null }
+            records.push({ id, type, name: recordName })
           }
         }
       }
 
-      // init record.data & record.files
-      await Promise.all(Object.values(records).map(async (record) => {
-        record.data = await utils.readText(getRecordPath(record.id, record.type, record.name)) // eslint-disable-line no-param-reassign
-        record.files = extractFileIds(parse(record.data)).map(fileId => attachments[fileId]) // eslint-disable-line no-param-reassign
-        // FIXME validate if all fileIds are known
+      const result = {}
+
+      await Promise.all(records.map(async ({ id, type, name }) => {
+        if (result[id]) throw new Error(`Duplicate record: ${type}/${id} ${name}`)
+        result[id] = await this.readRecord(id, type, name, attachments)
       }))
 
-      return records
+      return result
+    },
+
+    async readRecord(id, type, name, attachments) {
+      const file = getRecordPath(id, type, name)
+      const stats = await utils.statFile(file)
+
+      const data = await utils.readText(file)
+      // FIXME validate if all fileIds are known
+      const files = extractFileIds(parse(data)).map(fileId => attachments[fileId])
+
+      return { id, type, name, data, files, updatedTs: stats.mtimeMs }
     },
 
     async writeRecord(id, type, name, data) {
       const file = getRecordPath(id, type, name)
+      const tempFile = `${file}.atomic-temp`
 
-      // write into temp file and then rename temp file to achieve "atomic" file writes
-      await utils.writeText(`${file}.atomic-temp`, data)
-      await utils.renameFile(`${file}.atomic-temp`, file)
+      try {
+        // write into temp file and then rename temp file to achieve "atomic" file writes
+        await utils.writeText(tempFile, data)
+        await utils.renameFile(tempFile, file)
+      } catch (e) {
+        await utils.deleteFile(tempFile) // cleanup temp file if operation fails
+        throw e
+      }
     },
 
     async removeRecord(id, type, name) {
@@ -160,7 +174,7 @@ function createQueue() {
 /**
  * RecordId: number // positive integer
  * RecordType: one of RECORD_TYPES
- * Record: { type: RecordType, id: string, name: string, data: string, files: File[] }
+ * Record: { type: RecordType, id: string, name: string, data: string, updatedTs: number, files: File[] }
  * File: { id: string, name: string }
  * NewFile: { name: string, data: Buffer }
  * Attachment: { id: string, name: string, data: Buffer }
@@ -235,7 +249,7 @@ export default async function createStorage(rootDir) {
     }
 
     // 4. update records cache
-    const record = { id, type, name, data, files: fileIds.map(fileId => cache.files[fileId]) }
+    const record = await fs.readRecord(id, type, name, cache.files)
     cache.records[id] = record
 
     // 5. remove unused files if needed

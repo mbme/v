@@ -342,8 +342,12 @@ select {
   justify-content: flex-end;
 }
 
-.flex-vertical-center {
+.flex-align-center {
   align-items: center;
+}
+
+.flex-align-baseline {
+  align-items: baseline;
 }
 
 .cursor-pointer {

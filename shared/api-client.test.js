@@ -61,6 +61,7 @@ test('should manage records', async (assert) => {
   const updatedRecord = await api.updateRecord(record.id, 'new name', 'new data')
   assert.equal(updatedRecord.name, 'new name')
   assert.equal(updatedRecord.data, 'new data')
+  assert.equal(updatedRecord.updatedTs > record.updatedTs, true)
 
   // delete record
   await api.deleteRecord(record.id)

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { fuzzySearch, formatUnixTs } from 'shared/utils'
+import { fuzzySearch, formatTs } from 'shared/utils'
 import s from 'client/styles'
 import { Button, Toolbar, Link, LightInput } from 'client/components'
 import * as routerActions from 'client/router/actions'
@@ -30,8 +30,8 @@ class NotesView extends PureComponent {
       .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
       .sort(recent)
       .map(note => (
-        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className="section flex">
-          <small className={Time}>{formatUnixTs(note.updatedTs)}</small>
+        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className="section flex flex-align-baseline">
+          <small className={Time}>{formatTs(note.updatedTs)}</small>
           {note.name}
         </Link>
       ))
