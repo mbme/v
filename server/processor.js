@@ -1,49 +1,49 @@
-import { validateAndThrow } from 'server/validators'
+import { assertAll } from 'server/validator'
 import createStorage from 'server/storage'
 
 const actions = {
   'PING': () => 'PONG',
 
   'LIST_RECORDS': (storage, { type }) => {
-    validateAndThrow(
-      [ type, 'Record.type' ],
+    assertAll(
+      [ type, 'record-type' ],
     )
 
     return storage.listRecords(type)
   },
 
   'CREATE_RECORD': (storage, { type, name, data }, files) => {
-    validateAndThrow(
-      [ type, 'Record.type' ],
-      [ name, 'Record.name' ],
-      [ data, 'Record.data' ],
-      [ files, 'File[]' ],
+    assertAll(
+      [ type, 'record-type' ],
+      [ name, 'record-name' ],
+      [ data, 'record-data' ],
+      [ files, 'NewFile[]' ],
     )
 
     return storage.createRecord(type, name, data, files)
   },
 
   'UPDATE_RECORD': (storage, { id, name, data }, files) => {
-    validateAndThrow(
-      [ id, 'Record.id' ],
-      [ name, 'Record.name' ],
-      [ data, 'Record.data' ],
-      [ files, 'File[]' ],
+    assertAll(
+      [ id, 'record-id' ],
+      [ name, 'record-name' ],
+      [ data, 'record-data' ],
+      [ files, 'NewFile[]' ],
     )
 
     return storage.updateRecord(id, name, data, files)
   },
 
   'DELETE_RECORD': (storage, { id }) => {
-    validateAndThrow(
-      [ id, 'Record.id' ],
+    assertAll(
+      [ id, 'record-id' ],
     )
 
     return storage.deleteRecord(id)
   },
 
   'READ_FILE': (storage, { id }) => {
-    validateAndThrow(
+    assertAll(
       [ id, 'file-id' ],
     )
 

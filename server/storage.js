@@ -2,7 +2,7 @@ import path from 'path'
 import { extractFileIds, parse } from 'shared/parser'
 import { uniq, flatten, isSha256, isAsyncFunction } from 'shared/utils'
 import * as utils from 'server/utils'
-import { validate } from 'server/validators'
+import { validateAll } from 'server/validator'
 
 export const RECORD_TYPES = [ 'note' ]
 
@@ -80,10 +80,13 @@ function createStorageFs(rootDir) {
             console.error(`skipping ${type}/${name}`)
             continue // eslint-disable-line no-continue
           }
+
           const recordName = name.substring(0, name.length - 3)
 
-          // FIXME add validateFew method
-          const validationErrors = [ ...validate(id, 'Record.id'), ...validate(recordName, 'Record.name') ]
+          const validationErrors = validateAll(
+            [ 'record-id', id ],
+            [ 'record-name', recordName ],
+          )
 
           if (validationErrors.length) {
             console.error(`validation failed for ${type}/${fileName}`, validationErrors)

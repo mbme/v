@@ -51,17 +51,6 @@ export function createArray(size, val) {
   return arr.fill(val)
 }
 
-// recursive helper for `getIn`
-function getInRec(obj, [ prop, ...rest ]) {
-  if (!rest.length) {
-    return obj[prop]
-  }
-
-  return getInRec(obj[prop], rest)
-}
-
-export const getIn = (obj, path) => getInRec(obj, path.split('.'))
-
 /**
  * Create new object with specified prototype `proto` and custom `props`
  */
