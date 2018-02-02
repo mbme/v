@@ -43,10 +43,10 @@ export function deleteNote(id) {
 
 export function createNote(name, data, newFiles) {
   return async (dispatch, getState, apiClient) => {
-    const id = await apiClient.createRecord(NOTE_TYPE, name, data, newFiles)
+    const record = await apiClient.createRecord(NOTE_TYPE, name, data, newFiles)
 
     dispatch(markNotesListOutdated())
 
-    return id
+    return record.id
   }
 }

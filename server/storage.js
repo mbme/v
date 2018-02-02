@@ -6,7 +6,6 @@ import { uniq, flatten, isAsyncFunction } from 'shared/utils'
 import * as utils from 'server/utils'
 
 // TODO file size, updatedTs
-// TODO use Map instead of objects
 
 function createStorageFs(rootDir) {
   const getFilePath = (id, name) => path.join(rootDir, 'files', `${id}_${name}`)
@@ -33,7 +32,7 @@ function createStorageFs(rootDir) {
     async listFiles() {
       const fileNames = await utils.listFiles(path.join(rootDir, 'files'))
 
-      const files = {}
+      const files = new Map()
 
       await Promise.all(fileNames.map(async (fileName) => {
         const [ id, name ] = fileName.split('_')
@@ -47,9 +46,9 @@ function createStorageFs(rootDir) {
         const realHash = await utils.sha256File(path.join(rootDir, 'files', fileName))
 
         if (realHash !== id) throw new Error(`files: wrong hash in file ${fileName}: ${realHash}`)
-        if (files[id]) throw new Error(`files: duplicate file with id ${id}: ${name}`)
+        if (files.has(id)) throw new Error(`files: duplicate file with id ${id}: ${name}`)
 
-        files[id] = { id, name }
+        files.set(id, { id, name })
       }))
 
       return files
@@ -99,10 +98,10 @@ function createStorageFs(rootDir) {
         }
       }
 
-      const records = {}
+      const records = new Map()
 
       await Promise.all(Object.values(recordInfo).map(async ({ id, type, name }) => {
-        records[id] = await this.readRecord(id, type, name, filesCache)
+        records.set(id, await this.readRecord(id, type, name, filesCache))
       }))
 
       return records
@@ -114,7 +113,7 @@ function createStorageFs(rootDir) {
       const data = await utils.readText(recordFile)
 
       const files = extractFileIds(parse(data)).reduce((acc, fileId) => {
-        const file = filesCache[fileId]
+        const file = filesCache.get(fileId)
         if (!file) throw new Error(`records: record ${id} references unknown file ${fileId}`)
 
         acc.push(file)
@@ -203,29 +202,27 @@ export default async function createStorage(rootDir) {
   }
   cache.files = await fs.listFiles()
   cache.records = await fs.listRecords(cache.files)
-  console.log(`Storage initialized: ${Object.keys(cache.records).length} records, ${Object.keys(cache.files).length} files`)
+  console.log(`Storage initialized: ${cache.records.size} records, ${cache.files.size} files`)
 
   const queue = createQueue()
 
   async function removeUnusedFiles() {
-    const idsInUse = uniq(flatten(Object.values(cache.records).map(record => record.files.map(file => file.id))))
-    const allIds = Object.keys(cache.files)
-
-    const unusedIds = allIds.filter(fileId => !idsInUse.includes(fileId))
+    const idsInUse = uniq(flatten(Array.from(cache.records.values()).map(record => record.files.map(file => file.id))))
+    const unusedIds = Array.from(cache.files.keys()).filter(fileId => !idsInUse.includes(fileId))
 
     await Promise.all(unusedIds.map(async (fileId) => {
-      await fs.removeFile(fileId, cache.files[fileId].name)
-      delete cache.files[fileId]
+      await fs.removeFile(fileId, cache.files.get(fileId).name)
+      cache.files.delete(fileId)
     }))
   }
 
   async function saveRecord(id, type, name, data, attachments) {
-    const prevRecord = cache.records[id]
+    const prevRecord = cache.records.get(id)
     if (prevRecord && prevRecord.type !== type) throw new Error(`Wrong type ${prevRecord.type}, should be ${type}`)
 
     const fileIds = extractFileIds(parse(data))
 
-    const newIds = fileIds.filter(fileId => !cache.files[fileId])
+    const newIds = fileIds.filter(fileId => !cache.files.has(fileId))
     if (newIds.length !== attachments.length) console.error('WARN: there are redundant new files')
 
     const attachedFiles = {}
@@ -259,16 +256,16 @@ export default async function createStorage(rootDir) {
 
     // 3. update files cache
     for (const file of newFiles) {
-      cache.files[file.id] = file
+      cache.files.set(file.id, file)
     }
 
     // 4. update records cache
-    cache.records[id] = await fs.readRecord(id, type, name, cache.files)
+    cache.records.set(id, await fs.readRecord(id, type, name, cache.files))
 
     // 5. remove unused files if needed
     if (prevRecord) await removeUnusedFiles()
 
-    return cache.records[id]
+    return cache.records.get(id)
   }
 
   return {
@@ -276,7 +273,7 @@ export default async function createStorage(rootDir) {
      * @returns {Promise<Record[]>}
      */
     listRecords(type) {
-      return queue.push(async () => Object.values(cache.records).filter(record => record.type === type))
+      return queue.push(async () => Array.from(cache.records.values()).filter(record => record.type === type))
     },
 
     /**
@@ -284,7 +281,7 @@ export default async function createStorage(rootDir) {
      */
     readRecord(id) {
       return queue.push(async () => {
-        const record = cache.records[id]
+        const record = cache.records.get(id)
         if (!record) return null
 
         return record
@@ -300,7 +297,7 @@ export default async function createStorage(rootDir) {
      */
     createRecord(type, name, data, attachments) {
       return queue.push(async () => {
-        const id = Math.max(0, ...Object.keys(cache.records)) + 1
+        const id = Math.max(0, ...Array.from(cache.records.keys())) + 1
 
         return saveRecord(id, type, name, data, attachments)
       })
@@ -315,7 +312,7 @@ export default async function createStorage(rootDir) {
      */
     updateRecord(id, name, data, attachments) {
       return queue.push(async () => {
-        const record = cache.records[id]
+        const record = cache.records.get(id)
         if (!record) throw new Error(`Record ${id} doesn't exist`)
 
         return saveRecord(id, record.type, name, data, attachments)
@@ -324,11 +321,11 @@ export default async function createStorage(rootDir) {
 
     deleteRecord(id) {
       return queue.push(async () => {
-        const record = cache.records[id]
+        const record = cache.records.get(id)
         if (!record) throw new Error(`Record ${id} doesn't exist`)
 
         await fs.removeRecord(id, record.type, record.name)
-        delete cache.records[id]
+        cache.records.delete(id)
 
         await removeUnusedFiles()
       })
@@ -339,7 +336,7 @@ export default async function createStorage(rootDir) {
      */
     readFile(fileId) {
       return queue.push(async () => {
-        const attachment = cache.files[fileId]
+        const attachment = cache.files.get(fileId)
         if (!attachment) return null
 
         return {
