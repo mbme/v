@@ -1,8 +1,9 @@
 import path from 'path'
+import fs from 'fs'
 import http from 'http'
 import urlParser from 'url'
 
-import { readStream, existsFile, listFiles, readFile, sha256, aesDecrypt } from 'server/utils'
+import { readStream, existsFile, listFiles, sha256, aesDecrypt } from 'server/utils'
 import { extend } from 'shared/utils'
 import { CONTENT_TYPE } from 'shared/api-client'
 import { parse } from 'shared/protocol'
@@ -22,11 +23,11 @@ const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
 const STATIC_DIR = path.join(__dirname, '../client/static')
 const DIST_DIR = path.join(__dirname, '../dist')
 
-async function getFile(dir, name) {
+async function getFileStream(dir, name) {
   if (!await existsFile(dir)) return null
   if (!await listFiles(dir).then(files => files.includes(name))) return null
 
-  return readFile(path.join(dir, name))
+  return fs.createReadStream(path.join(dir, name))
 }
 
 function extractToken(cookies) {
@@ -40,14 +41,14 @@ function extractToken(cookies) {
 // return files from /static or /dist without subdirectories, use index.html as fallback
 async function getStaticFile(name, fallback = 'index.html') {
   if (name) {
-    const data = await getFile(STATIC_DIR, name) || await getFile(DIST_DIR, name)
+    const data = await getFileStream(STATIC_DIR, name) || await getFileStream(DIST_DIR, name)
 
     if (data) {
       return { name, data }
     }
   }
 
-  const data = await getFile(STATIC_DIR, fallback)
+  const data = await getFileStream(STATIC_DIR, fallback)
 
   if (data) {
     return { name: fallback, data }
@@ -175,7 +176,7 @@ export default async function startServer(port, customOptions) {
 
       if (file) {
         res.writeHead(200, withContentType(getFileType(file.name)))
-        res.end(file.data)
+        file.data.pipe(res)
       } else {
         res.writeHead(404)
         res.end()
