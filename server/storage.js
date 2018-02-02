@@ -8,7 +8,7 @@ import * as utils from 'server/utils'
 // TODO use Map instead of objects
 
 function createStorageFs(rootDir) {
-  const getAttachmentPath = (id, name) => path.join(rootDir, 'files', `${id}_${name}`)
+  const getFilePath = (id, name) => path.join(rootDir, 'files', `${id}_${name}`)
   const getRecordPath = (id, type, name) => path.join(rootDir, type, `${id}_${name}.mb`)
 
   return {
@@ -29,46 +29,48 @@ function createStorageFs(rootDir) {
       }
     },
 
-    async listAttachments() {
-      const files = await utils.listFiles(path.join(rootDir, 'files'))
+    async listFiles() {
+      const fileNames = await utils.listFiles(path.join(rootDir, 'files'))
 
-      const attachments = {}
+      const files = {}
 
-      await Promise.all(files.map(async (fileName) => {
+      await Promise.all(fileNames.map(async (fileName) => {
         const [ id, name ] = fileName.split('_')
-        if (validateAll([ id, 'file-id' ], [ name, 'file-name' ]).length) {
-          console.log(`attachments: unexpected file ${fileName}`)
+
+        const validationErrors = validateAll([ id, 'file-id' ], [ name, 'file-name' ])
+        if (validationErrors.length) {
+          console.log(`files: validation failed for file ${fileName}`, validationErrors)
           return
         }
 
         const realHash = await utils.sha256File(path.join(rootDir, 'files', fileName))
 
-        if (realHash !== id) throw new Error(`attachments: wrong hash in file ${fileName}: ${realHash}`)
-        if (attachments[id]) throw new Error(`attachments: duplicate file with id ${id}: ${name}`)
+        if (realHash !== id) throw new Error(`files: wrong hash in file ${fileName}: ${realHash}`)
+        if (files[id]) throw new Error(`files: duplicate file with id ${id}: ${name}`)
 
-        attachments[id] = { id, name }
+        files[id] = { id, name }
       }))
 
-      return attachments
+      return files
     },
 
-    async writeAttachment(id, name, data) {
-      await utils.writeFile(getAttachmentPath(id, name), data)
+    async writeFile(id, name, data) {
+      await utils.writeFile(getFilePath(id, name), data)
     },
 
-    async removeAttachment(id, name) {
+    async removeFile(id, name) {
       try {
-        await utils.deleteFile(getAttachmentPath(id, name))
+        await utils.deleteFile(getFilePath(id, name))
       } catch (e) {
-        console.error(`failed to remove attachment file ${id}`, e)
+        console.error(`files: failed to remove file ${id}`, e)
       }
     },
 
-    async readAttachment(id, name) {
-      return utils.readFile(getAttachmentPath(id, name))
+    async readFile(id, name) {
+      return utils.readFile(getFilePath(id, name))
     },
 
-    async listRecords(attachments) {
+    async listRecords(filesCache) {
       const fileNames = await Promise.all(RECORD_TYPES.map(type => utils.listFiles(path.join(rootDir, type))))
 
       const recordInfo = {}
@@ -99,22 +101,22 @@ function createStorageFs(rootDir) {
       const records = {}
 
       await Promise.all(Object.values(recordInfo).map(async ({ id, type, name }) => {
-        records[id] = await this.readRecord(id, type, name, attachments)
+        records[id] = await this.readRecord(id, type, name, filesCache)
       }))
 
       return records
     },
 
-    async readRecord(id, type, name, attachments) {
-      const file = getRecordPath(id, type, name)
-      const stats = await utils.statFile(file)
-      const data = await utils.readText(file)
+    async readRecord(id, type, name, filesCache) {
+      const recordFile = getRecordPath(id, type, name)
+      const stats = await utils.statFile(recordFile)
+      const data = await utils.readText(recordFile)
 
       const files = extractFileIds(parse(data)).reduce((acc, fileId) => {
-        const attachment = attachments[fileId]
-        if (!attachment) throw new Error(`records: record ${id} references unknown attachment ${fileId}`)
+        const file = filesCache[fileId]
+        if (!file) throw new Error(`records: record ${id} references unknown file ${fileId}`)
 
-        acc.push(attachment)
+        acc.push(file)
 
         return acc
       }, [])
@@ -182,10 +184,13 @@ function createQueue() {
 /**
  * RecordId: number // positive integer
  * RecordType: one of RECORD_TYPES
- * Record: { type: RecordType, id: string, name: string, data: string, updatedTs: number, files: File[] }
- * File: { id: string, name: string }
+ * FileInfo: { id: string, name: string }
+ * Record: { type: RecordType, id: string, name: string, data: string, updatedTs: number, files: FileInfo[] }
+ *
  * NewFile: { name: string, data: Buffer }
- * Attachment: { id: string, name: string, data: Buffer }
+ *
+ * File: { id: string, name: string, data: Buffer }
+ *
  */
 export default async function createStorage(rootDir) {
   const fs = createStorageFs(rootDir)
@@ -193,9 +198,9 @@ export default async function createStorage(rootDir) {
 
   const cache = {
     records: {}, //  [Record.id]: Record
-    files: {}, // [File.id]: File
+    files: {}, // [File.id]: FileInfo
   }
-  cache.files = await fs.listAttachments()
+  cache.files = await fs.listFiles()
   cache.records = await fs.listRecords(cache.files)
   console.log(`Storage initialized: ${Object.keys(cache.records).length} records, ${Object.keys(cache.files).length} files`)
 
@@ -208,7 +213,7 @@ export default async function createStorage(rootDir) {
     const unusedIds = allIds.filter(fileId => !idsInUse.includes(fileId))
 
     await Promise.all(unusedIds.map(async (fileId) => {
-      await fs.removeAttachment(fileId, cache.files[fileId].name)
+      await fs.removeFile(fileId, cache.files[fileId].name)
       delete cache.files[fileId]
     }))
   }
@@ -235,7 +240,7 @@ export default async function createStorage(rootDir) {
       // 1. write new files
       newFiles = await Promise.all(newIds.map(async (fileId) => {
         const file = attachedFiles[fileId]
-        await fs.writeAttachment(fileId, file.name, file.data)
+        await fs.writeFile(fileId, file.name, file.data)
 
         return { id: fileId, name: file.name }
       }))
@@ -246,7 +251,7 @@ export default async function createStorage(rootDir) {
       console.error('failed to save record', e)
 
       // remove leftover files
-      await Promise.all(newFiles.map(file => fs.removeAttachment(file.id, file.name)))
+      await Promise.all(newFiles.map(file => fs.removeFile(file.id, file.name)))
 
       throw e
     }
@@ -329,7 +334,7 @@ export default async function createStorage(rootDir) {
     },
 
     /**
-     * @returns {Promise<Attachment?>}
+     * @returns {Promise<File?>}
      */
     readFile(fileId) {
       return queue.push(async () => {
@@ -338,7 +343,7 @@ export default async function createStorage(rootDir) {
 
         return {
           ...attachment,
-          data: await fs.readAttachment(fileId, attachment.name),
+          data: await fs.readFile(fileId, attachment.name),
         }
       })
     },
