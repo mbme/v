@@ -1,7 +1,7 @@
 import path from 'path'
 import { extractFileIds, parse } from 'shared/parser'
 import { validateAll, RECORD_TYPES } from 'shared/types'
-import { uniq, flatten, isSha256, isAsyncFunction } from 'shared/utils'
+import { uniq, flatten, isAsyncFunction } from 'shared/utils'
 import * as utils from 'server/utils'
 
 // TODO file size, updatedTs
@@ -31,19 +31,25 @@ function createStorageFs(rootDir) {
 
     async listAttachments() {
       const files = await utils.listFiles(path.join(rootDir, 'files'))
-      return files.reduce((acc, fileName) => {
-        const [ id, name ] = fileName.split('_')
 
-        if (name && isSha256(id)) {
-          // FIXME ensure id === sha256(readFile(fileName))
-          if (acc[id]) throw new Error(`Duplicate file with id ${id}: ${name}`)
-          acc[id] = { id, name }
-        } else {
-          console.error(`WARN: attachments dir contains unexpected file ${fileName}`)
+      const attachments = {}
+
+      await Promise.all(files.map(async (fileName) => {
+        const [ id, name ] = fileName.split('_')
+        if (validateAll([ id, 'file-id' ], [ name, 'file-name' ]).length) {
+          console.log(`attachments: unexpected file ${fileName}`)
+          return
         }
 
-        return acc
-      }, {})
+        const realHash = await utils.sha256File(path.join(rootDir, 'files', fileName))
+
+        if (realHash !== id) throw new Error(`attachments: wrong hash in file ${fileName}: ${realHash}`)
+        if (attachments[id]) throw new Error(`attachments: duplicate file with id ${id}: ${name}`)
+
+        attachments[id] = { id, name }
+      }))
+
+      return attachments
     },
 
     async writeAttachment(id, name, data) {
@@ -65,52 +71,53 @@ function createStorageFs(rootDir) {
     async listRecords(attachments) {
       const fileNames = await Promise.all(RECORD_TYPES.map(type => utils.listFiles(path.join(rootDir, type))))
 
-      const records = []
-
+      const recordInfo = {}
       for (let i = 0; i < RECORD_TYPES.length; i += 1) {
         const type = RECORD_TYPES[i]
 
         for (const fileName of fileNames[i]) {
-          const [ idStr, name ] = fileName.split('_')
+          if (!fileName.endsWith('.mb')) {
+            console.log(`records: unexpected file ${type}/${fileName}`)
+            continue
+          }
+
+          const [ idStr, name ] = fileName.substring(0, fileName.length - 3).split('_')
           const id = parseInt(idStr, 10)
 
-          if (!name.endsWith('.mb')) { // FIXME improve filename parsing
-            console.error(`skipping ${type}/${name}`)
-            continue // eslint-disable-line no-continue
-          }
-
-          const recordName = name.substring(0, name.length - 3)
-
-          const validationErrors = validateAll(
-            [ 'record-id', id ],
-            [ 'record-name', recordName ],
-          )
-
+          const validationErrors = validateAll([ 'record-id', id ], [ 'record-name', name ])
           if (validationErrors.length) {
-            console.error(`validation failed for ${type}/${fileName}`, validationErrors)
-          } else {
-            records.push({ id, type, name: recordName })
+            console.log(`Validation failed for ${type}/${fileName}`, validationErrors)
+            throw new Error(`records: validation failed for ${type}/${fileName}`)
           }
+
+          if (recordInfo[id]) throw new Error(`records: duplicate record with id ${id}: ${type}/${fileName}`)
+
+          recordInfo[i] = { id, type, name }
         }
       }
 
-      const result = {}
+      const records = {}
 
-      await Promise.all(records.map(async ({ id, type, name }) => {
-        if (result[id]) throw new Error(`Duplicate record: ${type}/${id} ${name}`)
-        result[id] = await this.readRecord(id, type, name, attachments)
+      await Promise.all(Object.values(recordInfo).map(async ({ id, type, name }) => {
+        records[id] = await this.readRecord(id, type, name, attachments)
       }))
 
-      return result
+      return records
     },
 
     async readRecord(id, type, name, attachments) {
       const file = getRecordPath(id, type, name)
       const stats = await utils.statFile(file)
-
       const data = await utils.readText(file)
-      // FIXME validate if all fileIds are known
-      const files = extractFileIds(parse(data)).map(fileId => attachments[fileId])
+
+      const files = extractFileIds(parse(data)).reduce((acc, fileId) => {
+        const attachment = attachments[fileId]
+        if (!attachment) throw new Error(`records: record ${id} references unknown attachment ${fileId}`)
+
+        acc.push(attachment)
+
+        return acc
+      }, [])
 
       return { id, type, name, data, files, updatedTs: stats.mtimeMs }
     },
@@ -250,13 +257,12 @@ export default async function createStorage(rootDir) {
     }
 
     // 4. update records cache
-    const record = await fs.readRecord(id, type, name, cache.files)
-    cache.records[id] = record
+    cache.records[id] = await fs.readRecord(id, type, name, cache.files)
 
     // 5. remove unused files if needed
     if (prevRecord) await removeUnusedFiles()
 
-    return record
+    return cache.records[id]
   }
 
   return {

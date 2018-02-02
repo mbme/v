@@ -1,4 +1,4 @@
-/* eslint-disable no-labels, no-continue, no-extra-label, no-constant-condition, no-restricted-syntax */
+/* eslint-disable no-labels, no-extra-label, no-constant-condition, no-restricted-syntax */
 import { isString, uniq, isSha256 } from 'shared/utils'
 
 const isChar = char => (str, i) => str[i] === char

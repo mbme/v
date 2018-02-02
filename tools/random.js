@@ -1,4 +1,3 @@
-/* eslint-disable no-continue */
 import { capitalize } from 'shared/utils'
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd

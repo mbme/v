@@ -7,6 +7,15 @@ import { promisify } from 'util'
 export const hash = hashType => (buffer, encoding = 'hex') => crypto.createHash(hashType).update(buffer).digest(encoding)
 export const sha256 = hash('sha256')
 
+export function sha256File(filePath) {
+  return new Promise(
+    (resolve, reject) => fs.createReadableStream(filePath)
+      .pipe(crypto.createHash('sha256').setEncoding('hex'))
+      .on('error', reject)
+      .on('finish', () => resolve(this.read()))
+  )
+}
+
 export function aesEncrypt(text, password) {
   const iv = crypto.randomBytes(16) // always 16 for AES
 
