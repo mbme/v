@@ -1,4 +1,4 @@
-import { assertAll } from 'server/validator'
+import { assertAll } from 'shared/types'
 import createStorage from 'server/storage'
 
 const actions = {

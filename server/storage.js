@@ -1,10 +1,8 @@
 import path from 'path'
 import { extractFileIds, parse } from 'shared/parser'
+import { validateAll, RECORD_TYPES } from 'shared/types'
 import { uniq, flatten, isSha256, isAsyncFunction } from 'shared/utils'
 import * as utils from 'server/utils'
-import { validateAll } from 'server/validator'
-
-export const RECORD_TYPES = [ 'note' ]
 
 // TODO file size, updatedTs
 // TODO use Map instead of objects

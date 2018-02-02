@@ -1,19 +1,12 @@
 import { getType, isString, isObject, isArray, flatten } from 'shared/utils'
-import { RECORD_TYPES } from 'server/storage'
 
-function createObjectValidator(props, strict = true) {
+export const RECORD_TYPES = [ 'note' ]
+
+function createObjectValidator(props) {
   return (val) => {
     if (!isObject(val)) return [ `expected object, received ${getType(val)}` ]
 
-    const results = flatten(Object.entries(props).map(([ prop, typeName ]) => validate(val[prop], typeName))) // eslint-disable-line no-use-before-define
-
-    if (strict) {
-      for (const key of Object.keys(val)) {
-        if (!props[key]) results.push(`Unexpected property ${key}`)
-      }
-    }
-
-    return results
+    return flatten(Object.entries(props).map(([ prop, typeName ]) => validate(val[prop], typeName))) // eslint-disable-line no-use-before-define
   }
 }
 
@@ -33,7 +26,7 @@ const Types = {
   'file-data': 'buffer',
   'file-id': 'string!', // FIXME sha256
 
-  'NewFile': createObjectValidator({ 'name': 'file-name', 'data': 'file-data' }, true),
+  'NewFile': createObjectValidator({ 'name': 'file-name', 'data': 'file-data' }),
 }
 
 /**

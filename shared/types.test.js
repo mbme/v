@@ -1,5 +1,5 @@
 import { test } from 'tools/test'
-import { validate, assert as validationAssert, assertAll } from './validator'
+import { validate, assert as validationAssert, assertAll } from './types'
 
 test('positive-integer', ({ equal }) => {
   equal(validate(2, 'positive-integer').length, 0)
@@ -34,8 +34,7 @@ test('NewFile', ({ equal }) => {
   equal(validate({
     name: 2,
     data: null,
-    unexpected: 'yes',
-  }, 'NewFile').length, 3)
+  }, 'NewFile').length, 2)
 
   equal(validate(null, 'NewFile').length, 1)
 })
