@@ -144,7 +144,7 @@ export default async function startServer(port, customOptions) {
 
           if (response) {
             res.writeHead(200, { 'Content-Disposition': `inline; filename=${response.name}`, ...withContentType(getFileType(response.name)) })
-            res.end(response.data)
+            response.data.pipe(res)
           } else {
             res.writeHead(404)
             res.end()

@@ -9,10 +9,12 @@ export const sha256 = hash('sha256')
 
 export function sha256File(filePath) {
   return new Promise(
-    (resolve, reject) => fs.createReadableStream(filePath)
-      .pipe(crypto.createHash('sha256').setEncoding('hex'))
+    (resolve, reject) => fs.createReadStream(filePath)
       .on('error', reject)
-      .on('finish', () => resolve(this.read()))
+      .pipe(crypto.createHash('sha256').setEncoding('hex'))
+      .on('finish', function onFinish() {
+        resolve(this.read())
+      })
   )
 }
 

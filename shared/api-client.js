@@ -22,6 +22,10 @@ export default function createApiClient(baseUrl, network) {
       return apiPOST({ name: 'LIST_RECORDS', data: { type } })
     },
 
+    readRecord(id) {
+      return apiPOST({ name: 'READ_RECORD', data: { id } })
+    },
+
     createRecord(type, name, data, newFiles = []) {
       return apiPOST({ name: 'CREATE_RECORD', data: { type, name, data } }, newFiles)
     },

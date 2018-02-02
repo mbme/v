@@ -12,6 +12,14 @@ const actions = {
     return storage.listRecords(type)
   },
 
+  'READ_RECORD': (storage, { id }) => {
+    assertAll(
+      [ id, 'record-id' ],
+    )
+
+    return storage.readRecord(id)
+  },
+
   'CREATE_RECORD': (storage, { type, name, data }, files) => {
     assertAll(
       [ type, 'record-type' ],

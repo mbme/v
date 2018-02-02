@@ -9,11 +9,12 @@ let server
 let api
 const port = 8079
 const rootDir = '/tmp/api-client-test-storage'
+const password = 'test'
+
+const runServer = () => startServer(port, { html5historyFallback: false, requestLogger: false, rootDir, password })
 
 before(async () => {
-  const password = 'test'
-
-  server = await startServer(port, { html5historyFallback: false, requestLogger: false, rootDir, password })
+  server = await runServer()
   api = createApiClient(`http://localhost:${port}`, createNetwork(password))
 })
 
@@ -76,4 +77,22 @@ test('should return an error', async (assert) => {
     return
   }
   throw new Error('must be unreachable')
+})
+
+test('should properly initialize', async (assert) => {
+  const buffer = Buffer.from('test file content')
+  const name = 'super text.json'
+  const fileId = sha256(buffer)
+  const link = createLink(name, fileId)
+
+  const record = await api.createRecord('note', 'name', `data ${link}`, [ { name, data: buffer } ])
+
+  await server.close()
+  server = await runServer()
+
+  assert.equal(buffer.equals(await api.readFile(fileId)), true)
+
+  const recordAfterRestart = await api.readRecord(record.id)
+  assert.equal(recordAfterRestart.name, record.name)
+  assert.equal(recordAfterRestart.data, record.data)
 })

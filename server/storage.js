@@ -1,4 +1,5 @@
 import path from 'path'
+import nodeFs from 'fs'
 import { extractFileIds, parse } from 'shared/parser'
 import { validateAll, RECORD_TYPES } from 'shared/types'
 import { uniq, flatten, isAsyncFunction } from 'shared/utils'
@@ -66,8 +67,8 @@ function createStorageFs(rootDir) {
       }
     },
 
-    async readFile(id, name) {
-      return utils.readFile(getFilePath(id, name))
+    getFileStream(id, name) {
+      return nodeFs.createReadStream(getFilePath(id, name))
     },
 
     async listRecords(filesCache) {
@@ -86,7 +87,7 @@ function createStorageFs(rootDir) {
           const [ idStr, name ] = fileName.substring(0, fileName.length - 3).split('_')
           const id = parseInt(idStr, 10)
 
-          const validationErrors = validateAll([ 'record-id', id ], [ 'record-name', name ])
+          const validationErrors = validateAll([ id, 'record-id' ], [ name, 'record-name' ])
           if (validationErrors.length) {
             console.log(`Validation failed for ${type}/${fileName}`, validationErrors)
             throw new Error(`records: validation failed for ${type}/${fileName}`)
@@ -189,7 +190,7 @@ function createQueue() {
  *
  * NewFile: { name: string, data: Buffer }
  *
- * File: { id: string, name: string, data: Buffer }
+ * File: { id: string, name: string, data: ReadableStream }
  *
  */
 export default async function createStorage(rootDir) {
@@ -343,7 +344,7 @@ export default async function createStorage(rootDir) {
 
         return {
           ...attachment,
-          data: await fs.readFile(fileId, attachment.name),
+          data: fs.getFileStream(fileId, attachment.name),
         }
       })
     },
