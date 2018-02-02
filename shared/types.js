@@ -1,4 +1,4 @@
-import { getType, isString, isObject, isArray, flatten } from 'shared/utils'
+import { getType, isString, isObject, isArray, isSha256, flatten } from 'shared/utils'
 
 export const RECORD_TYPES = [ 'note' ]
 
@@ -16,6 +16,7 @@ const Types = {
   'object': isObject,
   'string!': val => isString(val) && val, // not empty string
   'buffer': Buffer.isBuffer,
+  'sha256': val => isString(val) && isSha256(val),
 
   'record-type': val => RECORD_TYPES.includes(val),
   'record-id': 'positive-integer',
@@ -24,7 +25,7 @@ const Types = {
 
   'file-name': 'string!',
   'file-data': 'buffer',
-  'file-id': 'string!', // FIXME sha256
+  'file-id': 'sha256',
 
   'NewFile': createObjectValidator({ 'name': 'file-name', 'data': 'file-data' }),
 }
