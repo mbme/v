@@ -25,20 +25,6 @@ test('record', ({ equal }) => {
   equal(validate('', 'record-name').length, 1)
 })
 
-test('NewFile', ({ equal }) => {
-  equal(validate({
-    name: 'test',
-    data: Buffer.from([]),
-  }, 'NewFile').length, 0)
-
-  equal(validate({
-    name: 2,
-    data: null,
-  }, 'NewFile').length, 2)
-
-  equal(validate(null, 'NewFile').length, 1)
-})
-
 test('validation asserts', (assert) => {
   assert.throws(() => validationAssert(1, 'string'))
   assert.equal(validationAssert('1', 'string'), undefined)

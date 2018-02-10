@@ -2,14 +2,6 @@ import { getType, isString, isObject, isArray, isSha256, flatten } from 'shared/
 
 export const RECORD_TYPES = [ 'note' ]
 
-function createObjectValidator(props) {
-  return (val) => {
-    if (!isObject(val)) return [ `expected object, received ${getType(val)}` ]
-
-    return flatten(Object.entries(props).map(([ prop, typeName ]) => validate(val[prop], typeName))) // eslint-disable-line no-use-before-define
-  }
-}
-
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
   'string': isString,
@@ -26,8 +18,6 @@ const Types = {
   'file-name': 'string!',
   'file-data': 'buffer',
   'file-id': 'sha256',
-
-  'NewFile': createObjectValidator({ 'name': 'file-name', 'data': 'file-data' }),
 }
 
 /**
@@ -64,4 +54,12 @@ export const validateAll = (...rules) => flatten(rules.map(([ val, typeName ]) =
 export function assertAll(...rules) {
   const results = validateAll(...rules)
   if (results.length) throw results
+}
+
+export function createObjectValidator(props) {
+  return (val) => {
+    if (!isObject(val)) return [ `expected object, received ${getType(val)}` ]
+
+    return flatten(Object.entries(props).map(([ prop, typeName ]) => validate(val[prop], typeName)))
+  }
 }
