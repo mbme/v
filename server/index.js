@@ -96,9 +96,20 @@ export default async function startServer(port, customOptions) {
             return
           }
 
-          const response = await processor.processAction(parse(buffer))
-          res.writeHead(200, { 'Content-Type': 'application/json' })
-          res.end(JSON.stringify({ data: response }))
+          const response = JSON.stringify({ data: await processor.processAction(parse(buffer)) })
+          const headers = {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate', // turn of caches
+          }
+
+          if (/\bgzip\b/.test(req.headers['accept-encoding'])) { // compress response if client supports gzip
+            headers['Content-Encoding'] = 'gzip'
+            res.writeHead(200, headers)
+            res.end(await utils.gzip(response))
+          } else {
+            res.writeHead(200, headers)
+            res.end(response)
+          }
           return
         }
 
@@ -122,6 +133,7 @@ export default async function startServer(port, customOptions) {
             res.writeHead(200, {
               'Content-Disposition': `inline; filename=${response.file.id}`,
               'Content-Type': response.file.mimeType,
+              'Cache-Control': 'immutable, private, max-age=31536000', // max caching
             })
             response.stream.pipe(res)
           } else {

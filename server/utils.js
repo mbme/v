@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
 import readline from 'readline'
+import zlib from 'zlib'
 import childProcess from 'child_process'
 import { promisify } from 'util'
 
@@ -97,6 +98,8 @@ export const writeJSON = (name, data) => writeText(name, JSON.stringify(data, nu
 export const deleteFile = promisify(fs.unlink)
 export const renameFile = promisify(fs.rename)
 export const mkdir = promisify(fs.mkdir)
+
+export const gzip = promisify(zlib.gzip)
 
 export function ask(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
