@@ -253,5 +253,5 @@ export function select(tree, type) {
 
 export const extractFileIds = tree => uniq(select(tree, 'Link').map(({ link }) => link.isInternal ? link.address : null).filter(Boolean))
 
-export const createLink = (name, link) => `[[${link}][${name}]]`
+export const createLink = (name = '', link) => `[[${link}][${name}]]`
 export const createImageLink = (name, link) => createLink(name, `image:${link}`)

@@ -5,8 +5,6 @@ import { validateAll, assertAll } from 'shared/types'
 import { uniq, flatten, isAsyncFunction } from 'shared/utils'
 import * as utils from 'server/utils'
 
-// TODO file size, updatedTs
-
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id)
   const getRecordPath = id => path.join(rootDir, `${id}.mb`)
@@ -37,15 +35,25 @@ function createStorageFs(rootDir) {
           return
         }
 
-        const realHash = await utils.sha256File(path.join(rootDir, 'files', id))
+        const filePath = getFilePath(id)
+        const realHash = await utils.sha256File(filePath)
 
         if (realHash !== id) throw new Error(`files: wrong hash in file ${id}: ${realHash}`)
         if (files[id]) throw new Error(`files: duplicate file with id ${id}`)
 
-        files[id] = { id }
+        files[id] = await this.readFileInfo(id)
       }))
 
       return Object.values(files)
+    },
+
+    async readFileInfo(id) {
+      const filePath = getFilePath(id)
+
+      const mimeType = await utils.getMimeType(filePath)
+      const stats = await utils.statFile(filePath)
+
+      return { id, mimeType, updatedTs: stats.mtimeMs, size: stats.size }
     },
 
     async writeFile(id, data) {
@@ -98,14 +106,12 @@ function createStorageFs(rootDir) {
       const recordFile = getRecordPath(id)
       const { type, name, data, updatedTs } = await utils.readJSON(recordFile)
 
-      const files = extractFileIds(parse(data)).reduce((acc, fileId) => {
+      const files = extractFileIds(parse(data)).map((fileId) => {
         const file = getFile(fileId)
         if (!file) throw new Error(`records: record ${id} references unknown file ${fileId}`)
 
-        acc.push(file)
-
-        return acc
-      }, [])
+        return file
+      })
 
       return { id, type, name, data, files, updatedTs }
     },
@@ -116,7 +122,7 @@ function createStorageFs(rootDir) {
 
       try {
         // write into temp file and then rename temp file to achieve "atomic" file writes
-        await utils.writeText(tempFile, { type, name, data, updatedTs: Date.now() })
+        await utils.writeJSON(tempFile, { type, name, data, updatedTs: Date.now() })
         await utils.renameFile(tempFile, file)
       } catch (e) {
         await utils.deleteFile(tempFile) // cleanup temp file if operation fails
@@ -140,7 +146,7 @@ async function createCache(fs) {
     getFile: id => files.find(file => file.id === id),
     removeFile(id) {
       const pos = files.findIndex(file => file.id === id)
-      if (pos !== -1) files.slice(pos, 1)
+      if (pos !== -1) files.splice(pos, 1)
     },
     addFile: file => files.push(file),
 
@@ -149,7 +155,7 @@ async function createCache(fs) {
     getRecord: id => records.find(record => record.id === id),
     removeRecord(id) {
       const pos = records.findIndex(record => record.id === id)
-      if (pos !== -1) records.slice(pos, 1)
+      if (pos !== -1) records.splice(pos, 1)
     },
     addRecord: record => records.push(record),
   }
@@ -195,7 +201,7 @@ function createQueue() {
 /**
  * RecordId: number // positive integer
  * RecordType: one of RECORD_TYPES
- * FileInfo: { id: string }
+ * FileInfo: { id: string, mimeType: string, updatedTs: number, size: number }
  * Record: { type: RecordType, id: string, name: string, data: string, updatedTs: number, files: FileInfo[] }
  */
 export default async function createStorage(rootDir) {
@@ -242,8 +248,7 @@ export default async function createStorage(rootDir) {
       newFiles = await Promise.all(newIds.map(async (fileId) => {
         await fs.writeFile(fileId, attachedFiles[fileId])
 
-        // FIXME readFileInfo here
-        return { id: fileId }
+        return fs.readFileInfo(fileId)
       }))
 
       // 2. write new record data

@@ -37,11 +37,10 @@ test('should ping', async (assert) => {
 
 test('should manage files', async (assert) => {
   const buffer = Buffer.from('test file content')
-  const name = 'super text.json'
   const fileId = sha256(buffer)
-  const link = createLink(name, fileId)
+  const link = createLink('', fileId)
 
-  const record = await api.createRecord('note', 'name', `data ${link}`, [ { name, data: buffer } ])
+  const record = await api.createRecord('note', 'name', `data ${link}`, [ buffer ])
   assert.equal(buffer.equals(await api.readFile(fileId)), true)
 
   await api.updateRecord(record.id, 'name', 'data')
@@ -81,11 +80,10 @@ test('should return an error', async (assert) => {
 
 test('should properly initialize', async (assert) => {
   const buffer = Buffer.from('test file content')
-  const name = 'super text.json'
   const fileId = sha256(buffer)
-  const link = createLink(name, fileId)
+  const link = createLink('', fileId)
 
-  const record = await api.createRecord('note', 'name', `data ${link}`, [ { name, data: buffer } ])
+  const record = await api.createRecord('note', 'name', `data ${link}`, [ buffer ])
 
   await server.close()
   server = await runServer()

@@ -38,7 +38,10 @@ export default function createNetwork() {
 
         if (res.status === 403) throw new UnauthorizedError('Access denied')
 
-        if (res.status === 400) return res.json().then((body) => { throw new Error(body.error) })
+        if (res.status === 400) {
+          const { error } = await res.json()
+          throw new Error(error)
+        }
 
         if (res.status !== 200) throw new Error(`Server returned ${res.status} ${res.statusText}`)
 

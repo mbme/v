@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
 import readline from 'readline'
+import childProcess from 'child_process'
 import { promisify } from 'util'
 
 export const hash = hashType => (buffer, encoding = 'hex') => crypto.createHash(hashType).update(buffer).digest(encoding)
@@ -105,3 +106,14 @@ export function ask(question) {
     rl.close()
   }))
 }
+
+export const exec = promisify(childProcess.exec)
+
+const MIME = {
+  '.css': 'text/css',
+  '.html': 'text/html',
+  '.json': 'application/json',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+}
+export const getMimeType = async filePath => MIME[path.extname(filePath)] || exec(`file -b -i ${filePath}`).then(({ stdout }) => stdout.trim())

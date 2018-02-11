@@ -53,7 +53,7 @@ class NoteEditorView extends PureComponent {
   getAttachments() {
     const ids = extractFileIds(parse(this.state.data))
     // TODO filter out known files
-    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file)
+    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file.data)
   }
 
   onFilesSelected = async (files) => {
@@ -73,7 +73,7 @@ class NoteEditorView extends PureComponent {
       if (!this.localFiles[hash]) {
         this.localFiles = {
           ...this.localFiles,
-          [hash]: { name: file.name, data, file },
+          [hash]: { data, file },
         }
       }
     }))

@@ -52,7 +52,7 @@ export default async function genData(port, password, recordsCount = 23) {
 
   await Promise.all(createArray(recordsCount, async () => {
     const { name, data } = await genText(generator, images)
-    return api.createRecord('note', name, data, images.map(image => image.file))
+    return api.createRecord('note', name, data, images.map(image => image.file.data))
   }))
 
   console.log('Generated %s fake records', recordsCount)

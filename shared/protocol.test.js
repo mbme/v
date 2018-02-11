@@ -2,12 +2,10 @@ import { test } from 'tools/test'
 import { serialize, parse } from './protocol'
 
 const buffer = Buffer.from('test file')
-const name = 'super text.json'
-const getFile = () => ({ name, data: buffer })
 
 test('serialization', (assert) => {
   const action = { name: 'TEST' }
-  const files = [ getFile(), getFile() ]
+  const files = [ buffer, buffer ]
   assert.matchSnapshot(serialize(action, files).toString('utf8'))
 })
 
@@ -25,15 +23,14 @@ test('deserialization', (assert) => {
 
   { // parse action with files
     const action = { name: 'TEST' }
-    const files = [ getFile(), getFile() ]
+    const files = [ buffer, buffer ]
 
     const result = parse(serialize(action, files))
     assert.deepEqual(result.action, action)
     assert.equal(result.files.length, files.length)
 
     for (const file of result.files) {
-      assert.equal(file.name, name)
-      assert.equal(file.data.equals(buffer), true)
+      assert.equal(file.equals(buffer), true)
     }
   }
 })

@@ -3,31 +3,25 @@ import fs from 'fs'
 import http from 'http'
 import urlParser from 'url'
 
-import { readStream, existsFile, listFiles, sha256, aesDecrypt } from 'server/utils'
+import * as utils from 'server/utils'
 import { extend } from 'shared/utils'
 import { CONTENT_TYPE } from 'shared/api-client'
 import { parse } from 'shared/protocol'
 import createProcessor from './processor'
 
-const MIME = {
-  css: 'text/css',
-  html: 'text/html',
-  json: 'application/json',
-  svg: 'image/svg+xml',
-  ico: 'image/x-icon',
-}
-
-const withContentType = type => MIME[type] ? { 'Content-Type': MIME[type] } : {}
-const getFileType = name => name.substring(name.lastIndexOf('.') + 1)
-
 const STATIC_DIR = path.join(__dirname, '../client/static')
 const DIST_DIR = path.join(__dirname, '../dist')
 
 async function getFileStream(dir, name) {
-  if (!await existsFile(dir)) return null
-  if (!await listFiles(dir).then(files => files.includes(name))) return null
+  if (!await utils.existsFile(dir)) return null
+  if (!await utils.listFiles(dir).then(files => files.includes(name))) return null
 
-  return fs.createReadStream(path.join(dir, name))
+  const filePath = path.join(dir, name)
+
+  return {
+    stream: fs.createReadStream(filePath),
+    mimeType: await utils.getMimeType(filePath),
+  }
 }
 
 function extractToken(cookies) {
@@ -36,25 +30,6 @@ function extractToken(cookies) {
   if (!tokenCookie) return ''
 
   return decodeURIComponent(tokenCookie.substring(6))
-}
-
-// return files from /static or /dist without subdirectories, use index.html as fallback
-async function getStaticFile(name, fallback = 'index.html') {
-  if (name) {
-    const data = await getFileStream(STATIC_DIR, name) || await getFileStream(DIST_DIR, name)
-
-    if (data) {
-      return { name, data }
-    }
-  }
-
-  const data = await getFileStream(STATIC_DIR, fallback)
-
-  if (data) {
-    return { name: fallback, data }
-  }
-
-  return null
 }
 
 const defaults = {
@@ -72,7 +47,7 @@ export default async function startServer(port, customOptions) {
   // token: AES("valid <generation timestamp>", SHA256(password))
   function isValidAuth(token) {
     try {
-      return /^valid \d+$/.test(aesDecrypt(token || '', sha256(options.password)))
+      return /^valid \d+$/.test(utils.aesDecrypt(token || '', utils.sha256(options.password)))
     } catch (ignored) {
       return false
     }
@@ -112,7 +87,7 @@ export default async function startServer(port, customOptions) {
             return
           }
 
-          const buffer = await readStream(req)
+          const buffer = await utils.readStream(req)
 
           // ensure we read all the data
           if (buffer.length !== expectedLength) {
@@ -122,7 +97,7 @@ export default async function startServer(port, customOptions) {
           }
 
           const response = await processor.processAction(parse(buffer))
-          res.writeHead(200, withContentType('json'))
+          res.writeHead(200, { 'Content-Type': 'application/json' })
           res.end(JSON.stringify({ data: response }))
           return
         }
@@ -144,8 +119,11 @@ export default async function startServer(port, customOptions) {
           })
 
           if (response) {
-            res.writeHead(200, { 'Content-Disposition': `inline; filename=${response.name}`, ...withContentType(getFileType(response.name)) })
-            response.data.pipe(res)
+            res.writeHead(200, {
+              'Content-Disposition': `inline; filename=${response.file.id}`,
+              'Content-Type': response.file.mimeType,
+            })
+            response.stream.pipe(res)
           } else {
             res.writeHead(404)
             res.end()
@@ -171,19 +149,21 @@ export default async function startServer(port, customOptions) {
         return
       }
 
-
-      const file = await getStaticFile(url.path.substring(1))
+      const fileName = url.path.substring(1)
+      const file = await getFileStream(STATIC_DIR, fileName)
+            || await getFileStream(DIST_DIR, fileName)
+            || await getFileStream(STATIC_DIR, 'index.html')
 
       if (file) {
-        res.writeHead(200, withContentType(getFileType(file.name)))
-        file.data.pipe(res)
+        res.writeHead(200, { 'Content-Type': file.mimeType })
+        file.stream.pipe(res)
       } else {
         res.writeHead(404)
         res.end()
       }
     } catch (e) {
       options.requestLogger && console.error(e)
-      res.writeHead(400, withContentType('json'))
+      res.writeHead(400, { 'Content-Type': 'application/json' })
       res.end(JSON.stringify({ error: e.toString() }))
     } finally {
       const hrend = process.hrtime(start)
