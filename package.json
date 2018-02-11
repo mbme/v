@@ -12,6 +12,7 @@
     "dev": "NODE_PATH=. bin/node.js bin/dev-server",
     "test": "NODE_PATH=. bin/node.js bin/test",
     "test-update": "yarn test --update-snapshots",
+    "repl": "NODE_PATH=. bin/node.js bin/repl",
     "lint": "NODE_PATH=. eslint . --ext js,jsx",
     "cloc": "cloc --vcs=git --exclude-ext=json,md,test.js -v *"
   },
