@@ -80,6 +80,7 @@ export function uniq(arr, getKey = val => val) {
   return result
 }
 
+// [ [ 1, 2 ], 3 ] => [ 1, 2, 3 ]
 export function flatten(arr) {
   return arr.reduce((acc, item) => {
     if (isArray(item)) {
@@ -90,17 +91,6 @@ export function flatten(arr) {
     return acc
   }, [])
 }
-
-// TODO remove
-export const groupBy = (arr, getKey) => arr.reduce((acc, value) => {
-  const key = getKey(value)
-  const group = acc[key] || []
-  group.push(value)
-
-  acc[key] = group
-
-  return acc
-}, {})
 
 // inclusive ? [min, max] : [min, max)
 export const randomInt = (min, max, inclusive = true) => Math.floor(Math.random() * (max - min + (inclusive ? 1 : 0)) + min) // eslint-disable-line no-mixed-operators
