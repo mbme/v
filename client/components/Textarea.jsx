@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import s from 'client/styles'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import s from 'client/styles';
 
 const Styles = s.cx({
   backgroundColor: 'var(--bg-color)',
@@ -11,7 +11,7 @@ const Styles = s.cx({
   resize: 'none',
   minHeight: '300px',
   overflowY: 'hidden',
-}, 'with-border')
+}, 'with-border');
 
 export default class Textarea extends PureComponent {
   static propTypes = {
@@ -25,52 +25,52 @@ export default class Textarea extends PureComponent {
   selectionEnd = 0
 
   updateHeight = () => {
-    this.ref.style.height = 'auto'
-    this.ref.style.height = this.ref.scrollHeight + 'px'
+    this.ref.style.height = 'auto';
+    this.ref.style.height = this.ref.scrollHeight + 'px';
   }
 
   componentDidMount() {
-    this.updateHeight() // TODO handle window resize
+    this.updateHeight(); // TODO handle window resize
   }
 
   componentDidUpdate() {
-    this.updateHeight()
+    this.updateHeight();
   }
 
   onBlur = () => {
-    this.selectionStart = this.ref.selectionStart
-    this.selectionEnd = this.ref.selectionEnd
+    this.selectionStart = this.ref.selectionStart;
+    this.selectionEnd = this.ref.selectionEnd;
   }
 
   insert(str) {
-    const { value, onChange } = this.props
+    const { value, onChange } = this.props;
 
-    this.ref.value = `${value.substring(0, this.selectionStart)}${str}${value.substring(this.selectionEnd)}`
+    this.ref.value = `${value.substring(0, this.selectionStart)}${str}${value.substring(this.selectionEnd)}`;
 
-    this.selectionStart += str.length
-    this.selectionEnd = this.selectionStart
+    this.selectionStart += str.length;
+    this.selectionEnd = this.selectionStart;
 
-    this.ref.setSelectionRange(this.selectionStart, this.selectionEnd)
+    this.ref.setSelectionRange(this.selectionStart, this.selectionEnd);
 
-    onChange(this.ref.value)
+    onChange(this.ref.value);
   }
 
   focus() {
-    this.ref.focus()
+    this.ref.focus();
   }
 
   render() {
-    const { name, value, onChange } = this.props
+    const { name, value, onChange } = this.props;
 
     return (
       <textarea
         className={Styles}
-        ref={(ref) => { this.ref = ref }}
+        ref={(ref) => { this.ref = ref; }}
         name={name}
         value={value}
         onChange={e => onChange(e.target.value)}
         onBlur={this.onBlur}
       />
-    )
+    );
   }
 }

@@ -1,20 +1,20 @@
 /* eslint-disable react/prop-types */
 
-import React from 'react'
+import React from 'react';
 
-import { ConfirmationDialog, Icon } from 'client/components'
-import NotesView from 'client/notes/NotesView'
-import NoteView from 'client/notes/NoteView'
-import NoteEditorView from 'client/notes/NoteEditorView'
-import * as notesActions from 'client/notes/actions'
+import { ConfirmationDialog, Icon } from 'client/components';
+import NotesView from 'client/notes/NotesView';
+import NoteView from 'client/notes/NoteView';
+import NoteEditorView from 'client/notes/NoteEditorView';
+import * as notesActions from 'client/notes/actions';
 
 async function initNote(store, params) {
-  const id = parseInt(params.id, 10)
+  const id = parseInt(params.id, 10);
 
-  await store.dispatch(notesActions.listNotes())
+  await store.dispatch(notesActions.listNotes());
 
   if (!store.getState().notes.notes.find(note => note.id === id)) {
-    throw new Error(`Unknown note ${id}`)
+    throw new Error(`Unknown note ${id}`);
   }
 }
 
@@ -67,4 +67,4 @@ export default [
     path: '(.*)',
     render: () => null,
   },
-]
+];

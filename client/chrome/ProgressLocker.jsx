@@ -1,6 +1,6 @@
-import React from 'react'
-import s from 'client/styles'
-import { Icon, Backdrop } from 'client/components'
+import React from 'react';
+import s from 'client/styles';
+import { Icon, Backdrop } from 'client/components';
 
 const BackdropStyles = s.cx({
   cursor: 'progress',
@@ -12,7 +12,7 @@ const BackdropStyles = s.cx({
   animationDuration: '3s',
   animationIterationCount: 'infinite',
   alignItems: 'center',
-})
+});
 
 const Spinner = s.cx({
   width: '24px',
@@ -23,12 +23,12 @@ const Spinner = s.cx({
   }),
   animationDuration: '1.5s',
   animationIterationCount: 'infinite',
-})
+});
 
 export default function ProgressLocker() {
   return (
     <Backdrop className={BackdropStyles}>
       <Icon type="loader" className={Spinner} />
     </Backdrop>
-  )
+  );
 }

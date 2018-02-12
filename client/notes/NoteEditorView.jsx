@@ -1,17 +1,17 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser'
-import { readFile, sha256 } from 'client/utils'
-import { Button, Textarea, Toolbar, FormInput, IconButton } from 'client/components'
-import * as routerActions from 'client/router/actions'
-import * as chromeActions from 'client/chrome/actions'
-import * as notesActions from './actions'
-import AttachFileButton from './AttachFileButton'
-import DeleteNoteButton from './DeleteNoteButton'
-import Note, { Title } from './Note'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
+import { readFile, sha256 } from 'client/utils';
+import { Button, Textarea, Toolbar, FormInput, IconButton } from 'client/components';
+import * as routerActions from 'client/router/actions';
+import * as chromeActions from 'client/chrome/actions';
+import * as notesActions from './actions';
+import AttachFileButton from './AttachFileButton';
+import DeleteNoteButton from './DeleteNoteButton';
+import Note, { Title } from './Note';
 
-const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false)
+const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false);
 
 class NoteEditorView extends PureComponent {
   static propTypes = {
@@ -41,66 +41,66 @@ class NoteEditorView extends PureComponent {
   closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' })
 
   onSave = async () => {
-    await this.props.updateNote(this.props.id, this.state.name, this.state.data, this.getAttachments())
-    this.closeEditor(this.props.id)
+    await this.props.updateNote(this.props.id, this.state.name, this.state.data, this.getAttachments());
+    this.closeEditor(this.props.id);
   }
 
   onCreate = async () => {
-    const id = await this.props.createNote(this.state.name, this.state.data, this.getAttachments())
-    this.closeEditor(id)
+    const id = await this.props.createNote(this.state.name, this.state.data, this.getAttachments());
+    this.closeEditor(id);
   }
 
   getAttachments() {
-    const ids = extractFileIds(parse(this.state.data))
+    const ids = extractFileIds(parse(this.state.data));
     // TODO filter out known files
-    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file.data)
+    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file.data);
   }
 
   onFilesSelected = async (files) => {
     if (!files.length) {
-      return
+      return;
     }
 
-    this.props.showLocker(true)
+    this.props.showLocker(true);
 
-    const links = []
+    const links = [];
     await Promise.all(files.map(async (file) => {
-      const data = await readFile(file)
-      const hash = await sha256(data)
+      const data = await readFile(file);
+      const hash = await sha256(data);
 
-      links.push((isImage(file.name) ? createImageLink : createLink)(file.name, hash))
+      links.push((isImage(file.name) ? createImageLink : createLink)(file.name, hash));
 
       if (!this.localFiles[hash]) {
         this.localFiles = {
           ...this.localFiles,
           [hash]: { data, file },
-        }
+        };
       }
-    }))
+    }));
 
-    this.props.showLocker(false)
+    this.props.showLocker(false);
 
-    this.textAreaRef.insert(links.join(' '))
-    this.textAreaRef.focus()
+    this.textAreaRef.insert(links.join(' '));
+    this.textAreaRef.focus();
   }
 
   render() {
-    const { preview, name, data } = this.state
-    const { id } = this.props
+    const { preview, name, data } = this.state;
+    const { id } = this.props;
 
     const leftIcons = [
       id && <DeleteNoteButton key="delete" id={id} />,
       <AttachFileButton key="attach" onSelected={this.onFilesSelected} />,
       <IconButton key="preview" title="Preview" type={preview ? 'eye-off' : 'eye'} onClick={() => this.setState({ preview: !preview })} />,
-    ]
+    ];
 
-    const isValid = name && this.hasChanges()
+    const isValid = name && this.hasChanges();
     const rightIcons = [
       <Button key="cancel" onClick={() => this.closeEditor(id)}>Cancel</Button>,
       id
         ? <Button key="save" primary onClick={this.onSave} disabled={!isValid}>Save</Button>
         : <Button key="create" primary onClick={this.onCreate} disabled={!isValid}>Create</Button>,
-    ]
+    ];
 
     return (
       <div className="view-container">
@@ -111,29 +111,29 @@ class NoteEditorView extends PureComponent {
         </div>
 
         <div className="section" hidden={preview}>
-          <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref }} />
+          <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref; }} />
         </div>
 
         {preview && <Note name={name} data={data} localFiles={this.localFiles} />}
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = ({ notes }, { id }) => {
   if (!id) {
-    return { name: '', data: '' }
+    return { name: '', data: '' };
   }
 
-  const note = notes.notes.find(n => n.id === id)
-  return { name: note.name, data: note.data }
-}
+  const note = notes.notes.find(n => n.id === id);
+  return { name: note.name, data: note.data };
+};
 
 const mapDispatchToProps = {
   updateNote: notesActions.updateNote,
   createNote: notesActions.createNote,
   showLocker: chromeActions.showLocker,
   push: routerActions.push,
-}
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(NoteEditorView)
+export default connect(mapStateToProps, mapDispatchToProps)(NoteEditorView);

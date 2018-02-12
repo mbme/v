@@ -1,7 +1,7 @@
-import routerMiddleware from './middleware'
-import routes from './routes'
-import createRouter from './router'
+import routerMiddleware from './middleware';
+import routes from './routes';
+import createRouter from './router';
 
-export { propagateCurrentLocation } from './actions'
+export { propagateCurrentLocation } from './actions';
 
-export default routerMiddleware(createRouter(routes))
+export default routerMiddleware(createRouter(routes));

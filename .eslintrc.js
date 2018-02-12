@@ -36,12 +36,13 @@ module.exports = {
     'no-console': 0,
     'no-confusing-arrow': 0,
     'no-await-in-loop': 0,
+    'no-labels': 0,
+    'no-extra-label': 0,
     'no-continue': 0,
     'no-unused-expressions': [
       'error',
       {
         allowTernary: true,
-        allowShortCircuit: true,
       },
     ],
     'no-underscore-dangle': [
@@ -58,10 +59,6 @@ module.exports = {
     'comma-dangle': [
       'error',
       'always-multiline',
-    ],
-    'semi': [
-      'error',
-      'never',
     ],
     'quote-props': 0,
     'react/require-default-props': 0,
@@ -88,7 +85,6 @@ module.exports = {
     'no-restricted-syntax': [
       'error',
       'ForInStatement',
-      'LabeledStatement',
       'WithStatement',
     ],
   },

@@ -1,4 +1,4 @@
-import createStorage from 'server/storage'
+import createStorage from 'server/storage';
 
 const actions = {
   'PING': () => 'PONG',
@@ -9,21 +9,21 @@ const actions = {
   'UPDATE_RECORD': (storage, { id, name, data }, files) => storage.updateRecord(id, name, data, files),
   'DELETE_RECORD': (storage, { id }) => storage.deleteRecord(id),
   'READ_FILE': (storage, { id }) => storage.readFile(id),
-}
+};
 
 export default async function createProcessor({ rootDir }) {
-  const storage = await createStorage(rootDir)
+  const storage = await createStorage(rootDir);
 
   return {
     processAction({ action: { name, data }, files = [] }) {
-      const action = actions[name]
-      if (!action) throw new Error(`unknown action: ${name}`)
+      const action = actions[name];
+      if (!action) throw new Error(`unknown action: ${name}`);
 
-      return action(storage, data, files)
+      return action(storage, data, files);
     },
 
     close() {
-      return storage.close()
+      return storage.close();
     },
-  }
+  };
 }

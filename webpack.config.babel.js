@@ -1,8 +1,8 @@
-import path from 'path'
-import webpack from 'webpack'
-import MinifyPlugin from 'babel-minify-webpack-plugin'
+import path from 'path';
+import webpack from 'webpack';
+import MinifyPlugin from 'babel-minify-webpack-plugin';
 
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default {
   entry: './client/index.jsx',
@@ -58,4 +58,4 @@ export default {
   ].filter(plugin => !!plugin),
 
   devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
-}
+};

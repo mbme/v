@@ -1,4 +1,4 @@
-import { LOCATION_CHANGE, SET_VIEW } from './actions'
+import { LOCATION_CHANGE, SET_VIEW } from './actions';
 
 const defaultState = {
   pathname: '/',
@@ -8,21 +8,21 @@ const defaultState = {
   isLoading: false,
   routingSequence: [],
   view: null,
-}
+};
 
 function parseQuery(search) {
   if (!search.length) {
-    return {}
+    return {};
   }
 
   return search.substring(1).split('&').reduce((acc, pair) => {
-    const splitter = pair.indexOf('=')
-    const key = decodeURIComponent(pair.substr(0, splitter))
-    const value = decodeURIComponent(pair.substr(splitter + 1))
-    acc[key] = value
+    const splitter = pair.indexOf('=');
+    const key = decodeURIComponent(pair.substr(0, splitter));
+    const value = decodeURIComponent(pair.substr(splitter + 1));
+    acc[key] = value;
 
-    return acc
-  }, {})
+    return acc;
+  }, {});
 }
 
 export default function router(state = defaultState, action) {
@@ -35,7 +35,7 @@ export default function router(state = defaultState, action) {
         query: parseQuery(action.search),
         isPush: action.isPush,
         isLoading: true,
-      }
+      };
 
     case SET_VIEW:
       return {
@@ -43,9 +43,9 @@ export default function router(state = defaultState, action) {
         isLoading: false,
         view: action.view,
         routingSequence: action.routingSequence,
-      }
+      };
 
     default:
-      return state
+      return state;
   }
 }

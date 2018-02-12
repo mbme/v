@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { IconButton, ConfirmationDialog } from 'client/components'
-import * as routerActions from 'client/router/actions'
-import * as notesActions from './actions'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { IconButton, ConfirmationDialog } from 'client/components';
+import * as routerActions from 'client/router/actions';
+import * as notesActions from './actions';
 
 class DeleteNoteButton extends PureComponent {
   static propTypes = {
@@ -31,13 +31,13 @@ class DeleteNoteButton extends PureComponent {
           Are you sure you want to <b>delete this note?</b>
         </ConfirmationDialog>
       ),
-    ]
+    ];
   }
 }
 
 const mapDispatchToProps = {
   deleteNote: notesActions.deleteNote,
   push: routerActions.push,
-}
+};
 
-export default connect(null, mapDispatchToProps)(DeleteNoteButton)
+export default connect(null, mapDispatchToProps)(DeleteNoteButton);

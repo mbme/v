@@ -1,5 +1,5 @@
-import { test, before, after } from 'tools/test'
-import { parse, select } from './parser'
+import { test, before, after } from 'tools/test';
+import { parse, select } from './parser';
 
 const text = `
 # Header
@@ -22,44 +22,44 @@ test *bold* \`code\`
 
 One more paragraph. [[http://link.to/123?321][link]]
 
-`
+`;
 
-before(() => { global.__DEVELOPMENT__ = false }) // suppress warnings
-after(() => { global.__DEVELOPMENT__ = true })
+before(() => { global.__DEVELOPMENT__ = false; }); // suppress warnings
+after(() => { global.__DEVELOPMENT__ = true; });
 
 test('Bold', (assert) => {
-  assert.matchSnapshot(parse('*test*', 'Bold'))
-  assert.matchSnapshot(parse('* test \\* and* so on', 'Bold'))
+  assert.matchSnapshot(parse('*test*', 'Bold'));
+  assert.matchSnapshot(parse('* test \\* and* so on', 'Bold'));
   assert.equal(parse(
     `*te
     st*`,
     'Bold',
-  ), null)
-})
+  ), null);
+});
 
 test('Mono', (assert) => {
-  assert.matchSnapshot(parse('`test`', 'Mono'))
-  assert.matchSnapshot(parse('` test \\` and` so on', 'Mono'))
+  assert.matchSnapshot(parse('`test`', 'Mono'));
+  assert.matchSnapshot(parse('` test \\` and` so on', 'Mono'));
   assert.matchSnapshot(parse(
     `\`te
     st\``,
     'Mono',
-  ), null)
-})
+  ), null);
+});
 
 test('Header', (assert) => {
-  assert.matchSnapshot(parse('# AHAHAH *test oh no* !', 'Header'))
+  assert.matchSnapshot(parse('# AHAHAH *test oh no* !', 'Header'));
   assert.equal(parse(
     `# AHAHAH *test oh no* !
     there is no empty line
     `,
     'Header',
-  ), null)
-})
+  ), null);
+});
 
 test('Link', (assert) => {
-  assert.matchSnapshot(parse('[[http://amazing.com][awesome link]]', 'Link'))
-})
+  assert.matchSnapshot(parse('[[http://amazing.com][awesome link]]', 'Link'));
+});
 
 test('Paragraph', (assert) => {
   assert.matchSnapshot(parse(
@@ -68,15 +68,15 @@ test('Paragraph', (assert) => {
     go go _power cows_ \`code\`
     `,
     'Paragraph',
-  ))
-})
+  ));
+});
 
 test('Document', (assert) => {
-  assert.equal(parse('', 'Document') !== null, true)
-  assert.matchSnapshot(parse(text, 'Document'))
-})
+  assert.equal(parse('', 'Document') !== null, true);
+  assert.matchSnapshot(parse(text, 'Document'));
+});
 
 test('select', (assert) => {
-  const links = select(parse(text), 'Link')
-  assert.matchSnapshot(links)
-})
+  const links = select(parse(text), 'Link');
+  assert.matchSnapshot(links);
+});

@@ -1,22 +1,22 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import { fuzzySearch, formatTs } from 'shared/utils'
-import s from 'client/styles'
-import { Button, Toolbar, Link, LightInput } from 'client/components'
-import * as routerActions from 'client/router/actions'
+import { fuzzySearch, formatTs } from 'shared/utils';
+import s from 'client/styles';
+import { Button, Toolbar, Link, LightInput } from 'client/components';
+import * as routerActions from 'client/router/actions';
 
 const Counter = s.cx({
   marginLeft: 'var(--spacing-small)',
   whiteSpace: 'nowrap',
-})
+});
 
 const Time = s.cx({
   marginRight: 'var(--spacing-small)',
-})
+});
 
-const recent = (n1, n2) => n2.updatedTs - n1.updatedTs
+const recent = (n1, n2) => n2.updatedTs - n1.updatedTs;
 
 class NotesView extends PureComponent {
   static propTypes = {
@@ -34,29 +34,29 @@ class NotesView extends PureComponent {
           <small className={Time}>{formatTs(note.updatedTs)}</small>
           {note.name}
         </Link>
-      ))
+      ));
   }
 
   updateTimoutId = null
   onFilterChange = (filter) => {
-    if (filter.trim() === this.props.filter) return
+    if (filter.trim() === this.props.filter) return;
 
-    window.clearTimeout(this.updateTimoutId)
-    this.updateTimoutId = window.setTimeout(this.props.setFilter, 300, filter)
+    window.clearTimeout(this.updateTimoutId);
+    this.updateTimoutId = window.setTimeout(this.props.setFilter, 300, filter);
   }
 
   componentWillUnmount() {
-    window.clearTimeout(this.updateTimoutId)
+    window.clearTimeout(this.updateTimoutId);
   }
 
   render() {
-    const notes = this.getVisibleNotes()
+    const notes = this.getVisibleNotes();
 
     const addBtn = (
       <Link to={{ name: 'add-note' }}>
         <Button raised primary>Add</Button>
       </Link>
-    )
+    );
 
     const left = [
       (
@@ -74,27 +74,27 @@ class NotesView extends PureComponent {
           {notes.length} items
         </small>
       ),
-    ]
+    ];
 
     return (
       <div className="view-container">
         <Toolbar left={left} right={addBtn} />
         {notes}
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = ({ notes, router }) => ({
   notes: notes.notes,
   filter: router.query.filter || '',
-})
+});
 
 const mapDispatchToProps = dispatch => ({
   setFilter(filter) {
-    const params = filter.trim().length ? { filter } : null
-    dispatch(routerActions.replace({ name: 'notes', params }))
+    const params = filter.trim().length ? { filter } : null;
+    dispatch(routerActions.replace({ name: 'notes', params }));
   },
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(NotesView)
+export default connect(mapStateToProps, mapDispatchToProps)(NotesView);

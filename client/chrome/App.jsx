@@ -1,25 +1,25 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import s from 'client/styles'
-import { Link, IconButton } from 'client/components'
-import { deauthorize } from 'client/utils/platform'
-import { showToast } from './actions'
-import AuthView from './AuthView'
-import ProgressLocker from './ProgressLocker'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import s from 'client/styles';
+import { Link, IconButton } from 'client/components';
+import { deauthorize } from 'client/utils/platform';
+import { showToast } from './actions';
+import AuthView from './AuthView';
+import ProgressLocker from './ProgressLocker';
 
 export function NotFoundView() {
   return (
     <div className="view-container">
       <div className="heading">NOT FOUND</div>
     </div>
-  )
+  );
 }
 
 const AppContainer = s.cx({
   margin: '0 auto',
   maxWidth: 'var(--max-width)',
-})
+});
 
 const ToastContainer = s.cx({
   position: 'fixed',
@@ -34,7 +34,7 @@ const ToastContainer = s.cx({
   ':empty': {
     display: 'none',
   },
-})
+});
 
 const NavLink = isSelected => s.cx({
   display: 'inline-block',
@@ -43,13 +43,13 @@ const NavLink = isSelected => s.cx({
   ...s.if(isSelected, {
     borderBottom: '2px solid var(--color-link)',
   }),
-})
+});
 
 const LogoutIcon = s.cx({
   position: 'absolute',
   right: '0',
   top: '-5px',
-})
+});
 
 class App extends PureComponent {
   static propTypes = {
@@ -68,48 +68,48 @@ class App extends PureComponent {
   toastTimeout = null
 
   constructor(props) {
-    super(props)
+    super(props);
 
     // Switch off the native scroll restoration behavior and handle it manually
     // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
     if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual'
+      window.history.scrollRestoration = 'manual';
     }
   }
 
   componentWillUpdate(nextProps) {
     if (this.props.pathname !== nextProps.pathname) {
       // save scroll pos
-      this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset }
+      this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset };
     }
 
     // hide toast in few seconds
     if (nextProps.toast && this.props.toast !== nextProps.toast) {
-      clearTimeout(this.toastTimeout)
-      this.toastTimeout = setTimeout(() => this.props.showToast(null), 8000)
+      clearTimeout(this.toastTimeout);
+      this.toastTimeout = setTimeout(() => this.props.showToast(null), 8000);
     }
   }
 
   componentDidUpdate() {
-    const { isPush, pathname } = this.props
+    const { isPush, pathname } = this.props;
 
     if (isPush) {
-      delete this.scrollPos[pathname] // delete stored scroll position for the next page
-      window.scrollTo(0, 0)
+      delete this.scrollPos[pathname]; // delete stored scroll position for the next page
+      window.scrollTo(0, 0);
     } else {
       // try to restore scroll position
-      const { offsetX, offsetY } = this.scrollPos[pathname] || { offsetX: 0, offsetY: 0 }
-      window.scrollTo(offsetX, offsetY)
+      const { offsetX, offsetY } = this.scrollPos[pathname] || { offsetX: 0, offsetY: 0 };
+      window.scrollTo(offsetX, offsetY);
     }
   }
 
   logout = () => {
-    deauthorize()
-    window.location.reload()
+    deauthorize();
+    window.location.reload();
   }
 
   renderNavbar() {
-    const route = this.props.routingSequence[0]
+    const route = this.props.routingSequence[0];
 
     return (
       <nav className="section relative">
@@ -118,15 +118,15 @@ class App extends PureComponent {
         <Link to={{ name: 'one' }} className={NavLink(route === 'one')}>One</Link>
         <IconButton className={LogoutIcon} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
-    )
+    );
   }
 
   render() {
-    const { view, isLoading, toast, showLocker, authorized } = this.props
+    const { view, isLoading, toast, showLocker, authorized } = this.props;
 
-    if (!authorized) return <AuthView />
+    if (!authorized) return <AuthView />;
 
-    const currentView = isLoading ? null : (view || <NotFoundView />)
+    const currentView = isLoading ? null : (view || <NotFoundView />);
 
     return (
       <div className={AppContainer}>
@@ -137,7 +137,7 @@ class App extends PureComponent {
         </div>
         {showLocker && <ProgressLocker />}
       </div>
-    )
+    );
   }
 }
 
@@ -150,10 +150,10 @@ const mapStateToProps = ({ router, chrome }) => ({
   toast: chrome.toast,
   showLocker: router.isLoading || chrome.showLocker,
   authorized: chrome.authorized,
-})
+});
 
 const mapDispatchToProps = {
   showToast,
-}
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App);
