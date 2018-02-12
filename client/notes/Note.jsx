@@ -23,13 +23,13 @@ export default class Note extends PureComponent {
     name: PropTypes.string.isRequired,
     data: PropTypes.string.isRequired,
     localFiles: PropTypes.object,
-  }
+  };
 
   static defaultProps = {
     localFiles: {},
-  }
+  };
 
-  fileUrls = {}
+  fileUrls = {};
 
   componentWillUpdate(nextProps) {
     if (this.props.localFiles !== nextProps.localFiles) throw new Error('update not supported');
@@ -93,7 +93,7 @@ export default class Note extends PureComponent {
       default:
         return item;
     }
-  }
+  };
 
   render() {
     return (

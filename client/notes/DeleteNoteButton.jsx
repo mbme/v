@@ -10,13 +10,13 @@ class DeleteNoteButton extends PureComponent {
     id: PropTypes.number.isRequired,
     deleteNote: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
-  }
+  };
 
   state = {
     showConfirmation: false,
-  }
+  };
 
-  deleteNote = () => this.props.deleteNote(this.props.id).then(() => this.props.push({ name: 'notes' }))
+  deleteNote = () => this.props.deleteNote(this.props.id).then(() => this.props.push({ name: 'notes' }));
 
   render() {
     return [

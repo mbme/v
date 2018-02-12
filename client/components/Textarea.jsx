@@ -18,29 +18,34 @@ export default class Textarea extends PureComponent {
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-  }
+  };
 
-  ref = null
-  selectionStart = 0
-  selectionEnd = 0
+  ref = null;
+  selectionStart = 0;
+  selectionEnd = 0;
 
   updateHeight = () => {
     this.ref.style.height = 'auto';
     this.ref.style.height = this.ref.scrollHeight + 'px';
-  }
+  };
 
   componentDidMount() {
-    this.updateHeight(); // TODO handle window resize
+    this.updateHeight();
+    window.addEventListener('resize', this.updateHeight);
   }
 
   componentDidUpdate() {
     this.updateHeight();
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateHeight);
+  }
+
   onBlur = () => {
     this.selectionStart = this.ref.selectionStart;
     this.selectionEnd = this.ref.selectionEnd;
-  }
+  };
 
   insert(str) {
     const { value, onChange } = this.props;

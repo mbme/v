@@ -20,7 +20,7 @@ export default function createNetwork() {
   return {
     events,
 
-    async POST(url, action, files = []) {
+    async post(url, action, files = []) {
       events.emit('start');
 
       const data = serialize(action, files);
@@ -56,7 +56,7 @@ export default function createNetwork() {
       }
     },
 
-    async GET(url) {
+    async get(url) {
       const res = await fetch(url, { credentials: 'include' });
 
       if (res.status === 404) return null;

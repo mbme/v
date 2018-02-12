@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
@@ -22,33 +22,35 @@ class NoteEditorView extends PureComponent {
     createNote: PropTypes.func.isRequired,
     updateNote: PropTypes.func.isRequired,
     showLocker: PropTypes.func.isRequired,
-  }
+  };
 
   state = {
     preview: false,
     name: this.props.name,
     data: this.props.data,
-  }
+  };
 
-  localFiles = {}
+  localFiles = {};
 
-  textAreaRef = null
+  textAreaRef = null;
 
-  hasChanges = () => this.state.name !== this.props.name || this.state.data !== this.props.data
-  onNameChange = name => this.setState({ name })
-  onDataChange = data => this.setState({ data })
+  hasChanges = () => this.state.name !== this.props.name || this.state.data !== this.props.data;
+  onNameChange = name => this.setState({ name });
+  onDataChange = data => this.setState({ data });
 
-  closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' })
+  closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' });
+
+  togglePreview = () => this.setState({ preview: !this.state.preview });
 
   onSave = async () => {
     await this.props.updateNote(this.props.id, this.state.name, this.state.data, this.getAttachments());
     this.closeEditor(this.props.id);
-  }
+  };
 
   onCreate = async () => {
     const id = await this.props.createNote(this.state.name, this.state.data, this.getAttachments());
     this.closeEditor(id);
-  }
+  };
 
   getAttachments() {
     const ids = extractFileIds(parse(this.state.data));
@@ -57,9 +59,7 @@ class NoteEditorView extends PureComponent {
   }
 
   onFilesSelected = async (files) => {
-    if (!files.length) {
-      return;
-    }
+    if (!files.length) return;
 
     this.props.showLocker(true);
 
@@ -82,25 +82,28 @@ class NoteEditorView extends PureComponent {
 
     this.textAreaRef.insert(links.join(' '));
     this.textAreaRef.focus();
-  }
+  };
 
   render() {
     const { preview, name, data } = this.state;
     const { id } = this.props;
-
-    const leftIcons = [
-      id && <DeleteNoteButton key="delete" id={id} />,
-      <AttachFileButton key="attach" onSelected={this.onFilesSelected} />,
-      <IconButton key="preview" title="Preview" type={preview ? 'eye-off' : 'eye'} onClick={() => this.setState({ preview: !preview })} />,
-    ];
-
     const isValid = name && this.hasChanges();
-    const rightIcons = [
-      <Button key="cancel" onClick={() => this.closeEditor(id)}>Cancel</Button>,
-      id
-        ? <Button key="save" primary onClick={this.onSave} disabled={!isValid}>Save</Button>
-        : <Button key="create" primary onClick={this.onCreate} disabled={!isValid}>Create</Button>,
-    ];
+
+    const leftIcons = (
+      <Fragment>
+        {id && <DeleteNoteButton id={id} />}
+        <AttachFileButton onSelected={this.onFilesSelected} />
+        <IconButton title="Preview" type={preview ? 'eye-off' : 'eye'} onClick={this.togglePreview} />
+      </Fragment>
+    );
+
+    const rightIcons = (
+      <Fragment>
+        <Button onClick={() => this.closeEditor(id)}>Cancel</Button>
+        {id && <Button primary onClick={this.onSave} disabled={!isValid}>Save</Button>}
+        {!id && <Button primary onClick={this.onCreate} disabled={!isValid}>Create</Button>}
+      </Fragment>
+    );
 
     return (
       <div className="view-container">
@@ -121,9 +124,7 @@ class NoteEditorView extends PureComponent {
 }
 
 const mapStateToProps = ({ notes }, { id }) => {
-  if (!id) {
-    return { name: '', data: '' };
-  }
+  if (!id) return { name: '', data: '' };
 
   const note = notes.notes.find(n => n.id === id);
   return { name: note.name, data: note.data };

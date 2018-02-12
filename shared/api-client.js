@@ -3,7 +3,7 @@ export const CONTENT_TYPE = 'multipart/v-data';
 export const getFileUrl = fileId => `/api?fileId=${fileId}`;
 
 export default function createApiClient(baseUrl, network) {
-  const apiPOST = network.POST.bind(null, `${baseUrl}/api`);
+  const apiPOST = network.post.bind(null, `${baseUrl}/api`);
 
   return {
     ping() {
@@ -15,7 +15,7 @@ export default function createApiClient(baseUrl, network) {
     },
 
     readFile(fileId) {
-      return network.GET(this.getFileUrl(fileId));
+      return network.get(this.getFileUrl(fileId));
     },
 
     listRecords(type) {

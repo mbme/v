@@ -26,17 +26,17 @@ const Logo = s.cx({
 class AuthView extends PureComponent {
   static propTypes = {
     ping: PropTypes.func.isRequired,
-  }
+  };
 
   state = {
     password: '',
-  }
+  };
 
-  onPasswordChange = password => this.setState({ password })
+  onPasswordChange = password => this.setState({ password });
 
   onKeyDown = (e) => {
     if (e.key === 'Enter') this.checkPassword(this.state.password);
-  }
+  };
 
   async checkPassword(password) {
     await authorize(password);

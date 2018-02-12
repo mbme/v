@@ -23,7 +23,7 @@ class NotesView extends PureComponent {
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
     setFilter: PropTypes.func.isRequired,
-  }
+  };
 
   getVisibleNotes() {
     return this.props.notes
@@ -37,13 +37,13 @@ class NotesView extends PureComponent {
       ));
   }
 
-  updateTimoutId = null
+  updateTimoutId = null;
   onFilterChange = (filter) => {
     if (filter.trim() === this.props.filter) return;
 
     window.clearTimeout(this.updateTimoutId);
     this.updateTimoutId = window.setTimeout(this.props.setFilter, 300, filter);
-  }
+  };
 
   componentWillUnmount() {
     window.clearTimeout(this.updateTimoutId);

@@ -15,7 +15,7 @@ export function sha256File(filePath) {
       .on('error', reject)
       .pipe(crypto.createHash('sha256').setEncoding('hex'))
       .on('finish', function onFinish() {
-        resolve(this.read());
+        resolve(this.read()); // eslint-disable-line babel/no-invalid-this
       })
   );
 }

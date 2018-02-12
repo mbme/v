@@ -25,9 +25,9 @@ class Input extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
-  }
+  };
 
-  ref = null
+  ref = null;
 
   componentDidMount() {
     if (this.props.autoFocus) {

@@ -16,12 +16,12 @@ export function NotFoundView() {
   );
 }
 
-const AppContainer = s.cx({
+const appContainer = s.cx({
   margin: '0 auto',
   maxWidth: 'var(--max-width)',
 });
 
-const ToastContainer = s.cx({
+const toastContainer = s.cx({
   position: 'fixed',
   bottom: '0',
   width: '100%',
@@ -36,7 +36,7 @@ const ToastContainer = s.cx({
   },
 });
 
-const NavLink = isSelected => s.cx({
+const navLink = isSelected => s.cx({
   display: 'inline-block',
   margin: '0 var(--spacing-medium)',
   color: 'var(--color-link)',
@@ -45,7 +45,7 @@ const NavLink = isSelected => s.cx({
   }),
 });
 
-const LogoutIcon = s.cx({
+const logoutIcon = s.cx({
   position: 'absolute',
   right: '0',
   top: '-5px',
@@ -62,10 +62,10 @@ class App extends PureComponent {
     showToast: PropTypes.func.isRequired,
     showLocker: PropTypes.bool.isRequired,
     authorized: PropTypes.bool.isRequired,
-  }
+  };
 
-  scrollPos = {}
-  toastTimeout = null
+  scrollPos = {};
+  toastTimeout = null;
 
   constructor(props) {
     super(props);
@@ -106,17 +106,17 @@ class App extends PureComponent {
   logout = () => {
     deauthorize();
     window.location.reload();
-  }
+  };
 
   renderNavbar() {
     const route = this.props.routingSequence[0];
 
     return (
       <nav className="section relative">
-        <Link to={{ name: 'notes' }} className={NavLink(route === 'notes')}>Notes</Link>
-        <Link to={{ name: 'todos' }} className={NavLink(route === 'todos')}>Todos</Link>
-        <Link to={{ name: 'one' }} className={NavLink(route === 'one')}>One</Link>
-        <IconButton className={LogoutIcon} type="log-out" title="Logout" onClick={this.logout} />
+        <Link to={{ name: 'notes' }} className={navLink(route === 'notes')}>Notes</Link>
+        <Link to={{ name: 'todos' }} className={navLink(route === 'todos')}>Todos</Link>
+        <Link to={{ name: 'one' }} className={navLink(route === 'one')}>One</Link>
+        <IconButton className={logoutIcon} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
     );
   }
@@ -129,10 +129,10 @@ class App extends PureComponent {
     const currentView = isLoading ? null : (view || <NotFoundView />);
 
     return (
-      <div className={AppContainer}>
+      <div className={appContainer}>
         {this.renderNavbar()}
         {currentView}
-        <div className={ToastContainer}>
+        <div className={toastContainer}>
           {toast}
         </div>
         {showLocker && <ProgressLocker />}

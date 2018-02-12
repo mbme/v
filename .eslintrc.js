@@ -30,7 +30,8 @@ module.exports = {
       },
     },
   ],
-  extends: [ 'airbnb', 'plugin:import/errors', 'plugin:import/warnings' ],
+  extends: [ 'airbnb', 'plugin:import/errors', 'plugin:import/warnings'],
+  plugins: [ 'babel' ],
   rules: {
     'max-len': 0,
     'no-console': 0,
@@ -61,12 +62,6 @@ module.exports = {
       'always-multiline',
     ],
     'quote-props': 0,
-    'react/require-default-props': 0,
-    'react/forbid-prop-types': 0,
-    'react/sort-comp': 0,
-    'jsx-a11y/anchor-is-valid': 0,
-    'jsx-a11y/click-events-have-key-events': 0,
-    'jsx-a11y/no-static-element-interactions': 0,
     'function-paren-newline': [
       'error',
       'consistent',
@@ -87,5 +82,17 @@ module.exports = {
       'ForInStatement',
       'WithStatement',
     ],
+
+    'react/require-default-props': 0,
+    'react/forbid-prop-types': 0,
+    'react/sort-comp': 0,
+
+    'jsx-a11y/anchor-is-valid': 0,
+    'jsx-a11y/click-events-have-key-events': 0,
+    'jsx-a11y/no-static-element-interactions': 0,
+
+    "babel/new-cap": 2,
+    "babel/no-invalid-this": 2,
+    "babel/semi": 2,
   },
 }

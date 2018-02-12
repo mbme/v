@@ -30,7 +30,7 @@ export class Backdrop extends PureComponent {
     children: PropTypes.node.isRequired,
     onClick: PropTypes.func,
     className: PropTypes.string,
-  }
+  };
 
   componentDidMount() {
     const { scrollTop } = document.documentElement;
@@ -64,15 +64,15 @@ export class Modal extends PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onCancel: PropTypes.func.isRequired,
-  }
+  };
 
-  modalRootEl = null
+  modalRootEl = null;
 
   onModalClick = (e) => {
     if (e.target === e.currentTarget) {
       this.props.onCancel();
     }
-  }
+  };
 
   componentWillMount() {
     this.modalRootEl = document.getElementById('modal');

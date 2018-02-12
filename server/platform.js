@@ -23,7 +23,7 @@ export default function createNetwork(password) {
   const token = aesEncrypt(`valid ${Date.now()}`, sha256(password));
 
   return {
-    async POST(url, action, files = []) {
+    async post(url, action, files = []) {
       const data = serialize(action, files);
 
       const resp = await request('POST', url, {
@@ -41,7 +41,7 @@ export default function createNetwork(password) {
       throw new Error(`Server returned ${resp.statusCode} ${resp.statusMessage}`);
     },
 
-    async GET(url) {
+    async get(url) {
       const resp = await request('GET', url, { 'Cookie': `token=${token}` });
 
       if (resp.statusCode === 200) return readStream(resp);

@@ -8,7 +8,7 @@ import Note from './Note';
 class NoteView extends PureComponent {
   static propTypes = {
     note: PropTypes.object.isRequired,
-  }
+  };
 
   render() {
     const { note } = this.props;

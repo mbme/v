@@ -13,9 +13,9 @@ class Link extends PureComponent {
     }).isRequired,
     children: PropTypes.node.isRequired,
     push: PropTypes.func.isRequired,
-  }
+  };
 
-  onClick = () => this.props.push(this.props.to)
+  onClick = () => this.props.push(this.props.to);
 
   render() {
     const { className, children } = this.props;
