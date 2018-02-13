@@ -91,8 +91,6 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 0,
     'jsx-a11y/no-static-element-interactions': 0,
 
-    "babel/new-cap": 2,
-    "babel/no-invalid-this": 2,
     "babel/semi": 2,
   },
 }

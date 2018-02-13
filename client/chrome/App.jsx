@@ -8,7 +8,7 @@ import { showToast } from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 
-export function NotFoundView() {
+function NotFoundView() {
   return (
     <div className="view-container">
       <div className="heading">NOT FOUND</div>
