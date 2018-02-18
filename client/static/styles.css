@@ -319,11 +319,6 @@ select {
   margin-bottom: var(--spacing-medium);
 }
 
-.view-container {
-  display: flex;
-  flex-direction: column;
-}
-
 /* UTILS */
 
 .text-center {

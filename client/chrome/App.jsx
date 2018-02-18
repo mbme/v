@@ -8,17 +8,14 @@ import { showToast } from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 
-function NotFoundView() {
-  return (
-    <div className="view-container">
-      <div className="heading">NOT FOUND</div>
-    </div>
-  );
-}
-
 const appContainer = s.cx({
   margin: '0 auto',
   maxWidth: 'var(--max-width)',
+});
+
+const viewContainer = s.cx({
+  display: 'flex',
+  flexDirection: 'column',
 });
 
 const toastContainer = s.cx({
@@ -126,12 +123,14 @@ class App extends PureComponent {
 
     if (!authorized) return <AuthView />;
 
-    const currentView = isLoading ? null : (view || <NotFoundView />);
+    const currentView = isLoading ? null : (view || <div className="heading">NOT FOUND</div>);
 
     return (
       <div className={appContainer}>
         {this.renderNavbar()}
-        {currentView}
+        <div className={viewContainer}>
+          {currentView}
+        </div>
         <div className={toastContainer}>
           {toast}
         </div>

@@ -106,7 +106,7 @@ class NoteEditorView extends PureComponent {
     );
 
     return (
-      <div className="view-container">
+      <Fragment>
         <Toolbar left={leftIcons} right={rightIcons} />
 
         <div className="section" hidden={preview}>
@@ -118,7 +118,7 @@ class NoteEditorView extends PureComponent {
         </div>
 
         {preview && <Note name={name} data={data} localFiles={this.localFiles} />}
-      </div>
+      </Fragment>
     );
   }
 }

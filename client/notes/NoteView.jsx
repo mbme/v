@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, Toolbar, IconButton } from 'client/components';
@@ -24,10 +24,10 @@ class NoteView extends PureComponent {
     );
 
     return (
-      <div className="view-container">
+      <Fragment>
         <Toolbar left={deleteBtn} right={editBtn} />
         <Note name={note.name} data={note.data} />
-      </div>
+      </Fragment>
     );
   }
 }

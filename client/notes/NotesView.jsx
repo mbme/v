@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -58,29 +58,26 @@ class NotesView extends PureComponent {
       </Link>
     );
 
-    const left = [
-      (
+    const left = (
+      <Fragment>
         <LightInput
-          key="filter"
           name="filter"
           defaultValue={this.props.filter}
           placeholder="Filter notes"
           onChange={this.onFilterChange}
           autoFocus
         />
-      ),
-      (
-        <small key="counter" className={Counter}>
+        <small className={Counter}>
           {notes.length} items
         </small>
-      ),
-    ];
+      </Fragment>
+    );
 
     return (
-      <div className="view-container">
+      <Fragment>
         <Toolbar left={left} right={addBtn} />
         {notes}
-      </div>
+      </Fragment>
     );
   }
 }
