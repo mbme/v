@@ -2,29 +2,33 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import s from 'client/styles';
 
-const Styles = {
+const inputStyles = ({ light }) => ({
   display: 'block',
   width: '100%',
-};
 
-const FormInputStyles = s.cx({
-  ...Styles,
-  backgroundColor: 'var(--bg-color)',
-  padding: 'var(--spacing-small)',
-}, 'with-border');
+  extend: [
+    {
+      condition: light,
+      border: '0 none',
+      borderBottom: 'var(--border)',
+      backgroundColor: 'inherit',
+      padding: 'var(--spacing-fine) var(--spacing-small)',
+    },
+    {
+      condition: !light,
+      backgroundColor: 'var(--bg-color)',
+      padding: 'var(--spacing-small)',
+      ...s.withBorder,
+    },
+  ],
+});
 
-const LightInputStyles = {
-  ...Styles,
-  border: '0 none',
-  borderBottom: 'var(--border)',
-  backgroundColor: 'inherit',
-  padding: 'var(--spacing-fine) var(--spacing-small)',
-};
-
-class Input extends PureComponent {
+export default class Input extends PureComponent {
   static propTypes = {
     autoFocus: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
+    light: PropTypes.bool,
+    className: PropTypes.string,
   };
 
   ref = null;
@@ -38,29 +42,14 @@ class Input extends PureComponent {
   }
 
   render() {
-    const { onChange, ...other } = this.props;
+    const { onChange, light, className, ...other } = this.props;
     return (
       <input
         ref={(ref) => { this.ref = ref; }}
         onChange={e => onChange(e.target.value)}
+        className={s.cx(inputStyles({ light }), className)}
         {...other}
       />
     );
   }
 }
-
-export function FormInput({ className, ...other }) {
-  return <Input className={s.cx(className, FormInputStyles)} {...other} />;
-}
-
-FormInput.propTypes = {
-  className: PropTypes.string,
-};
-
-export function LightInput({ className, ...other }) {
-  return <Input className={s.cx(className, LightInputStyles)} {...other} />;
-}
-
-LightInput.propTypes = {
-  className: PropTypes.string,
-};

@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
 import { readFile, sha256 } from 'client/utils';
-import { Button, Textarea, Toolbar, FormInput, IconButton } from 'client/components';
+import s from 'client/styles';
+import { Button, Textarea, Toolbar, Input, IconButton } from 'client/components';
 import * as routerActions from 'client/router/actions';
 import * as chromeActions from 'client/chrome/actions';
 import * as notesActions from './actions';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';
-import Note, { Title } from './Note';
+import Note, { titleStyles } from './Note';
 
 const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false);
 
@@ -109,11 +110,11 @@ class NoteEditorView extends PureComponent {
       <Fragment>
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <div className="section" hidden={preview}>
-          <FormInput className={Title} name="name" value={name} onChange={this.onNameChange} autoFocus />
+        <div className={s.cx(s.section)} hidden={preview}>
+          <Input className={titleStyles} name="name" value={name} onChange={this.onNameChange} autoFocus />
         </div>
 
-        <div className="section" hidden={preview}>
+        <div className={s.cx(s.section)} hidden={preview}>
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref; }} />
         </div>
 

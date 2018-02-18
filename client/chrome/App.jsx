@@ -18,6 +18,10 @@ const viewContainer = s.cx({
   flexDirection: 'column',
 });
 
+const navbarStyles = s.cx({
+  position: 'relative',
+}, s.section);
+
 const toastContainer = s.cx({
   position: 'fixed',
   bottom: '0',
@@ -37,9 +41,12 @@ const navLink = isSelected => s.cx({
   display: 'inline-block',
   margin: '0 var(--spacing-medium)',
   color: 'var(--color-link)',
-  ...s.if(isSelected, {
-    borderBottom: '2px solid var(--color-link)',
-  }),
+  extend: [
+    {
+      condition: isSelected,
+      borderBottom: '2px solid var(--color-link)',
+    },
+  ],
 });
 
 const logoutIcon = s.cx({
@@ -109,7 +116,7 @@ class App extends PureComponent {
     const route = this.props.routingSequence[0];
 
     return (
-      <nav className="section relative">
+      <nav className={navbarStyles}>
         <Link to={{ name: 'notes' }} className={navLink(route === 'notes')}>Notes</Link>
         <Link to={{ name: 'todos' }} className={navLink(route === 'todos')}>Todos</Link>
         <Link to={{ name: 'one' }} className={navLink(route === 'one')}>One</Link>
@@ -123,7 +130,7 @@ class App extends PureComponent {
 
     if (!authorized) return <AuthView />;
 
-    const currentView = isLoading ? null : (view || <div className="heading">NOT FOUND</div>);
+    const currentView = isLoading ? null : (view || <div className={s.cx(s.heading)}>NOT FOUND</div>);
 
     return (
       <div className={appContainer}>

@@ -307,23 +307,7 @@ select {
   display: none !important;
 }
 
-/* COMMON */
-
-.section {
-  margin-bottom: var(--spacing-medium);
-}
-
-.heading {
-  font-weight: bold;
-  font-size: var(--font-size-large);
-  margin-bottom: var(--spacing-medium);
-}
-
 /* UTILS */
-
-.text-center {
-  text-align: center;
-}
 
 .flex {
   display: flex;
@@ -343,17 +327,4 @@ select {
 
 .flex-align-baseline {
   align-items: baseline;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.with-border {
-  border: var(--border);
-  box-shadow: var(--box-shadow);
-}
-
-.relative {
-  position: relative;
 }

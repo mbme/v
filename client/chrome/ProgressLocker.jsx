@@ -2,7 +2,7 @@ import React from 'react';
 import s from 'client/styles';
 import { Icon, Backdrop } from 'client/components';
 
-const BackdropStyles = s.cx({
+const backdrop = s.cx({
   cursor: 'progress',
   animationName: s.animation({
     '0%': { opacity: '0.7' },
@@ -14,7 +14,7 @@ const BackdropStyles = s.cx({
   alignItems: 'center',
 });
 
-const Spinner = s.cx({
+const spinner = s.cx({
   width: '24px',
   height: '24px',
   animationName: s.animation({
@@ -27,8 +27,8 @@ const Spinner = s.cx({
 
 export default function ProgressLocker() {
   return (
-    <Backdrop className={BackdropStyles}>
-      <Icon type="loader" className={Spinner} />
+    <Backdrop className={backdrop}>
+      <Icon type="loader" className={spinner} />
     </Backdrop>
   );
 }

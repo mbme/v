@@ -4,6 +4,10 @@ import { connect } from 'react-redux';
 import s from 'client/styles';
 import * as routerActions from 'client/router/actions';
 
+const linkStyles = s.cx({
+  cursor: 'pointer',
+});
+
 class Link extends PureComponent {
   static propTypes = {
     className: PropTypes.string,
@@ -21,7 +25,7 @@ class Link extends PureComponent {
     const { className, children } = this.props;
 
     return (
-      <div className={s.cx(className, 'cursor-pointer')} role="link" tabIndex="0" onClick={this.onClick}>
+      <div className={s.cx(className, linkStyles)} role="link" tabIndex="0" onClick={this.onClick}>
         {children}
       </div>
     );

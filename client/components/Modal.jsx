@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'client/components';
 import s from 'client/styles';
 
-const BackdropContainer = s.cx({
+const backdropContainerStyles = s.cx({
   backgroundColor: 'rgba(255,255,255,.65)',
   position: 'fixed',
   zIndex: 10,
@@ -20,7 +20,7 @@ const BackdropContainer = s.cx({
   alignItems: 'flex-start',
 });
 
-const NoScroll = s.cx({
+const noScrollStyles = s.cx({
   height: '100vh',
   overflow: 'hidden',
 });
@@ -34,7 +34,7 @@ export class Backdrop extends PureComponent {
 
   componentDidMount() {
     const { scrollTop } = document.documentElement;
-    document.body.className = NoScroll;
+    document.body.className = noScrollStyles;
     document.body.style = `margin-top: ${-scrollTop}px`;
   }
 
@@ -46,19 +46,19 @@ export class Backdrop extends PureComponent {
   render() {
     const { className, onClick, children } = this.props;
     return (
-      <div className={s.cx(BackdropContainer, className)} onClick={onClick}>
+      <div className={s.cx(backdropContainerStyles, className)} onClick={onClick}>
         {children}
       </div>
     );
   }
 }
 
-const ModalStyles = s.cx({
+const modalStyles = s.cx({
   backgroundColor: 'var(--bg-color)',
   marginTop: '17vh',
   minWidth: '375px',
   padding: 'var(--spacing-medium)',
-}, 'with-border');
+}, s.withBorder);
 
 export class Modal extends PureComponent {
   static propTypes = {
@@ -81,7 +81,7 @@ export class Modal extends PureComponent {
   render() {
     return ReactDOM.createPortal(
       <Backdrop onClick={this.onModalClick}>
-        <div className={ModalStyles}>{this.props.children}</div>
+        <div className={modalStyles}>{this.props.children}</div>
       </Backdrop>,
       this.modalRootEl,
     );
@@ -91,7 +91,7 @@ export class Modal extends PureComponent {
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (
     <Modal onCancel={onCancel}>
-      <div className="section">{children}</div>
+      <div className={s.cx(s.section)}>{children}</div>
       <div className="flex flex-end flex-align-center">
         <Button onClick={onCancel}>CANCEL</Button>
         <Button raised primary onClick={onConfirmed}>{confirmation}</Button>

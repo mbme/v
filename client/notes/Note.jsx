@@ -4,19 +4,19 @@ import { getFileUrl } from 'shared/api-client';
 import { parse } from 'shared/parser';
 import s from 'client/styles';
 
-export const Title = s.cx({
+export const titleStyles = s.cx({
   textAlign: 'center',
   letterSpacing: '1.4px',
-}, 'heading');
+}, s.heading);
 
-const Document = s.cx({
+const documentStyles = s.cx({
   hyphens: 'auto',
   textAlign: 'justify',
 });
 
-const Image = s.cx({
+const imageStyles = s.cx({
   padding: 'var(--spacing-medium) 0',
-}, 'section');
+}, s.section);
 
 export default class Note extends PureComponent {
   static propTypes = {
@@ -54,7 +54,7 @@ export default class Note extends PureComponent {
   renderItem = (item) => {
     switch (item.type) {
       case 'Document': {
-        return React.createElement('article', { className: Document }, ...item.items.map(this.renderItem));
+        return React.createElement('article', { className: documentStyles }, ...item.items.map(this.renderItem));
       }
 
       case 'Paragraph': {
@@ -81,7 +81,7 @@ export default class Note extends PureComponent {
 
         if (item.link.type === 'image') {
           return (
-            <img className={Image} alt={item.link.name} src={url} />
+            <img className={imageStyles} alt={item.link.name} src={url} />
           );
         }
 
@@ -98,7 +98,7 @@ export default class Note extends PureComponent {
   render() {
     return (
       <div>
-        <h1 className={Title}>{this.props.name}</h1>
+        <h1 className={titleStyles}>{this.props.name}</h1>
         {this.renderItem(parse(this.props.data))}
       </div>
     );

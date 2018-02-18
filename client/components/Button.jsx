@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import s from 'client/styles';
 import Icon from './Icon';
 
-const cleanButton = (disabled, primary) => ({
+const button = ({ disabled, primary, type }) => ({
   border: '0 none',
   borderRadius: '2px',
   cursor: 'pointer',
@@ -11,34 +11,38 @@ const cleanButton = (disabled, primary) => ({
   backgroundColor: 'inherit',
   padding: 'var(--spacing-fine) var(--spacing-medium)',
 
-  ...s.if(disabled, {
-    cursor: 'auto',
-    filter: 'invert(80%)',
-  }),
-
-  ...s.if(primary && !disabled, {
-    color: 'var(--color-primary)',
-  }),
-});
-
-const flatButton = (disabled, primary) => ({
-  ...cleanButton(disabled, primary),
-
-  textTransform: 'uppercase',
-  letterSpacing: '1.2px',
-  transition: 'background-color 100ms linear',
-
-  ...s.if(!disabled, {
-    ':hover': {
-      boxShadow: 'var(--box-shadow)',
+  extend: [
+    {
+      condition: disabled,
+      cursor: 'auto',
+      filter: 'invert(80%)',
     },
-  }),
+    {
+      condition: primary && !disabled,
+      color: 'var(--color-primary)',
+    },
+    {
+      condition: type === 'flat',
+      textTransform: 'uppercase',
+      letterSpacing: '1.2px',
+      transition: 'background-color 100ms linear',
+    },
+    {
+      condition: type === 'flat' && !disabled,
+      ':hover': {
+        boxShadow: 'var(--box-shadow)',
+      },
+    },
+    {
+      condition: type === 'raised',
+      ...s.withBorder,
+    },
+  ],
 });
-
-const raisedButton = (disabled, primary) => s.cx(cleanButton(disabled, primary), 'with-border');
 
 export function Button({ onClick, disabled, raised, primary, children }) {
-  const className = s.cx(raised ? raisedButton(disabled, primary) : flatButton(disabled, primary));
+  const className = s.cx(button({ disabled, primary, type: raised ? 'raised' : 'flat' }));
+
   return (
     <button className={className} onClick={onClick} disabled={disabled}>{children}</button>
   );
@@ -53,7 +57,7 @@ Button.propTypes = {
 
 export function IconButton({ type, title, onClick, className }) {
   return (
-    <button className={s.cx(flatButton(false), className)} title={title} onClick={onClick}>
+    <button className={s.cx(button({ type: 'flat' }), className)} title={title} onClick={onClick}>
       <Icon type={type} />
     </button>
   );

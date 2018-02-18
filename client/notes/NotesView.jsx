@@ -4,15 +4,17 @@ import { connect } from 'react-redux';
 
 import { fuzzySearch, formatTs } from 'shared/utils';
 import s from 'client/styles';
-import { Button, Toolbar, Link, LightInput } from 'client/components';
+import { Button, Toolbar, Link, Input } from 'client/components';
 import * as routerActions from 'client/router/actions';
 
-const Counter = s.cx({
+const linkStyles = s.cx(s.section, 'flex flex-align-baseline');
+
+const counterStyles = s.cx({
   marginLeft: 'var(--spacing-small)',
   whiteSpace: 'nowrap',
 });
 
-const Time = s.cx({
+const timeStyles = s.cx({
   marginRight: 'var(--spacing-small)',
 });
 
@@ -30,8 +32,8 @@ class NotesView extends PureComponent {
       .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
       .sort(recent)
       .map(note => (
-        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className="section flex flex-align-baseline">
-          <small className={Time}>{formatTs(note.updatedTs)}</small>
+        <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={linkStyles}>
+          <small className={timeStyles}>{formatTs(note.updatedTs)}</small>
           {note.name}
         </Link>
       ));
@@ -60,14 +62,14 @@ class NotesView extends PureComponent {
 
     const left = (
       <Fragment>
-        <LightInput
+        <Input
           name="filter"
           defaultValue={this.props.filter}
           placeholder="Filter notes"
           onChange={this.onFilterChange}
           autoFocus
         />
-        <small className={Counter}>
+        <small className={counterStyles}>
           {notes.length} items
         </small>
       </Fragment>
