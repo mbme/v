@@ -10,6 +10,7 @@
     "build": "rm -f dist/* && NODE_ENV=production webpack",
     "start": "NODE_PATH=. NODE_ENV=production bin/node.js bin/server",
     "dev": "NODE_PATH=. bin/node.js bin/dev-server",
+    "dev-gen-data": "yarn dev --gen-data",
     "test": "NODE_PATH=. bin/node.js bin/test",
     "test-update": "yarn test --update-snapshots",
     "repl": "NODE_PATH=. bin/node.js bin/repl",

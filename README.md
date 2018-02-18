@@ -21,6 +21,8 @@ yarn build && yarn start
 
 # dev mode
 yarn dev
+# start dev server and generate random data
+yarn dev-gen-data
 
 # run tests
 yarn test
