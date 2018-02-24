@@ -306,25 +306,3 @@ select {
 [hidden] {
   display: none !important;
 }
-
-/* UTILS */
-
-.flex {
-  display: flex;
-}
-
-.flex-center {
-  justify-content: center;
-}
-
-.flex-end {
-  justify-content: flex-end;
-}
-
-.flex-align-center {
-  align-items: center;
-}
-
-.flex-align-baseline {
-  align-items: baseline;
-}

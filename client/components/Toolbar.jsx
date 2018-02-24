@@ -3,17 +3,13 @@ import PropTypes from 'prop-types';
 import s from 'client/styles';
 
 const containerStyles = s.cx({
-  display: 'flex',
-  flexWrap: 'nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
   position: 'sticky',
   top: 0,
   backgroundColor: 'var(--bg-color)',
   padding: 'var(--spacing-fine) 0',
-}, s.section);
+}, s.section, s.flex({ h: 'space-between', v: 'center', wrap: false }));
 
-const cellStyles = 'flex flex-center flex-align-center';
+const cellStyles = s.cx(s.flex({ h: 'center', v: 'center' }));
 
 export default function Toolbar({ left, right }) {
   return (

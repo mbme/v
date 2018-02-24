@@ -14,11 +14,7 @@ const backdropContainerStyles = s.cx({
   right: 0,
   bottom: 0,
   left: 0,
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'flex-start',
-});
+}, s.flex({ h: 'center', v: 'flex-start' }));
 
 const noScrollStyles = s.cx({
   height: '100vh',
@@ -35,12 +31,12 @@ export class Backdrop extends PureComponent {
   componentDidMount() {
     const { scrollTop } = document.documentElement;
     document.body.className = noScrollStyles;
-    document.body.style = `margin-top: ${-scrollTop}px`;
+    document.body.cssText = `margin-top: ${-scrollTop}px`;
   }
 
   componentWillUnmount() {
     document.body.className = '';
-    document.body.style = '';
+    document.body.cssText = '';
   }
 
   render() {
@@ -88,11 +84,13 @@ export class Modal extends PureComponent {
   }
 }
 
+const buttonContainerStyles = s.cx(s.flex({ h: 'flex-end', v: 'center' }));
+
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (
     <Modal onCancel={onCancel}>
       <div className={s.cx(s.section)}>{children}</div>
-      <div className="flex flex-end flex-align-center">
+      <div className={buttonContainerStyles}>
         <Button onClick={onCancel}>CANCEL</Button>
         <Button raised primary onClick={onConfirmed}>{confirmation}</Button>
       </div>

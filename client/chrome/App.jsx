@@ -8,21 +8,18 @@ import { showToast } from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 
-const appContainer = s.cx({
+const appContainerStyles = s.cx({
   margin: '0 auto',
   maxWidth: 'var(--max-width)',
 });
 
-const viewContainer = s.cx({
-  display: 'flex',
-  flexDirection: 'column',
-});
+const viewContainerStyles = s.cx(s.flex({ column: true }));
 
 const navbarStyles = s.cx({
   position: 'relative',
 }, s.section);
 
-const toastContainer = s.cx({
+const toastContainerStyles = s.cx({
   position: 'fixed',
   bottom: '0',
   width: '100%',
@@ -37,7 +34,7 @@ const toastContainer = s.cx({
   },
 });
 
-const navLink = isSelected => s.cx({
+const navLinkStyles = isSelected => s.cx({
   display: 'inline-block',
   margin: '0 var(--spacing-medium)',
   color: 'var(--color-link)',
@@ -49,7 +46,7 @@ const navLink = isSelected => s.cx({
   ],
 });
 
-const logoutIcon = s.cx({
+const logoutIconStyles = s.cx({
   position: 'absolute',
   right: '0',
   top: '-5px',
@@ -117,10 +114,10 @@ class App extends PureComponent {
 
     return (
       <nav className={navbarStyles}>
-        <Link to={{ name: 'notes' }} className={navLink(route === 'notes')}>Notes</Link>
-        <Link to={{ name: 'todos' }} className={navLink(route === 'todos')}>Todos</Link>
-        <Link to={{ name: 'one' }} className={navLink(route === 'one')}>One</Link>
-        <IconButton className={logoutIcon} type="log-out" title="Logout" onClick={this.logout} />
+        <Link to={{ name: 'notes' }} className={navLinkStyles(route === 'notes')}>Notes</Link>
+        <Link to={{ name: 'todos' }} className={navLinkStyles(route === 'todos')}>Todos</Link>
+        <Link to={{ name: 'one' }} className={navLinkStyles(route === 'one')}>One</Link>
+        <IconButton className={logoutIconStyles} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
     );
   }
@@ -133,12 +130,12 @@ class App extends PureComponent {
     const currentView = isLoading ? null : (view || <div className={s.cx(s.heading)}>NOT FOUND</div>);
 
     return (
-      <div className={appContainer}>
+      <div className={appContainerStyles}>
         {this.renderNavbar()}
-        <div className={viewContainer}>
+        <div className={viewContainerStyles}>
           {currentView}
         </div>
-        <div className={toastContainer}>
+        <div className={toastContainerStyles}>
           {toast}
         </div>
         {showLocker && <ProgressLocker />}

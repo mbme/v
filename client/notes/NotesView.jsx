@@ -7,7 +7,7 @@ import s from 'client/styles';
 import { Button, Toolbar, Link, Input } from 'client/components';
 import * as routerActions from 'client/router/actions';
 
-const linkStyles = s.cx(s.section, 'flex flex-align-baseline');
+const linkStyles = s.cx(s.section, s.flex({ v: 'baseline' }));
 
 const counterStyles = s.cx({
   marginLeft: 'var(--spacing-small)',

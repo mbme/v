@@ -37,9 +37,32 @@ function cx(...args) {
 
 const animation = keyframe => renderer.renderKeyframe(() => keyframe);
 
+const flex = ({ h, v, column = false, wrap = true }) => ({
+  display: 'flex',
+  extend: [
+    {
+      condition: h,
+      justifyContent: h,
+    },
+    {
+      condition: v,
+      alignItems: v,
+    },
+    {
+      condition: column,
+      flexDirection: 'column',
+    },
+    {
+      condition: !wrap,
+      flexWrap: 'nowrap',
+    },
+  ],
+});
+
 export default {
   cx,
   animation,
+  flex,
   withBorder: {
     border: 'var(--border)',
     boxShadow: 'var(--box-shadow)',

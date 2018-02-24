@@ -8,11 +8,8 @@ import * as chromeActions from './actions';
 
 const backdropStyles = s.cx({
   backgroundColor: 'var(--bg-color)',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'flex-start',
   paddingTop: '20vh',
-});
+}, s.flex({ column: true, h: 'flex-start', v: 'center' }));
 
 const inputStyles = s.cx({
   width: '300px',
