@@ -1,8 +1,8 @@
 import path from 'path';
 import nodeFs from 'fs';
 import { extractFileIds, parse } from 'shared/parser';
-import { validateAll, assertAll } from 'shared/types';
 import { uniq, flatten, isAsyncFunction } from 'shared/utils';
+import { validateAll, assertAll } from 'server/types';
 import * as utils from 'server/utils';
 
 function createStorageFs(rootDir) {

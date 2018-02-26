@@ -4,6 +4,11 @@ import { readStream, aesEncrypt, sha256 } from 'server/utils';
 import { serialize } from 'shared/protocol';
 import { CONTENT_TYPE } from 'shared/api-client';
 
+export const PlatformBuffer = {
+  fromStr: str => Buffer.from(str, 'utf8'),
+  concat: buffers => Buffer.concat(buffers),
+};
+
 function request(method, url, headers, body) {
   return new Promise((resolve, reject) => {
     const { protocol, hostname, port, pathname, search } = urlParser.parse(url);
@@ -24,7 +29,7 @@ export default function createNetwork(password) {
 
   return {
     async post(url, action, files = []) {
-      const data = serialize(action, files);
+      const data = serialize(action, files, PlatformBuffer);
 
       const resp = await request('POST', url, {
         'Content-Type': CONTENT_TYPE,

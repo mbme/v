@@ -9,13 +9,21 @@ import { flatten } from 'shared/utils';
 
 const SEPARATOR = ' ';
 
-const str2buffer = str => Buffer.from(str, 'utf8');
-const serializeItem = buffer => [ str2buffer(String(buffer.length)), str2buffer(SEPARATOR), buffer ];
+/**
+ * @param {string} action JSON string with action
+ * @param {(Buffer|ArrayBuffer)[]} fileBuffers array of file buffers
+ */
+export function serialize(action, fileBuffers, PlatformBuffer) {
+  const buffers = flatten([
+    PlatformBuffer.fromStr(JSON.stringify(action)),
+    ...fileBuffers,
+  ].map(buffer => ([
+    PlatformBuffer.fromStr(String(buffer.length)),
+    PlatformBuffer.fromStr(SEPARATOR),
+    buffer,
+  ])));
 
-export function serialize(action, files) {
-  const buffers = [ str2buffer(JSON.stringify(action)), ...files.map(file => Buffer.from(file)) ];
-
-  return Buffer.concat(flatten(buffers.map(serializeItem)));
+  return PlatformBuffer.concat(buffers);
 }
 
 function getItems(buffer) {

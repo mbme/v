@@ -3,6 +3,8 @@ module.exports = {
   globals: {
     __DEVELOPMENT__: true,
     __CLIENT__: true,
+    global: true,
+    console: true,
   },
   settings: {
     'import/resolver': {
@@ -12,6 +14,15 @@ module.exports = {
     },
   },
   overrides: [
+    {
+      files: [
+        'shared/**/*.js',
+      ],
+      env: {
+        node: false,
+        browser: false,
+      },
+    },
     {
       files: [
         'client/**/*.js',
@@ -24,6 +35,7 @@ module.exports = {
     {
       files: [
         'server/**/*.js',
+        '**/*.test.js',
       ],
       env: {
         node: true,

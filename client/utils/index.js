@@ -2,7 +2,7 @@ export function readFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = e => resolve(e.target.result);
+    reader.onload = e => resolve(new Uint8Array(e.target.result));
     reader.onerror = reject;
 
     reader.readAsArrayBuffer(file);
@@ -14,6 +14,19 @@ const bytesToHexString = buffer => Array.from(new Uint8Array(buffer)).map(b => (
 export const sha256 = buffer => crypto.subtle.digest('SHA-256', buffer).then(bytesToHexString);
 
 export const text2buffer = text => new TextEncoder().encode(text);
+
+export function concatBuffers(buffers) {
+  const length = buffers.reduce((acc, b) => acc + b.byteLength, 0);
+
+  const result = new Uint8Array(length);
+  let offset = 0;
+  for (const buffer of buffers) {
+    result.set(buffer, offset);
+    offset += buffer.byteLength;
+  }
+
+  return result;
+}
 
 export async function aesEncrypt(text, password) {
   const alg = { name: 'AES-CBC', iv: crypto.getRandomValues(new Uint8Array(16)) };

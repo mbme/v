@@ -1,4 +1,5 @@
 import { test } from 'tools/test';
+import { PlatformBuffer } from 'server/platform';
 import { serialize, parse } from './protocol';
 
 const buffer = Buffer.from('test file');
@@ -6,7 +7,7 @@ const buffer = Buffer.from('test file');
 test('serialization', (assert) => {
   const action = { name: 'TEST' };
   const files = [ buffer, buffer ];
-  assert.matchSnapshot(serialize(action, files).toString('utf8'));
+  assert.matchSnapshot(serialize(action, files, PlatformBuffer).toString('utf8'));
 });
 
 test('deserialization', (assert) => {
@@ -16,7 +17,7 @@ test('deserialization', (assert) => {
       data: { x: 1 },
     };
 
-    const result = parse(serialize(action, []));
+    const result = parse(serialize(action, [], PlatformBuffer));
     assert.equal(result.files.length, 0);
     assert.deepEqual(result.action, action);
   }
@@ -25,7 +26,7 @@ test('deserialization', (assert) => {
     const action = { name: 'TEST' };
     const files = [ buffer, buffer ];
 
-    const result = parse(serialize(action, files));
+    const result = parse(serialize(action, files, PlatformBuffer));
     assert.deepEqual(result.action, action);
     assert.equal(result.files.length, files.length);
 

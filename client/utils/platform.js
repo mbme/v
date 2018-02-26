@@ -1,7 +1,12 @@
 import { serialize } from 'shared/protocol';
 import { CONTENT_TYPE } from 'shared/api-client';
 import { createPubSub } from 'shared/utils';
-import { sha256, text2buffer, aesEncrypt } from 'client/utils';
+import { sha256, text2buffer, concatBuffers, aesEncrypt } from 'client/utils';
+
+const PlatformBuffer = {
+  fromStr: text2buffer,
+  concat: concatBuffers,
+};
 
 export async function authorize(password) {
   const token = await aesEncrypt(`valid ${Date.now()}`, await sha256(text2buffer(password)));
@@ -23,7 +28,7 @@ export default function createNetwork() {
     async post(url, action, files = []) {
       events.emit('start');
 
-      const data = serialize(action, files);
+      const data = serialize(action, files, PlatformBuffer);
 
       try {
         const res = await fetch(url, {
