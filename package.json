@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "babel-register": "^6.24.1",
-    "feather-icons": "^4.0.1",
     "fela": "^6.1.0",
     "fela-dom": "^7.0.0",
     "prop-types": "^15.5.10",
