@@ -4,7 +4,14 @@ import { isString, isObject } from 'shared/utils';
 
 const renderer = createRenderer();
 
-export const init = () => render(renderer);
+export function init() {
+  const styleLink = document.createElement('link');
+  styleLink.href = '/styles.css';
+  styleLink.rel = 'stylesheet';
+  document.head.append(styleLink);
+
+  render(renderer);
+}
 
 const cleanupStyleObj = style => ({
   ...style,

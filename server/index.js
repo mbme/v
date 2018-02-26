@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import http from 'http';
 import urlParser from 'url';
+import zlib from 'zlib';
 
 import * as utils from 'server/utils';
 import { extend } from 'shared/utils';
@@ -61,6 +62,8 @@ export default async function startServer(port, customOptions) {
 
     res.setHeader('Referrer-Policy', 'no-referrer');
 
+    const gzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
+
     try {
       const url = urlParser.parse(req.url, true);
 
@@ -97,17 +100,13 @@ export default async function startServer(port, customOptions) {
           }
 
           const response = JSON.stringify({ data: await processor.processAction(parse(buffer)) });
-          const headers = {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate', // turn of caches
-          };
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // turn off caches
 
-          if (/\bgzip\b/.test(req.headers['accept-encoding'])) { // compress response if client supports gzip
-            headers['Content-Encoding'] = 'gzip';
-            res.writeHead(200, headers);
+          if (gzipSupported) {
+            res.setHeader('Content-Encoding', 'gzip');
             res.end(await utils.gzip(response));
           } else {
-            res.writeHead(200, headers);
             res.end(response);
           }
           return;
@@ -167,8 +166,14 @@ export default async function startServer(port, customOptions) {
             || await getFileStream(STATIC_DIR, 'index.html');
 
       if (file) {
-        res.writeHead(200, { 'Content-Type': file.mimeType });
-        file.stream.pipe(res);
+        res.setHeader('Content-Type', file.mimeType);
+
+        if (gzipSupported) {
+          res.setHeader('Content-Encoding', 'gzip');
+          file.stream.pipe(zlib.createGzip()).pipe(res);
+        } else {
+          file.stream.pipe(res);
+        }
       } else {
         res.writeHead(404);
         res.end();

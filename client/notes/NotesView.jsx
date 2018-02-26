@@ -44,7 +44,7 @@ class NotesView extends PureComponent {
     if (filter.trim() === this.props.filter) return;
 
     window.clearTimeout(this.updateTimoutId);
-    this.updateTimoutId = window.setTimeout(this.props.setFilter, 300, filter);
+    this.updateTimoutId = window.setTimeout(this.props.setFilter, 60, filter);
   };
 
   componentWillUnmount() {
