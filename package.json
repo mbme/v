@@ -7,7 +7,7 @@
   "private": true,
   "main": "",
   "scripts": {
-    "build": "rm -f dist/* && NODE_ENV=production webpack",
+    "build": "NODE_PATH=. NODE_ENV=production bin/node.js bin/prod-build",
     "start": "NODE_PATH=. NODE_ENV=production bin/node.js bin/server",
     "dev": "NODE_PATH=. bin/node.js bin/dev-server",
     "dev-gen-data": "yarn dev --gen-data",
@@ -33,8 +33,7 @@
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-eslint": "^8.0.2",
-    "babel-loader": "^7.0.0",
-    "babel-minify-webpack-plugin": "^0.3.0",
+    "babel-loader": "^7.1.3",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
@@ -46,6 +45,6 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.2.0",
-    "webpack": "^3.11.0"
+    "webpack": "^4.0.0"
   }
 }

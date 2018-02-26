@@ -1,10 +1,11 @@
 import path from 'path';
 import webpack from 'webpack';
-import MinifyPlugin from 'babel-minify-webpack-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default {
+  mode: isProduction ? 'production' : 'development',
+
   entry: './client/index.jsx',
 
   output: {
@@ -44,11 +45,6 @@ export default {
   },
 
   plugins: [
-    isProduction && new webpack.optimize.ModuleConcatenationPlugin(),
-    isProduction && new MinifyPlugin(),
-
-    !isProduction && new webpack.NoEmitOnErrorsPlugin(),
-
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
