@@ -4,6 +4,42 @@ const isChar = char => (str, i) => str[i] === char;
 const isNewline = isChar('\n');
 const postprocessTextItem = tree => ({ type: tree.type, text: tree.items[0] });
 
+const LinkTypes = {
+  image: 'image:',
+  common: '',
+};
+
+function postprocessLink(tree) {
+  const [ addressItem, nameItem ] = tree.items;
+
+  for (const [ linkType, prefix ] of Object.entries(LinkTypes)) {
+    if (addressItem.text.startsWith(prefix)) {
+      const address = addressItem.text.substring(prefix.length);
+      return {
+        type: tree.type,
+        link: {
+          type: linkType,
+          name: nameItem ? nameItem.text : '',
+          address,
+          isInternal: isSha256(address),
+        },
+      };
+    }
+  }
+
+  throw new Error('unreachable');
+}
+
+function postprocessHeader(tree) {
+  const text = tree.items[0];
+  const lvl = text.startsWith('# ') ? 1 : 2;
+  return {
+    type: tree.type,
+    lvl,
+    text: text.substring(lvl + 1),
+  };
+}
+
 const declareType = type => ({
   skip: [ 0, 0 ],
   children: [],
@@ -13,13 +49,11 @@ const declareType = type => ({
   ...type,
 });
 
-const LinkTypes = {
-  image: 'image:',
-  common: '',
-};
+
+const INLINE_TYPES = [ 'Bold', 'Mono', 'Strikethrough', 'Link' ];
 
 const Grammar = {
-  Bold: declareType({
+  Bold: declareType({ // some *bold* text
     skip: [ 1, 1 ],
     escapeChar: '*',
     isStart: isChar('*'),
@@ -28,13 +62,35 @@ const Grammar = {
     postprocess: postprocessTextItem,
   }),
 
-  Mono: declareType({
+  Mono: declareType({ // some `monospace` text
     skip: [ 1, 1 ],
     escapeChar: '`',
     isStart: isChar('`'),
     isBreak: isNewline,
     isEnd: isChar('`'),
     postprocess: postprocessTextItem,
+  }),
+
+  Strikethrough: declareType({ // some ~striketrough~ text
+    skip: [ 1, 1 ],
+    escapeChar: '~',
+    isStart: isChar('~'),
+    isBreak: isNewline,
+    isEnd: isChar('~'),
+    postprocess: postprocessTextItem,
+  }),
+
+  Header: declareType({ // # Header lvl 1 or ## Header lvl 2
+    isStart: (str, pos) => {
+      if (pos > 0 && str[pos - 1] !== '\n') return false;
+
+      if (str.slice(pos, pos + 2) === '# ') return true;
+      if (str.slice(pos, pos + 3) === '## ') return true;
+
+      return false;
+    },
+    isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
+    postprocess: postprocessHeader,
   }),
 
   LinkPart: declareType({
@@ -46,80 +102,48 @@ const Grammar = {
     postprocess: postprocessTextItem,
   }),
 
-  Link: declareType({
+  Link: declareType({ // links [[type:ref][name]] or [[type:ref]]
     skip: [ 1, 1 ],
     children: [ 'LinkPart' ],
     isStart: isChar('['),
     isEnd: isChar(']'),
-    isValid: ({ items }) => items.length === 2 && items[0].type === 'LinkPart' && items[1].type === 'LinkPart',
-    postprocess(tree) {
-      const [ addressItem, nameItem ] = tree.items;
+    isValid: ({ items }) => {
+      if (items.length !== 1 && items.length !== 2) return false;
 
-      for (const [ linkType, prefix ] of Object.entries(LinkTypes)) {
-        if (addressItem.text.startsWith(prefix)) {
-          const address = addressItem.text.substring(prefix.length);
-          return {
-            type: tree.type,
-            link: {
-              type: linkType,
-              name: nameItem.text,
-              address,
-              isInternal: isSha256(address),
-            },
-          };
-        }
-      }
-
-      throw new Error('unreachable');
+      return items.filter(item => item.type !== 'LinkPart').length === 0;
     },
+    postprocess: postprocessLink,
   }),
 
-  Paragraph: declareType({
-    children: [ 'Bold', 'Mono', 'Link' ],
-    isStart: (str, pos) => pos === 0 || (str[pos] !== '\n' && str[pos - 1] === '\n'),
-    isEnd(str, pos) {
-      if (pos === str.length) {
-        return true;
-      }
-
-      const ending = str.slice(pos, pos + 2);
-      if (ending === '\n' || ending === '\n\n') {
-        return true;
-      }
-
-      return false;
-    },
-  }),
-
-  Header: declareType({
+  ListItem: declareType({ // * Unordered list
+    children: [ ...INLINE_TYPES ],
     skip: [ 1, 0 ],
     isStart: (str, pos) => {
-      if (str.slice(pos, pos + 2) !== '# ') {
-        return false;
-      }
+      if (pos > 0 && str[pos - 1] !== '\n') return false;
 
-      if (pos > 0 && str[pos - 1] !== '\n') { // check newline before #
-        return false;
-      }
+      if (str.slice(pos, pos + 2) === '* ') return true;
 
-      const newLinePos = str.indexOf('\n', pos);
-      if (newLinePos === -1) {
-        return true;
-      }
-
-      // check if there is an empty line after header
-      if (newLinePos + 1 < str.length && str[newLinePos + 1] !== '\n') {
-        return false;
-      }
-
-      return true;
+      return false;
     },
     isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
     postprocess: postprocessTextItem,
   }),
 
+  Paragraph: declareType({
+    children: [ 'Header', 'ListItem', ...INLINE_TYPES ],
+    isStart: (str, pos) => pos === 0 || (str[pos] !== '\n' && str[pos - 1] === '\n'),
+    isEnd(str, pos) {
+      if (pos === str.length) return true;
+
+      const ending = str.slice(pos, pos + 2);
+      if (ending === '\n' || ending === '\n\n') return true;
+
+      return false;
+    },
+  }),
+
   Document: declareType({
-    children: [ 'Header', 'Paragraph' ],
+    children: [ 'Paragraph' ],
     isStart: (str, pos) => pos === 0,
     isEnd: (str, pos) => pos === str.length,
   }),
@@ -136,16 +160,11 @@ export function parseFrom(str, pos, type, context) {
   const [ skipStart, skipEnd ] = rule.skip;
 
   let i = pos;
-  if (!rule.isStart(str, i, context)) {
-    return [ 0, null ];
-  }
+  if (!rule.isStart(str, i, context)) return [ 0, null ];
 
   i += skipStart;
 
-  const tree = {
-    type,
-    items: [],
-  };
+  const tree = { type, items: [] };
   let text = '';
   let ended = false;
 
@@ -169,16 +188,13 @@ export function parseFrom(str, pos, type, context) {
       break outer;
     }
 
-    if (i === str.length) {
-      break outer;
-    }
+    if (i === str.length) break outer;
 
     inner:
     for (const childType of rule.children) {
       const [ length, leaf ] = parseFrom(str, i, childType, [ ...context, type ]);
-      if (!length) {
-        continue inner;
-      }
+
+      if (!length) continue inner;
 
       if (text) {
         tree.items.push(text);
@@ -191,66 +207,52 @@ export function parseFrom(str, pos, type, context) {
       continue outer;
     }
 
-    if (rule.isBreak(str, i)) {
-      return [ 0, null ];
-    }
+    if (rule.isBreak(str, i)) return [ 0, null ];
 
     text += str[i];
     i += 1;
   }
 
-  if (text) {
-    tree.items.push(text);
-  }
+  if (text) tree.items.push(text);
 
   // validate result
-  if (!ended || !rule.isValid(tree)) {
-    return [ 0, null ];
-  }
+  if (!ended || !rule.isValid(tree)) return [ 0, null ];
 
   const length = i - pos;
 
   return [ length, rule.postprocess(tree) ];
 }
 
-function assertType(type) {
-  if (Grammar[type]) {
-    return;
-  }
-
-  throw new Error(`Uknown type ${type}`);
-}
-
-export function parse(str, type = 'Document') {
-  assertType(type);
-
-  const [ i, tree ] = parseFrom(str, 0, type, []);
+export function parse(str) {
+  const [ i, tree ] = parseFrom(str, 0, 'Document', []);
 
   if (global.__DEVELOPMENT__ && i !== str.length) {
-    console.error(`WARN: rule ${type} covers ${i} out of ${str.length} chars`);
+    console.error(`WARN: parser covers ${i} out of ${str.length} chars`);
   }
 
   return tree;
 }
 
 export function select(tree, type) {
-  assertType(type);
+  if (!Grammar[type]) throw new Error(`Uknown type ${type}`);
 
-  if (!tree || isString(tree)) {
-    return [];
-  }
+  if (!tree || isString(tree)) return [];
 
   const result = [];
-  if (tree.type === type) {
-    result.push(tree);
-  }
+  if (tree.type === type) result.push(tree);
 
   (tree.items || []).forEach(child => result.push(...select(child, type)));
 
   return result;
 }
 
-export const extractFileIds = tree => uniq(select(tree, 'Link').map(({ link }) => link.isInternal ? link.address : null).filter(Boolean));
+export function extractFileIds(tree) {
+  return uniq(select(tree, 'Link').reduce((acc, { link }) => {
+    if (link.isInternal) acc.push(link.address);
 
-export const createLink = (name = '', link) => `[[${link}][${name}]]`;
+    return acc;
+  }, []));
+}
+
+export const createLink = (name = '', link) => name ? `[[${link}][${name}]]` : `[[${link}]]`;
 export const createImageLink = (name, link) => createLink(name, `image:${link}`);

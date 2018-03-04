@@ -88,6 +88,7 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
     return [ snapshots, true ];
   } catch (e) {
     console.error(`  ${name} failed\n`, e.message);
+    console.error(e.stack.split('\n').filter(s => s.trim().startsWith('at '))[1]);
     return [ oldSnapshots, false ];
   }
 }

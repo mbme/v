@@ -2,81 +2,47 @@ import { test, before, after } from 'tools/test';
 import { parse, select } from './parser';
 
 const text = `
-# Header
-
+# Header1
 block
-# so not a header
+## Header2
 
 * test
 * test
 
 Paragraph and something else. sentence
-test *bold* \`code\`
-
-\`\`\`js
- code block
-\`\`\`
+test *bold\\**
+test \`code\\\`\`
+test ~strikethrough\\~~ text
 
 > some blockquote
 > quote
 
 One more paragraph. [[http://link.to/123?321][link]]
+And image link without description [[image:0d4dbbed6733f4038a8b72dfe1b02030d3bb8fad803e329e3b0bf41f7f8a4452]]
 
 `;
 
 before(() => { global.__DEVELOPMENT__ = false; }); // suppress warnings
 after(() => { global.__DEVELOPMENT__ = true; });
 
-test('Bold', (assert) => {
-  assert.matchSnapshot(parse('*test*', 'Bold'));
-  assert.matchSnapshot(parse('* test \\* and* so on', 'Bold'));
-  assert.equal(parse(
-    `*te
-    st*`,
-    'Bold',
-  ), null);
-});
+test('Markup', (assert) => {
+  const result = parse(text);
 
-test('Mono', (assert) => {
-  assert.matchSnapshot(parse('`test`', 'Mono'));
-  assert.matchSnapshot(parse('` test \\` and` so on', 'Mono'));
-  assert.matchSnapshot(parse(
-    `\`te
-    st\``,
-    'Mono',
-  ), null);
-});
+  assert.equal(select(result, 'Paragraph').length, 5);
+  assert.equal(select(result, 'Header').length, 2);
+  assert.equal(select(result, 'ListItem').length, 2);
 
-test('Header', (assert) => {
-  assert.matchSnapshot(parse('# AHAHAH *test oh no* !', 'Header'));
-  assert.equal(parse(
-    `# AHAHAH *test oh no* !
-    there is no empty line
-    `,
-    'Header',
-  ), null);
-});
+  const bold = select(result, 'Bold');
+  assert.equal(bold.length, 1);
+  assert.equal(bold[0].text, 'bold*');
 
-test('Link', (assert) => {
-  assert.matchSnapshot(parse('[[http://amazing.com][awesome link]]', 'Link'));
-});
+  const mono = select(result, 'Mono');
+  assert.equal(mono.length, 1);
+  assert.equal(mono[0].text, 'code`');
 
-test('Paragraph', (assert) => {
-  assert.matchSnapshot(parse(
-    `
-    AHAHAH *test oh no!
-    go go _power cows_ \`code\`
-    `,
-    'Paragraph',
-  ));
-});
+  const strikethrough = select(result, 'Strikethrough');
+  assert.equal(strikethrough.length, 1);
+  assert.equal(strikethrough[0].text, 'strikethrough~');
 
-test('Document', (assert) => {
-  assert.equal(parse('', 'Document') !== null, true);
-  assert.matchSnapshot(parse(text, 'Document'));
-});
-
-test('select', (assert) => {
-  const links = select(parse(text), 'Link');
-  assert.matchSnapshot(links);
+  assert.equal(select(result, 'Link').length, 2);
 });

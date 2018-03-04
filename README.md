@@ -9,7 +9,7 @@ Physicist Devashish Singh
 
 ### Dir structure
 ```
-/${record_type}/${id}_${name}
+/${id}_${name}
 /files/${id}_${name}
 ```
 
@@ -41,20 +41,18 @@ based on org-mode and markdown
 * header1 `# Header`
 * header2 `## Header`
 
-
 `$ref = http://link | file-id`
 
-* link `[[$ref][link name]]`
-* image `[[image:$ref][alt text]]`
+* link `[[$ref][description]]`, description is optional
+* image `[[image:$ref][description]]`, description is optional
 
 * bold `*text*`
 * mono `` `text` ``
 * striketrough `~text~`
-* superscript `text^{1}`
-* subscript `text_{2}`
 
 * unordered list `* list item`
-* ordered list `- list item`
+
+--------
 
 * code:
 ````
@@ -70,8 +68,9 @@ Quote here
 ```
 ````
 
-
-maybe later:
+* superscript `text^{1}`
+* subscript `text_{2}`
+* ordered list `- list item`
 * line break (2 spaces at the end of the line)
 * tables
 * footnotes `^[note text]`
