@@ -1,7 +1,18 @@
 import { isString, uniq, isSha256 } from 'shared/utils';
 
-const isChar = char => (str, i) => str[i] === char;
-const isNewline = isChar('\n');
+function isSubSequence(str, i, seq) {
+  for (let pos = 0; pos < seq.length; pos += 1) {
+    if (str[i + pos] !== seq[pos]) return false;
+  }
+
+  return true;
+}
+
+// BOF === Beginning Of File
+const isAfterNewlineOrBOF = (str, i) => (str[i - 1] === '\n' || i === 0);
+const isCharSeq = seq => (str, i) => isSubSequence(str, i, seq);
+const isNewline = isCharSeq('\n');
+
 const postprocessTextItem = tree => ({ type: tree.type, text: tree.items[0] });
 
 const LinkTypes = {
@@ -13,18 +24,18 @@ function postprocessLink(tree) {
   const [ addressItem, nameItem ] = tree.items;
 
   for (const [ linkType, prefix ] of Object.entries(LinkTypes)) {
-    if (addressItem.text.startsWith(prefix)) {
-      const address = addressItem.text.substring(prefix.length);
-      return {
-        type: tree.type,
-        link: {
-          type: linkType,
-          name: nameItem ? nameItem.text : '',
-          address,
-          isInternal: isSha256(address),
-        },
-      };
-    }
+    if (!addressItem.text.startsWith(prefix)) continue;
+
+    const address = addressItem.text.substring(prefix.length);
+    return {
+      type: tree.type,
+      link: {
+        type: linkType,
+        name: nameItem ? nameItem.text : '',
+        address,
+        isInternal: isSha256(address),
+      },
+    };
   }
 
   throw new Error('unreachable');
@@ -37,6 +48,26 @@ function postprocessHeader(tree) {
     type: tree.type,
     lvl,
     text: text.substring(lvl + 1),
+  };
+}
+
+function postprocessCodeBlock(tree) {
+  const text = tree.items[0];
+  const firstNewlinePos = text.indexOf('\n');
+  const lang = text.substring(0, firstNewlinePos);
+
+  if (lang.startsWith('quote:')) { // handle quotes
+    return {
+      type: tree.type,
+      source: lang.substring(6),
+      text: text.substring(firstNewlinePos + 1),
+    };
+  }
+
+  return {
+    type: tree.type,
+    lang,
+    text: text.substring(firstNewlinePos + 1),
   };
 }
 
@@ -56,39 +87,33 @@ const Grammar = {
   Bold: declareType({ // some *bold* text
     skip: [ 1, 1 ],
     escapeChar: '*',
-    isStart: isChar('*'),
+    isStart: isCharSeq('*'),
     isBreak: isNewline,
-    isEnd: isChar('*'),
+    isEnd: isCharSeq('*'),
     postprocess: postprocessTextItem,
   }),
 
   Mono: declareType({ // some `monospace` text
     skip: [ 1, 1 ],
     escapeChar: '`',
-    isStart: isChar('`'),
+    isStart: isCharSeq('`'),
     isBreak: isNewline,
-    isEnd: isChar('`'),
+    isEnd: isCharSeq('`'),
     postprocess: postprocessTextItem,
   }),
 
   Strikethrough: declareType({ // some ~striketrough~ text
     skip: [ 1, 1 ],
     escapeChar: '~',
-    isStart: isChar('~'),
+    isStart: isCharSeq('~'),
     isBreak: isNewline,
-    isEnd: isChar('~'),
+    isEnd: isCharSeq('~'),
     postprocess: postprocessTextItem,
   }),
 
   Header: declareType({ // # Header lvl 1 or ## Header lvl 2
-    isStart: (str, pos) => {
-      if (pos > 0 && str[pos - 1] !== '\n') return false;
-
-      if (str.slice(pos, pos + 2) === '# ') return true;
-      if (str.slice(pos, pos + 3) === '## ') return true;
-
-      return false;
-    },
+    isStart: (str, pos) => isAfterNewlineOrBOF(str, pos) &&
+      (isSubSequence(str, pos, '# ') || isSubSequence(str, pos, '## ')),
     isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
     postprocess: postprocessHeader,
   }),
@@ -96,17 +121,17 @@ const Grammar = {
   LinkPart: declareType({
     skip: [ 1, 1 ],
     escapeChar: ']',
-    isStart: isChar('['),
+    isStart: isCharSeq('['),
     isBreak: isNewline,
-    isEnd: isChar(']'),
+    isEnd: isCharSeq(']'),
     postprocess: postprocessTextItem,
   }),
 
   Link: declareType({ // links [[type:ref][name]] or [[type:ref]]
     skip: [ 1, 1 ],
     children: [ 'LinkPart' ],
-    isStart: isChar('['),
-    isEnd: isChar(']'),
+    isStart: isCharSeq('['),
+    isEnd: isCharSeq(']'),
     isValid: ({ items }) => {
       if (items.length !== 1 && items.length !== 2) return false;
 
@@ -118,19 +143,23 @@ const Grammar = {
   ListItem: declareType({ // * Unordered list
     children: [ ...INLINE_TYPES ],
     skip: [ 1, 0 ],
-    isStart: (str, pos) => {
-      if (pos > 0 && str[pos - 1] !== '\n') return false;
-
-      if (str.slice(pos, pos + 2) === '* ') return true;
-
-      return false;
-    },
+    isStart: (str, pos) => isAfterNewlineOrBOF(str, pos) && isSubSequence(str, pos, '* '),
     isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
     postprocess: postprocessTextItem,
   }),
 
+  // ```js
+  // callFunc();
+  // ```
+  CodeBlock: declareType({
+    skip: [ 3, 3 ],
+    isStart: (str, pos) => isAfterNewlineOrBOF(str, pos) && isSubSequence(str, pos, '```'),
+    isEnd: (str, pos) => isSubSequence(str, pos, '\n```'),
+    postprocess: postprocessCodeBlock,
+  }),
+
   Paragraph: declareType({
-    children: [ 'Header', 'ListItem', ...INLINE_TYPES ],
+    children: [ 'Header', 'ListItem', 'CodeBlock', ...INLINE_TYPES ],
     isStart: (str, pos) => pos === 0 || (str[pos] !== '\n' && str[pos - 1] === '\n'),
     isEnd(str, pos) {
       if (pos === str.length) return true;

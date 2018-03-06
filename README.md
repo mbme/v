@@ -52,8 +52,6 @@ based on org-mode and markdown
 
 * unordered list `* list item`
 
---------
-
 * code:
 ````
 ```js
@@ -63,10 +61,13 @@ based on org-mode and markdown
 
 * blockquote:
 ````
-```quote
+```quote:source
 Quote here
 ```
 ````
+
+--------
+
 
 * superscript `text^{1}`
 * subscript `text_{2}`
