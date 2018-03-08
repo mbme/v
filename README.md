@@ -7,12 +7,6 @@ you can almost be certain that there's a huge quantum of bullshit being dumped o
 Physicist Devashish Singh
 ```
 
-### Dir structure
-```
-/${id}_${name}
-/files/${id}_${name}
-```
-
 ### Build Scripts
 
 ```sh
@@ -33,6 +27,12 @@ yarn lint
 # count lines of code, requires https://github.com/AlDanial/cloc
 yarn cloc
 
+```
+
+### Dir structure
+```
+/${id}_${name}
+/files/${id}_${name}
 ```
 
 ### Syntax
