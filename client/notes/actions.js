@@ -8,9 +8,7 @@ export function markNotesListOutdated() {
 export const LIST_CHANGE = 'NOTES/LIST_CHANGE';
 export function listNotes() {
   return async (dispatch, getState, apiClient) => {
-    if (getState().notes.fresh) {
-      return null;
-    }
+    if (getState().notes.fresh) return null;
 
     const newNotes = await apiClient.listNotes();
 

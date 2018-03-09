@@ -128,7 +128,7 @@ const mapStateToProps = ({ notes }, { id }) => {
   if (!id) return { name: '', data: '' };
 
   const note = notes.notes.find(n => n.id === id);
-  return { name: note.name, data: note.data };
+  return { name: note.fields.name, data: note.fields.data };
 };
 
 const mapDispatchToProps = {

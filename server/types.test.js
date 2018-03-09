@@ -17,14 +17,6 @@ test('buffer', ({ equal }) => {
   equal(validate('test', 'buffer').length, 1);
 });
 
-test('record', ({ equal }) => {
-  equal(validate('note', 'record-type').length, 0);
-  equal(validate('test', 'record-type').length, 1);
-
-  equal(validate('note 123', 'record-name').length, 0);
-  equal(validate('', 'record-name').length, 1);
-});
-
 test('validation asserts', (assert) => {
   assert.throws(() => validationAssert(1, 'string'));
   assert.equal(validationAssert('1', 'string'), undefined);

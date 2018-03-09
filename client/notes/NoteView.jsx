@@ -26,7 +26,7 @@ class NoteView extends PureComponent {
     return (
       <Fragment>
         <Toolbar left={deleteBtn} right={editBtn} />
-        <Note name={note.name} data={note.data} />
+        <Note name={note.fields.name} data={note.fields.data} />
       </Fragment>
     );
   }

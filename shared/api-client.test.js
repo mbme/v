@@ -59,8 +59,8 @@ test('should manage notes', async (assert) => {
 
   // update note
   const updatedNote = await api.updateNote(note.id, 'new name', 'new data');
-  assert.equal(updatedNote.name, 'new name');
-  assert.equal(updatedNote.data, 'new data');
+  assert.equal(updatedNote.fields.name, 'new name');
+  assert.equal(updatedNote.fields.data, 'new data');
   assert.equal(updatedNote.updatedTs > note.updatedTs, true);
 
   // delete note
@@ -91,6 +91,6 @@ test('should properly initialize', async (assert) => {
   assert.equal(buffer.equals(await api.readFile(fileId)), true);
 
   const noteAfterRestart = await api.readNote(note.id);
-  assert.equal(noteAfterRestart.name, note.name);
-  assert.equal(noteAfterRestart.data, note.data);
+  assert.equal(noteAfterRestart.fields.name, note.fields.name);
+  assert.equal(noteAfterRestart.fields.data, note.fields.data);
 });

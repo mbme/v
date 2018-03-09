@@ -8,15 +8,17 @@ const actions = {
   'READ_NOTE': (storage, { id }) => storage.readRecord(id),
   'CREATE_NOTE': (storage, { name, data }, files) => {
     assertAll(
+      [ name, 'note-name' ],
       [ data, 'note-data' ],
     );
-    return storage.createRecord(RecordType.note, name, data, files);
+    return storage.createRecord(RecordType.note, { name, data }, files);
   },
   'UPDATE_NOTE': (storage, { id, name, data }, files) => {
     assertAll(
+      [ name, 'note-name' ],
       [ data, 'note-data' ],
     );
-    return storage.updateRecord(id, name, data, files);
+    return storage.updateRecord(id, { name, data }, files);
   },
   'DELETE_NOTE': (storage, { id }) => storage.deleteRecord(id),
 

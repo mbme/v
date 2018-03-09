@@ -29,12 +29,12 @@ class NotesView extends PureComponent {
 
   getVisibleNotes() {
     return this.props.notes
-      .filter(({ name }) => fuzzySearch(this.props.filter, name.toLowerCase()))
+      .filter(note => fuzzySearch(this.props.filter, note.fields.name.toLowerCase()))
       .sort(recent)
       .map(note => (
         <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={linkStyles}>
           <small className={timeStyles}>{formatTs(note.updatedTs)}</small>
-          {note.name}
+          {note.fields.name}
         </Link>
       ));
   }
