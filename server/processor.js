@@ -1,4 +1,4 @@
-import { RecordType } from 'server/types';
+import { RecordType, assertAll } from 'server/types';
 import createStorage from 'server/storage';
 
 const actions = {
@@ -6,8 +6,18 @@ const actions = {
 
   'LIST_NOTES': storage => storage.listRecords(RecordType.note),
   'READ_NOTE': (storage, { id }) => storage.readRecord(id),
-  'CREATE_NOTE': (storage, { name, data }, files) => storage.createRecord(RecordType.note, name, data, files),
-  'UPDATE_NOTE': (storage, { id, name, data }, files) => storage.updateRecord(id, name, data, files),
+  'CREATE_NOTE': (storage, { name, data }, files) => {
+    assertAll(
+      [ data, 'note-data' ],
+    );
+    return storage.createRecord(RecordType.note, name, data, files);
+  },
+  'UPDATE_NOTE': (storage, { id, name, data }, files) => {
+    assertAll(
+      [ data, 'note-data' ],
+    );
+    return storage.updateRecord(id, name, data, files);
+  },
   'DELETE_NOTE': (storage, { id }) => storage.deleteRecord(id),
 
   'READ_FILE': (storage, { id }) => storage.readFile(id),

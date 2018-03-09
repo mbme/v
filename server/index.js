@@ -187,7 +187,7 @@ export default async function startServer(port, customOptions) {
       const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000);
 
       if (options.requestLogger) {
-        console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage, ms);
+        console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage || 'OK', ms);
       }
     }
   });

@@ -1,9 +1,17 @@
 import path from 'path';
 import nodeFs from 'fs';
-import { extractFileIds, parse } from 'shared/parser';
+import * as parser from 'shared/parser';
 import { uniq, flatten, isAsyncFunction } from 'shared/utils';
-import { validateAll, assertAll } from 'server/types';
+import { validateAll, assertAll, RecordType } from 'server/types';
 import * as utils from 'server/utils';
+
+function extractFileIds(type, data) {
+  if (type === RecordType.note) {
+    return parser.extractFileIds(parser.parse(data));
+  }
+
+  throw new Error('NYI');
+}
 
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id);
@@ -106,7 +114,7 @@ function createStorageFs(rootDir) {
       const recordFile = getRecordPath(id);
       const { type, name, data, updatedTs } = await utils.readJSON(recordFile);
 
-      const files = extractFileIds(parse(data)).map((fileId) => {
+      const files = extractFileIds(type, data).map((fileId) => {
         const file = getFile(fileId);
         if (!file) throw new Error(`records: record ${id} references unknown file ${fileId}`);
 
@@ -199,10 +207,8 @@ function createQueue() {
 }
 
 /**
- * RecordId: number // positive integer
- * RecordType: one of RECORD_TYPES
  * FileInfo: { id: string, mimeType: string, updatedTs: number, size: number }
- * Record: { type: RecordType, id: string, name: string, data: string, updatedTs: number, files: FileInfo[] }
+ * Record: { type: RecordType, id: string, name: string, data: any, updatedTs: number, files: FileInfo[] }
  */
 export default async function createStorage(rootDir) {
   console.log('root dir: ', rootDir);
@@ -229,7 +235,7 @@ export default async function createStorage(rootDir) {
     const prevRecord = cache.getRecord(id);
     if (prevRecord && prevRecord.type !== type) throw new Error(`Wrong type ${prevRecord.type}, should be ${type}`);
 
-    const fileIds = extractFileIds(parse(data));
+    const fileIds = extractFileIds(type, data);
 
     const newIds = fileIds.filter(fileId => !cache.getFile(fileId));
     if (newIds.length !== attachments.length) console.error('WARN: there are redundant attachments');

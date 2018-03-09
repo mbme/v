@@ -17,7 +17,9 @@ const Types = {
   'record-type': val => RECORD_TYPES.includes(val),
   'record-id': 'positive-integer',
   'record-name': 'string!',
-  'record-data': 'string',
+  'record-data': val => val !== null && val !== undefined,
+
+  'note-data': 'string',
 
   'file-name': 'string!',
   'file-data': 'buffer',
