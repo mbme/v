@@ -6,9 +6,9 @@ import { validateAll, assertAll, RecordType } from 'server/types';
 import * as utils from 'server/utils';
 
 function extractFileIds(type, fields) {
-  if (type === RecordType.note) {
-    return parser.extractFileIds(parser.parse(fields.data));
-  }
+  if (type === RecordType.note) return parser.extractFileIds(parser.parse(fields.data));
+
+  if (type === RecordType.track) return fields.fileId;
 
   throw new Error('NYI');
 }

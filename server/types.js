@@ -2,6 +2,7 @@ import { getType, isString, isObject, isArray, isSha256, flatten } from 'shared/
 
 export const RecordType = {
   note: 'note',
+  track: 'track',
 };
 
 const RECORD_TYPES = Object.values(RecordType);
@@ -20,6 +21,11 @@ const Types = {
 
   'note-name': 'string!',
   'note-data': 'string',
+
+  'track-artist': 'string!',
+  'track-title': 'string!',
+  'track-rating': val => [ 1, 2, 3, 4, 5 ].includes(val),
+  'track-categories': 'string![]',
 
   'file-name': 'string!',
   'file-data': 'buffer',

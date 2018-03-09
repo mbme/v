@@ -4,6 +4,9 @@ import createStorage from 'server/storage';
 const actions = {
   'PING': () => 'PONG',
 
+  'READ_FILE': (storage, { id }) => storage.readFile(id),
+
+  // NOTES
   'LIST_NOTES': storage => storage.listRecords(RecordType.note),
   'READ_NOTE': (storage, { id }) => storage.readRecord(id),
   'CREATE_NOTE': (storage, { name, data }, files) => {
@@ -22,7 +25,30 @@ const actions = {
   },
   'DELETE_NOTE': (storage, { id }) => storage.deleteRecord(id),
 
-  'READ_FILE': (storage, { id }) => storage.readFile(id),
+  // TRACKS
+  'LIST_TRACKS': storage => storage.listRecords(RecordType.track),
+  'READ_TRACK': (storage, { id }) => storage.readRecord(id),
+  'CREATE_TRACK': (storage, { artist, title, rating, categories, fileId }, files) => {
+    assertAll(
+      [ artist, 'track-artist' ],
+      [ title, 'track-title' ],
+      [ rating, 'track-rating' ],
+      [ categories, 'track-categories' ],
+      [ fileId, 'file-id' ],
+    );
+    return storage.createRecord(RecordType.track, { artist, title, rating, categories, fileId }, files);
+  },
+  'UPDATE_TRACK': (storage, { id, artist, title, rating, categories, fileId }, files) => {
+    assertAll(
+      [ artist, 'track-artist' ],
+      [ title, 'track-title' ],
+      [ rating, 'track-rating' ],
+      [ categories, 'track-categories' ],
+      [ fileId, 'file-id' ],
+    );
+    return storage.updateRecord(id, { artist, title, rating, categories, fileId }, files);
+  },
+  'DELETE_TRACK': (storage, { id }) => storage.deleteRecord(id),
 };
 
 export default async function createProcessor({ rootDir }) {
