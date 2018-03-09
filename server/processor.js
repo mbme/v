@@ -1,13 +1,15 @@
+import { RecordType } from 'server/types';
 import createStorage from 'server/storage';
 
 const actions = {
   'PING': () => 'PONG',
 
-  'LIST_RECORDS': (storage, { type }) => storage.listRecords(type),
-  'READ_RECORD': (storage, { id }) => storage.readRecord(id),
-  'CREATE_RECORD': (storage, { type, name, data }, files) => storage.createRecord(type, name, data, files),
-  'UPDATE_RECORD': (storage, { id, name, data }, files) => storage.updateRecord(id, name, data, files),
-  'DELETE_RECORD': (storage, { id }) => storage.deleteRecord(id),
+  'LIST_NOTES': storage => storage.listRecords(RecordType.note),
+  'READ_NOTE': (storage, { id }) => storage.readRecord(id),
+  'CREATE_NOTE': (storage, { name, data }, files) => storage.createRecord(RecordType.note, name, data, files),
+  'UPDATE_NOTE': (storage, { id, name, data }, files) => storage.updateRecord(id, name, data, files),
+  'DELETE_NOTE': (storage, { id }) => storage.deleteRecord(id),
+
   'READ_FILE': (storage, { id }) => storage.readFile(id),
 };
 

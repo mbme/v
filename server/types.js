@@ -1,6 +1,10 @@
 import { getType, isString, isObject, isArray, isSha256, flatten } from 'shared/utils';
 
-export const RECORD_TYPES = [ 'note' ];
+export const RecordType = {
+  note: 'note',
+};
+
+const RECORD_TYPES = Object.values(RecordType);
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,

@@ -18,24 +18,24 @@ export default function createApiClient(baseUrl, network) {
       return network.get(this.getFileUrl(fileId));
     },
 
-    listRecords(type) {
-      return apiPOST({ name: 'LIST_RECORDS', data: { type } });
+    listNotes() {
+      return apiPOST({ name: 'LIST_NOTES' });
     },
 
-    readRecord(id) {
-      return apiPOST({ name: 'READ_RECORD', data: { id } });
+    readNote(id) {
+      return apiPOST({ name: 'READ_NOTE', data: { id } });
     },
 
-    createRecord(type, name, data, newFiles = []) {
-      return apiPOST({ name: 'CREATE_RECORD', data: { type, name, data } }, newFiles);
+    createNote(name, data, newFiles = []) {
+      return apiPOST({ name: 'CREATE_NOTE', data: { name, data } }, newFiles);
     },
 
-    updateRecord(id, name, data, newFiles = []) {
-      return apiPOST({ name: 'UPDATE_RECORD', data: { id, name, data } }, newFiles);
+    updateNote(id, name, data, newFiles = []) {
+      return apiPOST({ name: 'UPDATE_NOTE', data: { id, name, data } }, newFiles);
     },
 
-    deleteRecord(id) {
-      return apiPOST({ name: 'DELETE_RECORD', data: { id } });
+    deleteNote(id) {
+      return apiPOST({ name: 'DELETE_NOTE', data: { id } });
     },
   };
 }

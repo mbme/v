@@ -42,7 +42,7 @@ async function genText(generator, images) {
   return { name: name.substring(0, name.length - 1), data };
 }
 
-export default async function genData(port, password, recordsCount = 23) {
+export default async function genData(port, password, notesCount = 23) {
   const api = createApiClient(`http://localhost:${port}`, createNetwork(password));
 
   const resourcesPath = path.join(__dirname, '../resources');
@@ -50,10 +50,10 @@ export default async function genData(port, password, recordsCount = 23) {
   const text = await readText(path.join(resourcesPath, 'text.txt'));
   const generator = createTextGenerator(text);
 
-  await Promise.all(createArray(recordsCount, async () => {
+  await Promise.all(createArray(notesCount, async () => {
     const { name, data } = await genText(generator, images);
-    return api.createRecord('note', name, data, images.map(image => image.file.data));
+    return api.createNote(name, data, images.map(image => image.file.data));
   }));
 
-  console.log('Generated %s fake records', recordsCount);
+  console.log('Generated %s fake notes', notesCount);
 }

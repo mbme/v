@@ -26,7 +26,7 @@ after(() => {
 test('should handle auth', async (assert) => {
   const badApi = createApiClient(`http://localhost:${port}`, createNetwork('wrong password'));
 
-  const failed = await badApi.listRecords('note').then(() => false, () => true);
+  const failed = await badApi.listNotes().then(() => false, () => true);
   assert.equal(failed, true);
 });
 
@@ -40,37 +40,37 @@ test('should manage files', async (assert) => {
   const fileId = sha256(buffer);
   const link = createLink('', fileId);
 
-  const record = await api.createRecord('note', 'name', `data ${link}`, [ buffer ]);
+  const note = await api.createNote('name', `data ${link}`, [ buffer ]);
   assert.equal(buffer.equals(await api.readFile(fileId)), true);
 
-  await api.updateRecord(record.id, 'name', 'data');
+  await api.updateNote(note.id, 'name', 'data');
   assert.equal(await api.readFile(fileId), null);
 });
 
-test('should manage records', async (assert) => {
-  // create record
-  const record = await api.createRecord('note', 'name', 'some data');
+test('should manage notes', async (assert) => {
+  // create note
+  const note = await api.createNote('name', 'some data');
 
-  // list records
-  const records = await api.listRecords('note');
-  await api.createRecord('note', 'name', 'some data');
-  const newRecords = await api.listRecords('note');
-  assert.equal(newRecords.length, records.length + 1);
+  // list notes
+  const notes = await api.listNotes();
+  await api.createNote('name', 'some data');
+  const newNotes = await api.listNotes();
+  assert.equal(newNotes.length, notes.length + 1);
 
-  // update record
-  const updatedRecord = await api.updateRecord(record.id, 'new name', 'new data');
-  assert.equal(updatedRecord.name, 'new name');
-  assert.equal(updatedRecord.data, 'new data');
-  assert.equal(updatedRecord.updatedTs > record.updatedTs, true);
+  // update note
+  const updatedNote = await api.updateNote(note.id, 'new name', 'new data');
+  assert.equal(updatedNote.name, 'new name');
+  assert.equal(updatedNote.data, 'new data');
+  assert.equal(updatedNote.updatedTs > note.updatedTs, true);
 
-  // delete record
-  await api.deleteRecord(record.id);
-  assert.equal((await api.listRecords('note')).filter(rec => rec.id === record.id).length, 0);
+  // delete note
+  await api.deleteNote(note.id);
+  assert.equal((await api.listNotes()).filter(n => n.id === note.id).length, 0);
 });
 
 test('should return an error', async (assert) => {
   try {
-    await api.updateRecord(99999999, 'new name', 'new data');
+    await api.updateNote(99999999, 'new name', 'new data');
   } catch (e) {
     assert.equal(!!e, true);
     return;
@@ -83,14 +83,14 @@ test('should properly initialize', async (assert) => {
   const fileId = sha256(buffer);
   const link = createLink('', fileId);
 
-  const record = await api.createRecord('note', 'name', `data ${link}`, [ buffer ]);
+  const note = await api.createNote('name', `data ${link}`, [ buffer ]);
 
   await server.close();
   server = await runServer();
 
   assert.equal(buffer.equals(await api.readFile(fileId)), true);
 
-  const recordAfterRestart = await api.readRecord(record.id);
-  assert.equal(recordAfterRestart.name, record.name);
-  assert.equal(recordAfterRestart.data, record.data);
+  const noteAfterRestart = await api.readNote(note.id);
+  assert.equal(noteAfterRestart.name, note.name);
+  assert.equal(noteAfterRestart.data, note.data);
 });

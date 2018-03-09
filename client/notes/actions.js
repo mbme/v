@@ -1,5 +1,3 @@
-const NOTE_TYPE = 'note';
-
 export const LIST_OUTDATED = 'NOTES/LIST_OUTDATED';
 export function markNotesListOutdated() {
   return {
@@ -10,24 +8,19 @@ export function markNotesListOutdated() {
 export const LIST_CHANGE = 'NOTES/LIST_CHANGE';
 export function listNotes() {
   return async (dispatch, getState, apiClient) => {
-    const { notes } = getState();
-
-    if (notes.fresh) {
+    if (getState().notes.fresh) {
       return null;
     }
 
-    const records = await apiClient.listRecords(NOTE_TYPE);
+    const newNotes = await apiClient.listNotes();
 
-    return dispatch({
-      type: LIST_CHANGE,
-      notes: records,
-    });
+    return dispatch({ type: LIST_CHANGE, notes: newNotes });
   };
 }
 
 export function updateNote(id, name, data, newFiles) {
   return async (dispatch, getState, apiClient) => {
-    await apiClient.updateRecord(id, name, data, newFiles);
+    await apiClient.updateNote(id, name, data, newFiles);
 
     dispatch(markNotesListOutdated());
   };
@@ -35,7 +28,7 @@ export function updateNote(id, name, data, newFiles) {
 
 export function deleteNote(id) {
   return async (dispatch, getState, apiClient) => {
-    await apiClient.deleteRecord(id);
+    await apiClient.deleteNote(id);
 
     dispatch(markNotesListOutdated());
   };
@@ -43,10 +36,10 @@ export function deleteNote(id) {
 
 export function createNote(name, data, newFiles) {
   return async (dispatch, getState, apiClient) => {
-    const record = await apiClient.createRecord(NOTE_TYPE, name, data, newFiles);
+    const note = await apiClient.createNote(name, data, newFiles);
 
     dispatch(markNotesListOutdated());
 
-    return record.id;
+    return note.id;
   };
 }
