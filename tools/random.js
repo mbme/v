@@ -1,4 +1,4 @@
-import { capitalize } from 'shared/utils';
+import { capitalize, randomInt } from 'shared/utils';
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd
 
@@ -213,6 +213,11 @@ export function createTextGenerator(corpus) {
       }
 
       return sentence;
+    },
+
+    word() {
+      const words = Object.keys(stats.words);
+      return words[randomInt(0, words.length - 1)];
     },
   };
 }

@@ -20,7 +20,7 @@ async function run() {
     compilationPromise,
   ]);
 
-  if (process.argv.slice(3).includes('--gen-data')) await genData(port, password, 30);
+  if (process.argv.slice(3).includes('--gen-data')) await genData(port, password, 30, 10);
 
   console.log(`server http://localhost:${port}`);
 

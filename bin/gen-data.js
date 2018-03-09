@@ -42,7 +42,11 @@ async function genText(generator, images) {
   return { name: name.substring(0, name.length - 1), data };
 }
 
-export default async function genData(port, password, notesCount = 23) {
+function randowWords(generator, wordsCount) {
+  return createArray(wordsCount, generator.word).join(' ');
+}
+
+export default async function genData(port, password, notesCount, tracksCount) {
   const api = createApiClient(`http://localhost:${port}`, createNetwork(password));
 
   const resourcesPath = path.join(__dirname, '../resources');
@@ -50,10 +54,23 @@ export default async function genData(port, password, notesCount = 23) {
   const text = await readText(path.join(resourcesPath, 'text.txt'));
   const generator = createTextGenerator(text);
 
-  await Promise.all(createArray(notesCount, async () => {
+  const notesPromises = createArray(notesCount, async () => {
     const { name, data } = await genText(generator, images);
     return api.createNote(name, data, images.map(image => image.file.data));
-  }));
+  });
 
-  console.log('Generated %s fake notes', notesCount);
+  const trackData = await readFile(path.join(resourcesPath, 'track.mp3'));
+  const trackId = sha256(trackData);
+  const tracksPromises = createArray(tracksCount, async () => {
+    const artist = randowWords(generator, randomInt(1, 2));
+    const title = randowWords(generator, randomInt(1, 4));
+    const rating = randomInt(1, 5);
+    const categories = createArray(randomInt(0, 2), generator.word);
+
+    return api.createTrack(artist, title, rating, categories, trackId, [ trackData ]);
+  });
+
+  await Promise.all([ ...notesPromises, ...tracksPromises ]);
+
+  console.log('Generated %s fake notes & %s fake tracks', notesCount, tracksCount);
 }

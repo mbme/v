@@ -42,11 +42,11 @@ export default function createApiClient(baseUrl, network) {
     readTrack(id) {
       return apiPOST({ name: 'READ_TRACK', data: { id } });
     },
-    createTrack(artist, title, rating, categories, newFiles = []) {
-      return apiPOST({ name: 'CREATE_TRACK', data: { artist, title, rating, categories } }, newFiles);
+    createTrack(artist, title, rating, categories, fileId, newFiles = []) {
+      return apiPOST({ name: 'CREATE_TRACK', data: { artist, title, rating, categories, fileId } }, newFiles);
     },
-    updateTrack(id, artist, title, rating, categories, newFiles = []) {
-      return apiPOST({ name: 'UPDATE_TRACK', data: { id, artist, title, rating, categories } }, newFiles);
+    updateTrack(id, artist, title, rating, categories, fileId, newFiles = []) {
+      return apiPOST({ name: 'UPDATE_TRACK', data: { id, artist, title, rating, categories, fileId } }, newFiles);
     },
     deleteTrack(id) {
       return apiPOST({ name: 'DELETE_TRACK', data: { id } });
