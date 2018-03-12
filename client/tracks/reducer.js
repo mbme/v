@@ -1,14 +1,14 @@
 import { CHANGE_LIST } from './actions';
 
 const defaultState = {
-  notes: [],
+  tracks: [],
 };
 
-export default function notes(state = defaultState, action) {
+export default function tracks(state = defaultState, action) {
   switch (action.type) {
     case CHANGE_LIST:
       return {
-        notes: action.notes,
+        tracks: action.tracks,
       };
 
     default:

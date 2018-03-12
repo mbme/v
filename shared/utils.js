@@ -145,3 +145,5 @@ export function createPubSub() {
     },
   };
 }
+
+export const recentComparator = (r1, r2) => r2.updatedTs - r1.updatedTs;

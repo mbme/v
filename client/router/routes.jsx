@@ -8,6 +8,9 @@ import NoteView from 'client/notes/NoteView';
 import NoteEditorView from 'client/notes/NoteEditorView';
 import * as notesActions from 'client/notes/actions';
 
+import TracksView from 'client/tracks/TracksView';
+import * as tracksActions from 'client/tracks/actions';
+
 async function initNote(store, params) {
   const id = parseInt(params.id, 10);
 
@@ -60,6 +63,16 @@ export default [
         path: '/:id/editor',
         init: initNote,
         render: ({ id }) => <NoteEditorView id={parseInt(id, 10)} />,
+      },
+    ],
+  },
+  {
+    path: '/tracks',
+    name: 'tracks',
+    children: [
+      {
+        init: store => store.dispatch(tracksActions.listTracks()),
+        render: () => <TracksView />,
       },
     ],
   },

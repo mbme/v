@@ -2,31 +2,29 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as routerActions from 'client/router/actions';
-import { fuzzySearch, recentComparator, formatTs } from 'shared/utils';
+import { fuzzySearch, recentComparator } from 'shared/utils';
 import s from 'client/styles';
-import { Button, Toolbar, Link, Input } from 'client/components';
-
-const linkStyles = s.cx(s.section, s.flex({ v: 'baseline' }));
+import { Toolbar, Input } from 'client/components';
 
 const counterStyles = s.cx({
   marginLeft: 'var(--spacing-small)',
   whiteSpace: 'nowrap',
 });
 
-const timeStyles = s.cx({
-  marginRight: 'var(--spacing-small)',
-});
+function isTrackVisible(track, filter) {
+  return fuzzySearch(filter, [ track.fields.name, track.fields.artist ].join(' ').toLowerCase());
+}
 
-class NotesView extends PureComponent {
+class TracksView extends PureComponent {
   static propTypes = {
-    notes: PropTypes.arrayOf(PropTypes.object).isRequired,
+    tracks: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
     setFilter: PropTypes.func.isRequired,
   };
 
-  getVisibleNotes() {
-    return this.props.notes
-      .filter(note => fuzzySearch(this.props.filter, note.fields.name.toLowerCase()))
+  getVisibleTracks() {
+    return this.props.tracks
+      .filter(track => isTrackVisible(track, this.props.filter))
       .sort(recentComparator);
   }
 
@@ -43,11 +41,8 @@ class NotesView extends PureComponent {
   }
 
   render() {
-    const notes = this.getVisibleNotes().map(note => (
-      <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={linkStyles}>
-        <small className={timeStyles}>{formatTs(note.updatedTs)}</small>
-        {note.fields.name}
-      </Link>
+    const tracks = this.getVisibleTracks().map(track => (
+      <div key={track.id}>{track.fields.artist} - {track.fields.title}</div>
     ));
 
     const left = (
@@ -55,41 +50,35 @@ class NotesView extends PureComponent {
         <Input
           name="filter"
           defaultValue={this.props.filter}
-          placeholder="Filter notes"
+          placeholder="Filter tracks"
           onChange={this.onFilterChange}
           autoFocus
         />
         <small className={counterStyles}>
-          {notes.length} items
+          {tracks.length} items
         </small>
       </Fragment>
     );
 
-    const addBtn = (
-      <Link to={{ name: 'add-note' }}>
-        <Button raised primary>Add</Button>
-      </Link>
-    );
-
     return (
       <Fragment>
-        <Toolbar left={left} right={addBtn} />
-        {notes}
+        <Toolbar left={left} />
+        {tracks}
       </Fragment>
     );
   }
 }
 
-const mapStateToProps = ({ notes, router }) => ({
-  notes: notes.notes,
+const mapStateToProps = ({ tracks, router }) => ({
+  tracks: tracks.tracks,
   filter: router.query.filter || '',
 });
 
 const mapDispatchToProps = dispatch => ({
   setFilter(filter) {
     const params = filter.trim().length ? { filter } : null;
-    dispatch(routerActions.replace({ name: 'notes', params }));
+    dispatch(routerActions.replace({ name: 'tracks', params }));
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(NotesView);
+export default connect(mapStateToProps, mapDispatchToProps)(TracksView);

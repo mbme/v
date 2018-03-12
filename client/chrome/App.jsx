@@ -115,7 +115,7 @@ class App extends PureComponent {
     return (
       <nav className={navbarStyles}>
         <Link to={{ name: 'notes' }} className={navLinkStyles(route === 'notes')}>Notes</Link>
-        <Link to={{ name: 'todos' }} className={navLinkStyles(route === 'todos')}>Todos</Link>
+        <Link to={{ name: 'tracks' }} className={navLinkStyles(route === 'tracks')}>Tracks</Link>
         <Link to={{ name: 'one' }} className={navLinkStyles(route === 'one')}>One</Link>
         <IconButton className={logoutIconStyles} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
