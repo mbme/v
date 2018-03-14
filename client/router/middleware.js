@@ -18,24 +18,24 @@ export default function routerMiddleware(router) {
           break;
 
         case LOCATION_CHANGE:
-          router.resolve(action.pathname).then((resp) => {
-            if (resp.redirectTo) {
-              store.dispatch(replace(resp.redirectTo));
+          router.resolve(action.pathname).then(({ route, params }) => {
+            if (route.redirectTo) {
+              store.dispatch(replace(route.redirectTo));
               return;
             }
 
             next(action);
 
-            const initPromise = resp.init ? resp.init(store, resp.params) : Promise.resolve();
+            const initPromise = route.init ? route.init(store, params) : Promise.resolve();
 
             initPromise.then(
-              () => resp.render(resp.params),
+              () => route.render(params),
               (e) => {
                 console.error(e);
                 return null;
               },
             ).then(
-              view => store.dispatch(setView(view, resp.routingSequence)),
+              view => store.dispatch(setView(view, route, params)),
             );
           });
           break;

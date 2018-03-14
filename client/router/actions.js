@@ -31,10 +31,11 @@ export function propagateCurrentLocation(isPush = false) {
 }
 
 export const SET_VIEW = 'ROUTER/SET_VIEW';
-export function setView(view, routingSequence) {
+export function setView(view, route, params) {
   return {
     type: SET_VIEW,
     view,
-    routingSequence,
+    route,
+    params,
   };
 }

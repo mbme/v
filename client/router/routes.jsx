@@ -15,7 +15,6 @@ async function initNote(store, params) {
   const id = parseInt(params.id, 10);
 
   await store.dispatch(notesActions.listNotes());
-
   if (!store.getState().notes.notes.find(note => note.id === id)) {
     throw new Error(`Unknown note ${id}`);
   }
@@ -39,43 +38,40 @@ export default [
       </div>
     ),
   },
+
+  // NOTES
   {
     path: '/notes',
     name: 'notes',
-    children: [
-      {
-        init: store => store.dispatch(notesActions.listNotes()),
-        render: () => <NotesView />,
-      },
-      {
-        name: 'add-note',
-        path: '/add',
-        render: () => <NoteEditorView />,
-      },
-      {
-        name: 'note',
-        path: '/:id',
-        init: initNote,
-        render: ({ id }) => <NoteView id={parseInt(id, 10)} />,
-      },
-      {
-        name: 'note-editor',
-        path: '/:id/editor',
-        init: initNote,
-        render: ({ id }) => <NoteEditorView id={parseInt(id, 10)} />,
-      },
-    ],
+    init: store => store.dispatch(notesActions.listNotes()),
+    render: () => <NotesView />,
   },
+  {
+    name: 'add-note',
+    path: '/notes/add',
+    render: () => <NoteEditorView />,
+  },
+  {
+    name: 'note',
+    path: '/notes/:id',
+    init: initNote,
+    render: ({ id }) => <NoteView id={parseInt(id, 10)} />,
+  },
+  {
+    name: 'note-editor',
+    path: '/notes/:id/editor',
+    init: initNote,
+    render: ({ id }) => <NoteEditorView id={parseInt(id, 10)} />,
+  },
+
+  // TRACKS
   {
     path: '/tracks',
     name: 'tracks',
-    children: [
-      {
-        init: store => store.dispatch(tracksActions.listTracks()),
-        render: () => <TracksView />,
-      },
-    ],
+    init: store => store.dispatch(tracksActions.listTracks()),
+    render: () => <TracksView />,
   },
+
   {
     path: '(.*)',
     render: () => null,

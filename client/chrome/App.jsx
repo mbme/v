@@ -57,7 +57,7 @@ class App extends PureComponent {
     pathname: PropTypes.string.isRequired,
     isPush: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
-    routingSequence: PropTypes.arrayOf(PropTypes.string).isRequired,
+    route: PropTypes.object,
     view: PropTypes.node,
     toast: PropTypes.node,
     showToast: PropTypes.func.isRequired,
@@ -110,13 +110,12 @@ class App extends PureComponent {
   };
 
   renderNavbar() {
-    const route = this.props.routingSequence[0];
-
+    const routeName = this.props.route ? this.props.route.name : null;
     return (
       <nav className={navbarStyles}>
-        <Link to={{ name: 'notes' }} className={navLinkStyles(route === 'notes')}>Notes</Link>
-        <Link to={{ name: 'tracks' }} className={navLinkStyles(route === 'tracks')}>Tracks</Link>
-        <Link to={{ name: 'one' }} className={navLinkStyles(route === 'one')}>One</Link>
+        <Link to={{ name: 'notes' }} className={navLinkStyles([ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName))}>Notes</Link>
+        <Link to={{ name: 'tracks' }} className={navLinkStyles(routeName === 'tracks')}>Tracks</Link>
+        <Link to={{ name: 'one' }} className={navLinkStyles(routeName === 'one')}>One</Link>
         <IconButton className={logoutIconStyles} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
     );
@@ -149,7 +148,7 @@ const mapStateToProps = ({ router, chrome }) => ({
   isPush: router.isPush,
   isLoading: router.isLoading,
   view: router.view,
-  routingSequence: router.routingSequence,
+  route: router.route,
   toast: chrome.toast,
   showLocker: router.isLoading || chrome.showLocker,
   authorized: chrome.authorized,

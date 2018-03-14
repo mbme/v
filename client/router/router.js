@@ -2,25 +2,9 @@ import Router from 'universal-router';
 import generateUrls from 'universal-router/generateUrls';
 
 export default function createRouter(routes) {
-  let routingSequence;
-
   const router = new Router(routes, {
     resolveRoute({ route }, params) {
-      if (!route.parent) {
-        routingSequence = [];
-      } else {
-        routingSequence.push(route.name);
-      }
-
-      if (route.redirectTo) {
-        return { redirectTo: route.redirectTo };
-      }
-
-      if (route.render) {
-        return { render: route.render, init: route.init, params };
-      }
-
-      return undefined;
+      return route.name ? { route, params } : undefined;
     },
   });
 
@@ -36,7 +20,7 @@ export default function createRouter(routes) {
     },
 
     resolve(pathname) {
-      return router.resolve(pathname).then(resp => ({ ...resp, routingSequence }));
+      return router.resolve(pathname);
     },
   };
 }

@@ -6,8 +6,9 @@ const defaultState = {
   query: {},
   isPush: false,
   isLoading: false,
-  routingSequence: [],
   view: null,
+  route: null,
+  params: {},
 };
 
 function parseQuery(search) {
@@ -42,7 +43,8 @@ export default function router(state = defaultState, action) {
         ...state,
         isLoading: false,
         view: action.view,
-        routingSequence: action.routingSequence,
+        route: action.route,
+        params: action.params,
       };
 
     default:
