@@ -8,17 +8,17 @@ export default function routerMiddleware(router) {
     return next => (action) => { // eslint-disable-line consistent-return
       switch (action.type) {
         case PUSH:
-          window.history.pushState(null, '', router.getUrl(action.name, action.params));
+          window.history.pushState(null, '', router.getUrl(action.name, action.params, action.query));
           store.dispatch(propagateCurrentLocation(true));
           break;
 
         case REPLACE:
-          window.history.replaceState(null, '', router.getUrl(action.name, action.params));
+          window.history.replaceState(null, '', router.getUrl(action.name, action.params, action.query));
           store.dispatch(propagateCurrentLocation(true));
           break;
 
         case LOCATION_CHANGE:
-          router.resolve(action.pathname).then(({ route, params }) => {
+          router.resolve(action.pathname, action.search).then(({ route, params, query }) => {
             if (route.redirectTo) {
               store.dispatch(replace(route.redirectTo));
               return;
@@ -26,16 +26,16 @@ export default function routerMiddleware(router) {
 
             next(action);
 
-            const initPromise = route.init ? route.init(store, params) : Promise.resolve();
+            const initPromise = route.init ? route.init(store, params, query) : Promise.resolve();
 
             initPromise.then(
-              () => route.render(params),
+              () => route.render(params, query),
               (e) => {
                 console.error(e);
                 return null;
               },
             ).then(
-              view => store.dispatch(setView(view, route, params)),
+              view => store.dispatch(setView(view, route, params, query)),
             );
           });
           break;

@@ -1,18 +1,35 @@
 export const PUSH = 'ROUTER/PUSH';
-export function push({ name, params }) {
+export function push({ name, params, query }) {
   return {
     type: PUSH,
     name,
     params,
+    query,
   };
 }
 
 export const REPLACE = 'ROUTER/REPLACE';
-export function replace({ name, params }) {
+export function replace({ name, params, query }) {
   return {
     type: REPLACE,
     name,
     params,
+    query,
+  };
+}
+
+export function replaceQueryParam(name, value) {
+  return (dispatch, getState) => {
+    const { route, params, query } = getState().router;
+
+    return dispatch(replace({
+      name: route.name,
+      params,
+      query: {
+        ...query,
+        [name]: value,
+      },
+    }));
   };
 }
 
@@ -31,11 +48,12 @@ export function propagateCurrentLocation(isPush = false) {
 }
 
 export const SET_VIEW = 'ROUTER/SET_VIEW';
-export function setView(view, route, params) {
+export function setView(view, route, params, query) {
   return {
     type: SET_VIEW,
     view,
     route,
     params,
+    query,
   };
 }

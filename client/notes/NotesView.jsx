@@ -1,10 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import * as routerActions from 'client/router/actions';
 import { fuzzySearch, recentComparator, formatTs } from 'shared/utils';
 import s from 'client/styles';
-import { Button, Toolbar, Link, Input } from 'client/components';
+import { Button, Toolbar, Link, Filter } from 'client/components';
 
 const linkStyles = s.cx(s.section, s.flex({ v: 'baseline' }));
 
@@ -21,25 +20,12 @@ class NotesView extends PureComponent {
   static propTypes = {
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
-    setFilter: PropTypes.func.isRequired,
   };
 
   getVisibleNotes() {
     return this.props.notes
       .filter(note => fuzzySearch(this.props.filter, note.fields.name.toLowerCase()))
       .sort(recentComparator);
-  }
-
-  updateTimoutId = null;
-  onFilterChange = (filter) => {
-    if (filter.trim() === this.props.filter) return;
-
-    window.clearTimeout(this.updateTimoutId);
-    this.updateTimoutId = window.setTimeout(this.props.setFilter, 60, filter);
-  };
-
-  componentWillUnmount() {
-    window.clearTimeout(this.updateTimoutId);
   }
 
   render() {
@@ -52,13 +38,7 @@ class NotesView extends PureComponent {
 
     const left = (
       <Fragment>
-        <Input
-          name="filter"
-          defaultValue={this.props.filter}
-          placeholder="Filter notes"
-          onChange={this.onFilterChange}
-          autoFocus
-        />
+        <Filter placeholder="Filter notes" />
         <small className={counterStyles}>
           {notes.length} items
         </small>
@@ -85,11 +65,4 @@ const mapStateToProps = ({ notes, router }) => ({
   filter: router.query.filter || '',
 });
 
-const mapDispatchToProps = dispatch => ({
-  setFilter(filter) {
-    const params = filter.trim().length ? { filter } : null;
-    dispatch(routerActions.replace({ name: 'notes', params }));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(NotesView);
+export default connect(mapStateToProps)(NotesView);
