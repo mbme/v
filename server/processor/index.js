@@ -1,5 +1,5 @@
-import { RecordType, assertAll } from 'server/types';
-import createStorage from 'server/storage';
+import { RecordType, assertAll } from './types';
+import createStorage from './storage';
 
 const actions = {
   'PING': () => 'PONG',

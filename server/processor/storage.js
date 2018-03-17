@@ -2,8 +2,8 @@ import path from 'path';
 import nodeFs from 'fs';
 import * as parser from 'shared/parser';
 import { uniq, flatten, isAsyncFunction } from 'shared/utils';
-import { validateAll, assertAll, RecordType } from 'server/types';
 import * as utils from 'server/utils';
+import { validateAll, assertAll, RecordType } from './types';
 
 function extractFileIds(type, fields) {
   if (type === RecordType.note) return parser.extractFileIds(parser.parse(fields.data));
