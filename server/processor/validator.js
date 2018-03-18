@@ -1,11 +1,5 @@
 import { getType, isString, isObject, isArray, isSha256, flatten } from 'shared/utils';
-
-export const RecordType = {
-  note: 'note',
-  track: 'track',
-};
-
-const RECORD_TYPES = Object.values(RecordType);
+import { validation } from './records';
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
@@ -15,21 +9,11 @@ const Types = {
   'buffer': Buffer.isBuffer,
   'sha256': val => isString(val) && isSha256(val),
 
-  'record-type': val => RECORD_TYPES.includes(val),
-  'record-id': 'positive-integer',
-  'record-fields': 'object',
-
-  'note-name': 'string!',
-  'note-data': 'string',
-
-  'track-artist': 'string!',
-  'track-title': 'string!',
-  'track-rating': val => [ 1, 2, 3, 4, 5 ].includes(val),
-  'track-categories': 'string![]',
-
   'file-name': 'string!',
   'file-data': 'buffer',
   'file-id': 'sha256',
+
+  ...validation,
 };
 
 /**

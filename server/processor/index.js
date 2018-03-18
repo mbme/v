@@ -1,4 +1,5 @@
-import { RecordType, assertAll } from './types';
+import { RecordType } from './records';
+import { assertAll } from './validator';
 import createStorage from './storage';
 
 const actions = {

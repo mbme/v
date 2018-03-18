@@ -1,17 +1,9 @@
 import path from 'path';
 import nodeFs from 'fs';
-import * as parser from 'shared/parser';
 import { uniq, flatten, isAsyncFunction } from 'shared/utils';
 import * as utils from 'server/utils';
-import { validateAll, assertAll, RecordType } from './types';
-
-function extractFileIds(type, fields) {
-  if (type === RecordType.note) return parser.extractFileIds(parser.parse(fields.data));
-
-  if (type === RecordType.track) return [ fields.fileId ];
-
-  throw new Error('NYI');
-}
+import { validateAll, assertAll } from './validator';
+import { extractFileIds } from './records';
 
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id);
