@@ -1,8 +1,9 @@
+import path from 'path';
 import { test, before, after } from 'tools/test';
 import startServer from 'server';
 import createNetwork from 'server/utils/platform';
 import { createLink } from 'shared/parser';
-import { sha256, rmrfSync } from 'server/utils';
+import { sha256, rmrfSync, readFile } from 'server/utils';
 import createApiClient from './api-client';
 
 let server;
@@ -45,6 +46,17 @@ test('should manage files', async (assert) => {
 
   await api.updateNote(note.id, 'name', 'data');
   assert.equal(await api.readFile(fileId), null);
+});
+
+test('should read file metadata', async (assert) => {
+  const buffer = await readFile(path.resolve(__dirname, '../resources/track.mp3'));
+  const fileId = sha256(buffer);
+  const link = createLink('', fileId);
+
+  const note = await api.createNote('name', `data ${link}`, [ buffer ]);
+  const { meta } = note.files[0];
+  assert.equal(meta.bitRate, 112000);
+  assert.equal(meta.duration, 178.573);
 });
 
 test('should manage notes', async (assert) => {

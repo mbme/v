@@ -29,11 +29,17 @@ yarn cloc
 
 ```
 
+### External Dependencies
+* [Unix `file` command](https://en.wikipedia.org/wiki/File_(command))
+* [`ffprobe` (part of `ffmpeg`)](https://www.ffmpeg.org/ffprobe.html))
+
+
 ### Dir structure
 ```
-/${id}_${name}
-/files/${id}_${name}
+/${id}.mb # record
+/files/${id} # file
 ```
+Record is a json file: `{ type: string, fields: {}, updatedTs: number }`
 
 ### Syntax
 based on org-mode and markdown

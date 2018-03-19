@@ -110,7 +110,8 @@ export function ask(question) {
   }));
 }
 
-export const exec = promisify(childProcess.exec);
+export const execRaw = promisify(childProcess.exec);
+export const exec = command => execRaw(command).then(({ stdout }) => stdout.trim());
 
 const MIME = {
   '.css': 'text/css',
@@ -119,4 +120,4 @@ const MIME = {
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
 };
-export const getMimeType = async filePath => MIME[path.extname(filePath)] || exec(`file -b -i ${filePath}`).then(({ stdout }) => stdout.trim());
+export const getMimeType = async filePath => MIME[path.extname(filePath)] || exec(`file -b -i ${filePath}`);

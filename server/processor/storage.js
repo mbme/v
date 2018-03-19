@@ -4,6 +4,7 @@ import { uniq, flatten, isAsyncFunction } from 'shared/utils';
 import * as utils from 'server/utils';
 import { validateAll, assertAll } from './validator';
 import { extractFileIds } from './records';
+import probeMetadata from './probe';
 
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id);
@@ -52,8 +53,9 @@ function createStorageFs(rootDir) {
 
       const mimeType = await utils.getMimeType(filePath);
       const stats = await utils.statFile(filePath);
+      const meta = await probeMetadata(filePath);
 
-      return { id, mimeType, updatedTs: stats.mtimeMs, size: stats.size };
+      return { id, mimeType, updatedTs: stats.mtimeMs, size: stats.size, meta };
     },
 
     async writeFile(id, data) {
@@ -193,7 +195,7 @@ function createQueue() {
 }
 
 /**
- * FileInfo: { id: string, mimeType: string, updatedTs: number, size: number }
+ * FileInfo: { id: string, mimeType: string, updatedTs: number, size: number, meta: {} }
  * Record: { type: RecordType, id: string, fields: object, updatedTs: number, files: FileInfo[] }
  */
 export default async function createStorage(rootDir) {
@@ -295,6 +297,9 @@ export default async function createStorage(rootDir) {
       });
     },
 
+    /**
+     * @returns {Promise<Record>}
+     */
     createRecord(type, fields, attachments) {
       return queue.push(async () => {
         assertAll(
@@ -309,6 +314,9 @@ export default async function createStorage(rootDir) {
       });
     },
 
+    /**
+     * @returns {Promise<Record>}
+     */
     updateRecord(id, fields, attachments) {
       return queue.push(async () => {
         assertAll(
@@ -324,6 +332,9 @@ export default async function createStorage(rootDir) {
       });
     },
 
+    /**
+     * @returns {Promise}
+     */
     deleteRecord(id) {
       return queue.push(async () => {
         assertAll(
@@ -355,6 +366,9 @@ export default async function createStorage(rootDir) {
       });
     },
 
+    /**
+     * @returns {Promise}
+     */
     close() {
       return new Promise(resolve => queue.close(resolve));
     },
