@@ -93,13 +93,7 @@ function createStorageFs(rootDir) {
         recordIds.push(id);
       }
 
-      const records = {};
-
-      await Promise.all(recordIds.map(async (id) => {
-        records[id] = await this.readRecord(id, getFile);
-      }));
-
-      return Object.values(records);
+      return Promise.all(recordIds.map(id => this.readRecord(id, getFile)));
     },
 
     async readRecord(id, getFile) {
