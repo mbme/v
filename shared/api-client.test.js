@@ -1,6 +1,6 @@
 import { test, before, after } from 'tools/test';
 import startServer from 'server';
-import createNetwork from 'server/platform';
+import createNetwork from 'server/utils/platform';
 import { createLink } from 'shared/parser';
 import { sha256, rmrfSync } from 'server/utils';
 import createApiClient from './api-client';

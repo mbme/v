@@ -5,7 +5,7 @@ import { createArray, randomInt, shuffle } from 'shared/utils';
 import { createImageLink } from 'shared/parser';
 import { createTextGenerator } from 'tools/random';
 import { readText, listFiles, readFile, sha256 } from 'server/utils';
-import createNetwork from 'server/platform';
+import createNetwork from 'server/utils/platform';
 
 async function listImage(basePath) {
   const files = await listFiles(basePath);
