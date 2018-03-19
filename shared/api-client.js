@@ -19,8 +19,8 @@ export default function createApiClient(baseUrl, network) {
     },
 
     // NOTES
-    listNotes() {
-      return apiPOST({ name: 'LIST_NOTES' });
+    listNotes({ size, skip, filter } = {}) {
+      return apiPOST({ name: 'LIST_NOTES', data: { size, skip, filter } });
     },
     readNote(id) {
       return apiPOST({ name: 'READ_NOTE', data: { id } });
@@ -36,8 +36,8 @@ export default function createApiClient(baseUrl, network) {
     },
 
     // TRACKS
-    listTracks() {
-      return apiPOST({ name: 'LIST_TRACKS' });
+    listTracks({ size, skip, filter } = {}) {
+      return apiPOST({ name: 'LIST_TRACKS', data: { size, skip, filter } });
     },
     readTrack(id) {
       return apiPOST({ name: 'READ_TRACK', data: { id } });

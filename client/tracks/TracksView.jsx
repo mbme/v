@@ -11,7 +11,7 @@ const counterStyles = s.cx({
 });
 
 function isTrackVisible(track, filter) {
-  return fuzzySearch(filter, [ track.fields.name, track.fields.artist ].join(' ').toLowerCase());
+  return fuzzySearch(filter, [ track.fields.name, track.fields.artist ].join(' '));
 }
 
 class TracksView extends PureComponent {

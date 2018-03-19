@@ -10,29 +10,23 @@ export const isAsyncFunction = elem => getType(elem) === 'AsyncFunction';
  * Check if needle fuzzy matches haystack.
  * @see https://github.com/bevacqua/fuzzysearch
  */
-export function fuzzySearch(needle, haystack) {
+export function fuzzySearch(needle, haystack, ignoreCase = true) {
+  if (ignoreCase) return fuzzySearch(needle.toLowerCase(), haystack.toLowerCase(), false);
+
   const nlen = needle.length;
 
   // if needle is empty then it matches everything
-  if (!nlen) {
-    return true;
-  }
+  if (!nlen) return true;
 
   const hlen = haystack.length;
-  if (nlen > hlen) {
-    return false;
-  }
+  if (nlen > hlen) return false;
 
-  if (nlen === hlen) {
-    return needle === haystack;
-  }
+  if (nlen === hlen) return needle === haystack;
 
   outer: for (let i = 0, j = 0; i < nlen; i += 1) {
     const nch = needle.charCodeAt(i);
     while (j < hlen) {
-      if (haystack.charCodeAt(j++) === nch) { // eslint-disable-line no-plusplus
-        continue outer;
-      }
+      if (haystack.charCodeAt(j++) === nch) continue outer; // eslint-disable-line no-plusplus
     }
     return false;
   }

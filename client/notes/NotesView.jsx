@@ -24,7 +24,7 @@ class NotesView extends PureComponent {
 
   getVisibleNotes() {
     return this.props.notes
-      .filter(note => fuzzySearch(this.props.filter, note.fields.name.toLowerCase()))
+      .filter(note => fuzzySearch(this.props.filter, note.fields.name))
       .sort(recentComparator);
   }
 

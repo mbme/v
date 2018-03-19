@@ -1,3 +1,5 @@
+import { fuzzySearch } from 'shared/utils';
+
 export const type = 'track';
 
 export const validation = {
@@ -8,3 +10,5 @@ export const validation = {
 };
 
 export const extractFileIds = fields => [ fields.fileId ];
+
+export const applyFilter = (record, filter) => fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' '));

@@ -22,3 +22,11 @@ export const validation = {
   ...note.validation,
   ...track.validation,
 };
+
+export function applyFilter(record, filter) {
+  if (record.type === note.type) return note.applyFilter(record, filter);
+
+  if (record.type === track.type) return track.applyFilter(record, filter);
+
+  throw new Error(`applyFilter NYI for ${record.type}`);
+}

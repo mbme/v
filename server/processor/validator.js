@@ -1,12 +1,14 @@
-import { getType, isString, isObject, isArray, isSha256, flatten } from 'shared/utils';
+import { getType, isString, isObject, isArray, isAsyncFunction, isSha256, flatten } from 'shared/utils';
 import { validation } from './records';
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
+  'non-negative-integer': val => Number.isInteger(val) && val >= 0,
   'string': isString,
   'object': isObject,
   'string!': val => isString(val) && val, // not empty string
   'buffer': Buffer.isBuffer,
+  'async-function': isAsyncFunction,
   'sha256': val => isString(val) && isSha256(val),
 
   'file-name': 'string!',

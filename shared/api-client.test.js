@@ -2,8 +2,9 @@ import path from 'path';
 import { test, before, after } from 'tools/test';
 import startServer from 'server';
 import createNetwork from 'server/utils/platform';
-import { createLink } from 'shared/parser';
 import { sha256, rmrfSync, readFile } from 'server/utils';
+import { createLink } from 'shared/parser';
+import { createArray } from 'shared/utils';
 import createApiClient from './api-client';
 
 let server;
@@ -59,14 +60,34 @@ test('should read file metadata', async (assert) => {
   assert.equal(meta.duration, 178.573);
 });
 
+test('should apply pagination', async (assert) => {
+  await Promise.all(createArray(10, () => api.createNote('pagination-name', 'data')));
+
+  {
+    const result = await api.listNotes({ skip: 1, size: 9, filter: 'pagination-name' });
+    assert.equal(result.items.length, 9);
+    assert.equal(result.total, 10);
+  }
+  {
+    const result = await api.listNotes({ skip: 1, size: 0, filter: 'pagination-name' });
+    assert.equal(result.items.length, 9);
+    assert.equal(result.total, 10);
+  }
+  {
+    const result = await api.listNotes({ skip: 0, size: 0, filter: 'pagination-name' });
+    assert.equal(result.items.length, 10);
+    assert.equal(result.total, 10);
+  }
+});
+
 test('should manage notes', async (assert) => {
   // create note
   const note = await api.createNote('name', 'some data');
 
   // list notes
-  const notes = await api.listNotes();
+  const notes = (await api.listNotes({ size: 0 })).items;
   await api.createNote('name', 'some data');
-  const newNotes = await api.listNotes();
+  const newNotes = (await api.listNotes({ size: 0 })).items;
   assert.equal(newNotes.length, notes.length + 1);
 
   // update note
@@ -77,7 +98,7 @@ test('should manage notes', async (assert) => {
 
   // delete note
   await api.deleteNote(note.id);
-  assert.equal((await api.listNotes()).filter(n => n.id === note.id).length, 0);
+  assert.equal((await api.listNotes({ size: 0 })).items.filter(n => n.id === note.id).length, 0);
 });
 
 test('should return an error', async (assert) => {

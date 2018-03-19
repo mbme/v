@@ -1,9 +1,10 @@
 export const CHANGE_LIST = 'NOTES/CHANGE_LIST';
-export function listNotes() {
-  return async (dispatch, getState, apiClient) => dispatch({
-    type: CHANGE_LIST,
-    notes: await apiClient.listNotes(),
-  });
+export function listNotes(filter = '') {
+  return async (dispatch, getState, apiClient) => {
+    const result = await apiClient.listNotes({ size: 0, filter });
+
+    dispatch({ type: CHANGE_LIST, notes: result.items });
+  };
 }
 
 export function updateNote(id, name, data, newFiles) {

@@ -8,7 +8,7 @@ const actions = {
   'READ_FILE': (storage, { id }) => storage.readFile(id),
 
   // NOTES
-  'LIST_NOTES': storage => storage.listRecords(RecordType.note),
+  'LIST_NOTES': (storage, { size, skip, filter }) => storage.listRecords(RecordType.note, { size, skip, filter }),
   'READ_NOTE': (storage, { id }) => storage.readRecord(id),
   'CREATE_NOTE': (storage, { name, data }, files) => {
     assertAll(
@@ -27,7 +27,7 @@ const actions = {
   'DELETE_NOTE': (storage, { id }) => storage.deleteRecord(id),
 
   // TRACKS
-  'LIST_TRACKS': storage => storage.listRecords(RecordType.track),
+  'LIST_TRACKS': (storage, { size, skip, filter }) => storage.listRecords(RecordType.track, { size, skip, filter }),
   'READ_TRACK': (storage, { id }) => storage.readRecord(id),
   'CREATE_TRACK': (storage, { artist, title, rating, categories, fileId }, files) => {
     assertAll(
@@ -56,7 +56,7 @@ export default async function createProcessor({ rootDir }) {
   const storage = await createStorage(rootDir);
 
   return {
-    processAction({ action: { name, data }, files = [] }) {
+    processAction({ action: { name, data = {} }, files = [] }) {
       const action = actions[name];
       if (!action) throw new Error(`unknown action: ${name}`);
 

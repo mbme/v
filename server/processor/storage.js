@@ -1,9 +1,9 @@
 import path from 'path';
 import nodeFs from 'fs';
-import { uniq, flatten, isAsyncFunction } from 'shared/utils';
+import { uniq, flatten, recentComparator } from 'shared/utils';
 import * as utils from 'server/utils';
 import { validateAll, assertAll } from './validator';
-import { extractFileIds } from './records';
+import { extractFileIds, applyFilter } from './records';
 import probeMetadata from './probe';
 
 function createStorageFs(rootDir) {
@@ -177,7 +177,7 @@ function createQueue() {
 
   return {
     push(action) {
-      if (!isAsyncFunction(action)) throw new Error('action must be async function');
+      assertAll([ action, 'async-function' ]);
 
       return new Promise((resolve, reject) => {
         if (onClose) throw new Error('closing storage');
@@ -272,15 +272,28 @@ export default async function createStorage(rootDir) {
 
   return {
     /**
-     * @returns {Promise<Record[]>}
+     * @returns {Promise<{ items: Record[], total: number }>}
      */
-    listRecords(type) {
+    listRecords(type, { size = 50, skip = 0, filter = '' }) {
       return queue.push(async () => {
         assertAll(
+          [ size, 'non-negative-integer' ],
+          [ skip, 'non-negative-integer' ],
+          [ filter, 'string' ],
           [ type, 'record-type' ],
         );
 
-        return cache.records.filter(record => record.type === type);
+        const results = cache.records
+          .filter(record => record.type === type && applyFilter(record, filter))
+          .sort(recentComparator);
+
+        return {
+          total: results.length,
+
+          // apply pagination
+          // handles special case when size is 0 which means "no size limit"
+          items: results.filter((_, i) => i >= skip && (size === 0 ? true : i < skip + size)),
+        };
       });
     },
 
