@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import s from 'client/styles';
+import { trackShape } from 'client/shapes';
 import { Toolbar, Filter } from 'client/components';
 import * as trackActions from './actions';
 
@@ -12,7 +13,7 @@ const counterStyles = s.cx({
 
 class TracksView extends PureComponent {
   static propTypes = {
-    tracks: PropTypes.arrayOf(PropTypes.object).isRequired,
+    tracks: PropTypes.arrayOf(trackShape).isRequired,
     filter: PropTypes.string.isRequired,
     listTracks: PropTypes.func.isRequired,
   };

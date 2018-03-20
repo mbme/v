@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { formatTs } from 'shared/utils';
+import { noteShape } from 'client/shapes';
 import s from 'client/styles';
 import { Button, Toolbar, Link, Filter } from 'client/components';
 import * as notesActions from './actions';
@@ -19,7 +20,7 @@ const timeStyles = s.cx({
 
 class NotesView extends PureComponent {
   static propTypes = {
-    notes: PropTypes.arrayOf(PropTypes.object).isRequired,
+    notes: PropTypes.arrayOf(noteShape).isRequired,
     filter: PropTypes.string.isRequired,
     listNotes: PropTypes.func.isRequired,
   };

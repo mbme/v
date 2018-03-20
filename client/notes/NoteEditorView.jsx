@@ -2,13 +2,14 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import NotFoundView from 'client/chrome/NotFoundView';
+import { noteShape } from 'client/shapes';
 import * as notesActions from './actions';
 import NoteEditor from './NoteEditor';
 
 class NoteEditorView extends PureComponent {
   static propTypes = {
     id: PropTypes.number,
-    note: PropTypes.object,
+    note: noteShape,
     readNote: PropTypes.func.isRequired,
   };
 
