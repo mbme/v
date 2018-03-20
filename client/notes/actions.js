@@ -7,6 +7,15 @@ export function listNotes(filter = '') {
   };
 }
 
+export const SET = 'NOTES/SET';
+export function readNote(id) {
+  return async (dispatch, getState, apiClient) => {
+    const result = await apiClient.readNote(id);
+
+    dispatch({ type: SET, id, note: result });
+  };
+}
+
 export function updateNote(id, name, data, newFiles) {
   return async (dispatch, getState, apiClient) => {
     await apiClient.updateNote(id, name, data, newFiles);

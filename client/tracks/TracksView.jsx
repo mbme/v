@@ -1,33 +1,35 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fuzzySearch, recentComparator } from 'shared/utils';
 import s from 'client/styles';
 import { Toolbar, Filter } from 'client/components';
+import * as trackActions from './actions';
 
 const counterStyles = s.cx({
   marginLeft: 'var(--spacing-small)',
   whiteSpace: 'nowrap',
 });
 
-function isTrackVisible(track, filter) {
-  return fuzzySearch(filter, [ track.fields.name, track.fields.artist ].join(' '));
-}
-
 class TracksView extends PureComponent {
   static propTypes = {
     tracks: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
+    listTracks: PropTypes.func.isRequired,
   };
 
-  getVisibleTracks() {
-    return this.props.tracks
-      .filter(track => isTrackVisible(track, this.props.filter))
-      .sort(recentComparator);
+  constructor(props) {
+    super(props);
+    props.listTracks(props.filter);
+  }
+
+  componentWillUpdate(nextProps) {
+    if (this.props.filter !== nextProps.filter) {
+      nextProps.listTracks(nextProps.filter);
+    }
   }
 
   render() {
-    const tracks = this.getVisibleTracks().map(track => (
+    const tracks = this.props.tracks.map(track => (
       <div key={track.id}>{track.fields.artist} - {track.fields.title}</div>
     ));
 
@@ -54,4 +56,8 @@ const mapStateToProps = ({ tracks, router }) => ({
   filter: router.query.filter || '',
 });
 
-export default connect(mapStateToProps)(TracksView);
+const mapDispatchToProps = {
+  listTracks: trackActions.listTracks,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TracksView);

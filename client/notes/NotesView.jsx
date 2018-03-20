@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fuzzySearch, recentComparator, formatTs } from 'shared/utils';
+import { formatTs } from 'shared/utils';
 import s from 'client/styles';
 import { Button, Toolbar, Link, Filter } from 'client/components';
+import * as notesActions from './actions';
 
 const linkStyles = s.cx(s.section, s.flex({ v: 'baseline' }));
 
@@ -20,16 +21,22 @@ class NotesView extends PureComponent {
   static propTypes = {
     notes: PropTypes.arrayOf(PropTypes.object).isRequired,
     filter: PropTypes.string.isRequired,
+    listNotes: PropTypes.func.isRequired,
   };
 
-  getVisibleNotes() {
-    return this.props.notes
-      .filter(note => fuzzySearch(this.props.filter, note.fields.name))
-      .sort(recentComparator);
+  constructor(props) {
+    super(props);
+    this.props.listNotes(props.filter);
+  }
+
+  componentWillUpdate(nextProps) {
+    if (this.props.filter !== nextProps.filter) {
+      nextProps.listNotes(nextProps.filter);
+    }
   }
 
   render() {
-    const notes = this.getVisibleNotes().map(note => (
+    const notes = this.props.notes.map(note => (
       <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={linkStyles}>
         <small className={timeStyles}>{formatTs(note.updatedTs)}</small>
         {note.fields.name}
@@ -65,4 +72,8 @@ const mapStateToProps = ({ notes, router }) => ({
   filter: router.query.filter || '',
 });
 
-export default connect(mapStateToProps)(NotesView);
+const mapDispatchToProps = {
+  listNotes: notesActions.listNotes,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NotesView);

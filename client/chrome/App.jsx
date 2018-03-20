@@ -126,13 +126,11 @@ class App extends PureComponent {
 
     if (!authorized) return <AuthView />;
 
-    const currentView = isLoading ? null : (view || <div className={s.cx(s.heading)}>NOT FOUND</div>);
-
     return (
       <div className={appContainerStyles}>
         {this.renderNavbar()}
         <div className={viewContainerStyles}>
-          {currentView}
+          {!isLoading && view}
         </div>
         <div className={toastContainerStyles}>
           {toast}

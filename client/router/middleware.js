@@ -26,17 +26,8 @@ export default function routerMiddleware(router) {
 
             next(action);
 
-            const initPromise = route.init ? route.init(store, params, query) : Promise.resolve();
-
-            initPromise.then(
-              () => route.render(params, query),
-              (e) => {
-                console.error(e);
-                return null;
-              },
-            ).then(
-              view => store.dispatch(setView(view, route, params, query)),
-            );
+            const view = route.render(params, query);
+            store.dispatch(setView(view, route, params, query));
           });
           break;
 
