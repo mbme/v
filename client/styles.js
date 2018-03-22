@@ -44,7 +44,7 @@ function cx(...args) {
 
 const animation = keyframe => renderer.renderKeyframe(() => keyframe);
 
-const flex = ({ h, v, column = false, wrap = true }) => ({
+const flex = ({ h, v, column = false, wrap = true } = {}) => ({
   display: 'flex',
   extend: [
     {

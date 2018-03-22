@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import { ConfirmationDialog, Icon } from 'client/components';
 import NotFoundView from 'client/chrome/NotFoundView';
+import ThemeView from 'client/chrome/ThemeView';
 import NotesView from 'client/notes/NotesView';
 import NoteView from 'client/notes/NoteView';
 import NoteEditorView from 'client/notes/NoteEditorView';
@@ -14,17 +14,9 @@ export default [
     redirectTo: { name: 'notes' },
   },
   {
-    path: '/one',
-    name: 'one',
-    render: () => (
-      <div>
-        <h1>Page One</h1>
-        <ConfirmationDialog confirmation="Remove" onConfirmed={() => {}} onCancel={() => {}}>
-          Are you sure you want to <b>remove it?</b>
-          <Icon type="edit" />
-        </ConfirmationDialog>
-      </div>
-    ),
+    path: '/theme',
+    name: 'theme',
+    render: () => <ThemeView />,
   },
 
   // NOTES

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import s from 'client/styles';
 
 // https://feathericons.com/
 function FeatherIcon({ children }) {
@@ -78,9 +79,15 @@ const icons = {
   ),
 };
 
+export const ICON_TYPES = Object.keys(icons);
+
+const iconStyles = s.cx({
+  display: 'inline-block',
+});
+
 export default function Icon({ type, className }) {
   return (
-    <div className={className} aria-label={type}>{icons[type]}</div>
+    <div className={s.cx(iconStyles, className)} aria-label={type}>{icons[type]}</div>
   );
 }
 

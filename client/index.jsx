@@ -13,6 +13,8 @@ import { showToast, showLocker, setAuthorized } from './chrome/actions';
 import App from './chrome/App';
 import { init as initStyles } from './styles';
 
+global.noop = () => {};
+
 initStyles();
 
 const network = createNetwork();

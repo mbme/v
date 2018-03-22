@@ -5,6 +5,7 @@ module.exports = {
     __CLIENT__: true,
     global: true,
     console: true,
+    noop: true,
   },
   settings: {
     'import/resolver': {

@@ -4,8 +4,15 @@ import { connect } from 'react-redux';
 import s from 'client/styles';
 import * as routerActions from 'client/router/actions';
 
-const linkStyles = s.cx({
+const linkStyles = clean => s.cx({
   cursor: 'pointer',
+  display: 'inline-block',
+  extend: [
+    {
+      condition: !clean,
+      color: 'var(--color-link)',
+    },
+  ],
 });
 
 class Link extends PureComponent {
@@ -17,15 +24,16 @@ class Link extends PureComponent {
     }).isRequired,
     children: PropTypes.node.isRequired,
     push: PropTypes.func.isRequired,
+    clean: PropTypes.bool,
   };
 
   onClick = () => this.props.push(this.props.to);
 
   render() {
-    const { className, children } = this.props;
+    const { className, children, clean } = this.props;
 
     return (
-      <div className={s.cx(className, linkStyles)} role="link" tabIndex="0" onClick={this.onClick}>
+      <div className={s.cx(className, linkStyles(clean))} role="link" tabIndex="0" onClick={this.onClick}>
         {children}
       </div>
     );
