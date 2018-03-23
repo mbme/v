@@ -1,8 +1,12 @@
-import { createRenderer } from 'fela';
+import { createRenderer, combineRules } from 'fela';
 import { render } from 'fela-dom';
 import { isString, isObject } from 'shared/utils';
 
-const renderer = createRenderer();
+const renderer = createRenderer({
+  plugins: [
+    style => ({ ...style, extend: undefined, condition: undefined }), // remove `extend` and `condition`
+  ],
+});
 
 export function init() {
   const styleLink = document.createElement('link');
@@ -13,18 +17,14 @@ export function init() {
   render(renderer);
 }
 
-const cleanupStyleObj = style => ({
-  ...style,
-  extend: undefined,
-  condition: undefined,
-});
-
 function renderStyle(obj) {
+  const rules = (obj.extend || [])
+    .filter(style => style.condition)
+    .map(style => () => style);
+
   return [
-    renderer.renderRule(() => cleanupStyleObj(obj)),
-    ...(obj.extend || [])
-      .filter(style => style.condition)
-      .map(style => renderer.renderRule(() => cleanupStyleObj(style))),
+    renderer.renderRule(() => obj),
+    renderer.renderRule(combineRules(...rules)),
   ];
 }
 

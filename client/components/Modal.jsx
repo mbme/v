@@ -16,6 +16,10 @@ const backdropContainerStyles = s.cx({
   left: 0,
 }, s.flex({ h: 'center', v: 'flex-start' }));
 
+const noScrollStyles = s.cx({
+  height: '100vh',
+});
+
 export class Backdrop extends PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -27,10 +31,12 @@ export class Backdrop extends PureComponent {
 
   componentDidMount() {
     this.scrollTop = document.documentElement.scrollTop;
+    document.body.className = noScrollStyles;
     document.body.style.marginTop = `${-this.scrollTop}px`;
   }
 
   componentWillUnmount() {
+    document.body.className = '';
     document.body.style.marginTop = '';
     document.documentElement.scrollTop = this.scrollTop;
   }

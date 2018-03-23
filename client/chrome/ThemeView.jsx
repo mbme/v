@@ -54,10 +54,14 @@ export default class ThemeView extends PureComponent {
           <h3>Colors</h3>
           <div className={colorSquareStyles('var(--color-text)')} /> Text color <br />
           <div className={colorSquareStyles('var(--color-heading)')} /> Heading color <br />
+
           <div className={colorSquareStyles('var(--color-primary)')} /> Primary color <br />
           <div className={colorSquareStyles('var(--color-secondary)')} /> Secondary color <br />
           <div className={colorSquareStyles('var(--color-link)')} /> Link color <br />
+          <div className={colorSquareStyles('var(--color-light)')} /> Light color <br />
+
           <div className={colorSquareStyles('var(--bg-color)')} /> Background color <br />
+          <div className={colorSquareStyles('var(--bg-color-darker)')} /> Background color (darker) <br />
         </div>
 
         <div className={sectionStyles}>

@@ -11,6 +11,7 @@ import ProgressLocker from './ProgressLocker';
 const appContainerStyles = s.cx({
   margin: '0 auto',
   maxWidth: 'var(--max-width)',
+  padding: '0 var(--spacing-small)',
 });
 
 const viewContainerStyles = s.cx(s.flex({ column: true }));
