@@ -88,7 +88,7 @@ export function ConfirmationDialog({ children, confirmation, onConfirmed, onCanc
       <div className={s.cx(s.section)}>{children}</div>
       <div className={buttonContainerStyles}>
         <Button onClick={onCancel}>CANCEL</Button>
-        <Button raised primary onClick={onConfirmed}>{confirmation}</Button>
+        <Button primary onClick={onConfirmed}>{confirmation}</Button>
       </div>
     </Modal>
   );

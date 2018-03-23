@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { IconButton } from 'client/components';
+import { Icon } from 'client/components';
 
 export default class AttachFileButton extends PureComponent {
   static propTypes = {
@@ -18,11 +18,14 @@ export default class AttachFileButton extends PureComponent {
   };
 
   render() {
-    return [
-      <IconButton key="attachBtn" title="Attach files" type="paperclip" onClick={this.onClick} />,
-      <form key="fileInput" hidden ref={(ref) => { this.formRef = ref; }}>
-        <input type="file" multiple onChange={this.onFilesSelected} />
-      </form>,
-    ];
+    return (
+      <Fragment>
+        <Icon title="Attach files" type="paperclip" onClick={this.onClick} />
+
+        <form hidden ref={(ref) => { this.formRef = ref; }}>
+          <input type="file" multiple onChange={this.onFilesSelected} />
+        </form>
+      </Fragment>
+    );
   }
 }

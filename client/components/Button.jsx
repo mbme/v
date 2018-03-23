@@ -1,47 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import s from 'client/styles';
-import Icon from './Icon';
 
-const button = ({ disabled, primary, type }) => ({
-  border: '0 none',
+const button = ({ disabled, primary }) => ({
   borderRadius: '2px',
   cursor: 'pointer',
   userSelect: 'none',
-  backgroundColor: 'inherit',
   padding: 'var(--spacing-fine) var(--spacing-medium)',
+  textTransform: 'uppercase',
+  letterSpacing: '1.2px',
+  transition: 'background-color 100ms linear',
 
   extend: [
     {
-      condition: disabled,
-      cursor: 'auto',
-      filter: 'invert(80%)',
-    },
-    {
-      condition: primary && !disabled,
-      color: 'var(--color-primary)',
-    },
-    {
-      condition: type === 'flat',
-      textTransform: 'uppercase',
-      letterSpacing: '1.2px',
-      transition: 'background-color 100ms linear',
-    },
-    {
-      condition: type === 'flat' && !disabled,
+      condition: !primary,
+      color: 'var(--color-text)',
+      backgroundColor: 'var(--bg-color)',
+      border: 'var(--border)',
       ':hover': {
-        boxShadow: 'var(--box-shadow)',
+        backgroundColor: 'var(--bg-color-darker)',
       },
     },
     {
-      condition: type === 'raised',
+      condition: !primary && disabled,
+      cursor: 'auto',
+      color: 'var(--color-light)',
+      backgroundColor: 'var(--bg-color-darker)',
+    },
+    {
+      condition: primary && !disabled,
+      backgroundColor: 'var(--color-primary)',
+      color: 'var(--color-light)',
       ...s.withBorder,
     },
   ],
 });
 
-export function Button({ onClick, disabled, raised, primary, children }) {
-  const className = s.cx(button({ disabled, primary, type: raised ? 'raised' : 'flat' }));
+export default function Button({ onClick, disabled, primary, children }) {
+  const className = s.cx(button({ disabled, primary }));
 
   return (
     <button className={className} onClick={onClick} disabled={disabled}>{children}</button>
@@ -50,21 +46,6 @@ export function Button({ onClick, disabled, raised, primary, children }) {
 Button.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
-  raised: PropTypes.bool,
   primary: PropTypes.bool,
   children: PropTypes.node.isRequired,
-};
-
-export function IconButton({ type, title, onClick, className }) {
-  return (
-    <button className={s.cx(button({ type: 'flat' }), className)} title={title} onClick={onClick}>
-      <Icon type={type} />
-    </button>
-  );
-}
-IconButton.propTypes = {
-  type: PropTypes.string.isRequired,
-  title: PropTypes.string,
-  onClick: PropTypes.func,
-  className: PropTypes.string,
 };

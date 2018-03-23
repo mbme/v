@@ -5,15 +5,20 @@
     "Segoe UI", Roboto, Oxygen, /* Windows, Android, KDE */
     Ubuntu, Cantarell, "Fira Sans", /* Ubuntu, Gnome, Firefox OS */
     "Droid Sans", "Helvetica Neue", sans-serif; /* Old Android */
+  --font-family-mono: monospace, monospace;
   --line-height: 1.35;
   --font-size: 22px;
 
-  --color: #333;
-  --color-primary: #e66164;
-  --color-secondary: #BDBDBD;
-  --color-link: #54B2D8;
+  --color-text: #333333;
+  --color-heading: #000000;
 
-  --bg-color: #fff;
+  --color-primary: #FF553C;
+  --color-secondary: #5E5A57;
+  --color-link: #FDAF3C;
+  --color-light: #ffffff;
+
+  --bg-color: #ffffff;
+  --bg-color-darker: #f5f5f5;
 
   --border: 1px solid rgba(0,0,0,.09);
   --box-shadow: 0 2px 4px rgba(0,0,0,.2);
@@ -59,6 +64,7 @@ html {
 
 body {
   margin: 0; /* 1 */
+  padding: 0;
   font-family: var(--font-family-base);
   font-size: var(--font-size);
   font-weight: 400;
@@ -67,8 +73,7 @@ body {
   text-rendering: optimizeLegibility;
 
   background-color: var(--bg-color); /* 2 */
-  color: var(--color);
-  padding: var(--spacing-medium);
+  color: var(--color-text);
 }
 
 /* Suppress the focus outline on elements that cannot be accessed via keyboard. */
@@ -96,6 +101,7 @@ hr {
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: var(--spacing-medium);
+  color: var(--color-heading);
 }
 
 /* Reset margins on paragraphs */
@@ -186,7 +192,7 @@ pre,
 code,
 kbd,
 samp {
-  font-family: monospace, monospace; /* Correct the inheritance and scaling of font size in all browsers. */
+  font-family: var(--font-family-mono); /* Correct the inheritance and scaling of font size in all browsers. */
   font-size: 1em; /* Correct the odd `em` font sizing in all browsers. */
 }
 

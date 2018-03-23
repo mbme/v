@@ -44,8 +44,9 @@ function cx(...args) {
 
 const animation = keyframe => renderer.renderKeyframe(() => keyframe);
 
-const flex = ({ h, v, column = false, wrap = true } = {}) => ({
+const flex = ({ h, v, column = false, wrap } = {}) => ({
   display: 'flex',
+
   extend: [
     {
       condition: h,
@@ -60,7 +61,11 @@ const flex = ({ h, v, column = false, wrap = true } = {}) => ({
       flexDirection: 'column',
     },
     {
-      condition: !wrap,
+      condition: wrap === true,
+      flexWrap: 'wrap',
+    },
+    {
+      condition: wrap === false,
       flexWrap: 'nowrap',
     },
   ],

@@ -5,6 +5,7 @@ import s from 'client/styles';
 import { trackShape } from 'client/shapes';
 import { Toolbar, Filter } from 'client/components';
 import * as trackActions from './actions';
+import Track from './Track';
 
 const counterStyles = s.cx({
   marginLeft: 'var(--spacing-small)',
@@ -30,9 +31,7 @@ class TracksView extends PureComponent {
   }
 
   render() {
-    const tracks = this.props.tracks.map(track => (
-      <div key={track.id}>{track.fields.artist} - {track.fields.title}</div>
-    ));
+    const tracks = this.props.tracks.map(track => <Track key={track.id} track={track} />);
 
     const left = (
       <Fragment>

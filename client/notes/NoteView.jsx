@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link, Toolbar, IconButton } from 'client/components';
+import { Link, Toolbar, Icon } from 'client/components';
 import { noteShape } from 'client/shapes';
 import NotFoundView from 'client/chrome/NotFoundView';
 import * as notesActions from './actions';
@@ -33,7 +33,7 @@ class NoteView extends PureComponent {
 
     const editBtn = (
       <Link to={{ name: 'note-editor', params: { id: note.id } }} clean>
-        <IconButton type="edit-2" />
+        <Icon type="edit-2" />
       </Link>
     );
 

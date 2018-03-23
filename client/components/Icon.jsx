@@ -3,9 +3,19 @@ import PropTypes from 'prop-types';
 import s from 'client/styles';
 
 // https://feathericons.com/
-function FeatherIcon({ children }) {
+function FeatherIcon({ children, ...otherProps }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="transparent" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="transparent"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...otherProps}
+    >
       {children}
     </svg>
   );
@@ -83,12 +93,15 @@ export const ICON_TYPES = Object.keys(icons);
 
 const iconStyles = s.cx({
   display: 'inline-block',
+  cursor: 'pointer',
 });
 
-export default function Icon({ type, className }) {
-  return (
-    <div className={s.cx(iconStyles, className)} aria-label={type}>{icons[type]}</div>
-  );
+export default function Icon({ type, className, ...otherProps }) {
+  return React.cloneElement(icons[type], {
+    className: s.cx(iconStyles, className),
+    'aria-label': type,
+    ...otherProps,
+  });
 }
 
 Icon.propTypes = {

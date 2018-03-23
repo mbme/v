@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import s from 'client/styles';
-import { Link, IconButton } from 'client/components';
+import { Link, Icon } from 'client/components';
 import { deauthorize } from 'client/utils/platform';
 import { showToast } from './actions';
 import AuthView from './AuthView';
@@ -17,6 +17,9 @@ const viewContainerStyles = s.cx(s.flex({ column: true }));
 
 const navbarStyles = s.cx({
   position: 'relative',
+  backgroundColor: 'var(--color-secondary)',
+  color: 'white',
+  padding: 'var(--spacing-small) var(--spacing-small)',
 }, s.section);
 
 const toastContainerStyles = s.cx({
@@ -37,19 +40,17 @@ const toastContainerStyles = s.cx({
 const navLinkStyles = isSelected => s.cx({
   display: 'inline-block',
   margin: '0 var(--spacing-medium)',
-  color: 'var(--color-link)',
   extend: [
     {
       condition: isSelected,
-      borderBottom: '2px solid var(--color-link)',
+      color: 'var(--color-primary)',
     },
   ],
 });
 
 const logoutIconStyles = s.cx({
   position: 'absolute',
-  right: '0',
-  top: '-5px',
+  right: 'var(--spacing-small)',
 });
 
 class App extends PureComponent {
@@ -111,11 +112,26 @@ class App extends PureComponent {
 
   renderNavbar() {
     const routeName = this.props.route ? this.props.route.name : null;
+
     return (
       <nav className={navbarStyles}>
-        <Link to={{ name: 'notes' }} className={navLinkStyles([ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName))}>Notes</Link>
-        <Link to={{ name: 'tracks' }} className={navLinkStyles(routeName === 'tracks')}>Tracks</Link>
-        <IconButton className={logoutIconStyles} type="log-out" title="Logout" onClick={this.logout} />
+        <Link
+          clean
+          to={{ name: 'notes' }}
+          className={navLinkStyles([ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName))}
+        >
+          Notes
+        </Link>
+
+        <Link
+          clean
+          to={{ name: 'tracks' }}
+          className={navLinkStyles(routeName === 'tracks')}
+        >
+          Tracks
+        </Link>
+
+        <Icon className={logoutIconStyles} type="log-out" title="Logout" onClick={this.logout} />
       </nav>
     );
   }

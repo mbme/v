@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { IconButton, ConfirmationDialog } from 'client/components';
+import { Icon, ConfirmationDialog } from 'client/components';
 import * as routerActions from 'client/router/actions';
 import * as notesActions from './actions';
 
@@ -19,19 +19,26 @@ class DeleteNoteButton extends PureComponent {
   deleteNote = () => this.props.deleteNote(this.props.id).then(() => this.props.push({ name: 'notes' }));
 
   render() {
-    return [
-      <IconButton key="deleteBtn" title="Delete note" type="trash-2" onClick={() => this.setState({ showConfirmation: true })} />,
-      this.state.showConfirmation && (
-        <ConfirmationDialog
-          key="deleteNoteDialog"
-          confirmation="Delete"
-          onConfirmed={this.deleteNote}
-          onCancel={() => this.setState({ showConfirmation: false })}
-        >
-          Are you sure you want to <b>delete this note?</b>
-        </ConfirmationDialog>
-      ),
-    ];
+    return (
+      <Fragment>
+        <Icon
+          title="Delete note"
+          type="trash-2"
+          onClick={() => this.setState({ showConfirmation: true })}
+        />
+
+        {this.state.showConfirmation && (
+          <ConfirmationDialog
+            confirmation="Delete"
+            onConfirmed={this.deleteNote}
+            onCancel={() => this.setState({ showConfirmation: false })}
+          >
+            Are you sure you want to <b>delete this note?</b>
+          </ConfirmationDialog>
+        )
+        }
+      </Fragment>
+    );
   }
 }
 

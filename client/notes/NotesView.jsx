@@ -38,7 +38,7 @@ class NotesView extends PureComponent {
 
   render() {
     const notes = this.props.notes.map(note => (
-      <Link key={note.id} to={{ name: 'note', params: { id: note.id } }} className={linkStyles}>
+      <Link key={note.id} clean to={{ name: 'note', params: { id: note.id } }} className={linkStyles}>
         <small className={timeStyles}>{formatTs(note.updatedTs)}</small>
         {note.fields.name}
       </Link>
@@ -55,7 +55,7 @@ class NotesView extends PureComponent {
 
     const addBtn = (
       <Link to={{ name: 'add-note' }}>
-        <Button raised primary>Add</Button>
+        <Button primary>Add</Button>
       </Link>
     );
 

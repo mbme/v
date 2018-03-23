@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
 import { readFile, sha256 } from 'client/utils';
 import s from 'client/styles';
-import { Button, Textarea, Toolbar, Input, IconButton } from 'client/components';
+import { Button, Textarea, Toolbar, Input, Icon } from 'client/components';
 import * as routerActions from 'client/router/actions';
 import * as chromeActions from 'client/chrome/actions';
 import * as notesActions from './actions';
@@ -94,7 +94,7 @@ class NoteEditor extends PureComponent {
       <Fragment>
         {id && <DeleteNoteButton id={id} />}
         <AttachFileButton onSelected={this.onFilesSelected} />
-        <IconButton title="Preview" type={preview ? 'eye-off' : 'eye'} onClick={this.togglePreview} />
+        <Icon title="Preview" type={preview ? 'eye-off' : 'eye'} onClick={this.togglePreview} />
       </Fragment>
     );
 
