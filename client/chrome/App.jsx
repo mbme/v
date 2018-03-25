@@ -2,26 +2,54 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import s from 'client/styles';
-import { Link, Icon } from 'client/components';
+import { Link } from 'client/components';
 import { deauthorize } from 'client/utils/platform';
 import { showToast } from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 
 const appContainerStyles = s.cx({
-  margin: '0 auto',
-  maxWidth: 'var(--max-width)',
-  padding: '0 var(--spacing-small)',
+  display: 'grid',
+  gridTemplateColumns: '30% var(--max-width) auto',
 });
 
-const viewContainerStyles = s.cx(s.flex({ column: true }));
-
-const navbarStyles = s.cx({
+const navbarContainerStyles = s.cx({
+  gridArea: '1 / 1 / 1 / 1',
   position: 'relative',
   backgroundColor: 'var(--color-secondary)',
   color: 'white',
-  padding: 'var(--spacing-small) var(--spacing-small)',
-}, s.section);
+});
+
+const navbarStyles = s.cx({
+  padding: 'var(--spacing-small) var(--spacing-large)',
+  height: '100vh',
+  position: 'sticky',
+  top: '0px',
+  fontSize: 'var(--font-size-medium)',
+}, s.flex({ column: true, v: 'flex-end' }));
+
+const navLinkStyles = isSelected => s.cx({
+  display: 'inline-block',
+  margin: 'var(--spacing-medium) 0',
+  extend: [
+    {
+      condition: isSelected,
+      color: 'var(--color-primary)',
+    },
+  ],
+});
+
+const logoutStyles = s.cx({
+  position: 'absolute',
+  bottom: 'var(--spacing-small)',
+});
+
+const viewContainerStyles = s.cx({
+  gridArea: '1 / 2 / 1 / 2',
+
+  padding: '0 var(--spacing-large)',
+}, s.flex({ column: true }));
+
 
 const toastContainerStyles = s.cx({
   position: 'fixed',
@@ -36,22 +64,6 @@ const toastContainerStyles = s.cx({
   ':empty': {
     display: 'none',
   },
-});
-
-const navLinkStyles = isSelected => s.cx({
-  display: 'inline-block',
-  margin: '0 var(--spacing-medium)',
-  extend: [
-    {
-      condition: isSelected,
-      color: 'var(--color-primary)',
-    },
-  ],
-});
-
-const logoutIconStyles = s.cx({
-  position: 'absolute',
-  right: 'var(--spacing-small)',
 });
 
 class App extends PureComponent {
@@ -132,7 +144,17 @@ class App extends PureComponent {
           Tracks
         </Link>
 
-        <Icon className={logoutIconStyles} type="log-out" title="Logout" onClick={this.logout} />
+        <Link
+          clean
+          to={{ name: 'theme' }}
+          className={navLinkStyles(routeName === 'theme')}
+        >
+          Theme
+        </Link>
+
+        <div className={logoutStyles} onClick={this.logout}>
+          Logout
+        </div>
       </nav>
     );
   }
@@ -144,7 +166,9 @@ class App extends PureComponent {
 
     return (
       <div className={appContainerStyles}>
-        {this.renderNavbar()}
+        <div className={navbarContainerStyles}>
+          {this.renderNavbar()}
+        </div>
         <div className={viewContainerStyles}>
           {!isLoading && view}
         </div>

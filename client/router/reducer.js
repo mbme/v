@@ -17,6 +17,9 @@ export default function router(state = defaultState, action) {
     case LOCATION_CHANGE:
       return {
         ...defaultState,
+
+        view: state.view, // keep previous view
+
         pathname: action.pathname,
         search: action.search,
         isPush: action.isPush,
