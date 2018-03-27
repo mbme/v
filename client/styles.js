@@ -2,9 +2,20 @@ import { createRenderer, combineRules } from 'fela';
 import { render } from 'fela-dom';
 import { isString, isObject } from 'shared/utils';
 
+const SCREEN = {
+  small: 320,
+  medium: 768,
+  large: 1024,
+};
+
 const renderer = createRenderer({
   plugins: [
     style => ({ ...style, extend: undefined, condition: undefined }), // remove `extend` and `condition`
+  ],
+  mediaQueryOrder: [
+    `only screen and (min-width: ${SCREEN.small}px)`,
+    `only screen and (min-width: ${SCREEN.medium}px)`,
+    `only screen and (min-width: ${SCREEN.large}px)`,
   ],
 });
 
@@ -19,13 +30,10 @@ export function init() {
 
 function renderStyle(obj) {
   const rules = (obj.extend || [])
-    .filter(style => style.condition)
+    .filter(style => style.hasOwnProperty('condition') ? style.condition : true)
     .map(style => () => style);
 
-  return [
-    renderer.renderRule(() => obj),
-    renderer.renderRule(combineRules(...rules)),
-  ];
+  return renderer.renderRule(combineRules(() => obj, ...rules));
 }
 
 function cx(...args) {
@@ -35,7 +43,7 @@ function cx(...args) {
     if (isString(val)) {
       acc.push(val);
     } else if (isObject(val)) {
-      acc.push(...renderStyle(val));
+      acc.push(renderStyle(val));
     }
 
     return acc;
@@ -71,6 +79,13 @@ const flex = ({ h, v, column = false, wrap } = {}) => ({
   ],
 });
 
+const minWidth = (width, styles) => ({
+  [`@media only screen and (min-width: ${width})`]: styles,
+});
+
+const onMediumScreen = styles => minWidth(SCREEN.medium + 'px', styles);
+const onLargeScreen = styles => minWidth(SCREEN.large + 'px', styles);
+
 export default {
   cx,
   animation,
@@ -87,4 +102,7 @@ export default {
   section: {
     marginBottom: 'var(--spacing-medium)',
   },
+
+  onMediumScreen,
+  onLargeScreen,
 };

@@ -6,8 +6,9 @@
     Ubuntu, Cantarell, "Fira Sans", /* Ubuntu, Gnome, Firefox OS */
     "Droid Sans", "Helvetica Neue", sans-serif; /* Old Android */
   --font-family-mono: monospace, monospace;
-  --line-height: 1.35;
-  --font-size: 22px;
+
+  --line-height: 1.30;
+  --font-size: 16px;
 
   --color-text: #333333;
   --color-heading: #000000;
@@ -38,10 +39,10 @@
   --max-width: 35rem;
 }
 
-@media (max-width: 767px) {
+@media only screen and (min-width: 768px) {
   :root {
-    --line-height: 1.30;
-    --font-size: 16px;
+    --line-height: 1.35;
+    --font-size: 22px;
   }
 }
 

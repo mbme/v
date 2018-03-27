@@ -4,28 +4,52 @@ import { connect } from 'react-redux';
 import s from 'client/styles';
 import { Link } from 'client/components';
 import { deauthorize } from 'client/utils/platform';
-import { showToast } from './actions';
+import * as chromeActions from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 
 const appContainerStyles = s.cx({
   display: 'grid',
-  gridTemplateColumns: '30% var(--max-width) auto',
+  gridTemplateAreas: '"content"',
+
+  extend: [
+    s.onLargeScreen({
+      gridTemplateColumns: 'minmax(180px, 30%) var(--max-width) auto',
+      gridTemplateAreas: '"sidemenu content whitespace"',
+    }),
+  ],
 });
 
-const navbarContainerStyles = s.cx({
-  gridArea: '1 / 1 / 1 / 1',
+const navbarContainerStyles = isNavVisible => s.cx({
+  gridArea: 'sidemenu',
   position: 'relative',
   backgroundColor: 'var(--color-secondary)',
   color: 'white',
+  fontSize: 'var(--font-size-medium)',
+
+  display: 'none',
+
+  extend: [
+    s.onLargeScreen({
+      display: 'block',
+    }),
+    {
+      condition: isNavVisible,
+      display: 'block',
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      right: '0',
+      zIndex: '1',
+    },
+  ],
 });
 
 const navbarStyles = s.cx({
   padding: 'var(--spacing-small) var(--spacing-large)',
   height: '100vh',
   position: 'sticky',
-  top: '0px',
-  fontSize: 'var(--font-size-medium)',
+  top: '0',
 }, s.flex({ column: true, v: 'flex-end' }));
 
 const navLinkStyles = isSelected => s.cx({
@@ -45,9 +69,20 @@ const logoutStyles = s.cx({
 });
 
 const viewContainerStyles = s.cx({
-  gridArea: '1 / 2 / 1 / 2',
+  gridArea: 'content',
+  padding: '0 var(--spacing-small)',
+  justifySelf: 'center',
+  maxWidth: 'var(--max-width)',
 
-  padding: '0 var(--spacing-large)',
+  extend: [
+    s.onLargeScreen({
+      padding: '0 var(--spacing-large)',
+    }),
+
+    s.onMediumScreen({
+      padding: '0 var(--spacing-medium)',
+    }),
+  ],
 }, s.flex({ column: true }));
 
 
@@ -66,6 +101,10 @@ const toastContainerStyles = s.cx({
   },
 });
 
+// Switch off the native scroll restoration behavior and handle it manually
+// https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
+if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+
 class App extends PureComponent {
   static propTypes = {
     pathname: PropTypes.string.isRequired,
@@ -75,22 +114,14 @@ class App extends PureComponent {
     view: PropTypes.node,
     toast: PropTypes.node,
     showToast: PropTypes.func.isRequired,
-    showLocker: PropTypes.bool.isRequired,
-    authorized: PropTypes.bool.isRequired,
+    isLockerVisible: PropTypes.bool.isRequired,
+    isNavVisible: PropTypes.bool.isRequired,
+    showNav: PropTypes.func.isRequired,
+    isAuthorized: PropTypes.bool.isRequired,
   };
 
   scrollPos = {};
   toastTimeout = null;
-
-  constructor(props) {
-    super(props);
-
-    // Switch off the native scroll restoration behavior and handle it manually
-    // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }
 
   componentWillUpdate(nextProps) {
     if (this.props.pathname !== nextProps.pathname) {
@@ -159,14 +190,16 @@ class App extends PureComponent {
     );
   }
 
-  render() {
-    const { view, isLoading, toast, showLocker, authorized } = this.props;
+  hideNav = () => this.props.showNav(false);
 
-    if (!authorized) return <AuthView />;
+  render() {
+    const { view, isLoading, toast, isLockerVisible, isNavVisible, isAuthorized } = this.props;
+
+    if (!isAuthorized) return <AuthView />;
 
     return (
       <div className={appContainerStyles}>
-        <div className={navbarContainerStyles}>
+        <div className={navbarContainerStyles(isNavVisible)} onClick={this.hideNav}>
           {this.renderNavbar()}
         </div>
         <div className={viewContainerStyles}>
@@ -175,7 +208,7 @@ class App extends PureComponent {
         <div className={toastContainerStyles}>
           {toast}
         </div>
-        {showLocker && <ProgressLocker />}
+        {isLockerVisible && <ProgressLocker />}
       </div>
     );
   }
@@ -188,12 +221,14 @@ const mapStateToProps = ({ router, chrome }) => ({
   view: router.view,
   route: router.route,
   toast: chrome.toast,
-  showLocker: router.isLoading || chrome.showLocker,
-  authorized: chrome.authorized,
+  isLockerVisible: router.isLoading || chrome.showLocker,
+  isNavVisible: chrome.showNav,
+  isAuthorized: chrome.isAuthorized,
 });
 
 const mapDispatchToProps = {
-  showToast,
+  showToast: chromeActions.showToast,
+  showNav: chromeActions.showNav,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

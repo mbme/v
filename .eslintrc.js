@@ -68,6 +68,7 @@ module.exports = {
         ],
       },
     ],
+    'no-prototype-builtins': 0,
     'prefer-arrow-callback': 0,
     'prefer-template': 0,
     'comma-dangle': [
