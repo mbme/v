@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as routerActions from 'client/router/actions';
-import { Input } from 'client/components';
+import { Input, Icon } from 'client/components';
 
 class Filter extends PureComponent {
   static propTypes = {
@@ -12,13 +12,30 @@ class Filter extends PureComponent {
     replaceQueryParam: PropTypes.func.isRequired,
   };
 
+  state = {
+    expanded: false,
+  };
+
   updateTimoutId = null;
+
+  expand = () => this.setState({ expanded: true });
+
+  collapse = () => this.setState({ expanded: false });
+
+  onBlur = () => {
+    if (!this.props.filter.trim()) this.collapse();
+  };
 
   onFilterChange = (filter) => {
     if (filter.trim() === this.props.filter) return;
 
     window.clearTimeout(this.updateTimoutId);
-    this.updateTimoutId = window.setTimeout(this.props.replaceQueryParam, 60, 'filter', filter.trim().length ? filter : undefined);
+    this.updateTimoutId = window.setTimeout(
+      this.props.replaceQueryParam,
+      60,
+      'filter',
+      filter.trim().length ? filter : undefined,
+    );
   };
 
   componentWillUnmount() {
@@ -26,14 +43,23 @@ class Filter extends PureComponent {
   }
 
   render() {
+    if (this.state.expanded) {
+      return (
+        <Input
+          name="filter"
+          light
+          defaultValue={this.props.filter}
+          placeholder={this.props.placeholder}
+          onChange={this.onFilterChange}
+          onClear={this.collapse}
+          onBlur={this.onBlur}
+          autoFocus
+        />
+      );
+    }
+
     return (
-      <Input
-        name="filter"
-        defaultValue={this.props.filter}
-        placeholder={this.props.placeholder}
-        onChange={this.onFilterChange}
-        autoFocus
-      />
+      <Icon type="search" onClick={this.expand} />
     );
   }
 }

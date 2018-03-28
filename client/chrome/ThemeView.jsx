@@ -124,7 +124,13 @@ export default class ThemeView extends PureComponent {
           <Input name="input1" value="Input example (light)" light onChange={noop} />
         </div>
         <div className={sectionStyles}>
+          <Input name="input11" value="Input example (light) with clear" light onChange={noop} onClear={noop} />
+        </div>
+        <div className={sectionStyles}>
           <Input name="input2" value="Input example" onChange={noop} />
+        </div>
+        <div className={sectionStyles}>
+          <Input name="input21" value="Input example with clear" onChange={noop} onClear={noop} />
         </div>
 
         <div className={sectionStyles}>

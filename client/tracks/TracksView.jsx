@@ -34,17 +34,17 @@ class TracksView extends PureComponent {
     const tracks = this.props.tracks.map(track => <Track key={track.id} track={track} />);
 
     const left = (
-      <Fragment>
-        <Filter placeholder="Filter tracks" />
-        <small className={counterStyles}>
-          {tracks.length} items
-        </small>
-      </Fragment>
+      <Filter placeholder="Filter tracks" />
     );
 
     return (
       <Fragment>
         <Toolbar left={left} />
+
+        <small className={counterStyles}>
+          {tracks.length} items
+        </small>
+
         {tracks}
       </Fragment>
     );

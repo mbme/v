@@ -56,7 +56,9 @@ const modalStyles = s.cx({
   marginTop: '17vh',
   minWidth: '375px',
   padding: 'var(--spacing-medium)',
-}, s.withBorder);
+  border: 'var(--border)',
+  boxShadow: 'var(--box-shadow)',
+});
 
 export class Modal extends PureComponent {
   static propTypes = {

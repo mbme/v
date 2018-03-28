@@ -45,12 +45,7 @@ class NotesView extends PureComponent {
     ));
 
     const left = (
-      <Fragment>
-        <Filter placeholder="Filter notes" />
-        <small className={counterStyles}>
-          {notes.length} items
-        </small>
-      </Fragment>
+      <Filter placeholder="Filter notes" />
     );
 
     const addBtn = (
@@ -62,6 +57,11 @@ class NotesView extends PureComponent {
     return (
       <Fragment>
         <Toolbar left={left} right={addBtn} />
+
+        <small className={counterStyles}>
+          {notes.length} items
+        </small>
+
         {notes}
       </Fragment>
     );

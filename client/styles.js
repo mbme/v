@@ -120,10 +120,6 @@ export default {
 
   animation,
   flex,
-  withBorder: {
-    border: 'var(--border)',
-    boxShadow: 'var(--box-shadow)',
-  },
   heading: {
     fontWeight: 'bold',
     fontSize: 'var(--font-size-large)',

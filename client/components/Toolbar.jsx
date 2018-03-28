@@ -11,6 +11,7 @@ const styles = s.styles({
     top: 0,
     backgroundColor: 'var(--bg-color)',
     padding: 'var(--spacing-fine) 0',
+    height: '60px',
 
     extend: [
       s.section,
@@ -48,7 +49,9 @@ class Toolbar extends PureComponent {
           <Icon type="menu" className={styles.menuIcon} onClick={this.toggleNav} />
           {left}
         </div>
-        <div className={styles.cell}>{right}</div>
+        <div className={styles.cell}>
+          {right}
+        </div>
       </div>
     );
   }

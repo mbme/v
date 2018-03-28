@@ -10,7 +10,7 @@ import createNetwork, { UnauthorizedError } from './utils/platform';
 import routerMiddleware, { propagateCurrentLocation } from './router';
 import rootReducer from './reducers';
 import { showToast, showLocker, setAuthorized } from './chrome/actions';
-import App from './chrome/App';
+import AppView from './chrome/AppView';
 import { init as initStyles } from './styles';
 
 global.noop = () => {};
@@ -47,7 +47,7 @@ store.dispatch(propagateCurrentLocation()); // use current location
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <AppView />
   </Provider>,
   document.getElementById('root'),
 );

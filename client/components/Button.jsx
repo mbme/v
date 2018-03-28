@@ -4,6 +4,7 @@ import s from 'client/styles';
 
 const button = ({ disabled, primary }) => s.cx({
   padding: 'var(--spacing-fine) var(--spacing-medium)',
+  border: 'var(--border)',
   borderRadius: '2px',
   cursor: 'pointer',
   userSelect: 'none',
@@ -18,7 +19,6 @@ const button = ({ disabled, primary }) => s.cx({
       condition: !primary && !disabled,
       color: 'var(--color-text)',
       backgroundColor: 'var(--bg-color)',
-      border: 'var(--border)',
       ':hover': {
         backgroundColor: 'var(--bg-color-darker)',
       },
@@ -27,7 +27,7 @@ const button = ({ disabled, primary }) => s.cx({
       condition: primary && !disabled,
       backgroundColor: 'var(--color-primary)',
       color: 'var(--color-light)',
-      ...s.withBorder,
+      boxShadow: 'var(--box-shadow)',
       ':hover': {
         transform: 'scale(1.05)',
       },
@@ -37,7 +37,6 @@ const button = ({ disabled, primary }) => s.cx({
       cursor: 'auto',
       color: 'var(--color-secondary)',
       backgroundColor: 'var(--bg-color-darker)',
-      border: 'var(--border)',
     },
   ],
 });

@@ -75,8 +75,9 @@ const styles = s.styles({
 
   viewContainer: {
     gridArea: 'content',
-    padding: '0 var(--spacing-small)',
     justifySelf: 'center',
+    padding: '0 var(--spacing-small)',
+    width: '100%',
     maxWidth: 'var(--max-width)',
 
     mediumScreen: {
@@ -112,11 +113,10 @@ const styles = s.styles({
 // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
 if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
 
-class App extends PureComponent {
+class AppView extends PureComponent {
   static propTypes = {
     pathname: PropTypes.string.isRequired,
     isPush: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
     route: PropTypes.object,
     view: PropTypes.node,
     toast: PropTypes.node,
@@ -200,7 +200,7 @@ class App extends PureComponent {
   hideNav = () => this.props.showNav(false);
 
   render() {
-    const { view, isLoading, toast, isLockerVisible, isNavVisible, isAuthorized } = this.props;
+    const { view, toast, isLockerVisible, isNavVisible, isAuthorized } = this.props;
 
     if (!isAuthorized) return <AuthView />;
 
@@ -210,7 +210,7 @@ class App extends PureComponent {
           {this.renderNavbar()}
         </div>
         <div className={styles.viewContainer}>
-          {!isLoading && view}
+          {view}
         </div>
         <div className={styles.toastContainer}>
           {toast}
@@ -224,7 +224,6 @@ class App extends PureComponent {
 const mapStateToProps = ({ router, chrome }) => ({
   pathname: router.pathname,
   isPush: router.isPush,
-  isLoading: router.isLoading,
   view: router.view,
   route: router.route,
   toast: chrome.toast,
@@ -238,4 +237,4 @@ const mapDispatchToProps = {
   showNav: chromeActions.showNav,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(AppView);

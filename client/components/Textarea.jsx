@@ -11,7 +11,10 @@ const textareaStyles = s.cx({
   resize: 'none',
   minHeight: '300px',
   overflowY: 'hidden',
-}, s.withBorder);
+
+  border: 'var(--border)',
+  boxShadow: 'var(--box-shadow)',
+});
 
 export default class Textarea extends PureComponent {
   static propTypes = {
