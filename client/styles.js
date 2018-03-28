@@ -1,6 +1,6 @@
 import { createRenderer, combineRules } from 'fela';
 import { render } from 'fela-dom';
-import { isString, isObject } from 'shared/utils';
+import { isString, isObject, isFunction, flatten } from 'shared/utils';
 
 const SCREEN = {
   small: 320,
@@ -8,14 +8,28 @@ const SCREEN = {
   large: 1024,
 };
 
+const minWidth = (width, prefix = true) => `${prefix ? '@media ' : ''}only screen and (min-width: ${width}px)`;
+
 const renderer = createRenderer({
   plugins: [
-    style => ({ ...style, extend: undefined, condition: undefined }), // remove `extend` and `condition`
+    ({ mediumScreen, largeScreen, extend, condition, ...style }) => { // remove `extend` and `condition`
+      const result = style;
+
+      if (mediumScreen) {
+        result[minWidth(SCREEN.medium)] = mediumScreen;
+      }
+
+      if (largeScreen) {
+        result[minWidth(SCREEN.large)] = largeScreen;
+      }
+
+      return result;
+    },
   ],
   mediaQueryOrder: [
-    `only screen and (min-width: ${SCREEN.small}px)`,
-    `only screen and (min-width: ${SCREEN.medium}px)`,
-    `only screen and (min-width: ${SCREEN.large}px)`,
+    minWidth(SCREEN.small, false),
+    minWidth(SCREEN.medium, false),
+    minWidth(SCREEN.large, false),
   ],
 });
 
@@ -28,12 +42,23 @@ export function init() {
   render(renderer);
 }
 
-function renderStyle(obj) {
-  const rules = (obj.extend || [])
-    .filter(style => style.hasOwnProperty('condition') ? style.condition : true)
-    .map(style => () => style);
+export function flattenStyles(obj) {
+  if (obj.hasOwnProperty('condition') && !obj.condition) return [];
 
-  return renderer.renderRule(combineRules(() => obj, ...rules));
+  const styles = flatten((obj.extend || []).map(flattenStyles));
+
+  const result = obj;
+
+  delete result.extend;
+  delete result.condition;
+
+  return [ result, ...styles ];
+}
+
+function renderStyles(obj) {
+  const rules = flattenStyles(obj).map(style => () => style);
+
+  return renderer.renderRule(combineRules(...rules));
 }
 
 function cx(...args) {
@@ -43,11 +68,21 @@ function cx(...args) {
     if (isString(val)) {
       acc.push(val);
     } else if (isObject(val)) {
-      acc.push(renderStyle(val));
+      acc.push(renderStyles(val));
     }
 
     return acc;
   }, []).join(' ');
+}
+
+function stylesObject(obj) {
+  const result = {};
+
+  Object.entries(obj).forEach(([ key, value ]) => {
+    result[key] = isFunction(value) ? (...props) => cx(value(...props)) : cx(value);
+  });
+
+  return result;
 }
 
 const animation = keyframe => renderer.renderKeyframe(() => keyframe);
@@ -79,15 +114,10 @@ const flex = ({ h, v, column = false, wrap } = {}) => ({
   ],
 });
 
-const minWidth = (width, styles) => ({
-  [`@media only screen and (min-width: ${width})`]: styles,
-});
-
-const onMediumScreen = styles => minWidth(SCREEN.medium + 'px', styles);
-const onLargeScreen = styles => minWidth(SCREEN.large + 'px', styles);
-
 export default {
   cx,
+  styles: stylesObject,
+
   animation,
   flex,
   withBorder: {
@@ -102,7 +132,4 @@ export default {
   section: {
     marginBottom: 'var(--spacing-medium)',
   },
-
-  onMediumScreen,
-  onLargeScreen,
 };

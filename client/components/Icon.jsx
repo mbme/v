@@ -87,6 +87,14 @@ const icons = {
       <polygon points="16 3 21 8 8 21 3 21 3 16 16 3" />
     </FeatherIcon>
   ),
+
+  'menu': (
+    <FeatherIcon>
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </FeatherIcon>
+  ),
 };
 
 export const ICON_TYPES = Object.keys(icons);
