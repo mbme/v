@@ -7,9 +7,11 @@ import { Toolbar, Filter } from 'client/components';
 import * as trackActions from './actions';
 import Track from './Track';
 
-const counterStyles = s.cx({
-  marginLeft: 'var(--spacing-small)',
-  whiteSpace: 'nowrap',
+const styles = s.styles({
+  counter: {
+    marginLeft: 'var(--spacing-small)',
+    whiteSpace: 'nowrap',
+  },
 });
 
 class TracksView extends PureComponent {
@@ -41,7 +43,7 @@ class TracksView extends PureComponent {
       <Fragment>
         <Toolbar left={left} />
 
-        <small className={counterStyles}>
+        <small className={styles.counter}>
           {tracks.length} items
         </small>
 

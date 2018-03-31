@@ -2,18 +2,20 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import s from 'client/styles';
 
-const textareaStyles = s.cx({
-  backgroundColor: 'var(--bg-color)',
-  display: 'block',
-  width: '100%',
-  padding: 'var(--spacing-medium)',
+const styles = s.styles({
+  textarea: {
+    backgroundColor: 'var(--bg-color)',
+    display: 'block',
+    width: '100%',
+    padding: 'var(--spacing-medium)',
 
-  resize: 'none',
-  minHeight: '300px',
-  overflowY: 'hidden',
+    resize: 'none',
+    minHeight: '300px',
+    overflowY: 'hidden',
 
-  border: 'var(--border)',
-  boxShadow: 'var(--box-shadow)',
+    border: 'var(--border)',
+    boxShadow: 'var(--box-shadow)',
+  },
 });
 
 export default class Textarea extends PureComponent {
@@ -72,7 +74,7 @@ export default class Textarea extends PureComponent {
 
     return (
       <textarea
-        className={textareaStyles}
+        className={styles.textarea}
         ref={(ref) => { this.ref = ref; }}
         name={name}
         value={value}

@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
 import { readFile, sha256 } from 'client/utils';
-import s from 'client/styles';
-import { Button, Textarea, Toolbar, Input, Icon } from 'client/components';
+import { Button, Textarea, Toolbar, Input, Icon, Styled } from 'client/components';
 import * as routerActions from 'client/router/actions';
 import * as chromeActions from 'client/chrome/actions';
 import * as notesActions from './actions';
-import Note, { titleStyles } from './Note';
+import Note, { styles } from './Note';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';
 
@@ -110,13 +109,13 @@ class NoteEditor extends PureComponent {
       <Fragment>
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <div className={s.cx(s.section)} hidden={preview}>
-          <Input className={titleStyles} name="name" value={name} onChange={this.onNameChange} autoFocus />
-        </div>
+        <Styled marginBottom="var(--spacing-medium)" hidden={preview}>
+          <Input className={styles.title} name="name" value={name} onChange={this.onNameChange} autoFocus />
+        </Styled>
 
-        <div className={s.cx(s.section)} hidden={preview}>
+        <Styled marginBottom="var(--spacing-medium)" hidden={preview}>
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref; }} />
-        </div>
+        </Styled>
 
         {preview && <Note name={name} data={data} localFiles={this.localFiles} />}
       </Fragment>

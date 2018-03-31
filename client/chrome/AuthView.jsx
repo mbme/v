@@ -3,21 +3,21 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import s from 'client/styles';
 import { authorize } from 'client/utils/platform';
-import { Backdrop, Input } from 'client/components';
+import { Backdrop, Input, Styled } from 'client/components';
 import * as chromeActions from './actions';
 
-const backdropStyles = s.cx({
-  backgroundColor: 'var(--bg-color)',
-  paddingTop: '20vh',
-}, s.flex({ column: true, h: 'flex-start', v: 'center' }));
-
-const inputStyles = s.cx({
-  width: '300px',
-});
-
-const logoStyles = s.cx({
-  width: '150px',
-  marginBottom: 'var(--spacing-medium)',
+const styles = s.styles({
+  backdrop: {
+    backgroundColor: 'var(--bg-color)',
+    paddingTop: '20vh',
+    extend: [
+      s.flex({ column: true, h: 'flex-start', v: 'center' }),
+    ],
+  },
+  logo: {
+    width: '150px',
+    marginBottom: 'var(--spacing-medium)',
+  },
 });
 
 class AuthView extends PureComponent {
@@ -48,10 +48,11 @@ class AuthView extends PureComponent {
 
   render() {
     return (
-      <Backdrop className={backdropStyles}>
-        <img alt="logo" src="/logo.svg" className={logoStyles} />
-        <Input
-          className={inputStyles}
+      <Backdrop className={styles.backdrop}>
+        <img alt="logo" src="/logo.svg" className={styles.logo} />
+        <Styled
+          as={Input}
+          $width="300px"
           name="password"
           type="password"
           autoFocus

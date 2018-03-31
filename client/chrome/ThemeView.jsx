@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import {
+  Styled,
   Link,
   Textarea,
   Input,
@@ -12,30 +13,29 @@ import {
 import { ICON_TYPES } from 'client/components/Icon';
 import s from 'client/styles';
 
-const sectionStyles = s.cx(s.section);
-const headingStyles = s.cx({ textAlign: 'center' });
-const iconStyles = s.cx({ margin: '0 1rem' });
-
-const colorSquareStyles = color => s.cx({
-  display: 'inline-block',
-  width: '1rem',
-  height: '1rem',
-  backgroundColor: color,
-  border: 'var(--border)',
-  boxShadow: 'var(--boxShadow)',
-});
-
-const spacingSquareStyles = size => s.cx({
-  display: 'inline-block',
-  width: size,
-  height: size,
-  backgroundColor: '#93FAC9',
-  boxShadow: 'var(--boxShadow)',
-});
-
-const spacingLabel = s.cx({
-  width: '100px',
-  display: 'inline-block',
+const styles = s.styles({
+  icon: {
+    margin: '0 1rem',
+  },
+  colorSquare: color => ({
+    display: 'inline-block',
+    width: '1rem',
+    height: '1rem',
+    backgroundColor: color,
+    border: 'var(--border)',
+    boxShadow: 'var(--boxShadow)',
+  }),
+  spacingSquare: size => ({
+    display: 'inline-block',
+    width: size,
+    height: size,
+    backgroundColor: '#93FAC9',
+    boxShadow: 'var(--boxShadow)',
+  }),
+  spacingLabel: {
+    width: '100px',
+    display: 'inline-block',
+  },
 });
 
 export default class ThemeView extends PureComponent {
@@ -51,96 +51,102 @@ export default class ThemeView extends PureComponent {
       <div>
         <Toolbar />
 
-        <h1 className={headingStyles}>THEME</h1>
+        <Styled as="h1" $textAlign="center">THEME</Styled>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <h3>Colors</h3>
-          <div className={colorSquareStyles('var(--color-text)')} /> Text color <br />
-          <div className={colorSquareStyles('var(--color-heading)')} /> Heading color <br />
+          <div className={styles.colorSquare('var(--color-text)')} /> Text color <br />
+          <div className={styles.colorSquare('var(--color-heading)')} /> Heading color <br />
 
-          <div className={colorSquareStyles('var(--color-primary)')} /> Primary color <br />
-          <div className={colorSquareStyles('var(--color-secondary)')} /> Secondary color <br />
-          <div className={colorSquareStyles('var(--color-link)')} /> Link color <br />
-          <div className={colorSquareStyles('var(--color-light)')} /> Light color <br />
+          <div className={styles.colorSquare('var(--color-primary)')} /> Primary color <br />
+          <div className={styles.colorSquare('var(--color-secondary)')} /> Secondary color <br />
+          <div className={styles.colorSquare('var(--color-link)')} /> Link color <br />
+          <div className={styles.colorSquare('var(--color-light)')} /> Light color <br />
 
-          <div className={colorSquareStyles('var(--bg-color)')} /> Background color <br />
-          <div className={colorSquareStyles('var(--bg-color-darker)')} /> Background color (darker) <br />
-        </div>
+          <div className={styles.colorSquare('var(--bg-color)')} /> Background color <br />
+          <div className={styles.colorSquare('var(--bg-color-darker)')} /> Background color (darker) <br />
+        </Styled>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <h3>Font size</h3>
-          <div className={s.cx({ fontSize: 'var(--font-size-xlarge)' })}>Xlarge</div>
-          <div className={s.cx({ fontSize: 'var(--font-size-large)' })}>Large</div>
-          <div className={s.cx({ fontSize: 'var(--font-size-medium)' })}>Medium</div>
-          <div className={s.cx({ fontSize: 'var(--font-size-small)' })}>Small</div>
-          <div className={s.cx({ fontSize: 'var(--font-size-fine)' })}>Fine</div>
-        </div>
-        <div className={sectionStyles}>
+          <Styled $fontSize="var(--font-size-xlarge)">Xlarge</Styled>
+          <Styled $fontSize="var(--font-size-large)">Large</Styled>
+          <Styled $fontSize="var(--font-size-medium)">Medium</Styled>
+          <Styled $fontSize="var(--font-size-small)">Small</Styled>
+          <Styled $fontSize="var(--font-size-fine)">Fine</Styled>
+        </Styled>
+
+        <Styled $marginBottom="var(--spacing-medium)">
           <h3>Spacing</h3>
           <div>
-            <span className={spacingLabel}>Fine</span>
-            <div className={spacingSquareStyles('var(--spacing-fine)')} />
+            <span className={styles.spacingLabel}>Fine</span>
+            <div className={styles.spacingSquare('var(--spacing-fine)')} />
           </div>
           <div>
-            <span className={spacingLabel}>Small</span>
-            <div className={spacingSquareStyles('var(--spacing-small)')} />
+            <span className={styles.spacingLabel}>Small</span>
+            <div className={styles.spacingSquare('var(--spacing-small)')} />
           </div>
           <div>
-            <span className={spacingLabel}>Medium</span>
-            <div className={spacingSquareStyles('var(--spacing-medium)')} />
+            <span className={styles.spacingLabel}>Medium</span>
+            <div className={styles.spacingSquare('var(--spacing-medium)')} />
           </div>
           <div>
-            <span className={spacingLabel}>Large</span>
-            <div className={spacingSquareStyles('var(--spacing-large)')} />
+            <span className={styles.spacingLabel}>Large</span>
+            <div className={styles.spacingSquare('var(--spacing-large)')} />
           </div>
-        </div>
+        </Styled>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <h3>Icons</h3>
-          {ICON_TYPES.map(type => <Icon key={type} type={type} className={iconStyles} />)}
-        </div>
+          {ICON_TYPES.map(type => <Styled as={Icon} key={type} type={type} $margin="0 1rem" />)}
+        </Styled>
 
         <h3>Buttons</h3>
         <div className={s.cx(s.flex({ column: true }))}>
-          <div className={sectionStyles}>
+          <Styled $marginBottom="var(--spacing-medium)">
             <Button primary>Primary Button</Button>
             <div className={s.cx({ display: 'inline-block', width: '30px' })} />
             <Button primary disabled>Primary Button</Button>
-          </div>
-          <div className={sectionStyles}>
+          </Styled>
+
+          <Styled $marginBottom="var(--spacing-medium)">
             <Button>Button</Button>
             <div className={s.cx({ display: 'inline-block', width: '30px' })} />
             <Button disabled>Button</Button>
-          </div>
-          <div className={sectionStyles}>
+          </Styled>
+
+          <Styled $marginBottom="var(--spacing-medium)">
             <Link to={{ name: 'theme' }}>Link to theme</Link>
-          </div>
+          </Styled>
         </div>
 
         <h3>Forms</h3>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <Select name="select" options={{ val1: 'val1', val2: 'val2' }} onChange={noop} />
-        </div>
+        </Styled>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <Input name="input1" value="Input example (light)" light onChange={noop} />
-        </div>
-        <div className={sectionStyles}>
+        </Styled>
+
+        <Styled $marginBottom="var(--spacing-medium)">
           <Input name="input11" value="Input example (light) with clear" light onChange={noop} onClear={noop} />
-        </div>
-        <div className={sectionStyles}>
+        </Styled>
+
+        <Styled $marginBottom="var(--spacing-medium)">
           <Input name="input2" value="Input example" onChange={noop} />
-        </div>
-        <div className={sectionStyles}>
+        </Styled>
+
+        <Styled $marginBottom="var(--spacing-medium)">
           <Input name="input21" value="Input example with clear" onChange={noop} onClear={noop} />
-        </div>
+        </Styled>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <Textarea name="textarea" value="Textarea example" onChange={noop} />
-        </div>
+        </Styled>
 
-        <div className={sectionStyles}>
+        <Styled $marginBottom="var(--spacing-medium)">
           <Button raised onClick={this.showModal}>Show modal</Button>
 
           {this.state.showModal && (
@@ -149,7 +155,7 @@ export default class ThemeView extends PureComponent {
             </ConfirmationDialog>
           )
           }
-        </div>
+        </Styled>
       </div>
     );
   }

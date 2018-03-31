@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Backdrop } from 'client/components';
+import { Button, Backdrop, Styled } from 'client/components';
 import s from 'client/styles';
 
 const styles = s.styles({
@@ -38,7 +38,9 @@ export default class Modal extends PureComponent {
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (
     <Modal onCancel={onCancel}>
-      <div className={s.cx(s.section)}>{children}</div>
+      <Styled $marginBottom="var(--spacing-medium)">
+        {children}
+      </Styled>
       <div className={styles.buttonContainer}>
         <Button onClick={onCancel}>CANCEL</Button>
         <Button primary onClick={onConfirmed}>{confirmation}</Button>

@@ -12,9 +12,9 @@ const styles = s.styles({
     backgroundColor: 'var(--bg-color)',
     padding: 'var(--spacing-fine) 0',
     height: '60px',
+    marginBottom: 'var(--spacing-medium)',
 
     extend: [
-      s.section,
       s.flex({ h: 'space-between', v: 'center', wrap: false }),
     ],
   },

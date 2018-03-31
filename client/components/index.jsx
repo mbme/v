@@ -8,3 +8,4 @@ export { default as Toolbar } from './Toolbar';
 export { default as Filter } from './Filter';
 export { default as Select } from './Select';
 export { default as Button } from './Button';
+export { default as Styled } from './Styled';

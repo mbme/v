@@ -112,15 +112,6 @@ const flex = ({ h, v, column = false, wrap } = {}) => ({
 export default {
   cx,
   styles: stylesObject,
-
   animation,
   flex,
-  heading: {
-    fontWeight: 'bold',
-    fontSize: 'var(--font-size-large)',
-    marginBottom: 'var(--spacing-medium)',
-  },
-  section: {
-    marginBottom: 'var(--spacing-medium)',
-  },
 };
