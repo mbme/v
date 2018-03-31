@@ -29,7 +29,7 @@ const styles = s.styles({
     display: 'inline-block',
     width: size,
     height: size,
-    backgroundColor: '#93FAC9',
+    backgroundColor: 'var(--color-primary-lighter)',
     boxShadow: 'var(--boxShadow)',
   }),
   spacingLabel: {

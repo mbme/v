@@ -22,6 +22,7 @@
 
   --bg-color: #ffffff;
   --bg-color-darker: #f5f5f5;
+  --bg-color-backdrop: rgba(255,255,255, .65);
 
   --border: 1px solid rgba(0,0,0,.09);
   --box-shadow: 0 2px 4px rgba(0,0,0,.2);

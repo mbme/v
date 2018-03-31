@@ -5,7 +5,7 @@ import s from 'client/styles';
 
 const styles = s.styles({
   container: {
-    backgroundColor: 'rgba(255,255,255,.65)',
+    backgroundColor: 'var(--bg-color-backdrop)',
 
     position: 'fixed',
     top: 0,
