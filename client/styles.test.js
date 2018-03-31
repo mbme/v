@@ -65,8 +65,7 @@ test('flattenStyles', (assert) => {
     flattenStyles({
       x: 1,
       extend: [
-        {
-          condition: false,
+        false && {
           y: 1,
         },
       ],
@@ -76,18 +75,5 @@ test('flattenStyles', (assert) => {
         x: 1,
       },
     ],
-  );
-
-  assert.deepEqual(
-    flattenStyles({
-      condition: false,
-      x: 1,
-      extend: [
-        {
-          y: 1,
-        },
-      ],
-    }),
-    [],
   );
 });

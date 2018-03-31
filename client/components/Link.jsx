@@ -8,8 +8,7 @@ const linkStyles = clean => s.cx({
   cursor: 'pointer',
   display: 'inline-block',
   extend: [
-    {
-      condition: !clean,
+    !clean && {
       color: 'var(--color-link)',
     },
   ],

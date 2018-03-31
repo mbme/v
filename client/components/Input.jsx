@@ -8,13 +8,11 @@ const styles = s.styles({
     position: 'relative',
 
     extend: [
-      {
-        condition: light,
+      light && {
         backgroundColor: 'inherit',
         borderBottom: 'var(--border)',
       },
-      {
-        condition: !light,
+      !light && {
         backgroundColor: 'var(--bg-color)',
         boxShadow: 'var(--box-shadow)',
         border: 'var(--border)',
@@ -35,13 +33,11 @@ const styles = s.styles({
     paddingLeft: 'var(--spacing-small)',
 
     extend: [
-      {
-        condition: light,
+      light && {
         paddingTop: 'var(--spacing-fine)',
         paddingBottom: 'var(--spacing-fine)',
       },
-      {
-        condition: withClear,
+      withClear && {
         paddingRight: 'var(--spacing-medium)',
       },
     ],

@@ -15,16 +15,14 @@ const button = ({ disabled, primary }) => s.cx({
   fontSize: '80%',
 
   extend: [
-    {
-      condition: !primary && !disabled,
+    !primary && !disabled && {
       color: 'var(--color-text)',
       backgroundColor: 'var(--bg-color)',
       ':hover': {
         backgroundColor: 'var(--bg-color-darker)',
       },
     },
-    {
-      condition: primary && !disabled,
+    primary && !disabled && {
       backgroundColor: 'var(--color-primary)',
       color: 'var(--color-light)',
       boxShadow: 'var(--box-shadow)',
@@ -32,8 +30,7 @@ const button = ({ disabled, primary }) => s.cx({
         transform: 'scale(1.05)',
       },
     },
-    {
-      condition: disabled,
+    disabled && {
       cursor: 'auto',
       color: 'var(--color-secondary)',
       backgroundColor: 'var(--bg-color-darker)',

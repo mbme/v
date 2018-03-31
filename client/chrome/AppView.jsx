@@ -50,8 +50,7 @@ const styles = s.styles({
     display: 'inline-block',
     margin: 'var(--spacing-medium) 0',
     extend: [
-      {
-        condition: isSelected,
+      isSelected && {
         color: 'var(--color-primary)',
       },
     ],

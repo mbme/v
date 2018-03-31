@@ -41,16 +41,14 @@ class Toolbar extends PureComponent {
   toggleNav = () => this.props.showNav(!this.props.isNavVisible);
 
   render() {
-    const { left, right } = this.props;
-
     return (
       <div className={styles.container}>
         <div className={styles.cell}>
           <Icon type="menu" className={styles.menuIcon} onClick={this.toggleNav} />
-          {left}
+          {this.props.left}
         </div>
         <div className={styles.cell}>
-          {right}
+          {this.props.right}
         </div>
       </div>
     );

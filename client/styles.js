@@ -12,7 +12,8 @@ const minWidth = (width, prefix = true) => `${prefix ? '@media ' : ''}only scree
 
 const renderer = createRenderer({
   plugins: [
-    ({ mediumScreen, largeScreen, extend, condition, ...style }) => { // remove `extend` and `condition`
+    // remove extend, mediumScreen, largeScreen
+    ({ mediumScreen, largeScreen, extend, ...style }) => {
       const result = style;
 
       if (mediumScreen) {
@@ -43,14 +44,13 @@ export function init() {
 }
 
 export function flattenStyles(obj) {
-  if (obj.hasOwnProperty('condition') && !obj.condition) return [];
+  if (!isObject(obj)) return [];
 
   const styles = flatten((obj.extend || []).map(flattenStyles));
 
   const result = obj;
 
   delete result.extend;
-  delete result.condition;
 
   return [ result, ...styles ];
 }
@@ -91,24 +91,19 @@ const flex = ({ h, v, column = false, wrap } = {}) => ({
   display: 'flex',
 
   extend: [
-    {
-      condition: h,
+    h && {
       justifyContent: h,
     },
-    {
-      condition: v,
+    v && {
       alignItems: v,
     },
-    {
-      condition: column,
+    column && {
       flexDirection: 'column',
     },
-    {
-      condition: wrap === true,
+    wrap === true && {
       flexWrap: 'wrap',
     },
-    {
-      condition: wrap === false,
+    wrap === false && {
       flexWrap: 'nowrap',
     },
   ],
