@@ -7,6 +7,7 @@ import {
   Select,
   Button,
   Icon,
+  Toolbar,
 } from 'client/components';
 import { ICON_TYPES } from 'client/components/Icon';
 import s from 'client/styles';
@@ -48,6 +49,8 @@ export default class ThemeView extends PureComponent {
   render() {
     return (
       <div>
+        <Toolbar />
+
         <h1 className={headingStyles}>THEME</h1>
 
         <div className={sectionStyles}>

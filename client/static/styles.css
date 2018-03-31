@@ -56,7 +56,6 @@ html {
   font-family: var(--font-family-base);
   font-size: var(--font-size);
   line-height: var(--line-height);
-  overflow-y: scroll;
 }
 
 /* Body */
@@ -313,4 +312,9 @@ select {
 /* Always hide an element with the `hidden` HTML attribute (from PureCSS). */
 [hidden] {
   display: none !important;
+}
+
+#root {
+  overflow-y: scroll;
+  height: 100vh;
 }

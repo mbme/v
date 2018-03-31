@@ -1,12 +1,13 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import s from 'client/styles';
-import { Link } from 'client/components';
+import { Link, Backdrop } from 'client/components';
 import { deauthorize } from 'client/utils/platform';
 import * as chromeActions from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
+import ScrollKeeper from './ScrollKeeper';
 
 const styles = s.styles({
   appContainer: {
@@ -19,38 +20,26 @@ const styles = s.styles({
     },
   },
 
-  navbarContainer: isNavVisible => ({
+  navbarContainer: {
     gridArea: 'sidemenu',
+    position: 'sticky',
+    top: '0',
 
-    backgroundColor: 'var(--color-secondary)',
-    color: 'white',
-    fontSize: 'var(--font-size-medium)',
-
-    position: 'relative',
     display: 'none',
 
     largeScreen: {
       display: 'block',
     },
-
-    extend: [
-      {
-        condition: isNavVisible,
-        display: 'block',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        right: '0',
-        zIndex: '1',
-      },
-    ],
-  }),
+  },
 
   navbar: {
     padding: 'var(--spacing-small) var(--spacing-large)',
     height: '100vh',
-    position: 'sticky',
-    top: '0',
+    width: '100%',
+
+    backgroundColor: 'var(--color-secondary)',
+    color: 'var(--color-light)',
+    fontSize: 'var(--font-size-medium)',
 
     extend: [
       s.flex({ column: true, v: 'flex-end' }),
@@ -127,32 +116,13 @@ class AppView extends PureComponent {
     isAuthorized: PropTypes.bool.isRequired,
   };
 
-  scrollPos = {};
   toastTimeout = null;
 
   componentWillUpdate(nextProps) {
-    if (this.props.pathname !== nextProps.pathname) {
-      // save scroll pos
-      this.scrollPos[this.props.pathname] = { offsetX: window.pageXOffset, offsetY: window.pageYOffset };
-    }
-
     // hide toast in few seconds
     if (nextProps.toast && this.props.toast !== nextProps.toast) {
       clearTimeout(this.toastTimeout);
       this.toastTimeout = setTimeout(() => this.props.showToast(null), 8000);
-    }
-  }
-
-  componentDidUpdate() {
-    const { isPush, pathname } = this.props;
-
-    if (isPush) {
-      delete this.scrollPos[pathname]; // delete stored scroll position for the next page
-      window.scrollTo(0, 0);
-    } else {
-      // try to restore scroll position
-      const { offsetX, offsetY } = this.scrollPos[pathname] || { offsetX: 0, offsetY: 0 };
-      window.scrollTo(offsetX, offsetY);
     }
   }
 
@@ -164,7 +134,7 @@ class AppView extends PureComponent {
   renderNavbar() {
     const routeName = this.props.route ? this.props.route.name : null;
 
-    return (
+    const navbar = (
       <nav className={styles.navbar}>
         <Link
           clean
@@ -195,26 +165,46 @@ class AppView extends PureComponent {
         </div>
       </nav>
     );
+
+    return (
+      <Fragment>
+        <div className={styles.navbarContainer}>{navbar}</div>
+
+        {this.props.isNavVisible && (
+          <Backdrop onClick={() => this.props.showNav(false)}>
+            {navbar}
+          </Backdrop>
+        )}
+      </Fragment>
+    );
   }
 
-  hideNav = () => this.props.showNav(false);
-
   render() {
-    const { view, toast, isLockerVisible, isNavVisible, isAuthorized } = this.props;
+    const {
+      view,
+      toast,
+      isLockerVisible,
+      isAuthorized,
+      pathname,
+      isPush,
+    } = this.props;
 
     if (!isAuthorized) return <AuthView />;
 
     return (
       <div className={styles.appContainer}>
-        <div className={styles.navbarContainer(isNavVisible)} onClick={this.hideNav}>
-          {this.renderNavbar()}
-        </div>
+        <ScrollKeeper pathname={pathname} isPush={isPush} />
+
+        {this.renderNavbar()}
+
         <div className={styles.viewContainer}>
           {view}
         </div>
+
         <div className={styles.toastContainer}>
           {toast}
         </div>
+
         {isLockerVisible && <ProgressLocker />}
       </div>
     );
