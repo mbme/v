@@ -8,6 +8,7 @@ import * as chromeActions from './actions';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 import ScrollKeeper from './ScrollKeeper';
+import Toaster from './Toaster';
 
 const styles = s.styles({
   appContainer: {
@@ -33,9 +34,12 @@ const styles = s.styles({
   },
 
   navbar: {
-    padding: 'var(--spacing-small) var(--spacing-large)',
+    position: 'sticky',
+    top: 0,
+
     height: '100vh',
     width: '100%',
+    padding: 'var(--spacing-small) var(--spacing-large)',
 
     backgroundColor: 'var(--color-secondary)',
     color: 'var(--color-light)',
@@ -80,26 +84,7 @@ const styles = s.styles({
       s.flex({ column: true }),
     ],
   },
-
-  toastContainer: {
-    position: 'fixed',
-    bottom: '0',
-    width: '100%',
-    maxWidth: 'var(--max-width)',
-    backgroundColor: '#323232',
-    color: '#ffffff',
-    borderRadius: '2px',
-    textAlign: 'center',
-    padding: 'var(--spacing-medium)',
-    ':empty': {
-      display: 'none',
-    },
-  },
 });
-
-// Switch off the native scroll restoration behavior and handle it manually
-// https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
-if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
 
 class AppView extends PureComponent {
   static propTypes = {
@@ -107,23 +92,11 @@ class AppView extends PureComponent {
     isPush: PropTypes.bool.isRequired,
     route: PropTypes.object,
     view: PropTypes.node,
-    toast: PropTypes.node,
-    showToast: PropTypes.func.isRequired,
     isLockerVisible: PropTypes.bool.isRequired,
     isNavVisible: PropTypes.bool.isRequired,
     showNav: PropTypes.func.isRequired,
     isAuthorized: PropTypes.bool.isRequired,
   };
-
-  toastTimeout = null;
-
-  componentWillUpdate(nextProps) {
-    // hide toast in few seconds
-    if (nextProps.toast && this.props.toast !== nextProps.toast) {
-      clearTimeout(this.toastTimeout);
-      this.toastTimeout = setTimeout(() => this.props.showToast(null), 8000);
-    }
-  }
 
   logout = () => {
     deauthorize();
@@ -181,7 +154,6 @@ class AppView extends PureComponent {
   render() {
     const {
       view,
-      toast,
       isLockerVisible,
       isAuthorized,
       pathname,
@@ -200,9 +172,7 @@ class AppView extends PureComponent {
           {view}
         </div>
 
-        <div className={styles.toastContainer}>
-          {toast}
-        </div>
+        <Toaster />
 
         {isLockerVisible && <ProgressLocker />}
       </div>
@@ -215,14 +185,12 @@ const mapStateToProps = ({ router, chrome }) => ({
   isPush: router.isPush,
   view: router.view,
   route: router.route,
-  toast: chrome.toast,
   isLockerVisible: router.isLoading || chrome.showLocker,
   isNavVisible: chrome.showNav,
   isAuthorized: chrome.isAuthorized,
 });
 
 const mapDispatchToProps = {
-  showToast: chromeActions.showToast,
   showNav: chromeActions.showNav,
 };
 
