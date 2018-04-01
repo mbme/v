@@ -36,8 +36,8 @@ class Toaster extends PureComponent {
 
   toastTimeout = null;
 
-  componentWillUpdate(nextProps) {
-    if (nextProps.toast && this.props.toast !== nextProps.toast) { // hide toast in few seconds
+  getSnapshotBeforeUpdate(prevProps) {
+    if (this.props.toast && this.props.toast !== prevProps.toast) { // hide toast in few seconds
       clearTimeout(this.toastTimeout);
       this.toastTimeout = setTimeout(this.props.showToast, TOAST_TIMEOUT_MS, null);
     }

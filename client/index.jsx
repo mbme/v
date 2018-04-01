@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 
 import { createStore, applyMiddleware } from 'redux';
@@ -47,7 +47,9 @@ store.dispatch(propagateCurrentLocation()); // use current location
 
 ReactDOM.render(
   <Provider store={store}>
-    <AppView />
+    <StrictMode>
+      <AppView />
+    </StrictMode>
   </Provider>,
   document.getElementById('root'),
 );

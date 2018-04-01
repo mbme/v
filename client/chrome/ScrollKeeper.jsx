@@ -15,9 +15,9 @@ export default class ScrollKeeper extends PureComponent {
   scrollPos = {};
   rootEl = document.getElementById('root');
 
-  componentWillUpdate(nextProps) {
-    if (this.props.pathname !== nextProps.pathname) {
-      this.scrollPos[this.props.pathname] = { offsetX: this.rootEl.scrollLeft, offsetY: this.rootEl.scrollTop };
+  getSnapshotBeforeUpdate(prevProps) {
+    if (this.props.pathname !== prevProps.pathname) {
+      this.scrollPos[prevProps.pathname] = { offsetX: this.rootEl.scrollLeft, offsetY: this.rootEl.scrollTop };
     }
   }
 

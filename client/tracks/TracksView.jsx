@@ -26,9 +26,9 @@ class TracksView extends PureComponent {
     props.listTracks(props.filter);
   }
 
-  componentWillUpdate(nextProps) {
-    if (this.props.filter !== nextProps.filter) {
-      nextProps.listTracks(nextProps.filter);
+  getSnapshotBeforeUpdate(prevProps) {
+    if (this.props.filter !== prevProps.filter) {
+      this.props.listTracks(this.props.filter);
     }
   }
 

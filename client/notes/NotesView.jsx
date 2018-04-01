@@ -32,9 +32,9 @@ class NotesView extends PureComponent {
     this.props.listNotes(props.filter);
   }
 
-  componentWillUpdate(nextProps) {
-    if (this.props.filter !== nextProps.filter) {
-      nextProps.listNotes(nextProps.filter);
+  getSnapshotBeforeUpdate(prevProps) {
+    if (this.props.filter !== prevProps.filter) {
+      this.props.listNotes(this.props.filter);
     }
   }
 
