@@ -141,3 +141,12 @@ export function createPubSub() {
 }
 
 export const recentComparator = (r1, r2) => r2.updatedTs - r1.updatedTs;
+
+export function mapObject(obj, fn) {
+  const result = {};
+  Object.entries(obj)
+    .map(([ key, value ]) => [ key, fn(value, key) ])
+    .forEach(([ key, newValue ]) => { result[key] = newValue; });
+
+  return result;
+}

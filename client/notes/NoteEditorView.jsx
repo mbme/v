@@ -1,26 +1,33 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import NotFoundView from 'client/chrome/NotFoundView';
-import { noteShape } from 'client/shapes';
-import * as notesActions from './actions';
 import NoteEditor from './NoteEditor';
 
-class NoteEditorView extends PureComponent {
+export default class NoteEditorView extends PureComponent {
   static propTypes = {
     id: PropTypes.number,
-    note: noteShape,
-    readNote: PropTypes.func.isRequired,
+  };
+
+  state = {
+    note: undefined,
   };
 
   constructor(props) {
     super(props);
 
-    if (props.id) props.readNote(props.id);
+    this.loadData();
+  }
+
+  async loadData() {
+    if (!this.props.id) return;
+
+    const result = await apiClient.readNote(this.props.id);
+    this.setState({ note: result });
   }
 
   render() {
-    const { id, note } = this.props;
+    const { id } = this.props;
+    const { note } = this.state;
 
     if (note === null) return <NotFoundView />;
 
@@ -35,13 +42,3 @@ class NoteEditorView extends PureComponent {
     );
   }
 }
-
-const mapStateToProps = ({ notes }, { id }) => ({
-  note: id ? notes.note[id] : undefined,
-});
-
-const mapDispatchToProps = {
-  readNote: notesActions.readNote,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NoteEditorView);

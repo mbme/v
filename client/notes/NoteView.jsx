@@ -1,28 +1,31 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Link, Toolbar, Icon } from 'client/components';
-import { noteShape } from 'client/shapes';
 import NotFoundView from 'client/chrome/NotFoundView';
-import * as notesActions from './actions';
 import DeleteNoteButton from './DeleteNoteButton';
 import Note from './Note';
 
-class NoteView extends PureComponent {
+export default class NoteView extends PureComponent {
   static propTypes = {
     id: PropTypes.number.isRequired,
-    note: noteShape,
-    readNote: PropTypes.func.isRequired,
+  };
+
+  state = {
+    note: undefined,
   };
 
   constructor(props) {
     super(props);
+    this.loadData();
+  }
 
-    props.readNote(props.id);
+  async loadData() {
+    const result = await apiClient.readNote(this.props.id);
+    this.setState({ note: result });
   }
 
   render() {
-    const { note } = this.props;
+    const { note } = this.state;
 
     if (note === null) return <NotFoundView />;
     if (note === undefined) return null;
@@ -45,13 +48,3 @@ class NoteView extends PureComponent {
     );
   }
 }
-
-const mapStateToProps = ({ notes }, { id }) => ({
-  note: notes.note[id],
-});
-
-const mapDispatchToProps = {
-  readNote: notesActions.readNote,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NoteView);

@@ -2,10 +2,8 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { formatTs } from 'shared/utils';
-import { noteShape } from 'client/shapes';
 import s from 'client/styles';
 import { Button, Toolbar, Link, Filter, Styled } from 'client/components';
-import * as notesActions from './actions';
 
 const styles = s.styles({
   link: {
@@ -22,24 +20,29 @@ const styles = s.styles({
 
 class NotesView extends PureComponent {
   static propTypes = {
-    notes: PropTypes.arrayOf(noteShape).isRequired,
     filter: PropTypes.string.isRequired,
-    listNotes: PropTypes.func.isRequired,
+  };
+
+  state = {
+    notes: [],
   };
 
   constructor(props) {
     super(props);
-    this.props.listNotes(props.filter);
+    this.loadData();
   }
 
-  getSnapshotBeforeUpdate(prevProps) {
-    if (this.props.filter !== prevProps.filter) {
-      this.props.listNotes(this.props.filter);
-    }
+  async loadData() {
+    const result = await apiClient.listNotes({ size: 0, filter: this.props.filter });
+    this.setState({ notes: result.items });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.filter !== prevProps.filter) this.loadData();
   }
 
   render() {
-    const notes = this.props.notes.map(note => (
+    const notes = this.state.notes.map(note => (
       <Link key={note.id} clean to={{ name: 'note', params: { id: note.id } }} className={styles.link}>
         <Styled as="small" $marginRight="var(--spacing-small)">
           {formatTs(note.updatedTs)}
@@ -72,13 +75,8 @@ class NotesView extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ notes, router }) => ({
-  notes: notes.notes,
+const mapStateToProps = ({ router }) => ({
   filter: router.query.filter || '',
 });
 
-const mapDispatchToProps = {
-  listNotes: notesActions.listNotes,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NotesView);
+export default connect(mapStateToProps)(NotesView);

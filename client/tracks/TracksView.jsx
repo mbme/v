@@ -2,9 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import s from 'client/styles';
-import { trackShape } from 'client/shapes';
 import { Toolbar, Filter } from 'client/components';
-import * as trackActions from './actions';
 import Track from './Track';
 
 const styles = s.styles({
@@ -16,24 +14,29 @@ const styles = s.styles({
 
 class TracksView extends PureComponent {
   static propTypes = {
-    tracks: PropTypes.arrayOf(trackShape).isRequired,
     filter: PropTypes.string.isRequired,
-    listTracks: PropTypes.func.isRequired,
+  };
+
+  state = {
+    tracks: [],
   };
 
   constructor(props) {
     super(props);
-    props.listTracks(props.filter);
+    this.loadData();
   }
 
-  getSnapshotBeforeUpdate(prevProps) {
-    if (this.props.filter !== prevProps.filter) {
-      this.props.listTracks(this.props.filter);
-    }
+  async loadData() {
+    const result = await apiClient.listTracks({ size: 0, filter: this.props.filter });
+    this.setState({ tracks: result.items });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.filter !== prevProps.filter) this.loadData();
   }
 
   render() {
-    const tracks = this.props.tracks.map(track => <Track key={track.id} track={track} />);
+    const tracks = this.state.tracks.map(track => <Track key={track.id} track={track} />);
 
     const left = (
       <Filter placeholder="Filter tracks" />
@@ -53,13 +56,8 @@ class TracksView extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ tracks, router }) => ({
-  tracks: tracks.tracks,
+const mapStateToProps = ({ router }) => ({
   filter: router.query.filter || '',
 });
 
-const mapDispatchToProps = {
-  listTracks: trackActions.listTracks,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TracksView);
+export default connect(mapStateToProps)(TracksView);

@@ -15,14 +15,15 @@ import { init as initStyles } from './styles';
 
 global.noop = () => {};
 
-initStyles();
-
 const network = createNetwork();
+global.apiClient = createApiClient('', network);
+
+initStyles();
 
 const store = createStore(
   rootReducer,
   applyMiddleware(
-    reduxThunk.withExtraArgument(createApiClient('', network)),
+    reduxThunk.withExtraArgument(apiClient),
     routerMiddleware,
   ),
 );

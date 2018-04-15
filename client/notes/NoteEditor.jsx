@@ -6,7 +6,6 @@ import { readFile, sha256 } from 'client/utils';
 import { Button, Textarea, Toolbar, Input, Icon, Styled } from 'client/components';
 import * as routerActions from 'client/router/actions';
 import * as chromeActions from 'client/chrome/actions';
-import * as notesActions from './actions';
 import Note, { styles } from './Note';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';
@@ -19,8 +18,6 @@ class NoteEditor extends PureComponent {
     name: PropTypes.string.isRequired,
     data: PropTypes.string.isRequired,
     push: PropTypes.func.isRequired,
-    createNote: PropTypes.func.isRequired,
-    updateNote: PropTypes.func.isRequired,
     showLocker: PropTypes.func.isRequired,
   };
 
@@ -43,13 +40,13 @@ class NoteEditor extends PureComponent {
   togglePreview = () => this.setState({ preview: !this.state.preview });
 
   onSave = async () => {
-    await this.props.updateNote(this.props.id, this.state.name, this.state.data, this.getAttachments());
+    await apiClient.updateNote(this.props.id, this.state.name, this.state.data, this.getAttachments());
     this.closeEditor(this.props.id);
   };
 
   onCreate = async () => {
-    const id = await this.props.createNote(this.state.name, this.state.data, this.getAttachments());
-    this.closeEditor(id);
+    const note = await apiClient.createNote(this.state.name, this.state.data, this.getAttachments());
+    this.closeEditor(note.id);
   };
 
   getAttachments() {
@@ -124,8 +121,6 @@ class NoteEditor extends PureComponent {
 }
 
 const mapDispatchToProps = {
-  updateNote: notesActions.updateNote,
-  createNote: notesActions.createNote,
   showLocker: chromeActions.showLocker,
   push: routerActions.push,
 };
