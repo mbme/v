@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import s from 'client/styles';
-import * as chromeActions from './actions';
+import { inject } from 'client/store';
 
 const styles = s.styles({
   toastContainer: {
@@ -56,12 +55,9 @@ class Toaster extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ chrome }) => ({
-  toast: chrome.toast,
+const mapStoreToProps = (state, actions) => ({
+  toast: state.toast,
+  showToast: actions.showToast,
 });
 
-const mapDispatchToProps = {
-  showToast: chromeActions.showToast,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Toaster);
+export default inject(mapStoreToProps, Toaster);

@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import s from 'client/styles';
+import { inject } from 'client/store';
 import { Icon } from 'client/components';
-import * as chromeActions from 'client/chrome/actions';
 
 const styles = s.styles({
   container: {
@@ -55,12 +54,9 @@ class Toolbar extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ chrome }) => ({
-  isNavVisible: chrome.showNav,
+const mapStoreToProps = (state, actions) => ({
+  isNavVisible: state.showNav,
+  showNav: actions.showNav,
 });
 
-const mapDispatchToProps = {
-  showNav: chromeActions.showNav,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Toolbar);
+export default inject(mapStoreToProps, Toolbar);

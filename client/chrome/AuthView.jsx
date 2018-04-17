@@ -1,10 +1,19 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import s from 'client/styles';
 import { authorize } from 'client/utils/platform';
 import { Backdrop, Input, Styled } from 'client/components';
-import * as chromeActions from './actions';
+
+async function checkPassword(password) {
+  await authorize(password);
+
+  try {
+    await apiClient.ping();
+    window.location.reload();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 
 const styles = s.styles({
   backdrop: {
@@ -20,11 +29,7 @@ const styles = s.styles({
   },
 });
 
-class AuthView extends PureComponent {
-  static propTypes = {
-    ping: PropTypes.func.isRequired,
-  };
-
+export default class AuthView extends PureComponent {
   state = {
     password: '',
   };
@@ -32,19 +37,8 @@ class AuthView extends PureComponent {
   onPasswordChange = password => this.setState({ password });
 
   onKeyDown = (e) => {
-    if (e.key === 'Enter') this.checkPassword(this.state.password);
+    if (e.key === 'Enter') checkPassword(this.state.password);
   };
-
-  async checkPassword(password) {
-    await authorize(password);
-
-    try {
-      await this.props.ping();
-      window.location.reload();
-    } catch (e) {
-      console.error(e);
-    }
-  }
 
   render() {
     return (
@@ -64,9 +58,3 @@ class AuthView extends PureComponent {
     );
   }
 }
-
-const mapDispatchToProps = {
-  ping: chromeActions.ping,
-};
-
-export default connect(null, mapDispatchToProps)(AuthView);
