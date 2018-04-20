@@ -11,6 +11,7 @@ import createNetwork from './utils/platform';
 import routerMiddleware, { propagateCurrentLocation } from './router';
 import rootReducer from './reducers';
 import AppView from './chrome/AppView';
+import NetworkEventsObserver from './chrome/NetworkEventsObserver';
 import { init as initStyles } from './styles';
 
 global.noop = () => {};
@@ -34,7 +35,8 @@ ReactDOM.render(
   <Provider store={store}>
     <StrictMode>
       <Store>
-        <AppView events={network.events} />
+        <AppView />
+        <NetworkEventsObserver events={network.events} />
       </Store>
     </StrictMode>
   </Provider>,

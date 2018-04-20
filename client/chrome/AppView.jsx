@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import s from 'client/styles';
 import { inject } from 'client/store';
 import { Link, Backdrop } from 'client/components';
-import { deauthorize, UnauthorizedError } from 'client/utils/platform';
+import { deauthorize } from 'client/utils/platform';
 import AuthView from './AuthView';
 import ProgressLocker from './ProgressLocker';
 import ScrollKeeper from './ScrollKeeper';
@@ -97,33 +97,7 @@ class AppView extends PureComponent {
     isAuthorized: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     isLockerVisible: PropTypes.bool.isRequired,
-    showLocker: PropTypes.func.isRequired,
-    showToast: PropTypes.func.isRequired,
-    setAuthorized: PropTypes.func.isRequired,
-    events: PropTypes.object.isRequired,
   };
-
-  onRequestStart = () => this.props.showLocker(true);
-  onRequestEnd = () => this.props.showLocker(false);
-  onRequestError = (e) => {
-    if (e instanceof UnauthorizedError) {
-      this.props.setAuthorized(false);
-    }
-    this.props.showToast(e.toString());
-    this.props.showLocker(false);
-  };
-
-  componentDidMount() {
-    this.props.events.on('start', this.onRequestStart);
-    this.props.events.on('error', this.onRequestError);
-    this.props.events.on('end', this.onRequestEnd);
-  }
-
-  componentWillUnmount() {
-    this.props.events.off('start', this.onRequestStart);
-    this.props.events.off('error', this.onRequestError);
-    this.props.events.off('end', this.onRequestEnd);
-  }
 
   logout = () => {
     deauthorize();
@@ -221,9 +195,6 @@ const mapStoreToProps = (state, actions) => ({
   isNavVisible: state.showNav,
   isAuthorized: state.isAuthorized,
   showNav: actions.showNav,
-  showLocker: actions.showLocker,
-  showToast: actions.showToast,
-  setAuthorized: actions.setAuthorized,
 });
 
 export default connect(mapStateToProps)(inject(mapStoreToProps, AppView));
