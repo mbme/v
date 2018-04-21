@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { trackShape } from 'client/shapes';
+import { trackShape } from 'client/utils/shapes';
 import s from 'client/styles';
 
 const styles = s.styles({

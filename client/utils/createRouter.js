@@ -30,14 +30,22 @@ export default function createRouter(routes) {
 
   const url = generateUrls(router);
 
+  let state;
+
   return {
     getUrl(name, params, query = {}) {
       const search = stringifyQueryParams(query);
       return url(name, params) + (search ? `?${search}` : '');
     },
 
-    resolve(pathname, search) {
-      return router.resolve({ pathname, query: parseQuery(search) });
+    getState() {
+      return state;
+    },
+
+    async resolve(pathname, search) {
+      state = await router.resolve({ pathname, query: parseQuery(search) });
+
+      return state;
     },
   };
 }

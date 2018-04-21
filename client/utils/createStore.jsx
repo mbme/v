@@ -1,8 +1,9 @@
+/* eslint-disable react/no-multi-comp */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { mapObject } from 'shared/utils';
 
-function createStore(store) {
+export default function createStore(name, store) {
   const StoreContext = React.createContext({});
 
   class Store extends PureComponent {
@@ -17,7 +18,7 @@ function createStore(store) {
     actions = mapObject(store.actions, action => (...args) => this.runAction(action, args));
 
     async runAction(action, args) {
-      const newState = await Promise.resolve(action(...args, this.state.state));
+      const newState = await Promise.resolve(action(...args, this.state.state, this.actions));
 
       this.setState({ state: newState });
     }
@@ -32,7 +33,9 @@ function createStore(store) {
   }
 
   function inject(mapStoreToProps, Component) {
-    return class StoreInjector extends PureComponent {
+    return class extends PureComponent {
+      static displayName = `StoreInjector<${name}>`;
+
       renderComponent = ({ state, actions }) => {
         const mappedProps = mapStoreToProps(state, actions, this.props);
 
@@ -56,30 +59,3 @@ function createStore(store) {
     inject,
   };
 }
-
-const { Store, inject } = createStore({
-  state: {
-    toast: null,
-    showLocker: false,
-    showNav: false,
-
-    isAuthorized: true,
-  },
-
-  actions: {
-    showToast(toast, state) {
-      return { ...state, toast };
-    },
-    showLocker(show, state) {
-      return { ...state, showLocker: show };
-    },
-    showNav(show, state) {
-      return { ...state, showNav: show };
-    },
-    setAuthorized(isAuthorized, state) {
-      return { ...state, isAuthorized };
-    },
-  },
-});
-
-export { Store, inject };

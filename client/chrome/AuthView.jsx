@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import s from 'client/styles';
-import { authorize } from 'client/utils/platform';
+import { apiClient, authorize } from 'client/utils/platform';
 import { Backdrop, Input, Styled } from 'client/components';
 
 async function checkPassword(password) {

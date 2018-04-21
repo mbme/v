@@ -1,13 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import s from 'client/styles';
 import { inject } from 'client/store';
 import { Link, Backdrop } from 'client/components';
 import { deauthorize } from 'client/utils/platform';
 import AuthView from './AuthView';
+import Router from './Router';
 import ProgressLocker from './ProgressLocker';
-import ScrollKeeper from './ScrollKeeper';
+import NetworkEventsObserver from './NetworkEventsObserver';
 import Toaster from './Toaster';
 
 const styles = s.styles({
@@ -88,14 +88,10 @@ const styles = s.styles({
 
 class AppView extends PureComponent {
   static propTypes = {
-    pathname: PropTypes.string.isRequired,
-    isPush: PropTypes.bool.isRequired,
     route: PropTypes.object,
-    view: PropTypes.node,
     isNavVisible: PropTypes.bool.isRequired,
     showNav: PropTypes.func.isRequired,
     isAuthorized: PropTypes.bool.isRequired,
-    isLoading: PropTypes.bool.isRequired,
     isLockerVisible: PropTypes.bool.isRequired,
   };
 
@@ -154,11 +150,7 @@ class AppView extends PureComponent {
 
   render() {
     const {
-      view,
       isAuthorized,
-      pathname,
-      isPush,
-      isLoading,
       isLockerVisible,
     } = this.props;
 
@@ -166,35 +158,26 @@ class AppView extends PureComponent {
 
     return (
       <div className={styles.appContainer}>
-        <ScrollKeeper pathname={pathname} isPush={isPush} />
-
         {this.renderNavbar()}
 
         <div className={styles.viewContainer}>
-          {view}
+          <Router />
         </div>
 
         <Toaster />
-
-        {(isLoading || isLockerVisible) && <ProgressLocker />}
+        <NetworkEventsObserver />
+        {isLockerVisible && <ProgressLocker />}
       </div>
     );
   }
 }
-
-const mapStateToProps = ({ router }) => ({
-  pathname: router.pathname,
-  isPush: router.isPush,
-  view: router.view,
-  route: router.route,
-  isLoading: router.isLoading,
-});
 
 const mapStoreToProps = (state, actions) => ({
   isLockerVisible: state.showLocker,
   isNavVisible: state.showNav,
   isAuthorized: state.isAuthorized,
   showNav: actions.showNav,
+  route: state.route,
 });
 
-export default connect(mapStateToProps)(inject(mapStoreToProps, AppView));
+export default inject(mapStoreToProps, AppView);

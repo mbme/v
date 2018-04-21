@@ -1,11 +1,11 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
 import { inject } from 'client/store';
+import { push } from 'client/history';
 import { readFile, sha256 } from 'client/utils';
+import { apiClient } from 'client/utils/platform';
 import { Button, Textarea, Toolbar, Input, Icon, Styled } from 'client/components';
-import * as routerActions from 'client/router/actions';
 import Note, { styles } from './Note';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';
@@ -17,7 +17,6 @@ class NoteEditor extends PureComponent {
     id: PropTypes.number,
     name: PropTypes.string.isRequired,
     data: PropTypes.string.isRequired,
-    push: PropTypes.func.isRequired,
     showLocker: PropTypes.func.isRequired,
   };
 
@@ -35,7 +34,7 @@ class NoteEditor extends PureComponent {
   onNameChange = name => this.setState({ name });
   onDataChange = data => this.setState({ data });
 
-  closeEditor = id => this.props.push(id ? { name: 'note', params: { id } } : { name: 'notes' });
+  closeEditor = id => push(id ? { name: 'note', params: { id } } : { name: 'notes' });
 
   togglePreview = () => this.setState({ preview: !this.state.preview });
 
@@ -120,12 +119,8 @@ class NoteEditor extends PureComponent {
   }
 }
 
-const mapDispatchToProps = {
-  push: routerActions.push,
-};
-
 const mapStoreToProps = (state, actions) => ({
   showLocker: actions.showLocker,
 });
 
-export default connect(null, mapDispatchToProps)(inject(mapStoreToProps, NoteEditor));
+export default inject(mapStoreToProps, NoteEditor);

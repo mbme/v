@@ -1,13 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { push } from 'client/history';
+import { apiClient } from 'client/utils/platform';
 import { Icon, ConfirmationDialog } from 'client/components';
-import * as routerActions from 'client/router/actions';
 
-class DeleteNoteButton extends PureComponent {
+export default class DeleteNoteButton extends PureComponent {
   static propTypes = {
     id: PropTypes.number.isRequired,
-    push: PropTypes.func.isRequired,
   };
 
   state = {
@@ -16,7 +15,7 @@ class DeleteNoteButton extends PureComponent {
 
   deleteNote = async () => {
     await apiClient.deleteNote(this.props.id);
-    this.props.push({ name: 'notes' });
+    push({ name: 'notes' });
   };
 
   render() {
@@ -42,9 +41,3 @@ class DeleteNoteButton extends PureComponent {
     );
   }
 }
-
-const mapDispatchToProps = {
-  push: routerActions.push,
-};
-
-export default connect(null, mapDispatchToProps)(DeleteNoteButton);

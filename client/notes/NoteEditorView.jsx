@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import NotFoundView from 'client/chrome/NotFoundView';
+import { apiClient } from 'client/utils/platform';
 import NoteEditor from './NoteEditor';
 
 export default class NoteEditorView extends PureComponent {

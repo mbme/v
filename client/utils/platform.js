@@ -1,5 +1,5 @@
 import { serialize } from 'shared/protocol';
-import { CONTENT_TYPE } from 'shared/api-client';
+import createApiClient, { CONTENT_TYPE } from 'shared/api-client';
 import { createPubSub } from 'shared/utils';
 import { sha256, text2buffer, concatBuffers, aesEncrypt } from 'client/utils';
 
@@ -19,7 +19,7 @@ export async function deauthorize() {
 
 export class UnauthorizedError extends Error {}
 
-export default function createNetwork() {
+function createNetwork() {
   const events = createPubSub();
 
   return {
@@ -72,3 +72,7 @@ export default function createNetwork() {
     },
   };
 }
+
+export const network = createNetwork();
+
+export const apiClient = createApiClient('', network);

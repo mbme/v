@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { formatTs } from 'shared/utils';
+import { apiClient } from 'client/utils/platform';
+import { inject } from 'client/store';
 import s from 'client/styles';
 import { Button, Toolbar, Link, Filter, Styled } from 'client/components';
 
@@ -75,8 +76,8 @@ class NotesView extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ router }) => ({
-  filter: router.query.filter || '',
+const mapStoreToProps = state => ({
+  filter: state.query.filter || '',
 });
 
-export default connect(mapStateToProps)(NotesView);
+export default inject(mapStoreToProps, NotesView);

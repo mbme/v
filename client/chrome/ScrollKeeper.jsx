@@ -8,21 +8,25 @@ if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'm
 // save & restore scroll pos
 export default class ScrollKeeper extends PureComponent {
   static propTypes = {
-    pathname: PropTypes.string.isRequired,
-    isPush: PropTypes.bool.isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+      isPush: PropTypes.bool.isRequired,
+    }).isRequired,
+    children: PropTypes.node,
   };
 
   scrollPos = {};
   rootEl = document.getElementById('root');
 
   getSnapshotBeforeUpdate(prevProps) {
-    if (this.props.pathname !== prevProps.pathname) {
-      this.scrollPos[prevProps.pathname] = { offsetX: this.rootEl.scrollLeft, offsetY: this.rootEl.scrollTop };
-    }
+    this.scrollPos[prevProps.pathname] = {
+      offsetX: this.rootEl.scrollLeft,
+      offsetY: this.rootEl.scrollTop,
+    };
   }
 
   componentDidUpdate() {
-    const { isPush, pathname } = this.props;
+    const { isPush, pathname } = this.props.location;
 
     if (isPush) {
       delete this.scrollPos[pathname]; // delete stored scroll position for the next page
@@ -37,6 +41,6 @@ export default class ScrollKeeper extends PureComponent {
   }
 
   render() {
-    return null;
+    return this.props.children;
   }
 }

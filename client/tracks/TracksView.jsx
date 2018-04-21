@@ -1,7 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import s from 'client/styles';
+import { inject } from 'client/store';
+import { apiClient } from 'client/utils/platform';
 import { Toolbar, Filter } from 'client/components';
 import Track from './Track';
 
@@ -56,8 +57,8 @@ class TracksView extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ router }) => ({
-  filter: router.query.filter || '',
+const mapStoreToProps = state => ({
+  filter: state.query.filter || '',
 });
 
-export default connect(mapStateToProps)(TracksView);
+export default inject(mapStoreToProps, TracksView);

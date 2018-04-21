@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import * as routerActions from 'client/router/actions';
+import { inject } from 'client/store';
+import { replaceQueryParam } from 'client/history';
 import { Input, Icon } from 'client/components';
 
 class Filter extends PureComponent {
@@ -9,7 +9,6 @@ class Filter extends PureComponent {
     placeholder: PropTypes.string.isRequired,
 
     filter: PropTypes.string.isRequired,
-    replaceQueryParam: PropTypes.func.isRequired,
   };
 
   state = {
@@ -31,7 +30,7 @@ class Filter extends PureComponent {
 
     window.clearTimeout(this.updateTimoutId);
     this.updateTimoutId = window.setTimeout(
-      this.props.replaceQueryParam,
+      replaceQueryParam,
       60,
       'filter',
       filter.trim().length ? filter : undefined,
@@ -64,12 +63,8 @@ class Filter extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ router }) => ({
-  filter: router.query.filter || '',
+const mapStoreToProps = state => ({
+  filter: state.query.filter || '',
 });
 
-const mapDispatchToProps = {
-  replaceQueryParam: routerActions.replaceQueryParam,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Filter);
+export default inject(mapStoreToProps, Filter);
