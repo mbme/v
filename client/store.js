@@ -1,7 +1,7 @@
 import createStore from 'client/utils/createStore';
 
 const { Store, inject } = createStore('global', {
-  state: {
+  initialState: {
     toast: null,
     showLocker: false,
     showNav: false,

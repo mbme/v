@@ -31,6 +31,10 @@ class NetworkEventsObserver extends PureComponent {
     network.events.off('error', this.onRequestError);
     network.events.off('end', this.onRequestEnd);
   }
+
+  render() {
+    return null;
+  }
 }
 
 const mapStoreToProps = (state, actions) => ({

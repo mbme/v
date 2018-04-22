@@ -11,6 +11,7 @@ import TracksView from 'client/tracks/TracksView';
 
 export default createRouter([
   {
+    name: 'index',
     path: '',
     redirectTo: { name: 'notes' },
   },
@@ -50,6 +51,7 @@ export default createRouter([
   },
 
   {
+    name: 'not-found',
     path: '(.*)',
     render: () => <NotFoundView />,
   },

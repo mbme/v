@@ -6,26 +6,26 @@ import { mapObject } from 'shared/utils';
 export default function createStore(name, store) {
   const StoreContext = React.createContext({});
 
+  let currentState = store.initialState;
+
   class Store extends PureComponent {
     static propTypes = {
       children: PropTypes.node,
     };
 
-    state = {
-      state: store.state,
-    };
-
     actions = mapObject(store.actions, action => (...args) => this.runAction(action, args));
 
     async runAction(action, args) {
-      const newState = await Promise.resolve(action(...args, this.state.state, this.actions));
+      console.error('BEFORE', action.name, currentState.isAuthorized);
+      currentState = await Promise.resolve(action(...args, currentState, this.actions));
+      console.error('AFTER', action.name, currentState.isAuthorized);
 
-      this.setState({ state: newState });
+      this.forceUpdate();
     }
 
     render() {
       return (
-        <StoreContext.Provider value={{ state: this.state.state, actions: this.actions }}>
+        <StoreContext.Provider value={{ state: currentState, actions: this.actions }}>
           {this.props.children}
         </StoreContext.Provider>
       );
