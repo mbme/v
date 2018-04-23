@@ -15,12 +15,20 @@ export default function createStore(name, store) {
 
     actions = mapObject(store.actions, action => (...args) => this.runAction(action, args));
 
-    async runAction(action, args) {
-      console.error('BEFORE', action.name, currentState.isAuthorized);
-      currentState = await Promise.resolve(action(...args, currentState, this.actions));
-      console.error('AFTER', action.name, currentState.isAuthorized);
+    runAction(action, args) {
+      const result = action(...args, currentState, this.actions);
 
+      if (result instanceof Promise) {
+        return result.then((resolvedResult) => {
+          currentState = resolvedResult;
+          this.forceUpdate();
+        });
+      }
+
+      currentState = result;
       this.forceUpdate();
+
+      return undefined;
     }
 
     render() {

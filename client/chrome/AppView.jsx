@@ -154,7 +154,6 @@ class AppView extends PureComponent {
       isLockerVisible,
     } = this.props;
 
-    console.error('HERE', isAuthorized);
     if (!isAuthorized) return <AuthView />;
 
     return (
