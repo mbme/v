@@ -1,9 +1,8 @@
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import router from 'client/router';
 import { historyEvents, replace, propagateCurrentLocation } from 'client/history';
 import { inject } from 'client/store';
-import ScrollKeeper from './ScrollKeeper';
 
 class Router extends PureComponent {
   static propTypes = {
@@ -13,11 +12,6 @@ class Router extends PureComponent {
 
   state = {
     view: null,
-    location: {
-      pathname: '/',
-      search: '',
-      isPush: false,
-    },
   };
 
   componentDidMount() {
@@ -44,20 +38,14 @@ class Router extends PureComponent {
     }
 
     const view = route.render(params, query);
-    this.setState({ view, location });
+    this.setState({ view });
 
     this.props.setResolvedRoute({ route, params, query });
     this.props.showLocker(false);
   };
 
   render() {
-    const { view, location } = this.state;
-
-    return (
-      <ScrollKeeper location={location}>
-        {view}
-      </ScrollKeeper>
-    );
+    return this.state.view;
   }
 }
 

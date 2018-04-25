@@ -36,7 +36,4 @@ export function replaceQueryParam(param, value) {
   });
 }
 
-window.addEventListener('popstate', () => {
-  historyEvents.emit('locationChange', propagateCurrentLocation);
-});
-
+window.addEventListener('popstate', propagateCurrentLocation);
