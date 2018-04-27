@@ -34,14 +34,7 @@ const renderer = createRenderer({
   ],
 });
 
-export function init() {
-  const styleLink = document.createElement('link');
-  styleLink.href = '/styles.css';
-  styleLink.rel = 'stylesheet';
-  document.head.append(styleLink);
-
-  render(renderer);
-}
+export const init = () => render(renderer);
 
 export function flattenStyles(obj) {
   if (!isObject(obj)) return [];
