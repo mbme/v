@@ -1,5 +1,5 @@
 import { test } from 'tools/test';
-import { PlatformBuffer } from 'server/utils/platform';
+import { PlatformBuffer } from 'core/utils/platform';
 import { serialize, parse } from './protocol';
 
 const buffer = Buffer.from('test file');

@@ -2,7 +2,6 @@ module.exports = {
   parser: 'babel-eslint',
   globals: {
     __DEVELOPMENT__: true,
-    __CLIENT__: true,
     global: true,
     console: true,
     noop: true,

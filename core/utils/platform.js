@@ -1,8 +1,8 @@
 import http from 'http';
 import urlParser from 'url';
-import { readStream, aesEncrypt, sha256 } from 'server/utils';
 import { serialize } from 'shared/protocol';
 import { CONTENT_TYPE } from 'shared/api-client';
+import { readStream, aesEncrypt, sha256 } from './index';
 
 export const PlatformBuffer = {
   fromStr: str => Buffer.from(str, 'utf8'),

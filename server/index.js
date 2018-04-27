@@ -4,11 +4,11 @@ import http from 'http';
 import urlParser from 'url';
 import zlib from 'zlib';
 
-import * as utils from 'server/utils';
+import * as utils from 'core/utils';
 import { extend } from 'shared/utils';
 import { CONTENT_TYPE } from 'shared/api-client';
 import { parse } from 'shared/protocol';
-import createProcessor from './processor';
+import createProcessor from 'core';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
 const DIST_DIR = path.join(__dirname, '../dist');

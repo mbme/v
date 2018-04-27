@@ -50,9 +50,8 @@ export default {
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       },
-      '__CLIENT__': 'true',
     }),
-  ].filter(plugin => !!plugin),
+  ],
 
   devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
 };

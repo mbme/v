@@ -1,7 +1,7 @@
 import path from 'path';
 import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
 import webpackConfig from '../webpack.config.babel';
-import { rmrfSync } from '../server/utils';
+import { rmrfSync } from '../core/utils';
 
 rmrfSync(path.resolve(__dirname, '../dist'));
 
