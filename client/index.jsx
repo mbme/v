@@ -10,11 +10,16 @@ global.noop = () => {};
 
 initStyles();
 
+const rootEl = document.getElementById('root');
+
 ReactDOM.render(
   <StrictMode>
     <Store>
       <AppView />
     </Store>
   </StrictMode>,
-  document.getElementById('root'),
+  rootEl,
+  () => {
+    rootEl.style.visibility = 'visible';
+  },
 );
