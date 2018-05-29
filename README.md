@@ -11,12 +11,12 @@ Physicist Devashish Singh
 
 ```sh
 # prod mode
-yarn build && yarn start
+yarn start
 
 # dev mode
 yarn dev
 # start dev server and generate random data
-yarn dev-gen-data
+yarn dev --gen-data
 
 # run tests
 yarn test

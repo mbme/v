@@ -1,7 +1,7 @@
 import path from 'path';
 import nodeFs from 'fs';
 import { uniq, flatten, recentComparator } from 'shared/utils';
-import * as utils from 'server/utils';
+import * as utils from './utils';
 import { validateAll, assertAll } from './validator';
 import { extractFileIds, applyFilter } from './records';
 import probeMetadata from './probe';

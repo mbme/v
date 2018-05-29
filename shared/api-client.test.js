@@ -1,8 +1,8 @@
 import path from 'path';
 import { test, before, after } from 'tools/test';
 import startServer from 'server';
-import createNetwork from 'server/utils/platform';
-import { sha256, rmrfSync, readFile } from 'server/utils';
+import createNetwork from 'core/utils/platform';
+import { sha256, rmrfSync, readFile } from 'core/utils';
 import { createLink } from 'shared/parser';
 import { createArray } from 'shared/utils';
 import createApiClient from './api-client';

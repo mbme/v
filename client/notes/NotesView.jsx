@@ -28,14 +28,13 @@ class NotesView extends PureComponent {
     notes: [],
   };
 
-  constructor(props) {
-    super(props);
-    this.loadData();
-  }
-
   async loadData() {
     const result = await apiClient.listNotes({ size: 0, filter: this.props.filter });
     this.setState({ notes: result.items });
+  }
+
+  componentDidMount() {
+    this.loadData();
   }
 
   componentDidUpdate(prevProps) {

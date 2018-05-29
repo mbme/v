@@ -36,8 +36,8 @@ export default class Note extends PureComponent {
 
   fileUrls = {};
 
-  componentWillUpdate(nextProps) {
-    if (this.props.localFiles !== nextProps.localFiles) throw new Error('update not supported');
+  componentDidUpdate(prevProps) {
+    if (this.props.localFiles !== prevProps.localFiles) throw new Error('update not supported');
   }
 
   componentWillUnmount() {

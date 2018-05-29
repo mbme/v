@@ -1,6 +1,6 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path';
-import { walkSync } from 'server/utils';
+import { walkSync } from 'core/utils';
 import { collectTests, runTests } from 'tools/test';
 
 const args = process.argv.slice(3);

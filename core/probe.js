@@ -1,4 +1,4 @@
-import { exec } from 'server/utils';
+import { exec } from './utils';
 
 // TODO images, video
 

@@ -15,14 +15,13 @@ export default class NoteView extends PureComponent {
     note: undefined,
   };
 
-  constructor(props) {
-    super(props);
-    this.loadData();
-  }
-
   async loadData() {
     const result = await apiClient.readNote(this.props.id);
     this.setState({ note: result });
+  }
+
+  componentDidMount() {
+    this.loadData();
   }
 
   render() {

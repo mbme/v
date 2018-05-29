@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import assert from 'assert';
-import { readJSON, writeJSON, deleteFile } from 'server/utils';
+import { readJSON, writeJSON, deleteFile } from 'core/utils';
 import { uniq } from 'shared/utils';
 
 let _beforeCb;

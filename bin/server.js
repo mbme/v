@@ -1,23 +1,47 @@
 import startServer from 'server';
+import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
+import webpackConfig from 'webpack.config.babel';
+import genData from './gen-data';
 
-async function run() {
-  if (process.env.NODE_ENV !== 'production') console.warn('WARN: server should run in production mode');
+const isDevelopment = process.env.NODE_ENV === 'development';
+// FIXME port, rootDir & password in prod mode
+const port = 8080;
+const password = '';
 
-  const args = process.argv.slice(3);
-  const rootDir = args[0];
-  if (!rootDir) throw new Error('rootDir must be provided');
+const compiler = webpack(webpackConfig);
+const compilationPromise = new Promise((resolve, reject) => {
+  compiler.watch({ ignored: /(node_modules|dist)/ }, (err, stats) => {
+    err ? reject(err) : resolve();
+    console.log(stats.toString({ colors: true }));
+  });
+});
 
-  const port = 8080;
-  const server = await startServer(port, { rootDir });
+async function run(args) {
+  const [ server ] = await Promise.all([
+    startServer(port, { rootDir: '/tmp/db', password }),
+    compilationPromise,
+  ]);
+
+  if (isDevelopment && args.includes('--gen-data')) await genData(port, password, 30, 10);
+
   console.log(`Server listening on http://localhost:${port}`);
 
-  const close = async () => {
+  async function close() {
     console.log('Stopping...');
-    await server.close();
-    process.exit(1);
-  };
+    try {
+      await server.close();
+      process.exit(0);
+    } catch (e) {
+      console.error('Failed to stop server:', e);
+      process.exit(1);
+    }
+  }
+
   process.on('SIGINT', close);
   process.on('SIGTERM', close);
 }
 
-run();
+run(process.argv.slice(3)).catch((e) => {
+  console.error('Failed to start server:', e);
+  process.exit(2);
+});

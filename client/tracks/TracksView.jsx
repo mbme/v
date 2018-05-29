@@ -22,14 +22,13 @@ class TracksView extends PureComponent {
     tracks: [],
   };
 
-  constructor(props) {
-    super(props);
-    this.loadData();
-  }
-
   async loadData() {
     const result = await apiClient.listTracks({ size: 0, filter: this.props.filter });
     this.setState({ tracks: result.items });
+  }
+
+  componentDidMount() {
+    this.loadData();
   }
 
   componentDidUpdate(prevProps) {
