@@ -7,7 +7,7 @@ async function checkPassword(password) {
   await authorize(password);
 
   try {
-    await apiClient.ping();
+    await apiClient.PING();
     window.location.reload();
   } catch (e) {
     console.error(e);

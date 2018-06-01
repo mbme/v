@@ -56,7 +56,7 @@ export default async function genData(port, password, notesCount, tracksCount) {
 
   const notesPromises = createArray(notesCount, async () => {
     const { name, data } = await genText(generator, images);
-    return api.createNote(name, data, images.map(image => image.file.data));
+    return api.CREATE_NOTE({ name, data }, images.map(image => image.file.data));
   });
 
   const trackData = await readFile(path.join(resourcesPath, 'track.mp3'));
@@ -67,7 +67,7 @@ export default async function genData(port, password, notesCount, tracksCount) {
     const rating = randomInt(1, 5);
     const categories = createArray(randomInt(0, 2), generator.word);
 
-    return api.createTrack(artist, title, rating, categories, trackId, [ trackData ]);
+    return api.CREATE_TRACK({ artist, title, rating, categories, fileId: trackId }, [ trackData ]);
   });
 
   await Promise.all([ ...notesPromises, ...tracksPromises ]);

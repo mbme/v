@@ -29,7 +29,7 @@ class NotesView extends PureComponent {
   };
 
   async loadData() {
-    const result = await apiClient.listNotes({ size: 0, filter: this.props.filter });
+    const result = await apiClient.LIST_NOTES({ size: 0, filter: this.props.filter });
     this.setState({ notes: result.items });
   }
 

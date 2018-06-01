@@ -14,7 +14,7 @@ export default class DeleteNoteButton extends PureComponent {
   };
 
   deleteNote = async () => {
-    await apiClient.deleteNote(this.props.id);
+    await apiClient.DELETE_NOTE({ id: this.props.id });
     push({ name: 'notes' });
   };
 

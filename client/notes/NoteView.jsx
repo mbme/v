@@ -16,7 +16,7 @@ export default class NoteView extends PureComponent {
   };
 
   async loadData() {
-    const result = await apiClient.readNote(this.props.id);
+    const result = await apiClient.READ_NOTE({ id: this.props.id });
     this.setState({ note: result });
   }
 

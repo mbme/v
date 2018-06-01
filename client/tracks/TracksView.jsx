@@ -23,7 +23,7 @@ class TracksView extends PureComponent {
   };
 
   async loadData() {
-    const result = await apiClient.listTracks({ size: 0, filter: this.props.filter });
+    const result = await apiClient.LIST_TRACKS({ size: 0, filter: this.props.filter });
     this.setState({ tracks: result.items });
   }
 
