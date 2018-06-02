@@ -8,7 +8,7 @@ import * as utils from 'core/utils';
 import { extend } from 'shared/utils';
 import { CONTENT_TYPE } from 'shared/api-client';
 import { parse } from 'shared/protocol';
-import createProcessor from 'core';
+import createProcessor from 'core/processor';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
 const DIST_DIR = path.join(__dirname, '../dist');

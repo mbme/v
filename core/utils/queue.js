@@ -14,7 +14,7 @@ export default function createQueue() {
     if (onClose) onClose();
   }
 
-  const runQueue = () => {
+  const scheduleQueueProcessing = () => {
     if (!immediateId) immediateId = setImmediate(processQueue);
   };
 
@@ -23,16 +23,18 @@ export default function createQueue() {
       assertAll([ action, 'async-function' ]);
 
       return new Promise((resolve, reject) => {
-        if (onClose) throw new Error('closing has been closed');
+        if (onClose) throw new Error('queue has been closed');
 
         queue.push(() => action().then(resolve, reject));
-        runQueue();
+        scheduleQueueProcessing();
       });
     },
 
-    close(cb) {
-      onClose = cb;
-      runQueue();
+    close() {
+      return new Promise((resolve) => {
+        onClose = resolve;
+        scheduleQueueProcessing();
+      });
     },
   };
 }

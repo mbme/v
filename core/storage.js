@@ -2,10 +2,9 @@ import path from 'path';
 import nodeFs from 'fs';
 import { uniq, flatten, recentComparator } from 'shared/utils';
 import * as utils from './utils';
+import probeMetadata from './utils/probe';
 import { validateAll, assertAll } from './validator';
 import { extractFileIds, applyFilter } from './records';
-import probeMetadata from './probe';
-import createQueue from './utils/queue';
 
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id);
@@ -171,8 +170,6 @@ export default async function createStorage(rootDir) {
   const cache = await createCache(fs);
   console.log(`storage: ${cache.records.length} records, ${cache.files.length} files`);
 
-  const queue = createQueue();
-
   async function removeUnusedFiles() {
     const idsInUse = uniq(flatten(cache.records.map(record => record.files.map(file => file.id))));
     const unusedIds = cache.getFileIds().filter(id => !idsInUse.includes(id));
@@ -236,118 +233,99 @@ export default async function createStorage(rootDir) {
 
   return {
     /**
-     * @returns {Promise<{ items: Record[], total: number }>}
+     * @returns {{ items: Record[], total: number }}
      */
     listRecords(type, { size = 50, skip = 0, filter = '' }) {
-      return queue.push(async () => {
-        assertAll(
-          [ size, 'non-negative-integer' ],
-          [ skip, 'non-negative-integer' ],
-          [ filter, 'string' ],
-          [ type, 'record-type' ],
-        );
+      assertAll(
+        [ size, 'non-negative-integer' ],
+        [ skip, 'non-negative-integer' ],
+        [ filter, 'string' ],
+        [ type, 'record-type' ],
+      );
 
-        const results = cache.records
-          .filter(record => record.type === type && applyFilter(record, filter))
-          .sort(recentComparator);
+      const results = cache.records
+        .filter(record => record.type === type && applyFilter(record, filter))
+        .sort(recentComparator);
 
-        return {
-          total: results.length,
+      return {
+        total: results.length,
 
-          // apply pagination
-          // handles special case when size is 0 which means "no size limit"
-          items: results.filter((_, i) => i >= skip && (size === 0 ? true : i < skip + size)),
-        };
-      });
+        // apply pagination
+        // handles special case when size is 0 which means "no size limit"
+        items: results.filter((_, i) => i >= skip && (size === 0 ? true : i < skip + size)),
+      };
     },
 
     /**
-     * @returns {Promise<Record?>}
+     * @returns {Record?}
      */
     readRecord(id) {
-      return queue.push(async () => {
-        assertAll(
-          [ id, 'record-id' ],
-        );
+      assertAll(
+        [ id, 'record-id' ],
+      );
 
-        return cache.getRecord(id) || null;
-      });
+      return cache.getRecord(id) || null;
     },
 
     /**
      * @returns {Promise<Record>}
      */
     createRecord(type, fields, attachments) {
-      return queue.push(async () => {
-        assertAll(
-          [ type, 'record-type' ],
-          [ fields, 'record-fields' ],
-          [ attachments, 'buffer[]' ],
-        );
+      assertAll(
+        [ type, 'record-type' ],
+        [ fields, 'record-fields' ],
+        [ attachments, 'buffer[]' ],
+      );
 
-        const id = Math.max(0, ...cache.getRecordIds()) + 1;
+      const id = Math.max(0, ...cache.getRecordIds()) + 1;
 
-        return saveRecord(id, type, fields, attachments);
-      });
+      return saveRecord(id, type, fields, attachments);
     },
 
     /**
      * @returns {Promise<Record>}
      */
     updateRecord(id, fields, attachments) {
-      return queue.push(async () => {
-        assertAll(
-          [ id, 'record-id' ],
-          [ fields, 'record-fields' ],
-          [ attachments, 'buffer[]' ],
-        );
+      assertAll(
+        [ id, 'record-id' ],
+        [ fields, 'record-fields' ],
+        [ attachments, 'buffer[]' ],
+      );
 
-        const record = cache.getRecord(id);
-        if (!record) throw new Error(`Record ${id} doesn't exist`);
+      const record = cache.getRecord(id);
+      if (!record) throw new Error(`Record ${id} doesn't exist`);
 
-        return saveRecord(id, record.type, fields, attachments);
-      });
+      return saveRecord(id, record.type, fields, attachments);
     },
 
     /**
      * @returns {Promise}
      */
-    deleteRecord(id) {
-      return queue.push(async () => {
-        assertAll(
-          [ id, 'record-id' ],
-        );
+    async deleteRecord(id) {
+      assertAll(
+        [ id, 'record-id' ],
+      );
 
-        if (!cache.getRecord(id)) throw new Error(`Record ${id} doesn't exist`);
+      if (!cache.getRecord(id)) throw new Error(`Record ${id} doesn't exist`);
 
-        await fs.removeRecord(id);
-        cache.removeRecord(id);
+      await fs.removeRecord(id);
+      cache.removeRecord(id);
 
-        await removeUnusedFiles();
-      });
+      await removeUnusedFiles();
     },
 
     readFile(id) {
-      return queue.push(async () => {
-        assertAll(
-          [ id, 'file-id' ],
-        );
+      assertAll(
+        [ id, 'file-id' ],
+      );
 
-        const file = cache.getFile(id);
-        if (!file) return null;
+      const file = cache.getFile(id);
+      if (!file) return null;
 
-        return {
-          file,
-          stream: fs.getFileStream(id),
-        };
-      });
-    },
-
-    /**
-     * @returns {Promise}
-     */
-    close() {
-      return new Promise(resolve => queue.close(resolve));
+      return {
+        file,
+        stream: fs.getFileStream(id),
+      };
     },
   };
 }

@@ -1,8 +1,7 @@
 import { RecordType } from './records';
 import { assertAll } from './validator';
-import createStorage from './storage';
 
-const actions = {
+export default {
   'PING': () => 'PONG',
 
   'READ_FILE': (storage, { id }) => storage.readFile(id),
@@ -51,20 +50,3 @@ const actions = {
   },
   'DELETE_TRACK': (storage, { id }) => storage.deleteRecord(id),
 };
-
-export default async function createProcessor({ rootDir }) {
-  const storage = await createStorage(rootDir);
-
-  return {
-    processAction({ action: { name, data = {} }, files = [] }) {
-      const action = actions[name];
-      if (!action) throw new Error(`unknown action: ${name}`);
-
-      return action(storage, data, files);
-    },
-
-    close() {
-      return storage.close();
-    },
-  };
-}
