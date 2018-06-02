@@ -74,12 +74,10 @@ export function rmrfSync(dir) {
   fs.rmdirSync(dir);
 }
 
-export const listDirContent = promisify(fs.readdir);
-export const statFile = promisify(fs.lstat);
-export const isFile = filePath => statFile(filePath).then(stats => stats.isFile());
-export const isDirectory = filePath => statFile(filePath).then(stats => stats.isDirectory());
+export const isFile = filePath => fs.promises.lstat(filePath).then(stats => stats.isFile());
+export const isDirectory = filePath => fs.promises.lstat(filePath).then(stats => stats.isDirectory());
 export async function listFiles(filePath) {
-  const dirContent = await listDirContent(filePath);
+  const dirContent = await fs.promises.readdir(filePath);
   const fileCheckResults = await Promise.all(dirContent.map(item => isFile(path.join(filePath, item))));
   return dirContent.filter((_, i) => fileCheckResults[i]);
 }
@@ -87,17 +85,11 @@ export async function listFiles(filePath) {
 // use sync version here cause fs.exists has been deprecated
 export const existsFile = name => Promise.resolve(fs.existsSync(name));
 
-export const readFile = promisify(fs.readFile);
-export const readText = name => readFile(name, 'utf8');
+export const readText = name => fs.promises.readFile(name, 'utf8');
 export const readJSON = async name => JSON.parse(await readText(name));
 
-export const writeFile = promisify(fs.writeFile);
-export const writeText = (name, data) => writeFile(name, data, 'utf8');
+export const writeText = (name, data) => fs.promises.writeFile(name, data, 'utf8');
 export const writeJSON = (name, data) => writeText(name, JSON.stringify(data, null, 2));
-
-export const deleteFile = promisify(fs.unlink);
-export const renameFile = promisify(fs.rename);
-export const mkdir = promisify(fs.mkdir);
 
 export const gzip = promisify(zlib.gzip);
 

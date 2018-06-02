@@ -1,10 +1,11 @@
+import fs from 'fs';
 import path from 'path';
 
 import createApiClient from 'shared/api-client';
 import { createArray, randomInt, shuffle } from 'shared/utils';
 import { createImageLink } from 'shared/parser';
 import { createTextGenerator } from 'tools/random';
-import { readText, listFiles, readFile, sha256 } from 'core/utils';
+import { readText, listFiles, sha256 } from 'core/utils';
 import createNetwork from 'core/utils/platform';
 
 async function listImage(basePath) {
@@ -12,7 +13,7 @@ async function listImage(basePath) {
   const images = files.filter(name => name.match(/\.(jpg|jpeg)$/i));
 
   return Promise.all(images.map(async (name) => {
-    const data = await readFile(path.join(basePath, name));
+    const data = await fs.promises.readFile(path.join(basePath, name));
     const link = createImageLink(name, sha256(data));
 
     return { link, file: { name, data } };
@@ -59,7 +60,7 @@ export default async function genData(port, password, notesCount, tracksCount) {
     return api.CREATE_NOTE({ name, data }, images.map(image => image.file.data));
   });
 
-  const trackData = await readFile(path.join(resourcesPath, 'track.mp3'));
+  const trackData = await fs.promises.readFile(path.join(resourcesPath, 'track.mp3'));
   const trackId = sha256(trackData);
   const tracksPromises = createArray(tracksCount, async () => {
     const artist = randowWords(generator, randomInt(1, 2));

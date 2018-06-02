@@ -20,7 +20,7 @@ function createStorageFs(rootDir) {
           return;
         }
 
-        await utils.mkdir(dir);
+        await nodeFs.promises.mkdir(dir);
       }
     },
 
@@ -52,19 +52,19 @@ function createStorageFs(rootDir) {
       const filePath = getFilePath(id);
 
       const mimeType = await utils.getMimeType(filePath);
-      const stats = await utils.statFile(filePath);
+      const stats = await nodeFs.promises.lstat(filePath);
       const meta = await probeMetadata(filePath);
 
       return { id, mimeType, updatedTs: stats.mtimeMs, size: stats.size, meta };
     },
 
     async writeFile(id, data) {
-      await utils.writeFile(getFilePath(id), data);
+      await nodeFs.promises.writeFile(getFilePath(id), data);
     },
 
     async removeFile(id) {
       try {
-        await utils.deleteFile(getFilePath(id));
+        await nodeFs.promises.unlink(getFilePath(id));
       } catch (e) {
         console.error(`files: failed to remove file ${id}`, e);
       }
@@ -119,15 +119,15 @@ function createStorageFs(rootDir) {
       try {
         // write into temp file and then rename temp file to achieve "atomic" file writes
         await utils.writeJSON(tempFile, { type, fields, updatedTs: Date.now() });
-        await utils.renameFile(tempFile, file);
+        await nodeFs.promises.rename(tempFile, file);
       } catch (e) {
-        await utils.deleteFile(tempFile); // cleanup temp file if operation fails
+        await nodeFs.promises.unlink(tempFile); // cleanup temp file if operation fails
         throw e;
       }
     },
 
     async removeRecord(id) {
-      await utils.deleteFile(getRecordPath(id));
+      await nodeFs.promises.unlink(getRecordPath(id));
     },
   };
 }

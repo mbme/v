@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import assert from 'assert';
-import { readJSON, writeJSON, deleteFile } from 'core/utils';
+import { readJSON, writeJSON } from 'core/utils';
 import { uniq } from 'shared/utils';
 
 let _beforeCb;
@@ -118,7 +118,7 @@ export async function runTests(file, tests, updateSnapshots) {
   if (Object.values(newSnapshots).length) {
     await writeJSON(snapshotsFile, newSnapshots);
   } else if (snapshotsFileExists) {
-    await deleteFile(snapshotsFile);
+    await fs.promises.unlink(snapshotsFile);
   }
 
   return failures;
