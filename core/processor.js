@@ -1,20 +1,30 @@
 import createQueue from 'core/utils/queue';
+import createCoreStore from './stores/core';
+import createNotesStore from './stores/notes';
+import createTracksStore from './stores/tracks';
 import createStorage from './storage';
-import actions from './actions';
 
 export default async function createProcessor({ rootDir }) {
   const queue = createQueue();
   const storage = await createStorage(rootDir);
+  const stores = [
+    createCoreStore(storage),
+    createNotesStore(storage),
+    createTracksStore(storage),
+  ];
 
   return {
     processAction({ action: { name, data = {} }, files = [] }) {
-      const action = actions[name];
-      if (!action) throw new Error(`unknown action: ${name}`);
+      for (const store of stores) {
+        if (store[name]) {
+          return queue.push(async () => {
+            console.log('processing action %s', name);
+            return store[name](data, files);
+          });
+        }
+      }
 
-      return queue.push(async () => {
-        console.log('processing action %s', name);
-        return action(storage, data, files);
-      });
+      throw new Error(`unknown action: ${name}`);
     },
 
     close() {
