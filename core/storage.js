@@ -4,7 +4,6 @@ import { uniq, flatten, recentComparator } from 'shared/utils';
 import * as utils from './utils';
 import probeMetadata from './utils/probe';
 import { validateAll, assertAll } from './validator';
-import { extractFileIds } from './records';
 
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id);
@@ -100,9 +99,9 @@ function createStorageFs(rootDir) {
 
     async readRecord(id, getFile) {
       const recordFile = getRecordPath(id);
-      const { type, fields, updatedTs } = await utils.readJSON(recordFile);
+      const { type, fields, fileIds, updatedTs } = await utils.readJSON(recordFile);
 
-      const files = extractFileIds(type, fields).map((fileId) => {
+      const files = fileIds.map((fileId) => {
         const file = getFile(fileId);
         if (!file) throw new Error(`records: record ${id} references unknown file ${fileId}`);
 
@@ -112,13 +111,13 @@ function createStorageFs(rootDir) {
       return { id, type, fields, files, updatedTs };
     },
 
-    async writeRecord(id, type, fields) {
+    async writeRecord(id, type, fields, fileIds) {
       const file = getRecordPath(id);
       const tempFile = `${file}.atomic-temp`;
 
       try {
         // write into temp file and then rename temp file to achieve "atomic" file writes
-        await utils.writeJSON(tempFile, { type, fields, updatedTs: Date.now() });
+        await utils.writeJSON(tempFile, { type, fields, fileIds, updatedTs: Date.now() });
         await nodeFs.promises.rename(tempFile, file);
       } catch (e) {
         await nodeFs.promises.unlink(tempFile); // cleanup temp file if operation fails
@@ -180,11 +179,9 @@ export default async function createStorage(rootDir) {
     }));
   }
 
-  async function saveRecord(id, type, fields, attachments) {
+  async function saveRecord(id, type, fields, fileIds, attachments) {
     const prevRecord = cache.getRecord(id);
     if (prevRecord && prevRecord.type !== type) throw new Error(`Wrong type ${prevRecord.type}, should be ${type}`);
-
-    const fileIds = extractFileIds(type, fields);
 
     const newIds = fileIds.filter(fileId => !cache.getFile(fileId));
     if (newIds.length !== attachments.length) console.error('WARN: there are redundant attachments');
@@ -207,7 +204,7 @@ export default async function createStorage(rootDir) {
       }));
 
       // 2. write new record fields
-      await fs.writeRecord(id, type, fields);
+      await fs.writeRecord(id, type, fields, fileIds);
     } catch (e) {
       console.error('failed to save record', e);
 
@@ -270,32 +267,34 @@ export default async function createStorage(rootDir) {
     /**
      * @returns {Promise<Record>}
      */
-    createRecord(type, fields, attachments) {
+    createRecord(type, fields, fileIds, attachments) {
       assertAll(
         [ type, 'record-type' ],
         [ fields, 'record-fields' ],
+        [ fileIds, 'file-id[]' ],
         [ attachments, 'buffer[]' ],
       );
 
       const id = Math.max(0, ...cache.getRecordIds()) + 1;
 
-      return saveRecord(id, type, fields, attachments);
+      return saveRecord(id, type, fields, fileIds, attachments);
     },
 
     /**
      * @returns {Promise<Record>}
      */
-    updateRecord(id, fields, attachments) {
+    updateRecord(id, fields, fileIds, attachments) {
       assertAll(
         [ id, 'record-id' ],
         [ fields, 'record-fields' ],
+        [ fileIds, 'file-id[]' ],
         [ attachments, 'buffer[]' ],
       );
 
       const record = cache.getRecord(id);
       if (!record) throw new Error(`Record ${id} doesn't exist`);
 
-      return saveRecord(id, record.type, fields, attachments);
+      return saveRecord(id, record.type, fields, fileIds, attachments);
     },
 
     /**

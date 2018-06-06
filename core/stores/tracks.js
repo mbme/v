@@ -24,7 +24,7 @@ export default function createTracksStore(storage) {
       return storage.readRecord(id);
     },
 
-    CREATE_TRACK({ artist, title, rating, categories, fileId }, files) {
+    CREATE_TRACK({ artist, title, rating, categories, fileId }, attachments) {
       assertAll(
         [ artist, validation.artist ],
         [ title, validation.title ],
@@ -32,10 +32,10 @@ export default function createTracksStore(storage) {
         [ categories, validation.categories ],
         [ fileId, 'file-id' ],
       );
-      return storage.createRecord(RecordType, { artist, title, rating, categories, fileId }, files);
+      return storage.createRecord(RecordType, { artist, title, rating, categories, fileId }, [ fileId ], attachments);
     },
 
-    UPDATE_TRACK({ id, artist, title, rating, categories, fileId }, files) {
+    UPDATE_TRACK({ id, artist, title, rating, categories, fileId }, attachments) {
       assertAll(
         [ artist, validation.artist ],
         [ title, validation.title ],
@@ -43,7 +43,7 @@ export default function createTracksStore(storage) {
         [ categories, validation.categories ],
         [ fileId, 'file-id' ],
       );
-      return storage.updateRecord(id, { artist, title, rating, categories, fileId }, files);
+      return storage.updateRecord(id, { artist, title, rating, categories, fileId }, [ fileId ], attachments);
     },
 
     DELETE_TRACK({ id }) {
