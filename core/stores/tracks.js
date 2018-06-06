@@ -1,10 +1,15 @@
+import { fuzzySearch } from 'shared/utils';
 import { RecordType } from '../records';
 import { assertAll } from '../validator';
 
 export default function createTracksStore(storage) {
   return {
-    LIST_TRACKS({ size, skip, filter }) {
-      return storage.listRecords(RecordType.track, { size, skip, filter });
+    LIST_TRACKS({ size, skip, filter = '' }) {
+      return storage.listRecords(RecordType.track, {
+        size,
+        skip,
+        filter: record => fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' ')),
+      });
     },
     READ_TRACK({ id }) {
       return storage.readRecord(id);

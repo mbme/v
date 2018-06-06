@@ -1,10 +1,15 @@
+import { fuzzySearch } from 'shared/utils';
 import { RecordType } from '../records';
 import { assertAll } from '../validator';
 
 export default function createNotesStore(storage) {
   return {
-    LIST_NOTES({ size, skip, filter }) {
-      return storage.listRecords(RecordType.note, { size, skip, filter });
+    LIST_NOTES({ size, skip, filter = '' }) {
+      return storage.listRecords(RecordType.note, {
+        size,
+        skip,
+        filter: record => fuzzySearch(filter, record.fields.name),
+      });
     },
     READ_NOTE({ id }) {
       return storage.readRecord(id);

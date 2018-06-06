@@ -4,7 +4,7 @@ import { uniq, flatten, recentComparator } from 'shared/utils';
 import * as utils from './utils';
 import probeMetadata from './utils/probe';
 import { validateAll, assertAll } from './validator';
-import { extractFileIds, applyFilter } from './records';
+import { extractFileIds } from './records';
 
 function createStorageFs(rootDir) {
   const getFilePath = id => path.join(rootDir, 'files', id);
@@ -235,16 +235,16 @@ export default async function createStorage(rootDir) {
     /**
      * @returns {{ items: Record[], total: number }}
      */
-    listRecords(type, { size = 50, skip = 0, filter = '' }) {
+    listRecords(type, { size = 50, skip = 0, filter = () => true }) {
       assertAll(
         [ size, 'non-negative-integer' ],
         [ skip, 'non-negative-integer' ],
-        [ filter, 'string' ],
         [ type, 'record-type' ],
+        [ filter, 'function' ],
       );
 
       const results = cache.records
-        .filter(record => record.type === type && applyFilter(record, filter))
+        .filter(record => record.type === type && filter(record))
         .sort(recentComparator);
 
       return {

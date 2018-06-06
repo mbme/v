@@ -10,5 +10,3 @@ export const validation = {
 };
 
 export const extractFileIds = fields => [ fields.fileId ];
-
-export const applyFilter = (record, filter) => fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' '));

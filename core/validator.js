@@ -1,15 +1,16 @@
-import { getType, isString, isObject, isArray, isAsyncFunction, isSha256, flatten } from 'shared/utils';
+import * as utils from 'shared/utils';
 import { validation } from './records';
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
   'non-negative-integer': val => Number.isInteger(val) && val >= 0,
-  'string': isString,
-  'object': isObject,
-  'string!': val => isString(val) && val, // not empty string
+  'string': utils.isString,
+  'object': utils.isObject,
+  'string!': val => utils.isString(val) && val, // not empty string
   'buffer': Buffer.isBuffer,
-  'async-function': isAsyncFunction,
-  'sha256': val => isString(val) && isSha256(val),
+  'function': utils.isFunction,
+  'async-function': utils.isAsyncFunction,
+  'sha256': val => utils.isString(val) && utils.isSha256(val),
 
   'file-name': 'string!',
   'file-data': 'buffer',
@@ -23,23 +24,23 @@ const Types = {
  */
 export function validate(val, typeName) {
   if (typeName.endsWith('[]')) { // handle arrays
-    if (!isArray(val)) return [ `expected ${typeName}, received ${getType(val)}` ];
+    if (!utils.isArray(val)) return [ `expected ${typeName}, received ${utils.getType(val)}` ];
 
     const childTypeName = typeName.substring(0, typeName.length - 2);
-    return flatten(val.map(value => validate(value, childTypeName)));
+    return utils.flatten(val.map(value => validate(value, childTypeName)));
   }
 
   const type = Types[typeName];
   if (!type) throw new Error(`unknown type ${typeName}`);
 
   // type is an alias for other type
-  if (isString(type)) return validate(val, type);
+  if (utils.isString(type)) return validate(val, type);
 
   // type is validator function
   const result = type(val);
-  if (!result) return [ `expected ${typeName}, received ${getType(val)}` ];
+  if (!result) return [ `expected ${typeName}, received ${utils.getType(val)}` ];
 
-  return isArray(result) ? result : [];
+  return utils.isArray(result) ? result : [];
 }
 
 export function assert(val, typeName) {
@@ -47,7 +48,7 @@ export function assert(val, typeName) {
   if (results.length) throw results;
 }
 
-export const validateAll = (...rules) => flatten(rules.map(([ val, typeName ]) => validate(val, typeName)));
+export const validateAll = (...rules) => utils.flatten(rules.map(([ val, typeName ]) => validate(val, typeName)));
 
 export function assertAll(...rules) {
   const results = validateAll(...rules);
@@ -56,8 +57,8 @@ export function assertAll(...rules) {
 
 export function createObjectValidator(props) {
   return (val) => {
-    if (!isObject(val)) return [ `expected object, received ${getType(val)}` ];
+    if (!utils.isObject(val)) return [ `expected object, received ${utils.getType(val)}` ];
 
-    return flatten(Object.entries(props).map(([ prop, typeName ]) => validate(val[prop], typeName)));
+    return utils.flatten(Object.entries(props).map(([ prop, typeName ]) => validate(val[prop], typeName)));
   };
 }

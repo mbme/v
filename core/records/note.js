@@ -9,5 +9,3 @@ export const validation = {
 };
 
 export const extractFileIds = fields => parser.extractFileIds(parser.parse(fields.data));
-
-export const applyFilter = (record, filter) => fuzzySearch(filter, record.fields.name);
