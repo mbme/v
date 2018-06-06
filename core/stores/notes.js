@@ -1,33 +1,43 @@
 import { fuzzySearch } from 'shared/utils';
-import { RecordType } from '../records';
 import { assertAll } from '../validator';
+
+const RecordType = 'note';
+
+const validation = {
+  name: 'string!',
+  data: 'string',
+};
 
 export default function createNotesStore(storage) {
   return {
     LIST_NOTES({ size, skip, filter = '' }) {
-      return storage.listRecords(RecordType.note, {
+      return storage.listRecords(RecordType, {
         size,
         skip,
         filter: record => fuzzySearch(filter, record.fields.name),
       });
     },
+
     READ_NOTE({ id }) {
       return storage.readRecord(id);
     },
+
     CREATE_NOTE({ name, data }, files) {
       assertAll(
-        [ name, 'note-name' ],
-        [ data, 'note-data' ],
+        [ name, validation.name ],
+        [ data, validation.data ],
       );
-      return storage.createRecord(RecordType.note, { name, data }, files);
+      return storage.createRecord(RecordType, { name, data }, files);
     },
+
     UPDATE_NOTE({ id, name, data }, files) {
       assertAll(
-        [ name, 'note-name' ],
-        [ data, 'note-data' ],
+        [ name, validation.name ],
+        [ data, validation.data ],
       );
       return storage.updateRecord(id, { name, data }, files);
     },
+
     DELETE_NOTE({ id }) {
       return storage.deleteRecord(id);
     },

@@ -1,5 +1,4 @@
 import * as utils from 'shared/utils';
-import { validation } from './records';
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
@@ -16,7 +15,9 @@ const Types = {
   'file-data': 'buffer',
   'file-id': 'sha256',
 
-  ...validation,
+  'record-type': 'string!',
+  'record-id': 'positive-integer',
+  'record-fields': 'object',
 };
 
 /**

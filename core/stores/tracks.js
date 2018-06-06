@@ -1,39 +1,51 @@
 import { fuzzySearch } from 'shared/utils';
-import { RecordType } from '../records';
 import { assertAll } from '../validator';
+
+const RecordType = 'track';
+
+const validation = {
+  artist: 'string!',
+  title: 'string!',
+  rating: val => [ 1, 2, 3, 4, 5 ].includes(val),
+  categories: 'string![]',
+};
 
 export default function createTracksStore(storage) {
   return {
     LIST_TRACKS({ size, skip, filter = '' }) {
-      return storage.listRecords(RecordType.track, {
+      return storage.listRecords(RecordType, {
         size,
         skip,
         filter: record => fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' ')),
       });
     },
+
     READ_TRACK({ id }) {
       return storage.readRecord(id);
     },
+
     CREATE_TRACK({ artist, title, rating, categories, fileId }, files) {
       assertAll(
-        [ artist, 'track-artist' ],
-        [ title, 'track-title' ],
-        [ rating, 'track-rating' ],
-        [ categories, 'track-categories' ],
+        [ artist, validation.artist ],
+        [ title, validation.title ],
+        [ rating, validation.rating ],
+        [ categories, validation.categories ],
         [ fileId, 'file-id' ],
       );
-      return storage.createRecord(RecordType.track, { artist, title, rating, categories, fileId }, files);
+      return storage.createRecord(RecordType, { artist, title, rating, categories, fileId }, files);
     },
+
     UPDATE_TRACK({ id, artist, title, rating, categories, fileId }, files) {
       assertAll(
-        [ artist, 'track-artist' ],
-        [ title, 'track-title' ],
-        [ rating, 'track-rating' ],
-        [ categories, 'track-categories' ],
+        [ artist, validation.artist ],
+        [ title, validation.title ],
+        [ rating, validation.rating ],
+        [ categories, validation.categories ],
         [ fileId, 'file-id' ],
       );
       return storage.updateRecord(id, { artist, title, rating, categories, fileId }, files);
     },
+
     DELETE_TRACK({ id }) {
       return storage.deleteRecord(id);
     },
