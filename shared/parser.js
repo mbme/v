@@ -1,4 +1,4 @@
-import log from 'core/utils/log';
+import log from 'shared/log';
 import { isString, uniq, isSha256 } from 'shared/utils';
 
 function isSubSequence(str, i, seq) {

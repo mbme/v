@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import log from 'shared/log';
 import s from 'client/styles';
 import { apiClient, authorize } from 'client/utils/platform';
 import { Backdrop, Input, Styled } from 'client/components';
@@ -10,10 +11,9 @@ async function checkPassword(password) {
     await apiClient.PING();
     window.location.reload();
   } catch (e) {
-    console.error(e);
+    log.error('auth failed', e);
   }
 }
-
 
 const styles = s.styles({
   backdrop: {

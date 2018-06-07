@@ -6,7 +6,7 @@ import { createArray, randomInt, shuffle } from 'shared/utils';
 import { createImageLink } from 'shared/parser';
 import { createTextGenerator } from 'tools/random';
 import { readText, listFiles, sha256 } from 'core/utils';
-import log from 'core/utils/log';
+import log from 'shared/log';
 import createNetwork from 'core/utils/platform';
 
 async function listImage(basePath) {

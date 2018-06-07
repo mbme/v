@@ -4,7 +4,7 @@ import nodeFs from 'fs';
 import { recentComparator } from 'shared/utils';
 import * as utils from 'core/utils';
 import probeMetadata from 'core/utils/probe';
-import log from 'core/utils/log';
+import log from 'shared/log';
 import { validateAll, assertAll } from 'core/validator';
 import createCache from './cache';
 

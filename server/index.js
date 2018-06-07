@@ -5,7 +5,7 @@ import urlParser from 'url';
 import zlib from 'zlib';
 
 import * as utils from 'core/utils';
-import log from 'core/utils/log';
+import log from 'shared/log';
 import { extend } from 'shared/utils';
 import { CONTENT_TYPE } from 'shared/api-client';
 import { parse } from 'shared/protocol';

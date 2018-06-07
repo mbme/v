@@ -1,4 +1,4 @@
-import log from 'core/utils/log';
+import log from 'shared/log';
 import { assertAll } from 'core/validator';
 
 export default function createQueue() {

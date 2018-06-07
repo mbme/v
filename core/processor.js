@@ -1,4 +1,4 @@
-import log from 'core/utils/log';
+import log from 'shared/log';
 import createQueue from 'core/utils/queue';
 import createCoreStore from './stores/core';
 import createNotesStore from './stores/notes';
