@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { format as formatDate } from 'date-fns';
 
 const LEVEL = {
@@ -19,7 +20,6 @@ if (!Object.values(LEVEL).includes(minLogLevel)) throw new Error(`Illegal log le
 
 function log(lvlname, level, msg, ...params) {
   if (PRIORITY[level] >= PRIORITY[minLogLevel]) {
-    // eslint-disable-next-line no-console
     console[lvlname](`${formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss,SSS')} ${level.padEnd(5)} ${msg}`, ...params);
   }
 }
@@ -36,5 +36,8 @@ export default {
   },
   error(...params) {
     log('error', LEVEL.ERROR, ...params);
+  },
+  simple(...params) {
+    console.log(...params);
   },
 };

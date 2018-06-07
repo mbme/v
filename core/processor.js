@@ -1,3 +1,4 @@
+import log from 'core/utils/log';
 import createQueue from 'core/utils/queue';
 import createCoreStore from './stores/core';
 import createNotesStore from './stores/notes';
@@ -18,7 +19,7 @@ export default async function createProcessor({ rootDir }) {
       for (const store of stores) {
         if (store[name]) {
           return queue.push(async () => {
-            console.log('processing action %s', name);
+            log.info('processor: action %s', name);
             return store[name](data, files);
           });
         }

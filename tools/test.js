@@ -3,6 +3,7 @@
 import fs from 'fs';
 import assert from 'assert';
 import { readJSON, writeJSON } from 'core/utils';
+import log from 'core/utils/log';
 import { uniq } from 'shared/utils';
 
 let _beforeCb;
@@ -65,7 +66,7 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
             );
           } catch (e) {
             if (!updateSnapshots) throw e;
-            console.log(`  ${name}: updating snapshot`);
+            log.simple(`  ${name}: updating snapshot`);
           }
         }
 
@@ -84,11 +85,11 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
       },
     }));
 
-    console.log(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '');
+    log.simple(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '');
     return [ snapshots, true ];
   } catch (e) {
-    console.error(`  ${name} failed\n`, e.message);
-    console.error(e.stack.split('\n').filter(s => s.trim().startsWith('at '))[1]);
+    log.simple(`  ${name} failed\n`, e.message);
+    log.simple(e.stack);
     return [ oldSnapshots, false ];
   }
 }

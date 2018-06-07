@@ -1,3 +1,4 @@
+import log from 'core/utils/log';
 import { isString, uniq, isSha256 } from 'shared/utils';
 
 function isSubSequence(str, i, seq) {
@@ -180,7 +181,7 @@ const Grammar = {
 
 if (global.__DEVELOPMENT__) { // validate grammar
   Object.entries(Grammar).forEach(([ type, rule ]) => {
-    rule.children.forEach(childType => !!Grammar[childType] || console.error(`WARN: ${type} has unknown child "${childType}"`));
+    rule.children.forEach(childType => !!Grammar[childType] || log.warn(`parser: ${type} has unknown child "${childType}"`));
   });
 }
 
@@ -256,7 +257,7 @@ export function parse(str) {
   const [ i, tree ] = parseFrom(str, 0, 'Document', []);
 
   if (global.__DEVELOPMENT__ && i !== str.length) {
-    console.error(`WARN: parser covers ${i} out of ${str.length} chars`);
+    log.warn(`parser covers ${i} out of ${str.length} chars`);
   }
 
   return tree;

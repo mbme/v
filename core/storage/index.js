@@ -4,6 +4,7 @@ import nodeFs from 'fs';
 import { recentComparator } from 'shared/utils';
 import * as utils from 'core/utils';
 import probeMetadata from 'core/utils/probe';
+import log from 'core/utils/log';
 import { validateAll, assertAll } from 'core/validator';
 import createCache from './cache';
 
@@ -15,7 +16,7 @@ class Storage {
   _cache = null;
 
   constructor(rootDir) {
-    console.log('root dir: ', rootDir);
+    log.info('storage: root dir: ', rootDir);
     this.rootDir = rootDir;
   }
 
@@ -25,7 +26,7 @@ class Storage {
     const files = await this._listFiles();
     const records = await this._listRecords(id => files.find(file => file.id === id));
     this._cache = await createCache(records, files);
-    console.log(`storage: ${this._cache.records.length} records, ${this._cache.files.length} files`);
+    log.info(`storage: ${this._cache.records.length} records, ${this._cache.files.length} files`);
   }
 
   /**
@@ -149,7 +150,7 @@ class Storage {
     await Promise.all(fileNames.map(async (id) => {
       const validationErrors = validateAll([ id, 'file-id' ]);
       if (validationErrors.length) {
-        console.log(`files: validation failed for file ${id}`, validationErrors);
+        log.warn(`storage: files: validation failed for file ${id}`, validationErrors);
         return;
       }
 
@@ -179,7 +180,7 @@ class Storage {
     const recordIds = [];
     for (const fileName of await utils.listFiles(this.rootDir)) {
       if (!fileName.endsWith('.mb')) {
-        console.log(`records: unexpected file ${fileName}`);
+        log.warn(`storage: records: unexpected file ${fileName}`);
         continue;
       }
 
@@ -187,7 +188,7 @@ class Storage {
 
       const validationErrors = validateAll([ id, 'record-id' ]);
       if (validationErrors.length) {
-        console.log(`Validation failed for ${fileName}`, validationErrors);
+        log.warn(`storage: records: validation failed for ${fileName}`, validationErrors);
         throw new Error(`records: validation failed for ${fileName}`);
       }
 
@@ -227,7 +228,7 @@ class Storage {
     try {
       await nodeFs.promises.unlink(this._getFilePath(id));
     } catch (e) {
-      console.error(`files: failed to remove file ${id}`, e);
+      log.error(`storage: files: failed to remove file ${id}`, e);
     }
   }
 
@@ -236,7 +237,7 @@ class Storage {
     if (prevRecord && prevRecord.type !== type) throw new Error(`Wrong type ${prevRecord.type}, should be ${type}`);
 
     const newIds = fileIds.filter(fileId => !this._cache.getFile(fileId));
-    if (newIds.length !== attachments.length) console.error('WARN: there are redundant attachments');
+    if (newIds.length !== attachments.length) log.info('storage: there are redundant attachments');
 
     const attachedFiles = {};
     for (const attachment of attachments) {
@@ -258,7 +259,7 @@ class Storage {
       // 2. write new record fields
       await this._writeRecord(id, type, fields, fileIds);
     } catch (e) {
-      console.error('failed to save record', e);
+      log.error('storage: failed to save record', e);
 
       // remove leftover files
       await Promise.all(newFiles.map(file => this._removeFile(file.id)));

@@ -1,6 +1,7 @@
 import startServer from 'server';
 import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
 import webpackConfig from 'webpack.config.babel';
+import log from 'core/utils/log';
 import genData from './gen-data';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -12,7 +13,7 @@ const compiler = webpack(webpackConfig);
 const compilationPromise = new Promise((resolve, reject) => {
   compiler.watch({ ignored: /(node_modules|dist)/ }, (err, stats) => {
     err ? reject(err) : resolve();
-    console.log(stats.toString({ colors: true }));
+    log.simple(stats.toString({ colors: true }));
   });
 });
 
@@ -24,15 +25,15 @@ async function run(args) {
 
   if (isDevelopment && args.includes('--gen-data')) await genData(port, password, 30, 10);
 
-  console.log(`Server listening on http://localhost:${port}`);
+  log.info(`Server listening on http://localhost:${port}`);
 
   async function close() {
-    console.log('Stopping...');
+    log.debug('server: stopping...');
     try {
       await server.close();
       process.exit(0);
     } catch (e) {
-      console.error('Failed to stop server:', e);
+      log.error('server: failed to stop', e);
       process.exit(1);
     }
   }
@@ -42,6 +43,6 @@ async function run(args) {
 }
 
 run(process.argv.slice(3)).catch((e) => {
-  console.error('Failed to start server:', e);
+  log.error('server: failed to start', e);
   process.exit(2);
 });

@@ -1,3 +1,4 @@
+import log from 'core/utils/log';
 import { assertAll } from 'core/validator';
 
 export default function createQueue() {
@@ -8,7 +9,7 @@ export default function createQueue() {
   async function processQueue() {
     while (queue.length) {
       const action = queue.shift();
-      await action().catch(e => console.error('queued action failed', e));
+      await action().catch(e => log.error('queued action failed', e));
     }
     immediateId = null;
     if (onClose) onClose();

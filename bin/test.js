@@ -1,6 +1,7 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path';
 import { walkSync } from 'core/utils';
+import log from 'core/utils/log';
 import { collectTests, runTests } from 'tools/test';
 
 const args = process.argv.slice(3);
@@ -31,16 +32,16 @@ async function executeTestPlans() {
   let failures = 0;
 
   for (const testPlan of testPlans) {
-    console.log(testPlan.file);
+    log.simple(testPlan.file);
 
     if (testPlan.before) await Promise.resolve(testPlan.before());
     failures += await runTests(path.join(basePath, testPlan.file), testPlan.tests, updateSnapshots);
     if (testPlan.after) await Promise.resolve(testPlan.after());
 
-    console.log('');
+    log.simple('');
   }
 
-  console.log(failures ? `Failures: ${failures}` : 'Success!', '\n');
+  log.simple(failures ? `Failures: ${failures}` : 'Success!', '\n');
 }
 
-executeTestPlans().catch(e => console.error('TEST RUNNER FAILED', e));
+executeTestPlans().catch(e => log.simple('TEST RUNNER FAILED', e));

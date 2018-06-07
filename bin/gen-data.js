@@ -6,6 +6,7 @@ import { createArray, randomInt, shuffle } from 'shared/utils';
 import { createImageLink } from 'shared/parser';
 import { createTextGenerator } from 'tools/random';
 import { readText, listFiles, sha256 } from 'core/utils';
+import log from 'core/utils/log';
 import createNetwork from 'core/utils/platform';
 
 async function listImage(basePath) {
@@ -73,5 +74,5 @@ export default async function genData(port, password, notesCount, tracksCount) {
 
   await Promise.all([ ...notesPromises, ...tracksPromises ]);
 
-  console.log('Generated %s fake notes & %s fake tracks', notesCount, tracksCount);
+  log.info('Generated %s fake notes & %s fake tracks', notesCount, tracksCount);
 }
