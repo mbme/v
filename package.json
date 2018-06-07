@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@babel/register": "^7.0.0-beta.44",
+    "date-fns": "^1.29.0",
     "fela": "^6.1.0",
     "fela-dom": "^7.0.0",
     "prop-types": "^15.5.10",

@@ -14,7 +14,7 @@ const port = 8079;
 const rootDir = '/tmp/api-client-test-storage';
 const password = 'test';
 
-const runServer = () => startServer(port, { html5historyFallback: false, requestLogger: false, rootDir, password });
+const runServer = () => startServer(port, { html5historyFallback: false, rootDir, password });
 
 before(async () => {
   server = await runServer();

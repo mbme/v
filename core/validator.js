@@ -23,7 +23,7 @@ const Types = {
 /**
  * @param {string} typeName one of Types or type + [] for arrays of types
  */
-export function validate(val, typeName) {
+export function validate(val, typeName, validators = {}) {
   if (typeName.endsWith('[]')) { // handle arrays
     if (!utils.isArray(val)) return [ `expected ${typeName}, received ${utils.getType(val)}` ];
 
@@ -31,7 +31,7 @@ export function validate(val, typeName) {
     return utils.flatten(val.map(value => validate(value, childTypeName)));
   }
 
-  const type = Types[typeName];
+  const type = validators[typeName] || Types[typeName];
   if (!type) throw new Error(`unknown type ${typeName}`);
 
   // type is an alias for other type
@@ -44,12 +44,12 @@ export function validate(val, typeName) {
   return utils.isArray(result) ? result : [];
 }
 
-export function assert(val, typeName) {
-  const results = validate(val, typeName);
+export function assert(...params) {
+  const results = validate(...params);
   if (results.length) throw results;
 }
 
-export const validateAll = (...rules) => utils.flatten(rules.map(([ val, typeName ]) => validate(val, typeName)));
+export const validateAll = (...rules) => utils.flatten(rules.map(params => validate(...params)));
 
 export function assertAll(...rules) {
   const results = validateAll(...rules);

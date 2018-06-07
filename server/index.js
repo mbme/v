@@ -5,6 +5,7 @@ import urlParser from 'url';
 import zlib from 'zlib';
 
 import * as utils from 'core/utils';
+import log from 'core/utils/log';
 import { extend } from 'shared/utils';
 import { CONTENT_TYPE } from 'shared/api-client';
 import { parse } from 'shared/protocol';
@@ -37,7 +38,6 @@ const defaults = {
   rootDir: '',
   password: '',
   html5historyFallback: true,
-  requestLogger: true,
 };
 
 export default async function startServer(port, customOptions) {
@@ -179,16 +179,13 @@ export default async function startServer(port, customOptions) {
         res.end();
       }
     } catch (e) {
-      if (options.requestLogger) console.error(e);
+      log.error('server: failed to handle request', e);
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.toString() }));
     } finally {
       const hrend = process.hrtime(start);
       const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000);
-
-      if (options.requestLogger) {
-        console.info('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage || 'OK', ms);
-      }
+      log.debug('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage || 'OK', ms);
     }
   });
 

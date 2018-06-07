@@ -4,9 +4,9 @@ import { assertAll } from '../validator';
 
 const TYPE = 'note';
 
-const validation = {
-  name: 'string!',
-  data: 'string',
+const validators = {
+  'note-name': 'string!',
+  'note-data': 'string',
 };
 
 const extractFileIds = data => parser.extractFileIds(parser.parse(data));
@@ -27,8 +27,8 @@ export default function createNotesStore(storage) {
 
     CREATE_NOTE({ name, data }, attachments) {
       assertAll(
-        [ name, validation.name ],
-        [ data, validation.data ],
+        [ name, 'note-name', validators ],
+        [ data, 'note-data', validators ],
       );
 
       const fileIds = extractFileIds(data);
@@ -38,8 +38,8 @@ export default function createNotesStore(storage) {
 
     UPDATE_NOTE({ id, name, data }, attachments) {
       assertAll(
-        [ name, validation.name ],
-        [ data, validation.data ],
+        [ name, 'note-name', validators ],
+        [ data, 'note-data', validators ],
       );
 
       const fileIds = extractFileIds(data);
