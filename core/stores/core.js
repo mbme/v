@@ -3,6 +3,7 @@ export default function createCoreStore(storage) {
     PING() {
       return 'PONG';
     },
+
     READ_FILE({ id }) {
       return storage.readFile(id);
     },

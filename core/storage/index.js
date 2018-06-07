@@ -31,17 +31,14 @@ class Storage {
   /**
     * @returns {{ items: Record[], total: number }}
     */
-  listRecords(type, { size = 50, skip = 0, filter = () => true }) {
+  listRecords({ size = 50, skip = 0, filter = () => true }) {
     assertAll(
       [ size, 'non-negative-integer' ],
       [ skip, 'non-negative-integer' ],
-      [ type, 'record-type' ],
       [ filter, 'function' ],
     );
 
-    const results = this._cache.records
-      .filter(record => record.type === type && filter(record))
-      .sort(recentComparator);
+    const results = this._cache.records.filter(filter).sort(recentComparator);
 
     return {
       total: results.length,

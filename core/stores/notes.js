@@ -14,10 +14,10 @@ const extractFileIds = data => parser.extractFileIds(parser.parse(data));
 export default function createNotesStore(storage) {
   return {
     LIST_NOTES({ size, skip, filter = '' }) {
-      return storage.listRecords(RecordType, {
+      return storage.listRecords({
         size,
         skip,
-        filter: record => fuzzySearch(filter, record.fields.name),
+        filter: record => record.type === RecordType && fuzzySearch(filter, record.fields.name),
       });
     },
 

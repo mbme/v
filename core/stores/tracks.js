@@ -13,10 +13,10 @@ const validation = {
 export default function createTracksStore(storage) {
   return {
     LIST_TRACKS({ size, skip, filter = '' }) {
-      return storage.listRecords(RecordType, {
+      return storage.listRecords({
         size,
         skip,
-        filter: record => fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' ')),
+        filter: record => record.type === RecordType && fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' ')),
       });
     },
 
