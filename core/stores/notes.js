@@ -2,7 +2,7 @@ import * as parser from 'shared/parser';
 import { fuzzySearch } from 'shared/utils';
 import { assertAll } from '../validator';
 
-const RecordType = 'note';
+const TYPE = 'note';
 
 const validation = {
   name: 'string!',
@@ -17,7 +17,7 @@ export default function createNotesStore(storage) {
       return storage.listRecords({
         size,
         skip,
-        filter: record => record.type === RecordType && fuzzySearch(filter, record.fields.name),
+        filter: record => record.type === TYPE && fuzzySearch(filter, record.fields.name),
       });
     },
 
@@ -33,7 +33,7 @@ export default function createNotesStore(storage) {
 
       const fileIds = extractFileIds(data);
 
-      return storage.createRecord(RecordType, { name, data }, fileIds, attachments);
+      return storage.createRecord(TYPE, { name, data }, fileIds, attachments);
     },
 
     UPDATE_NOTE({ id, name, data }, attachments) {

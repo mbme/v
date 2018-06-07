@@ -1,7 +1,7 @@
 import { fuzzySearch } from 'shared/utils';
 import { assertAll } from '../validator';
 
-const RecordType = 'track';
+const TYPE = 'track';
 
 const validation = {
   artist: 'string!',
@@ -16,7 +16,7 @@ export default function createTracksStore(storage) {
       return storage.listRecords({
         size,
         skip,
-        filter: record => record.type === RecordType && fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' ')),
+        filter: record => record.type === TYPE && fuzzySearch(filter, [ record.fields.name, record.fields.artist ].join(' ')),
       });
     },
 
@@ -32,7 +32,7 @@ export default function createTracksStore(storage) {
         [ categories, validation.categories ],
         [ fileId, 'file-id' ],
       );
-      return storage.createRecord(RecordType, { artist, title, rating, categories, fileId }, [ fileId ], attachments);
+      return storage.createRecord(TYPE, { artist, title, rating, categories, fileId }, [ fileId ], attachments);
     },
 
     UPDATE_TRACK({ id, artist, title, rating, categories, fileId }, attachments) {
