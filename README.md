@@ -32,6 +32,7 @@ yarn cloc
 ### External Dependencies
 * [Unix `file` command](https://en.wikipedia.org/wiki/File_(command))
 * [`ffprobe` (part of `ffmpeg`)](https://www.ffmpeg.org/ffprobe.html))
+* [`cURL` command line tool](https://en.wikipedia.org/wiki/CURL)
 
 
 ### Dir structure

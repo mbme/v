@@ -15,12 +15,12 @@ export default async function createProcessor({ rootDir }) {
   ];
 
   return {
-    processAction({ action: { name, data = {} }, files = [] }) {
+    processAction({ name, data = {} }, assets = []) {
       for (const store of stores) {
         if (store[name]) {
           return queue.push(async () => {
             log.info('processor: action %s', name);
-            return store[name](data, files);
+            return store[name](data, assets);
           });
         }
       }

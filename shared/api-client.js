@@ -1,5 +1,3 @@
-export const CONTENT_TYPE = 'multipart/v-data';
-
 export const getFileUrl = fileId => `/api?fileId=${fileId}`;
 
 export default function createApiClient(baseUrl, network) {

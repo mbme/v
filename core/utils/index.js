@@ -1,3 +1,4 @@
+import os from 'os';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
@@ -80,6 +81,28 @@ export async function listFiles(filePath) {
   const dirContent = await fs.promises.readdir(filePath);
   const fileCheckResults = await Promise.all(dirContent.map(item => isFile(path.join(filePath, item))));
   return dirContent.filter((_, i) => fileCheckResults[i]);
+}
+
+export async function withTempFiles(files, cb) {
+  if (!files.length) {
+    return cb([]);
+  }
+
+  let dir;
+  try {
+    // create temp dir
+    dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'v-'));
+
+    // write temp files
+    const paths = files.map((_, i) => path.join(dir, `temp-file-${i}`));
+    await Promise.all(paths.map((filePath, i) => fs.promises.writeFile(filePath, files[i])));
+
+    return cb(paths);
+  } catch (e) {
+    throw e;
+  } finally { // do cleanup in any case
+    await rmrfSync(dir);
+  }
 }
 
 // use sync version here cause fs.exists has been deprecated

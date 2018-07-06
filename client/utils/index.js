@@ -15,19 +15,6 @@ export const sha256 = buffer => crypto.subtle.digest('SHA-256', buffer).then(byt
 
 export const text2buffer = text => new TextEncoder().encode(text);
 
-export function concatBuffers(buffers) {
-  const length = buffers.reduce((acc, b) => acc + b.byteLength, 0);
-
-  const result = new Uint8Array(length);
-  let offset = 0;
-  for (const buffer of buffers) {
-    result.set(buffer, offset);
-    offset += buffer.byteLength;
-  }
-
-  return result;
-}
-
 export async function aesEncrypt(text, password) {
   const alg = { name: 'AES-CBC', iv: crypto.getRandomValues(new Uint8Array(16)) };
   const passwordHash = await crypto.subtle.digest('SHA-256', text2buffer(password));

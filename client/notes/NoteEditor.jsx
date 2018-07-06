@@ -51,7 +51,7 @@ class NoteEditor extends PureComponent {
   getAssets() {
     const ids = extractFileIds(parse(this.state.data));
     // TODO filter out known files
-    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file.data);
+    return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file.file);
   }
 
   onFilesSelected = async (files) => {
@@ -105,11 +105,11 @@ class NoteEditor extends PureComponent {
       <Fragment>
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <Styled marginBottom="var(--spacing-medium)" hidden={preview}>
+        <Styled $marginBottom="var(--spacing-medium)" hidden={preview}>
           <Input className={styles.title} name="name" value={name} onChange={this.onNameChange} autoFocus />
         </Styled>
 
-        <Styled marginBottom="var(--spacing-medium)" hidden={preview}>
+        <Styled $marginBottom="var(--spacing-medium)" hidden={preview}>
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref; }} />
         </Styled>
 

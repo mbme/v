@@ -4,11 +4,11 @@ import http from 'http';
 import urlParser from 'url';
 import zlib from 'zlib';
 
+import Busboy from 'busboy';
+
 import * as utils from 'core/utils';
 import log from 'shared/log';
 import { extend } from 'shared/utils';
-import { CONTENT_TYPE } from 'shared/api-client';
-import { parse } from 'shared/protocol';
 import createProcessor from 'core/processor';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
@@ -26,12 +26,53 @@ async function getFileStream(dir, name) {
   };
 }
 
+/**
+ * extract auth token from cookies
+ */
 function extractToken(cookies) {
   const [ tokenCookie ] = cookies.split(';').filter(c => c.startsWith('token='));
 
   if (!tokenCookie) return '';
 
   return decodeURIComponent(tokenCookie.substring(6));
+}
+
+/**
+ * Extract action & assets from multipart/form-data POST request
+ */
+function readAction(req) {
+  const assets = [];
+  let action;
+
+  const busboy = new Busboy({ headers: req.headers });
+
+  busboy.on('file', async (_, file) => {
+    const data = await utils.readStream(file);
+    assets.push(data);
+  });
+
+  busboy.on('field', (fieldName, val) => {
+    if (fieldName === 'action') {
+      if (action) {
+        log.warn('server: request contains duplicate field "action"');
+      }
+      action = val;
+      return;
+    }
+
+    log.warn(`server: request contains unexpected field "${fieldName}"`);
+  });
+
+  return new Promise((resolve, reject) => {
+    busboy.on('finish', () => {
+      if (action) {
+        resolve({ action: JSON.parse(action), assets });
+      } else {
+        reject(new Error('malformed request, "action" is missing'));
+      }
+    });
+    req.pipe(busboy);
+  });
 }
 
 const defaults = {
@@ -76,30 +117,15 @@ export default async function startServer(port, customOptions) {
 
         if (req.method === 'POST') {
           // validate content-type
-          if (req.headers['content-type'] !== CONTENT_TYPE) {
+          if (!(req.headers['content-type'] || '').startsWith('multipart/form-data')) {
             res.writeHead(415);
             res.end();
             return;
           }
 
-          // ensure there is a content-length
-          const expectedLength = parseInt(req.headers['content-length'], 10);
-          if (Number.isNaN(expectedLength)) {
-            res.writeHead(411);
-            res.end();
-            return;
-          }
+          const { action, assets } = await readAction(req);
 
-          const buffer = await utils.readStream(req);
-
-          // ensure we read all the data
-          if (buffer.length !== expectedLength) {
-            res.writeHead(400);
-            res.end();
-            return;
-          }
-
-          const response = JSON.stringify({ data: await processor.processAction(parse(buffer)) });
+          const response = JSON.stringify({ data: await processor.processAction(action, assets) });
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // turn off caches
 
@@ -120,11 +146,9 @@ export default async function startServer(port, customOptions) {
           }
 
           const response = await processor.processAction({
-            action: {
-              name: 'READ_FILE',
-              data: {
-                id: url.query.fileId,
-              },
+            name: 'READ_FILE',
+            data: {
+              id: url.query.fileId,
             },
           });
 
