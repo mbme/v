@@ -97,7 +97,7 @@ export async function withTempFiles(files, cb) {
     const paths = files.map((_, i) => path.join(dir, `temp-file-${i}`));
     await Promise.all(paths.map((filePath, i) => fs.promises.writeFile(filePath, files[i])));
 
-    return cb(paths);
+    return await Promise.resolve(cb(paths));
   } catch (e) {
     throw e;
   } finally { // do cleanup in any case
@@ -127,6 +127,23 @@ export function ask(question) {
 
 export const execRaw = promisify(childProcess.exec);
 export const exec = command => execRaw(command).then(({ stdout }) => stdout.trim());
+export function spawn(command, ...args) {
+  return new Promise((resolve, reject) => {
+    const process = childProcess.spawn(command, args);
+    let result = '';
+    process.stdout.on('data', (data) => {
+      result += data;
+    });
+    process.on('close', (code) => {
+      if (code) {
+        reject({ code, result });
+      } else {
+        resolve(result.trim());
+      }
+    });
+    process.on('error', reject);
+  });
+}
 
 const MIME = {
   '.css': 'text/css',

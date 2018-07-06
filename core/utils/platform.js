@@ -1,6 +1,8 @@
 import http from 'http';
 import urlParser from 'url';
-import { readStream, aesEncrypt, sha256, exec, withTempFiles } from './index';
+import { flatten } from 'shared/utils';
+import log from 'shared/log';
+import { readStream, aesEncrypt, sha256, spawn, withTempFiles } from './index';
 
 function request(method, url, headers, body) {
   return new Promise((resolve, reject) => {
@@ -23,21 +25,24 @@ export default function createNetwork(password) {
   return {
     async post(url, action, assets = []) {
       const response = await withTempFiles(assets, (paths) => {
-        const command = [
+        const args = flatten([
           'curl',
           '-L', // follow redirects
-          '-w "|%{http_code}"', // print "|" and status code in the last line, like |404 or |200
-          `-H Cookie=token=${token}`,
-          `-F action=${JSON.stringify(action)}`,
-          ...paths.map((path, i) => `-F file${i}=@${path}`),
+          '-w', '|%{http_code}', // print "|" and status code in the last line, like |404 or |200
+          '-H', `Cookie: token=${token}`,
+          '-F', `action=${JSON.stringify(action)}`,
+          ...paths.map((path, i) => [ '-F', `file${i}=@${path}` ]),
           url,
-        ];
+        ]);
 
-        return exec(command.join(' '));
+        return spawn(...args);
+      }).catch((e) => {
+        log.warn('curl request failed', e.code);
+        return e.result;
       });
 
-      // console.error('RESPONSE');
-      // console.error(response);
+      if (!response) throw new Error('curl request failed');
+
       const splitterPos = response.lastIndexOf('|');
       const status = parseInt(response.substring(splitterPos + 1), 10);
       const body = response.substring(0, splitterPos);
