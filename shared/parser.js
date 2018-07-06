@@ -113,8 +113,8 @@ const Grammar = {
   }),
 
   Header: declareType({ // # Header lvl 1 or ## Header lvl 2
-    isStart: (str, pos) => isAfterNewlineOrBOF(str, pos) &&
-      (isSubSequence(str, pos, '# ') || isSubSequence(str, pos, '## ')),
+    isStart: (str, pos) => isAfterNewlineOrBOF(str, pos)
+      && (isSubSequence(str, pos, '# ') || isSubSequence(str, pos, '## ')),
     isEnd: (str, pos) => pos === str.length || str[pos] === '\n',
     postprocess: postprocessHeader,
   }),

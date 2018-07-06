@@ -36,7 +36,7 @@ class NoteEditor extends PureComponent {
 
   closeEditor = id => push(id ? { name: 'note', params: { id } } : { name: 'notes' });
 
-  togglePreview = () => this.setState({ preview: !this.state.preview });
+  togglePreview = () => this.setState(state => ({ preview: !state.preview }));
 
   onSave = async () => {
     await apiClient.UPDATE_NOTE({ id: this.props.id, name: this.state.name, data: this.state.data }, this.getAttachments());

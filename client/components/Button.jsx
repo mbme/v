@@ -44,6 +44,7 @@ export default function Button({ onClick, disabled, primary, children }) {
       className={button({ disabled, primary })}
       onClick={onClick}
       disabled={disabled}
+      type="button"
     >
       {children}
     </button>

@@ -4,6 +4,8 @@ module.exports = {
     __DEVELOPMENT__: true,
     global: true,
     noop: true,
+    process: true,
+    console: true,
   },
   settings: {
     'import/resolver': {
@@ -93,15 +95,20 @@ module.exports = {
       'ForInStatement',
       'WithStatement',
     ],
+    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
 
     'react/require-default-props': 0,
     'react/forbid-prop-types': 0,
     'react/sort-comp': 0,
+    'react/destructuring-assignment': 0,
+    'react/jsx-one-expression-per-line': 0,
 
     'jsx-a11y/anchor-is-valid': 0,
     'jsx-a11y/click-events-have-key-events': 0,
     'jsx-a11y/no-static-element-interactions': 0,
 
-    "babel/semi": 2,
+    'import/no-cycle': 0,
+
+    'babel/semi': 2,
   },
 }
