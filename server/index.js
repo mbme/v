@@ -179,7 +179,7 @@ export default async function startServer(port, customOptions) {
         res.end();
       }
     } catch (e) {
-      log.error('server: failed to handle request', e);
+      log.warn('server: failed to handle request', e);
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: e.toString() }));
     } finally {
