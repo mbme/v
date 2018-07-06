@@ -25,7 +25,7 @@ export default function createNotesStore(storage) {
       return storage.readRecord(id);
     },
 
-    CREATE_NOTE({ name, data }, attachments) {
+    CREATE_NOTE({ name, data }, assets) {
       assertAll(
         [ name, 'note-name', validators ],
         [ data, 'note-data', validators ],
@@ -33,10 +33,10 @@ export default function createNotesStore(storage) {
 
       const fileIds = extractFileIds(data);
 
-      return storage.createRecord(TYPE, { name, data }, fileIds, attachments);
+      return storage.createRecord(TYPE, { name, data }, fileIds, assets);
     },
 
-    UPDATE_NOTE({ id, name, data }, attachments) {
+    UPDATE_NOTE({ id, name, data }, assets) {
       assertAll(
         [ name, 'note-name', validators ],
         [ data, 'note-data', validators ],
@@ -44,7 +44,7 @@ export default function createNotesStore(storage) {
 
       const fileIds = extractFileIds(data);
 
-      return storage.updateRecord(id, { name, data }, fileIds, attachments);
+      return storage.updateRecord(id, { name, data }, fileIds, assets);
     },
 
     DELETE_NOTE({ id }) {

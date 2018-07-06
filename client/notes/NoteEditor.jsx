@@ -39,16 +39,16 @@ class NoteEditor extends PureComponent {
   togglePreview = () => this.setState(state => ({ preview: !state.preview }));
 
   onSave = async () => {
-    await apiClient.UPDATE_NOTE({ id: this.props.id, name: this.state.name, data: this.state.data }, this.getAttachments());
+    await apiClient.UPDATE_NOTE({ id: this.props.id, name: this.state.name, data: this.state.data }, this.getAssets());
     this.closeEditor(this.props.id);
   };
 
   onCreate = async () => {
-    const note = await apiClient.CREATE_NOTE({ name: this.state.name, data: this.state.data }, this.getAttachments());
+    const note = await apiClient.CREATE_NOTE({ name: this.state.name, data: this.state.data }, this.getAssets());
     this.closeEditor(note.id);
   };
 
-  getAttachments() {
+  getAssets() {
     const ids = extractFileIds(parse(this.state.data));
     // TODO filter out known files
     return Object.entries(this.localFiles).filter(([ id ]) => ids.includes(id)).map(([ , file ]) => file.data);

@@ -64,34 +64,34 @@ class Storage {
   /**
     * @returns {Promise<Record>}
     */
-  createRecord(type, fields, fileIds, attachments) {
+  createRecord(type, fields, fileIds, assets) {
     assertAll(
       [ type, 'record-type' ],
       [ fields, 'record-fields' ],
       [ fileIds, 'file-id[]' ],
-      [ attachments, 'buffer[]' ],
+      [ assets, 'buffer[]' ],
     );
 
     const id = Math.max(0, ...this._cache.getRecordIds()) + 1;
 
-    return this._saveRecord(id, type, fields, fileIds, attachments);
+    return this._saveRecord(id, type, fields, fileIds, assets);
   }
 
   /**
     * @returns {Promise<Record>}
     */
-  updateRecord(id, fields, fileIds, attachments) {
+  updateRecord(id, fields, fileIds, assets) {
     assertAll(
       [ id, 'record-id' ],
       [ fields, 'record-fields' ],
       [ fileIds, 'file-id[]' ],
-      [ attachments, 'buffer[]' ],
+      [ assets, 'buffer[]' ],
     );
 
     const record = this._cache.getRecord(id);
     if (!record) throw new Error(`Record ${id} doesn't exist`);
 
-    return this._saveRecord(id, record.type, fields, fileIds, attachments);
+    return this._saveRecord(id, record.type, fields, fileIds, assets);
   }
 
   /**
@@ -232,16 +232,16 @@ class Storage {
     }
   }
 
-  async _saveRecord(id, type, fields, fileIds, attachments) {
+  async _saveRecord(id, type, fields, fileIds, assets) {
     const prevRecord = this._cache.getRecord(id);
     if (prevRecord && prevRecord.type !== type) throw new Error(`Wrong type ${prevRecord.type}, should be ${type}`);
 
     const newIds = fileIds.filter(fileId => !this._cache.getFile(fileId));
-    if (newIds.length !== attachments.length) log.info('storage: there are redundant attachments');
+    if (newIds.length !== assets.length) log.info('storage: there are redundant assets');
 
     const attachedFiles = {};
-    for (const attachment of attachments) {
-      attachedFiles[utils.sha256(attachment)] = attachment;
+    for (const asset of assets) {
+      attachedFiles[utils.sha256(asset)] = asset;
     }
 
     const unknownIds = newIds.filter(fileId => !attachedFiles[fileId]);
