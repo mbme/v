@@ -1,5 +1,5 @@
 import createApiClient from '../../shared/api-client';
-import { createPubSub } from '../../shared/utils';
+import { pubSub } from '../../shared/utils';
 import { sha256, text2buffer, aesEncrypt } from './index';
 
 export async function authorize(password) {
@@ -14,7 +14,7 @@ export async function deauthorize() {
 export class UnauthorizedError extends Error {}
 
 function createNetwork() {
-  const events = createPubSub();
+  const events = pubSub();
 
   return {
     events,

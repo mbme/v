@@ -1,7 +1,10 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import router from '../router';
-import { historyEvents, replace, propagateCurrentLocation } from '../history';
+import router, {
+  historyEvents,
+  replace,
+  propagateCurrentLocation,
+} from '../router';
 import { inject } from '../store';
 
 class Router extends PureComponent {
@@ -16,11 +19,14 @@ class Router extends PureComponent {
 
   componentDidMount() {
     historyEvents.on('locationChange', this.resolveRoute);
+    window.addEventListener('popstate', propagateCurrentLocation);
+
     propagateCurrentLocation();
   }
 
   componentWillUnmount() {
     historyEvents.off('locationChange', this.resolveRoute);
+    window.removeEventListener('popstate', propagateCurrentLocation);
   }
 
   resolveRoute = async (location) => {

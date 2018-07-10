@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { push } from '../history';
+import { push } from '../router';
 import { apiClient } from '../utils/platform';
 import { Icon, ConfirmationDialog } from '../components';
 

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from '../store';
-import { replaceQueryParam } from '../history';
+import { replaceQueryParam } from '../router';
 import { Input, Icon } from './index';
 
 class Filter extends PureComponent {

@@ -74,6 +74,17 @@ export function uniq(arr, getKey = val => val) {
   return result;
 }
 
+export function removeMut(arr, value) {
+  const pos = arr.indexOf(value);
+  if (pos > -1) {
+    arr.splice(pos, 1);
+  }
+
+  return arr;
+}
+
+export const findById = (arr, id) => arr.find(item => item.id === id);
+
 // [ [ 1, 2 ], 3 ] => [ 1, 2, 3 ]
 export function flatten(arr) {
   return arr.reduce((acc, item) => {
@@ -116,7 +127,7 @@ export function formatTs(ts) {
   ].join('/');
 }
 
-export function createPubSub() {
+export function pubSub() {
   const subs = new Map();
 
   return {
@@ -136,6 +147,25 @@ export function createPubSub() {
 
     emit(name, params) {
       (subs.get(name) || new Set()).forEach(handler => handler(params));
+    },
+  };
+}
+
+export function observable(initialValue) {
+  const subs = [];
+  let value = initialValue;
+
+  return {
+    get value() {
+      return value;
+    },
+    set(newValue) {
+      value = newValue;
+      subs.forEach(sub => sub(newValue));
+    },
+    on(sub) {
+      subs.push(sub);
+      return () => removeMut(subs, sub);
     },
   };
 }

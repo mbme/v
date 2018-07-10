@@ -7,7 +7,7 @@ import {
   parse,
 } from '../../shared/parser';
 import { inject } from '../store';
-import { push } from '../history';
+import { push } from '../router';
 import { readFile, sha256 } from '../utils';
 import { apiClient } from '../utils/platform';
 import {

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
+import { pubSub } from '../shared/utils';
 import createRouter from './utils/createRouter';
 import NotFoundView from './chrome/NotFoundView';
 import ThemeView from './chrome/ThemeView';
@@ -9,7 +10,7 @@ import NoteView from './notes/NoteView';
 import NoteEditorView from './notes/NoteEditorView';
 import TracksView from './tracks/TracksView';
 
-export default createRouter([
+const router = createRouter([
   {
     name: 'index',
     path: '',
@@ -56,3 +57,38 @@ export default createRouter([
     render: () => <NotFoundView />,
   },
 ]);
+
+export default router;
+
+export const historyEvents = pubSub();
+
+export function propagateCurrentLocation(isPush = false) {
+  historyEvents.emit('locationChange', {
+    pathname: window.location.pathname,
+    search: window.location.search,
+    isPush,
+  });
+}
+
+export function push({ name, params, query }) {
+  window.history.pushState(null, '', router.getUrl(name, params, query));
+  propagateCurrentLocation(true);
+}
+
+export function replace({ name, params, query }) {
+  window.history.replaceState(null, '', router.getUrl(name, params, query));
+  propagateCurrentLocation(true);
+}
+
+export function replaceQueryParam(param, value) {
+  const { route, params, query } = router.getState();
+
+  replace({
+    name: route.name,
+    params,
+    query: {
+      ...query,
+      [param]: value,
+    },
+  });
+}

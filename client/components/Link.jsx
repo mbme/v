@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { push } from '../history';
+import { push } from '../router';
 import s from '../styles';
 
 const linkStyles = clean => s.cx({
