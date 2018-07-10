@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Link, Toolbar, Icon } from 'client/components';
-import { apiClient } from 'client/utils/platform';
-import NotFoundView from 'client/chrome/NotFoundView';
+import { Link, Toolbar, Icon } from '../components';
+import { apiClient } from '../utils/platform';
+import NotFoundView from '../chrome/NotFoundView';
 import DeleteNoteButton from './DeleteNoteButton';
 import Note from './Note';
 

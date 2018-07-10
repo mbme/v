@@ -1,8 +1,8 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path';
-import { walkSync } from 'core/utils';
-import log from 'shared/log';
-import { collectTests, runTests } from 'tools/test';
+import { walkSync } from '../core/utils';
+import log from '../shared/log';
+import { collectTests, runTests } from '../tools/test';
 
 const args = process.argv.slice(3);
 const filter = args.filter(arg => !arg.startsWith('--'))[0] || '';

@@ -9,9 +9,9 @@ import {
   Button,
   Icon,
   Toolbar,
-} from 'client/components';
-import { ICON_TYPES } from 'client/components/Icon';
-import s from 'client/styles';
+} from '../components';
+import { ICON_TYPES } from '../components/Icon';
+import s from '../styles';
 
 const styles = s.styles({
   icon: {

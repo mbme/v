@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import { test, before, after } from 'tools/test';
-import startServer from 'server';
-import createNetwork from 'core/utils/platform';
-import { sha256, rmrfSync } from 'core/utils';
-import { createLink } from 'shared/parser';
-import { createArray } from 'shared/utils';
+import { test, before, after } from '../tools/test';
+import startServer from '../server';
+import createNetwork from '../core/utils/platform';
+import { sha256, rmrfSync } from '../core/utils';
+import { createLink } from './parser';
+import { createArray } from './utils';
 import createApiClient from './api-client';
 
 let server;

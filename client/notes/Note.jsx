@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { getFileUrl } from 'shared/api-client';
-import { parse } from 'shared/parser';
-import s from 'client/styles';
+import { getFileUrl } from '../../shared/api-client';
+import { parse } from '../../shared/parser';
+import s from '../styles';
 
 export const styles = s.styles({
   title: {

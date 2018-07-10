@@ -1,7 +1,7 @@
 import http from 'http';
 import urlParser from 'url';
-import { flatten } from 'shared/utils';
-import log from 'shared/log';
+import { flatten } from '../../shared/utils';
+import log from '../../shared/log';
 import { readStream, aesEncrypt, sha256, spawn, withTempFiles } from './index';
 
 function request(method, url, headers, body) {

@@ -1,7 +1,7 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { network, UnauthorizedError } from 'client/utils/platform';
-import { inject } from 'client/store';
+import { network, UnauthorizedError } from '../utils/platform';
+import { inject } from '../store';
 
 class NetworkEventsObserver extends PureComponent {
   static propTypes = {

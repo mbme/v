@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { push } from 'client/history';
-import s from 'client/styles';
+import { push } from '../history';
+import s from '../styles';
 
 const linkStyles = clean => s.cx({
   cursor: 'pointer',

@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import s from 'client/styles';
-import { inject } from 'client/store';
-import { Icon } from 'client/components';
+import s from '../styles';
+import { inject } from '../store';
+import { Icon } from './index';
 
 const styles = s.styles({
   container: {

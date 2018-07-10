@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import s from 'client/styles';
-import { Icon, Backdrop } from 'client/components';
+import s from '../styles';
+import { Icon, Backdrop } from '../components';
 
 const styles = s.styles({
   backdrop: visible => ({

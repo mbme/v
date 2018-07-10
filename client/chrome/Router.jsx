@@ -1,8 +1,8 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import router from 'client/router';
-import { historyEvents, replace, propagateCurrentLocation } from 'client/history';
-import { inject } from 'client/store';
+import router from '../router';
+import { historyEvents, replace, propagateCurrentLocation } from '../history';
+import { inject } from '../store';
 
 class Router extends PureComponent {
   static propTypes = {

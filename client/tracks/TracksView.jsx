@@ -1,9 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import s from 'client/styles';
-import { inject } from 'client/store';
-import { apiClient } from 'client/utils/platform';
-import { Toolbar, Filter } from 'client/components';
+import s from '../styles';
+import { inject } from '../store';
+import { apiClient } from '../utils/platform';
+import { Toolbar, Filter } from '../components';
 import Track from './Track';
 
 const styles = s.styles({

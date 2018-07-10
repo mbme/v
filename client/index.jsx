@@ -1,7 +1,7 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 
-import { Store } from 'client/store';
+import { Store } from './store';
 import AppView from './chrome/AppView';
 
 import { init as initStyles } from './styles';

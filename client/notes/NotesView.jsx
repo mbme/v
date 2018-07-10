@@ -1,10 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { formatTs } from 'shared/utils';
-import { apiClient } from 'client/utils/platform';
-import { inject } from 'client/store';
-import s from 'client/styles';
-import { Button, Toolbar, Link, Filter, Styled } from 'client/components';
+import { formatTs } from '../../shared/utils';
+import { apiClient } from '../utils/platform';
+import { inject } from '../store';
+import s from '../styles';
+import {
+  Button,
+  Toolbar,
+  Link,
+  Filter,
+  Styled,
+} from '../components';
 
 const styles = s.styles({
   link: {

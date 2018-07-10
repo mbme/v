@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import s from 'client/styles';
-import { inject } from 'client/store';
+import s from '../styles';
+import { inject } from '../store';
 
 const styles = s.styles({
   toastContainer: {

@@ -1,6 +1,6 @@
-import createApiClient from 'shared/api-client';
-import { createPubSub } from 'shared/utils';
-import { sha256, text2buffer, aesEncrypt } from 'client/utils';
+import createApiClient from '../../shared/api-client';
+import { createPubSub } from '../../shared/utils';
+import { sha256, text2buffer, aesEncrypt } from './index';
 
 export async function authorize(password) {
   const token = await aesEncrypt(`valid ${Date.now()}`, await sha256(text2buffer(password)));

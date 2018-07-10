@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import createApiClient from 'shared/api-client';
-import { createArray, randomInt, shuffle } from 'shared/utils';
-import { createImageLink } from 'shared/parser';
-import { createTextGenerator } from 'tools/random';
-import { readText, listFiles, sha256 } from 'core/utils';
-import log from 'shared/log';
-import createNetwork from 'core/utils/platform';
+import createApiClient from '../shared/api-client';
+import { createArray, randomInt, shuffle } from '../shared/utils';
+import { createImageLink } from '../shared/parser';
+import { createTextGenerator } from '../tools/random';
+import { readText, listFiles, sha256 } from '../core/utils';
+import log from '../shared/log';
+import createNetwork from '../core/utils/platform';
 
 async function listImage(basePath) {
   const files = await listFiles(basePath);

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import s from 'client/styles';
+import s from '../styles';
 
 const button = ({ disabled, primary }) => s.cx({
   padding: 'var(--spacing-fine) var(--spacing-medium)',

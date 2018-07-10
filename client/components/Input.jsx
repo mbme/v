@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'client/components';
-import s from 'client/styles';
+import { Icon } from './index';
+import s from '../styles';
 
 const styles = s.styles({
   container: light => ({

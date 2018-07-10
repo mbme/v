@@ -1,5 +1,5 @@
-import { createPubSub } from 'shared/utils';
-import router from 'client/router';
+import { createPubSub } from '../shared/utils';
+import router from './router';
 
 const getCurrentLocation = isPush => ({
   pathname: window.location.pathname,

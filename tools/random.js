@@ -1,4 +1,4 @@
-import { capitalize, randomInt } from 'shared/utils';
+import { capitalize, randomInt } from '../shared/utils';
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd
 

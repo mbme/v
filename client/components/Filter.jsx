@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { inject } from 'client/store';
-import { replaceQueryParam } from 'client/history';
-import { Input, Icon } from 'client/components';
+import { inject } from '../store';
+import { replaceQueryParam } from '../history';
+import { Input, Icon } from './index';
 
 class Filter extends PureComponent {
   static propTypes = {

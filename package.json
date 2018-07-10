@@ -7,12 +7,12 @@
   "private": true,
   "main": "",
   "scripts": {
-    "start": "NODE_PATH=. NODE_ENV=production bin/node.js bin/server",
-    "dev": "NODE_PATH=. NODE_ENV=development bin/node.js bin/server",
-    "test": "NODE_PATH=. LOG=ERROR bin/node.js bin/test",
+    "start": "NODE_ENV=production bin/node.js bin/server",
+    "dev": "NODE_ENV=development bin/node.js bin/server",
+    "test": "LOG=ERROR bin/node.js bin/test",
     "test-update": "yarn test --update-snapshots",
-    "repl": "NODE_PATH=. bin/node.js bin/repl",
-    "lint": "NODE_PATH=. eslint . --ext js,jsx",
+    "repl": "bin/node.js bin/repl",
+    "lint": " eslint . --ext js,jsx",
     "cloc": "cloc --vcs=git --exclude-ext=json,md,test.js -v *"
   },
   "dependencies": {

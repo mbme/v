@@ -1,4 +1,4 @@
-import createStore from 'client/utils/createStore';
+import createStore from './utils/createStore';
 
 const { Store, inject } = createStore('global', {
   initialState: {

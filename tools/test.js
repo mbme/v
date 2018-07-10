@@ -2,9 +2,9 @@
 
 import fs from 'fs';
 import assert from 'assert';
-import { readJSON, writeJSON } from 'core/utils';
-import log from 'shared/log';
-import { uniq } from 'shared/utils';
+import { readJSON, writeJSON } from '../core/utils';
+import log from '../shared/log';
+import { uniq } from '../shared/utils';
 
 let _beforeCb;
 let _tests = [];

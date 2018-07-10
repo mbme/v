@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import s from 'client/styles';
+import s from '../styles';
 
 // https://feathericons.com/
 function FeatherIcon({ children, ...otherProps }) {

@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { push } from 'client/history';
-import { apiClient } from 'client/utils/platform';
-import { Icon, ConfirmationDialog } from 'client/components';
+import { push } from '../history';
+import { apiClient } from '../utils/platform';
+import { Icon, ConfirmationDialog } from '../components';
 
 export default class DeleteNoteButton extends PureComponent {
   static propTypes = {

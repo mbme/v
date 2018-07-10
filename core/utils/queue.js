@@ -1,5 +1,5 @@
-import log from 'shared/log';
-import { assertAll } from 'core/validator';
+import log from '../../shared/log';
+import { assertAll } from '../validator';
 
 export default function createQueue() {
   let immediateId = null;

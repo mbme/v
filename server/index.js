@@ -6,10 +6,10 @@ import zlib from 'zlib';
 
 import Busboy from 'busboy';
 
-import * as utils from 'core/utils';
-import log from 'shared/log';
-import { extend } from 'shared/utils';
-import createProcessor from 'core/processor';
+import * as utils from '../core/utils';
+import log from '../shared/log';
+import { extend } from '../shared/utils';
+import createProcessor from '../core/processor';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
 const DIST_DIR = path.join(__dirname, '../dist');

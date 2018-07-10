@@ -1,4 +1,4 @@
-import { test } from 'tools/test';
+import { test } from '../tools/test';
 import { flattenStyles } from './styles';
 
 test('flattenStyles', (assert) => {

@@ -1,4 +1,4 @@
-import { uniq, flatten } from 'shared/utils';
+import { uniq, flatten } from '../../shared/utils';
 
 export default function createCache(records, files) {
   return {

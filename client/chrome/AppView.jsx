@@ -1,9 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import s from 'client/styles';
-import { inject } from 'client/store';
-import { Link, Backdrop } from 'client/components';
-import { deauthorize } from 'client/utils/platform';
+import s from '../styles';
+import { inject } from '../store';
+import { Link, Backdrop } from '../components';
+import { deauthorize } from '../utils/platform';
 import AuthView from './AuthView';
 import Router from './Router';
 import ProgressLocker from './ProgressLocker';

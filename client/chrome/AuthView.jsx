@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import log from 'shared/log';
-import s from 'client/styles';
-import { apiClient, authorize } from 'client/utils/platform';
-import { Backdrop, Input, Styled } from 'client/components';
+import log from '../../shared/log';
+import s from '../styles';
+import { apiClient, authorize } from '../utils/platform';
+import { Backdrop, Input, Styled } from '../components';
 
 async function checkPassword(password) {
   await authorize(password);

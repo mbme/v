@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react';
-import createRouter from 'client/utils/createRouter';
-import NotFoundView from 'client/chrome/NotFoundView';
-import ThemeView from 'client/chrome/ThemeView';
-import NotesView from 'client/notes/NotesView';
-import NoteView from 'client/notes/NoteView';
-import NoteEditorView from 'client/notes/NoteEditorView';
-import TracksView from 'client/tracks/TracksView';
+import createRouter from './utils/createRouter';
+import NotFoundView from './chrome/NotFoundView';
+import ThemeView from './chrome/ThemeView';
+import NotesView from './notes/NotesView';
+import NoteView from './notes/NoteView';
+import NoteEditorView from './notes/NoteEditorView';
+import TracksView from './tracks/TracksView';
 
 export default createRouter([
   {

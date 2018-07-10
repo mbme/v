@@ -1,4 +1,4 @@
-import { test } from 'tools/test';
+import { test } from '../tools/test';
 import { isObject, isFunction, createArray, flatten } from './utils';
 
 test('isObject', (assert) => {

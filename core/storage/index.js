@@ -1,11 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 import path from 'path';
-import nodeFs from 'fs';
-import { recentComparator } from 'shared/utils';
-import * as utils from 'core/utils';
-import probeMetadata from 'core/utils/probe';
-import log from 'shared/log';
-import { validateAll, assertAll } from 'core/validator';
+import fs from 'fs';
+import { recentComparator } from '../../shared/utils';
+import log from '../../shared/log';
+import * as utils from '../utils';
+import probeMetadata from '../utils/probe';
+import { validateAll, assertAll } from '../validator';
 import createCache from './cache';
 
 // FileInfo: { id: string, mimeType: string, updatedTs: number, size: number, meta: {} }
@@ -104,7 +104,7 @@ class Storage {
 
     if (!this._cache.getRecord(id)) throw new Error(`Record ${id} doesn't exist`);
 
-    await nodeFs.promises.unlink(this._getRecordPath(id));
+    await fs.promises.unlink(this._getRecordPath(id));
     this._cache.removeRecord(id);
 
     await this._removeUnusedFiles();
@@ -120,7 +120,7 @@ class Storage {
 
     return {
       file,
-      stream: nodeFs.createReadStream(this._getFilePath(id)),
+      stream: fs.createReadStream(this._getFilePath(id)),
     };
   }
 
@@ -138,7 +138,7 @@ class Storage {
         return;
       }
 
-      await nodeFs.promises.mkdir(dir);
+      await fs.promises.mkdir(dir);
     }
   }
 
@@ -170,7 +170,7 @@ class Storage {
     const filePath = this._getFilePath(id);
 
     const mimeType = await utils.getMimeType(filePath);
-    const stats = await nodeFs.promises.lstat(filePath);
+    const stats = await fs.promises.lstat(filePath);
     const meta = await probeMetadata(filePath);
 
     return { id, mimeType, updatedTs: stats.mtimeMs, size: stats.size, meta };
@@ -226,7 +226,7 @@ class Storage {
 
   async _removeFile(id) {
     try {
-      await nodeFs.promises.unlink(this._getFilePath(id));
+      await fs.promises.unlink(this._getFilePath(id));
     } catch (e) {
       log.error(`storage: files: failed to remove file ${id}`, e);
     }
@@ -282,7 +282,7 @@ class Storage {
   }
 
   async _writeFile(id, data) {
-    await nodeFs.promises.writeFile(this._getFilePath(id), data);
+    await fs.promises.writeFile(this._getFilePath(id), data);
   }
 
   async _writeRecord(id, type, fields, fileIds) {
@@ -292,9 +292,9 @@ class Storage {
     try {
       // write into temp file and then rename temp file to achieve "atomic" file writes
       await utils.writeJSON(tempFile, { type, fields, fileIds, updatedTs: Date.now() });
-      await nodeFs.promises.rename(tempFile, file);
+      await fs.promises.rename(tempFile, file);
     } catch (e) {
-      await nodeFs.promises.unlink(tempFile); // cleanup temp file if operation fails
+      await fs.promises.unlink(tempFile); // cleanup temp file if operation fails
       throw e;
     }
   }

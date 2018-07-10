@@ -1,6 +1,6 @@
 import { createRenderer, combineRules } from 'fela';
 import { render } from 'fela-dom';
-import { isString, isObject, isFunction, flatten } from 'shared/utils';
+import { isString, isObject, isFunction, flatten } from '../shared/utils';
 
 const SCREEN = {
   small: 320,

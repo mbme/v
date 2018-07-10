@@ -1,5 +1,5 @@
-import log from 'shared/log';
-import createQueue from 'core/utils/queue';
+import log from '../shared/log';
+import createQueue from './utils/queue';
 import createCoreStore from './stores/core';
 import createNotesStore from './stores/notes';
 import createTracksStore from './stores/tracks';

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Backdrop, Styled } from 'client/components';
-import s from 'client/styles';
+import { Button, Backdrop, Styled } from './index';
+import s from '../styles';
 
 const styles = s.styles({
   modal: {

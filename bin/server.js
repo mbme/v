@@ -1,7 +1,7 @@
-import startServer from 'server';
 import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
-import webpackConfig from 'webpack.config.babel';
-import log from 'shared/log';
+import webpackConfig from '../webpack.config.babel';
+import startServer from '../server';
+import log from '../shared/log';
 import genData from './gen-data';
 
 const isDevelopment = process.env.NODE_ENV === 'development';

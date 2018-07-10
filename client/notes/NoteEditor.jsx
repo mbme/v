@@ -1,11 +1,23 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { createLink, createImageLink, extractFileIds, parse } from 'shared/parser';
-import { inject } from 'client/store';
-import { push } from 'client/history';
-import { readFile, sha256 } from 'client/utils';
-import { apiClient } from 'client/utils/platform';
-import { Button, Textarea, Toolbar, Input, Icon, Styled } from 'client/components';
+import {
+  createLink,
+  createImageLink,
+  extractFileIds,
+  parse,
+} from '../../shared/parser';
+import { inject } from '../store';
+import { push } from '../history';
+import { readFile, sha256 } from '../utils';
+import { apiClient } from '../utils/platform';
+import {
+  Button,
+  Textarea,
+  Toolbar,
+  Input,
+  Icon,
+  Styled,
+} from '../components';
 import Note, { styles } from './Note';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';

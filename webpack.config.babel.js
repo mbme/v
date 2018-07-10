@@ -16,10 +16,6 @@ export default {
 
   resolve: {
     extensions: [ '.js', '.jsx', '.json' ],
-    modules: [
-      path.resolve(__dirname), // equal to NODE_PATH=.
-      'node_modules',
-    ],
   },
 
   module: {

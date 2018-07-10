@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'client/components';
+import { Icon } from '../components';
 
 export default class AttachFileButton extends PureComponent {
   static propTypes = {

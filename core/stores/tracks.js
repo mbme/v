@@ -1,4 +1,4 @@
-import { fuzzySearch } from 'shared/utils';
+import { fuzzySearch } from '../../shared/utils';
 import { assertAll } from '../validator';
 
 const TYPE = 'track';

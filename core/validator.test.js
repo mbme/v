@@ -1,4 +1,4 @@
-import { test } from 'tools/test';
+import { test } from '../tools/test';
 import { validate, assert as validationAssert, assertAll } from './validator';
 
 test('positive-integer', ({ equal }) => {

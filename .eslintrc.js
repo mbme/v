@@ -7,13 +7,6 @@ module.exports = {
     process: true,
     console: true,
   },
-  settings: {
-    'import/resolver': {
-      node: {
-        paths: [ __dirname ],
-      },
-    },
-  },
   overrides: [
     {
       files: [

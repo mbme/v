@@ -1,4 +1,4 @@
-import * as utils from 'shared/utils';
+import * as utils from '../shared/utils';
 
 const Types = {
   'positive-integer': val => Number.isInteger(val) && val > 0,
