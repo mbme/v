@@ -4,8 +4,8 @@ export default function createCoreStore(storage) {
       return 'PONG';
     },
 
-    READ_FILE({ id }) {
-      return storage.readFile(id);
+    READ_ASSET({ id }) {
+      return storage.readAsset(id);
     },
   };
 }

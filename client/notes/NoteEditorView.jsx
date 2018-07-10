@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import NotFoundView from '../chrome/NotFoundView';
-import { apiClient } from '../utils/platform';
+import { api } from '../utils';
 import NoteEditor from './NoteEditor';
 
 export default class NoteEditorView extends PureComponent {
@@ -16,7 +16,7 @@ export default class NoteEditorView extends PureComponent {
   async loadData() {
     if (!this.props.id) return;
 
-    const result = await apiClient.READ_NOTE({ id: this.props.id });
+    const result = await api.READ_NOTE({ id: this.props.id });
     this.setState({ note: result });
   }
 

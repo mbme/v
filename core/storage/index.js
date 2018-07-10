@@ -110,7 +110,7 @@ class Storage {
     await this._removeUnusedFiles();
   }
 
-  readFile(id) {
+  readAsset(id) {
     assertAll(
       [ id, 'file-id' ],
     );

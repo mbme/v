@@ -1,15 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import createApiClient from '../shared/api-client';
 import { createArray, randomInt, shuffle } from '../shared/utils';
 import { createImageLink } from '../shared/parser';
-import { createTextGenerator } from '../tools/random';
 import { readText, listFiles, sha256 } from '../core/utils';
 import log from '../shared/log';
-import createNetwork from '../core/utils/platform';
+import { createTextGenerator } from './random';
 
-async function listImage(basePath) {
+async function listImages(basePath) {
   const files = await listFiles(basePath);
   const images = files.filter(name => name.match(/\.(jpg|jpeg)$/i));
 
@@ -48,11 +46,9 @@ function randowWords(generator, wordsCount) {
   return createArray(wordsCount, generator.word).join(' ');
 }
 
-export default async function genData(port, password, notesCount, tracksCount) {
-  const api = createApiClient(`http://localhost:${port}`, createNetwork(password));
-
+export default async function genData(api, notesCount, tracksCount) {
   const resourcesPath = path.join(__dirname, '../resources');
-  const images = await listImage(resourcesPath);
+  const images = await listImages(resourcesPath);
   const text = await readText(path.join(resourcesPath, 'text.txt'));
   const generator = createTextGenerator(text);
 

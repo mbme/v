@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import s from '../styles';
 import { inject } from '../store';
 import { Link, Backdrop } from '../components';
-import { deauthorize } from '../utils/platform';
+import { deauthorize } from '../utils';
 import AuthView from './AuthView';
 import Router from './Router';
 import ProgressLocker from './ProgressLocker';

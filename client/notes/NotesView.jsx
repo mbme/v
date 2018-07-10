@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { formatTs } from '../../shared/utils';
-import { apiClient } from '../utils/platform';
+import { api } from '../utils';
 import { inject } from '../store';
 import s from '../styles';
 import {
@@ -35,7 +35,7 @@ class NotesView extends PureComponent {
   };
 
   async loadData() {
-    const result = await apiClient.LIST_NOTES({ size: 0, filter: this.props.filter });
+    const result = await api.LIST_NOTES({ size: 0, filter: this.props.filter });
     this.setState({ notes: result.items });
   }
 

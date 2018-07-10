@@ -180,3 +180,11 @@ export function mapObject(obj, fn) {
 
   return result;
 }
+
+export function apiClient(onAction) {
+  return new Proxy({}, {
+    get(target, prop) {
+      return (data, newFiles) => onAction({ name: prop, data }, newFiles || []);
+    },
+  });
+}

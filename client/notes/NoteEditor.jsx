@@ -8,8 +8,7 @@ import {
 } from '../../shared/parser';
 import { inject } from '../store';
 import { push } from '../router';
-import { readFile, sha256 } from '../utils';
-import { apiClient } from '../utils/platform';
+import { readFile, sha256, api } from '../utils';
 import {
   Button,
   Textarea,
@@ -51,12 +50,12 @@ class NoteEditor extends PureComponent {
   togglePreview = () => this.setState(state => ({ preview: !state.preview }));
 
   onSave = async () => {
-    await apiClient.UPDATE_NOTE({ id: this.props.id, name: this.state.name, data: this.state.data }, this.getAssets());
+    await api.UPDATE_NOTE({ id: this.props.id, name: this.state.name, data: this.state.data }, this.getAssets());
     this.closeEditor(this.props.id);
   };
 
   onCreate = async () => {
-    const note = await apiClient.CREATE_NOTE({ name: this.state.name, data: this.state.data }, this.getAssets());
+    const note = await api.CREATE_NOTE({ name: this.state.name, data: this.state.data }, this.getAssets());
     this.closeEditor(note.id);
   };
 

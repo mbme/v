@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Link, Toolbar, Icon } from '../components';
-import { apiClient } from '../utils/platform';
+import { api } from '../utils';
 import NotFoundView from '../chrome/NotFoundView';
 import DeleteNoteButton from './DeleteNoteButton';
 import Note from './Note';
@@ -16,7 +16,7 @@ export default class NoteView extends PureComponent {
   };
 
   async loadData() {
-    const result = await apiClient.READ_NOTE({ id: this.props.id });
+    const result = await api.READ_NOTE({ id: this.props.id });
     this.setState({ note: result });
   }
 

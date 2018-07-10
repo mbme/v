@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import log from '../../shared/log';
 import s from '../styles';
-import { apiClient, authorize } from '../utils/platform';
+import { api, authorize } from '../utils';
 import { Backdrop, Input, Styled } from '../components';
 
 async function checkPassword(password) {
   await authorize(password);
 
   try {
-    await apiClient.PING();
+    await api.PING();
     window.location.reload();
   } catch (e) {
     log.error('auth failed', e);

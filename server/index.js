@@ -146,7 +146,7 @@ export default async function startServer(port, customOptions) {
           }
 
           const response = await processor.processAction({
-            name: 'READ_FILE',
+            name: 'READ_ASSET',
             data: {
               id: url.query.fileId,
             },

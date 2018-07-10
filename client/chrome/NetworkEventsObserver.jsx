@@ -1,6 +1,6 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { network, UnauthorizedError } from '../utils/platform';
+import { networkEvents, UnauthorizedError } from '../utils';
 import { inject } from '../store';
 
 class NetworkEventsObserver extends PureComponent {
@@ -21,15 +21,15 @@ class NetworkEventsObserver extends PureComponent {
   };
 
   componentDidMount() {
-    network.events.on('start', this.onRequestStart);
-    network.events.on('error', this.onRequestError);
-    network.events.on('end', this.onRequestEnd);
+    networkEvents.on('start', this.onRequestStart);
+    networkEvents.on('error', this.onRequestError);
+    networkEvents.on('end', this.onRequestEnd);
   }
 
   componentWillUnmount() {
-    network.events.off('start', this.onRequestStart);
-    network.events.off('error', this.onRequestError);
-    network.events.off('end', this.onRequestEnd);
+    networkEvents.off('start', this.onRequestStart);
+    networkEvents.off('error', this.onRequestError);
+    networkEvents.off('end', this.onRequestEnd);
   }
 
   render() {

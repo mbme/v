@@ -2,7 +2,8 @@ import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-depen
 import webpackConfig from '../webpack.config.babel';
 import startServer from '../server';
 import log from '../shared/log';
-import genData from './gen-data';
+import genData from '../tools/gen-data';
+import createApiClient from '../server/api-client';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 // FIXME port, rootDir & password in prod mode
@@ -23,7 +24,9 @@ async function run(args) {
     compilationPromise,
   ]);
 
-  if (isDevelopment && args.includes('--gen-data')) await genData(port, password, 30, 10);
+  if (isDevelopment && args.includes('--gen-data')) {
+    await genData(createApiClient(`http://localhost:${port}`, password), 30, 10);
+  }
 
   log.info(`Server listening on http://localhost:${port}`);
 

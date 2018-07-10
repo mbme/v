@@ -15,7 +15,7 @@ const testFiles = walkSync(basePath)
 
 const testPlans = [];
 for (const testFile of testFiles) {
-  const testPlan = collectTests(() => require(testFile));
+  const testPlan = collectTests(() => require(path.join(basePath, testFile)));
   const only = testPlan.tests.find(test => test.only);
   if (only) {
     if (updateSnapshots) throw new Error("Can't update the 'only' snapshot");

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { getFileUrl } from '../../shared/api-client';
 import { parse } from '../../shared/parser';
+import { getFileUrl } from '../utils';
 import s from '../styles';
 
 export const styles = s.styles({

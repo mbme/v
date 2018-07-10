@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { push } from '../router';
-import { apiClient } from '../utils/platform';
+import { api } from '../utils';
 import { Icon, ConfirmationDialog } from '../components';
 
 export default class DeleteNoteButton extends PureComponent {
@@ -14,7 +14,7 @@ export default class DeleteNoteButton extends PureComponent {
   };
 
   deleteNote = async () => {
-    await apiClient.DELETE_NOTE({ id: this.props.id });
+    await api.DELETE_NOTE({ id: this.props.id });
     push({ name: 'notes' });
   };
 

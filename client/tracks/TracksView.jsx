@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import s from '../styles';
 import { inject } from '../store';
-import { apiClient } from '../utils/platform';
+import { api } from '../utils';
 import { Toolbar, Filter } from '../components';
 import Track from './Track';
 
@@ -23,7 +23,7 @@ class TracksView extends PureComponent {
   };
 
   async loadData() {
-    const result = await apiClient.LIST_TRACKS({ size: 0, filter: this.props.filter });
+    const result = await api.LIST_TRACKS({ size: 0, filter: this.props.filter });
     this.setState({ tracks: result.items });
   }
 

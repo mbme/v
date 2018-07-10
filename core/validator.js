@@ -53,7 +53,7 @@ export const validateAll = (...rules) => utils.flatten(rules.map(params => valid
 
 export function assertAll(...rules) {
   const results = validateAll(...rules);
-  if (results.length) throw results;
+  if (results.length) throw new Error(results.join('\n'));
 }
 
 export function createObjectValidator(props) {

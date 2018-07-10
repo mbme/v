@@ -1,36 +1,27 @@
 import fs from 'fs';
 import path from 'path';
 import { test, before, after } from '../tools/test';
-import startServer from '../server';
-import createNetwork from '../core/utils/platform';
-import { sha256, rmrfSync } from '../core/utils';
-import { createLink } from './parser';
-import { createArray } from './utils';
-import createApiClient from './api-client';
+import { createLink } from '../shared/parser';
+import { createArray, apiClient } from '../shared/utils';
+import { sha256, rmrfSync, readStream } from './utils';
+import createProcessor from './processor';
 
-let server;
+let processor;
 let api;
-const port = 8079;
 const rootDir = '/tmp/api-client-test-storage';
-const password = 'test';
 
-const runServer = () => startServer(port, { html5historyFallback: false, rootDir, password });
+const init = async () => {
+  processor = await createProcessor({ rootDir });
+  api = apiClient(processor.processAction);
+};
 
 before(async () => {
-  server = await runServer();
-  api = createApiClient(`http://localhost:${port}`, createNetwork(password));
+  await init();
 });
 
 after(() => {
   rmrfSync(rootDir);
-  return server.close();
-});
-
-test('should handle auth', async (assert) => {
-  const badApi = createApiClient(`http://localhost:${port}`, createNetwork('wrong password'));
-
-  const failed = await badApi.LIST_NOTES().then(() => false, () => true);
-  assert.equal(failed, true);
+  return processor.close();
 });
 
 test('should ping', async (assert) => {
@@ -44,10 +35,11 @@ test('should manage files', async (assert) => {
   const link = createLink('', fileId);
 
   const note = await api.CREATE_NOTE({ name: 'name', data: `data ${link}` }, [ buffer ]);
-  assert.equal(buffer.equals(await api.READ_FILE({ fileId })), true);
+  const result = await readStream((await api.READ_ASSET({ id: fileId })).stream);
+  assert.equal(buffer.equals(result), true);
 
   await api.UPDATE_NOTE({ id: note.id, name: 'name', data: 'data' });
-  assert.equal(await api.READ_FILE({ fileId }), null);
+  assert.equal(await api.READ_ASSET({ id: fileId }), null);
 });
 
 test('should read file metadata', async (assert) => {
@@ -119,10 +111,12 @@ test('should properly initialize', async (assert) => {
 
   const note = await api.CREATE_NOTE({ name: 'name', data: `data ${link}` }, [ buffer ]);
 
-  await server.close();
-  server = await runServer();
+  // reinitialize
+  await processor.close();
+  await init();
 
-  assert.equal(buffer.equals(await api.READ_FILE({ fileId })), true);
+  const result = await readStream((await api.READ_ASSET({ id: fileId })).stream);
+  assert.equal(buffer.equals(result), true);
 
   const noteAfterRestart = await api.READ_NOTE({ id: note.id });
   assert.equal(noteAfterRestart.fields.name, note.fields.name);
