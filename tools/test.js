@@ -88,8 +88,7 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
     log.simple(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '');
     return [ snapshots, true ];
   } catch (e) {
-    log.simple(`  ${name} failed\n`, e.message);
-    log.simple(e.stack);
+    log.simple(`  ${name} failed\n`, e);
     return [ oldSnapshots, false ];
   }
 }
