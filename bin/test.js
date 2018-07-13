@@ -10,12 +10,11 @@ const updateSnapshots = args.includes('--update-snapshots');
 
 const basePath = path.join(__dirname, '..');
 const testFiles = walkSync(basePath)
-  .map(filePath => path.relative(basePath, filePath))
   .filter(relPath => relPath.endsWith('.test.js') && relPath.includes(filter));
 
 const testPlans = [];
 for (const testFile of testFiles) {
-  const testPlan = collectTests(() => require(path.join(basePath, testFile)));
+  const testPlan = collectTests(() => require(testFile));
   const only = testPlan.tests.find(test => test.only);
   if (only) {
     if (updateSnapshots) throw new Error("Can't update the 'only' snapshot");
@@ -32,7 +31,7 @@ async function executeTestPlans() {
   let failures = 0;
 
   for (const testPlan of testPlans) {
-    log.simple(testPlan.file);
+    log.simple(path.relative(basePath, testPlan.file));
 
     if (testPlan.before) await Promise.resolve(testPlan.before());
     failures += await runTests(path.join(basePath, testPlan.file), testPlan.tests, updateSnapshots);
