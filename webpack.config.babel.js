@@ -2,11 +2,12 @@ import path from 'path';
 import webpack from 'webpack';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const isV2 = !!process.env.V2;
 
 export default {
   mode: isProduction ? 'production' : 'development',
 
-  entry: './client/index.jsx',
+  entry: isV2 ? './client2/index.jsx' : './client/index.jsx',
 
   output: {
     publicPath: '/',
