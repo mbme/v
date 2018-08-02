@@ -52,7 +52,6 @@ class AuthView extends PureComponent {
   };
 
   render() {
-    console.error('HERE', this.props.isAuthorized);
     if (this.props.isAuthorized === undefined) {
       return null;
     }

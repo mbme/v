@@ -321,3 +321,82 @@ select {
   height: 100vh;
   visibility: hidden;
 }
+
+/* -------------------------------------------------------------------------------- */
+
+.AV-container {
+  display: grid;
+  grid-template-areas: "content";
+}
+
+.AV-navbar-container {
+  grid-area: sidemenu;
+  position: sticky;
+  top: 0;
+
+  display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .AV-container {
+    grid-template-columns: minmax(180px, 30%) var(--max-width) auto;
+    grid-template-areas: "sidemenu content whitespace";
+  }
+
+  .AV-navbar-container {
+    display: block;
+  }
+}
+
+.AV-navbar {
+  position: sticky;
+  top: 0;
+
+  height: 100vh;
+  width: 100%;
+  padding: var(--spacing-small) var(--spacing-large);
+
+  background-color: var(--color-secondary);
+  color: var(--color-light);
+  font-size: var(--font-size-medium);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.AV-logout {
+  position: absolute;
+  bottom: var(--spacing-small);
+}
+
+.AV-navlink {
+  display: inline-block;
+  margin: var(--spacing-medium) 0;
+}
+.AV-navlink.is-selected {
+  color: var(--color-primary);
+}
+
+.AV-view {
+  grid-area: content;
+  justify-self: center;
+  padding: 0 var(--spacing-small);
+  width: 100%;
+  max-width: var(--max-width);
+
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 768px) {
+  .AV-view {
+    padding: 0 var(--spacing-medium);
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .AV-view {
+    padding: 0 var(--spacing-large);
+  }
+}

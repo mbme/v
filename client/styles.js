@@ -54,6 +54,24 @@ function renderStyles(obj) {
   return renderer.renderRule(combineRules(...rules));
 }
 
+function cn(...args) {
+  return args.reduce((acc, val) => {
+    if (!val) return acc;
+
+    if (isString(val)) {
+      acc.push(val);
+    } else if (isObject(val)) {
+      Object.entries(val).forEach(([key, val]) => {
+        if (val) {
+          acc.push(key);
+        }
+      });
+    }
+
+    return acc;
+  }, []).join(' ');
+}
+
 function cx(...args) {
   return args.reduce((acc, val) => {
     if (!val) return acc;
@@ -104,6 +122,7 @@ const flex = ({ h, v, column = false, wrap } = {}) => ({
 
 export default {
   cx,
+  cn,
   styles: stylesObject,
   animation,
   flex,

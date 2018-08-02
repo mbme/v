@@ -10,82 +10,6 @@ import ProgressLocker from './ProgressLocker';
 import NetworkEventsObserver from './NetworkEventsObserver';
 import Toaster from './Toaster';
 
-const styles = s.styles({
-  appContainer: {
-    display: 'grid',
-    gridTemplateAreas: '"content"',
-
-    largeScreen: {
-      gridTemplateColumns: 'minmax(180px, 30%) var(--max-width) auto',
-      gridTemplateAreas: '"sidemenu content whitespace"',
-    },
-  },
-
-  navbarContainer: {
-    gridArea: 'sidemenu',
-    position: 'sticky',
-    top: '0',
-
-    display: 'none',
-
-    largeScreen: {
-      display: 'block',
-    },
-  },
-
-  navbar: {
-    position: 'sticky',
-    top: 0,
-
-    height: '100vh',
-    width: '100%',
-    padding: 'var(--spacing-small) var(--spacing-large)',
-
-    backgroundColor: 'var(--color-secondary)',
-    color: 'var(--color-light)',
-    fontSize: 'var(--font-size-medium)',
-
-    extend: [
-      s.flex({ column: true, v: 'flex-end' }),
-    ],
-  },
-
-  navLink: isSelected => ({
-    display: 'inline-block',
-    margin: 'var(--spacing-medium) 0',
-    extend: [
-      isSelected && {
-        color: 'var(--color-primary)',
-      },
-    ],
-  }),
-
-  logout: {
-    position: 'absolute',
-    bottom: 'var(--spacing-small)',
-  },
-
-  viewContainer: {
-    gridArea: 'content',
-    justifySelf: 'center',
-    padding: '0 var(--spacing-small)',
-    width: '100%',
-    maxWidth: 'var(--max-width)',
-
-    mediumScreen: {
-      padding: '0 var(--spacing-medium)',
-    },
-
-    largeScreen: {
-      padding: '0 var(--spacing-large)',
-    },
-
-    extend: [
-      s.flex({ column: true }),
-    ],
-  },
-});
-
 class AppView extends PureComponent {
   static propTypes = {
     route: PropTypes.object,
@@ -103,12 +27,14 @@ class AppView extends PureComponent {
   renderNavbar() {
     const routeName = this.props.route ? this.props.route.name : null;
 
+    const isNoteNavTree = [ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName);
+
     const navbar = (
-      <nav className={styles.navbar}>
+      <nav className="AV-navbar">
         <Link
           clean
           to={{ name: 'notes' }}
-          className={styles.navLink([ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName))}
+          className={s.cn('AV-navlink', { 'is-selected': isNoteNavTree })}
         >
           Notes
         </Link>
@@ -116,12 +42,12 @@ class AppView extends PureComponent {
         <Link
           clean
           to={{ name: 'theme' }}
-          className={styles.navLink(routeName === 'theme')}
+          className={s.cn('AV-navlink', { 'is-selected': routeName === 'theme' })}
         >
           Theme
         </Link>
 
-        <div className={styles.logout} onClick={this.logout}>
+        <div className="AV-logout" onClick={this.logout}>
           Logout
         </div>
       </nav>
@@ -129,7 +55,7 @@ class AppView extends PureComponent {
 
     return (
       <Fragment>
-        <div className={styles.navbarContainer}>{navbar}</div>
+        <div className="AV-navbar-container">{navbar}</div>
 
         {this.props.isNavVisible && (
           <Backdrop onClick={() => this.props.showNav(false)}>
@@ -157,10 +83,10 @@ class AppView extends PureComponent {
     }
 
     return (
-      <div className={styles.appContainer}>
+      <div className="AV-container">
         {this.renderNavbar()}
 
-        <div className={styles.viewContainer}>
+        <div className="AV-view">
           <Router />
         </div>
 
