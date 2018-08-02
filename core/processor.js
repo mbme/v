@@ -2,7 +2,6 @@ import log from '../shared/log';
 import createQueue from './utils/queue';
 import createCoreStore from './stores/core';
 import createNotesStore from './stores/notes';
-import createTracksStore from './stores/tracks';
 import createStorage from './storage';
 
 export default async function createProcessor({ rootDir }) {
@@ -11,7 +10,6 @@ export default async function createProcessor({ rootDir }) {
   const stores = [
     createCoreStore(storage),
     createNotesStore(storage),
-    createTracksStore(storage),
   ];
 
   return {

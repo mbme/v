@@ -102,6 +102,7 @@ module.exports = {
     'jsx-a11y/no-static-element-interactions': 0,
 
     'import/no-cycle': 0,
+    'import/prefer-default-export': 0,
 
     'babel/semi': 2,
   },

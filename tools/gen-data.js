@@ -42,11 +42,7 @@ async function genText(generator, images) {
   return { name: name.substring(0, name.length - 1), data };
 }
 
-function randowWords(generator, wordsCount) {
-  return createArray(wordsCount, generator.word).join(' ');
-}
-
-export default async function genData(api, notesCount, tracksCount) {
+export default async function genData(api, notesCount) {
   const resourcesPath = path.join(__dirname, '../resources');
   const images = await listImages(resourcesPath);
   const text = await readText(path.join(resourcesPath, 'text.txt'));
@@ -57,18 +53,7 @@ export default async function genData(api, notesCount, tracksCount) {
     return api.CREATE_NOTE({ name, data }, images.map(image => image.file.data));
   });
 
-  const trackData = await fs.promises.readFile(path.join(resourcesPath, 'track.mp3'));
-  const trackId = sha256(trackData);
-  const tracksPromises = createArray(tracksCount, async () => {
-    const artist = randowWords(generator, randomInt(1, 2));
-    const title = randowWords(generator, randomInt(1, 4));
-    const rating = randomInt(1, 5);
-    const categories = createArray(randomInt(0, 2), generator.word);
+  await Promise.all(notesPromises);
 
-    return api.CREATE_TRACK({ artist, title, rating, categories, fileId: trackId }, [ trackData ]);
-  });
-
-  await Promise.all([ ...notesPromises, ...tracksPromises ]);
-
-  log.info('Generated %s fake notes & %s fake tracks', notesCount, tracksCount);
+  log.info('Generated %s fake notes', notesCount);
 }

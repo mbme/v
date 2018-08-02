@@ -8,7 +8,6 @@ import ThemeView from './chrome/ThemeView';
 import NotesView from './notes/NotesView';
 import NoteView from './notes/NoteView';
 import NoteEditorView from './notes/NoteEditorView';
-import TracksView from './tracks/TracksView';
 
 const router = createRouter([
   {
@@ -42,13 +41,6 @@ const router = createRouter([
     name: 'note-editor',
     path: '/notes/:id/editor',
     render: ({ id }) => <NoteEditorView id={parseInt(id, 10)} />,
-  },
-
-  // TRACKS
-  {
-    path: '/tracks',
-    name: 'tracks',
-    render: () => <TracksView />,
   },
 
   {

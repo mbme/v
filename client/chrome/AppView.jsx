@@ -115,14 +115,6 @@ class AppView extends PureComponent {
 
         <Link
           clean
-          to={{ name: 'tracks' }}
-          className={styles.navLink(routeName === 'tracks')}
-        >
-          Tracks
-        </Link>
-
-        <Link
-          clean
           to={{ name: 'theme' }}
           className={styles.navLink(routeName === 'theme')}
         >

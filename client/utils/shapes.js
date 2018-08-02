@@ -8,11 +8,3 @@ export const noteShape = PropTypes.shape({
     data: PropTypes.string,
   }).isRequired,
 });
-
-export const trackShape = PropTypes.shape({
-  id: PropTypes.number.isRequired,
-  fields: PropTypes.shape({
-    artist: PropTypes.string.isRequired,
-    title: PropTypes.string,
-  }).isRequired,
-});
