@@ -15,9 +15,8 @@ import {
   Toolbar,
   Input,
   Icon,
-  Styled,
 } from '../components';
-import Note, { styles } from './Note';
+import Note from './Note';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';
 
@@ -116,13 +115,13 @@ class NoteEditor extends PureComponent {
       <Fragment>
         <Toolbar left={leftIcons} right={rightIcons} />
 
-        <Styled $marginBottom="var(--spacing-medium)" hidden={preview}>
-          <Input className={styles.title} name="name" value={name} onChange={this.onNameChange} autoFocus />
-        </Styled>
+        <div className="g-section" hidden={preview}>
+          <Input className="Note-title" name="name" value={name} onChange={this.onNameChange} autoFocus />
+        </div>
 
-        <Styled $marginBottom="var(--spacing-medium)" hidden={preview}>
+        <div className="g-section" hidden={preview}>
           <Textarea name="data" value={data} onChange={this.onDataChange} ref={(ref) => { this.textAreaRef = ref; }} />
-        </Styled>
+        </div>
 
         {preview && <Note name={name} data={data} localFiles={this.localFiles} />}
       </Fragment>

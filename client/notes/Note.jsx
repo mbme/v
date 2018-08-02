@@ -2,26 +2,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { parse } from '../../shared/parser';
 import { getFileUrl } from '../utils';
-import s from '../styles';
-
-export const styles = s.styles({
-  title: {
-    textAlign: 'center',
-    letterSpacing: '1.4px',
-    fontWeight: 'bold',
-    fontSize: 'var(--font-size-large)',
-    marginBottom: 'var(--spacing-medium)',
-  },
-  document: {
-    hyphens: 'auto',
-    textAlign: 'justify',
-  },
-  image: {
-    display: 'block',
-    padding: 'var(--spacing-medium) 0',
-    marginBottom: 'var(--spacing-meium)',
-  },
-});
 
 export default class Note extends PureComponent {
   static propTypes = {
@@ -59,7 +39,7 @@ export default class Note extends PureComponent {
   renderItem = (item) => {
     switch (item.type) {
       case 'Document': {
-        return React.createElement('article', { className: styles.document }, ...item.items.map(this.renderItem));
+        return React.createElement('article', { className: 'Note-document' }, ...item.items.map(this.renderItem));
       }
 
       case 'Paragraph': {
@@ -86,7 +66,7 @@ export default class Note extends PureComponent {
 
         if (item.link.type === 'image') {
           return (
-            <img className={styles.image} alt={item.link.name} src={url} />
+            <img className="Note-image" alt={item.link.name} src={url} />
           );
         }
 
@@ -103,7 +83,7 @@ export default class Note extends PureComponent {
   render() {
     return (
       <div>
-        <h1 className={styles.title}>{this.props.name}</h1>
+        <h1 className="Note-title">{this.props.name}</h1>
         {this.renderItem(parse(this.props.data))}
       </div>
     );

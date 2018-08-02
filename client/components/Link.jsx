@@ -1,17 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { push } from '../router';
-import s from '../styles';
-
-const linkStyles = clean => s.cx({
-  cursor: 'pointer',
-  display: 'inline-block',
-  extend: [
-    !clean && {
-      color: 'var(--color-link)',
-    },
-  ],
-});
+import { classNames } from '../utils';
 
 export default class Link extends PureComponent {
   static propTypes = {
@@ -31,7 +21,12 @@ export default class Link extends PureComponent {
     const { className, children, clean } = this.props;
 
     return (
-      <div className={s.cx(className, linkStyles(clean))} role="link" tabIndex="0" onClick={this.onClick}>
+      <div
+        className={classNames('Link', { 'is-clean': clean }, className)}
+        role="link"
+        tabIndex="0"
+        onClick={this.onClick}
+      >
         {children}
       </div>
     );

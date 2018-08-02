@@ -1,9 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import s from '../styles';
 import { inject } from '../store';
 import { Link, Backdrop } from '../components';
-import { deauthorize } from '../utils';
+import { deauthorize, classNames } from '../utils';
 import AuthView from './AuthView';
 import Router from './Router';
 import ProgressLocker from './ProgressLocker';
@@ -30,11 +29,11 @@ class AppView extends PureComponent {
     const isNoteNavTree = [ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName);
 
     const navbar = (
-      <nav className="AV-navbar">
+      <nav className="App-navbar">
         <Link
           clean
           to={{ name: 'notes' }}
-          className={s.cn('AV-navlink', { 'is-selected': isNoteNavTree })}
+          className={classNames('App-navlink', { 'is-selected': isNoteNavTree })}
         >
           Notes
         </Link>
@@ -42,12 +41,12 @@ class AppView extends PureComponent {
         <Link
           clean
           to={{ name: 'theme' }}
-          className={s.cn('AV-navlink', { 'is-selected': routeName === 'theme' })}
+          className={classNames('App-navlink', { 'is-selected': routeName === 'theme' })}
         >
           Theme
         </Link>
 
-        <div className="AV-logout" onClick={this.logout}>
+        <div className="App-logout" onClick={this.logout}>
           Logout
         </div>
       </nav>
@@ -55,7 +54,7 @@ class AppView extends PureComponent {
 
     return (
       <Fragment>
-        <div className="AV-navbar-container">{navbar}</div>
+        <div className="App-navbar-container">{navbar}</div>
 
         {this.props.isNavVisible && (
           <Backdrop onClick={() => this.props.showNav(false)}>
@@ -83,10 +82,10 @@ class AppView extends PureComponent {
     }
 
     return (
-      <div className="AV-container">
+      <div className="App-container">
         {this.renderNavbar()}
 
-        <div className="AV-view">
+        <div className="App-view">
           <Router />
         </div>
 

@@ -1,56 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { classNames } from '../utils';
 import { Icon } from './index';
-import s from '../styles';
-
-const styles = s.styles({
-  container: light => ({
-    position: 'relative',
-
-    extend: [
-      light && {
-        backgroundColor: 'inherit',
-        borderBottom: 'var(--border)',
-      },
-      !light && {
-        backgroundColor: 'var(--bg-color)',
-        boxShadow: 'var(--box-shadow)',
-        border: 'var(--border)',
-      },
-    ],
-  }),
-
-  input: (light, withClear) => ({
-    display: 'block',
-    width: '100%',
-    height: '100%',
-    border: '0 none',
-    backgroundColor: 'inherit',
-
-    paddingTop: 'var(--spacing-small)',
-    paddingRight: 'var(--spacing-small)',
-    paddingBottom: 'var(--spacing-small)',
-    paddingLeft: 'var(--spacing-small)',
-
-    extend: [
-      light && {
-        paddingTop: 'var(--spacing-fine)',
-        paddingBottom: 'var(--spacing-fine)',
-      },
-      withClear && {
-        paddingRight: 'var(--spacing-medium)',
-      },
-    ],
-  }),
-
-  clearIcon: {
-    position: 'absolute',
-    right: 'var(--spacing-fine)',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: 'var(--color-secondary)',
-  },
-});
 
 export default class Input extends PureComponent {
   static propTypes = {
@@ -99,15 +50,15 @@ export default class Input extends PureComponent {
   render() {
     const { onChange, light, className, onClear, ...other } = this.props;
     return (
-      <div className={s.cx(styles.container(light), className)}>
+      <div className={classNames('Input-container', { 'is-light': light }, className)}>
         <input
           ref={this.saveRef}
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
-          className={styles.input(light, !!onClear)}
+          className={classNames('Input-input', { 'is-light': light, 'is-with-clear': onClear })}
           {...other}
         />
-        {onClear && <Icon type="x" className={styles.clearIcon} onClick={this.onClickClear} />}
+        {onClear && <Icon type="x" className="Input-clear" onClick={this.onClickClear} />}
       </div>
     );
   }

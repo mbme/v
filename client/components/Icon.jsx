@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import s from '../styles';
+import { classNames } from '../utils';
 
 // https://feathericons.com/
 function FeatherIcon({ children, ...otherProps }) {
@@ -113,14 +113,9 @@ const icons = {
 
 export const ICON_TYPES = Object.keys(icons);
 
-const iconStyles = s.cx({
-  display: 'inline-block',
-  cursor: 'pointer',
-});
-
 export default function Icon({ type, className, ...otherProps }) {
   return React.cloneElement(icons[type], {
-    className: s.cx(iconStyles, className),
+    className: classNames('Icon', className),
     'aria-label': type,
     ...otherProps,
   });

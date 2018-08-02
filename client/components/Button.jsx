@@ -1,47 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import s from '../styles';
-
-const button = ({ disabled, primary }) => s.cx({
-  padding: 'var(--spacing-fine) var(--spacing-medium)',
-  border: 'var(--border)',
-  borderRadius: '2px',
-  cursor: 'pointer',
-  userSelect: 'none',
-  transition: 'background-color 100ms linear, transform 50ms ease-in',
-
-  textTransform: 'uppercase',
-  letterSpacing: '1.2px',
-  fontSize: '80%',
-
-  extend: [
-    !primary && !disabled && {
-      color: 'var(--color-text)',
-      backgroundColor: 'var(--bg-color)',
-      ':hover': {
-        backgroundColor: 'var(--bg-color-darker)',
-      },
-    },
-    primary && !disabled && {
-      backgroundColor: 'var(--color-primary)',
-      color: 'var(--color-light)',
-      boxShadow: 'var(--box-shadow)',
-      ':hover': {
-        transform: 'scale(1.05)',
-      },
-    },
-    disabled && {
-      cursor: 'auto',
-      color: 'var(--color-secondary)',
-      backgroundColor: 'var(--bg-color-darker)',
-    },
-  ],
-});
+import { classNames } from '../utils';
 
 export default function Button({ onClick, disabled, primary, children }) {
+  const className = classNames('Button', {
+    'is-disabled': disabled,
+    'is-primary': !disabled && primary,
+    'is-secondary': !disabled && !primary,
+  });
+
   return (
     <button
-      className={button({ disabled, primary })}
+      className={className}
       onClick={onClick}
       disabled={disabled}
       type="button"

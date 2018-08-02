@@ -1,20 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Backdrop, Styled } from './index';
-import s from '../styles';
-
-const styles = s.styles({
-  modal: {
-    backgroundColor: 'var(--bg-color)',
-    marginTop: '17vh',
-    minWidth: '375px',
-    padding: 'var(--spacing-medium)',
-    border: 'var(--border)',
-    boxShadow: 'var(--box-shadow)',
-  },
-
-  buttonContainer: s.flex({ h: 'flex-end', v: 'center' }),
-});
+import { Button, Backdrop } from './index';
 
 export default class Modal extends PureComponent {
   static propTypes = {
@@ -29,7 +15,7 @@ export default class Modal extends PureComponent {
   render() {
     return (
       <Backdrop onClick={this.onModalClick}>
-        <div className={styles.modal}>{this.props.children}</div>
+        <div className="Modal-modal">{this.props.children}</div>
       </Backdrop>
     );
   }
@@ -38,10 +24,10 @@ export default class Modal extends PureComponent {
 export function ConfirmationDialog({ children, confirmation, onConfirmed, onCancel }) {
   return (
     <Modal onCancel={onCancel}>
-      <Styled $marginBottom="var(--spacing-medium)">
+      <div className="g-section">
         {children}
-      </Styled>
-      <div className={styles.buttonContainer}>
+      </div>
+      <div className="Modal-buttons">
         <Button onClick={onCancel}>CANCEL</Button>
         <Button primary onClick={onConfirmed}>{confirmation}</Button>
       </div>

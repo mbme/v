@@ -1,4 +1,9 @@
-import { pubSub, apiClient } from '../../shared/utils';
+import {
+  pubSub,
+  apiClient,
+  isString,
+  isObject,
+} from '../../shared/utils';
 
 export function readFile(file) {
   return new Promise((resolve, reject) => {
@@ -80,3 +85,17 @@ export const api = apiClient(async (action, assets) => {
     throw e;
   }
 });
+
+export function classNames(...args) {
+  return args.reduce((acc, val) => {
+    if (isString(val)) {
+      acc.push(val);
+    } else if (isObject(val)) {
+      Object.entries(val).forEach(([ key, assertion ]) => {
+        if (assertion) acc.push(key);
+      });
+    }
+
+    return acc;
+  }, []).join(' ');
+}

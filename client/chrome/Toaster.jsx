@@ -1,29 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import s from '../styles';
 import { inject } from '../store';
-
-const styles = s.styles({
-  toastContainer: {
-    position: 'fixed',
-    bottom: '0',
-    left: '50%',
-    transform: 'translateX(-50%)',
-
-    width: '100%',
-    maxWidth: 'var(--max-width)',
-
-    backgroundColor: 'var(--color-dark)',
-    color: 'var(--color-light)',
-    borderRadius: '2px',
-    textAlign: 'center',
-    padding: 'var(--spacing-medium)',
-
-    ':empty': {
-      display: 'none',
-    },
-  },
-});
 
 const TOAST_TIMEOUT_MS = 8000;
 
@@ -48,7 +25,7 @@ class Toaster extends PureComponent {
 
   render() {
     return (
-      <div className={styles.toastContainer}>
+      <div className="Toaster-container">
         {this.props.toast}
       </div>
     );

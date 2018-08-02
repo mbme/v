@@ -1,33 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import s from '../styles';
 import { inject } from '../store';
 import { Icon } from './index';
-
-const styles = s.styles({
-  container: {
-    position: 'sticky',
-    top: 0,
-    backgroundColor: 'var(--bg-color)',
-    padding: 'var(--spacing-fine) 0',
-    height: '60px',
-    marginBottom: 'var(--spacing-medium)',
-
-    extend: [
-      s.flex({ h: 'space-between', v: 'center', wrap: false }),
-    ],
-  },
-
-  cell: s.flex({ h: 'center', v: 'center' }),
-
-  menuIcon: {
-    marginRight: 'var(--spacing-medium)',
-
-    largeScreen: {
-      display: 'none',
-    },
-  },
-});
 
 class Toolbar extends PureComponent {
   static propTypes = {
@@ -41,12 +15,12 @@ class Toolbar extends PureComponent {
 
   render() {
     return (
-      <div className={styles.container}>
-        <div className={styles.cell}>
-          <Icon type="menu" className={styles.menuIcon} onClick={this.toggleNav} />
+      <div className="Toolbar">
+        <div className="Toolbar-cell">
+          <Icon type="menu" className="Toolbar-menu-icon" onClick={this.toggleNav} />
           {this.props.left}
         </div>
-        <div className={styles.cell}>
+        <div className="Toolbar-cell">
           {this.props.right}
         </div>
       </div>

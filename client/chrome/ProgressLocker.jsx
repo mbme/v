@@ -1,37 +1,6 @@
 import React, { PureComponent } from 'react';
-import s from '../styles';
 import { Icon, Backdrop } from '../components';
-
-const styles = s.styles({
-  backdrop: visible => ({
-    cursor: 'progress',
-    alignItems: 'center',
-    opacity: 0,
-
-    extend: [
-      visible && {
-        animationName: s.animation({
-          '0%': { opacity: '0.7' },
-          '50%': { opacity: '1' },
-          '100%': { opacity: '0.7' },
-        }),
-        animationDuration: '3s',
-        animationIterationCount: 'infinite',
-      },
-    ],
-  }),
-
-  spinner: {
-    width: '24px',
-    height: '24px',
-    animationName: s.animation({
-      from: { transform: 'rotate(0deg)' },
-      to: { transform: 'rotate(359deg)' },
-    }),
-    animationDuration: '1.5s',
-    animationIterationCount: 'infinite',
-  },
-});
+import { classNames } from '../utils';
 
 export default class ProgressLocker extends PureComponent {
   state = {
@@ -52,8 +21,8 @@ export default class ProgressLocker extends PureComponent {
 
   render() {
     return (
-      <Backdrop className={styles.backdrop(this.state.visible)}>
-        <Icon type="loader" className={styles.spinner} />
+      <Backdrop className={classNames('Progress-backdrop', { 'is-visible': this.state.visible })}>
+        <Icon type="loader" className="Progress-spinner" />
       </Backdrop>
     );
   }

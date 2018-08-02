@@ -3,27 +3,12 @@ import PropTypes from 'prop-types';
 import { formatTs } from '../../shared/utils';
 import { api } from '../utils';
 import { inject } from '../store';
-import s from '../styles';
 import {
   Button,
   Toolbar,
   Link,
   Filter,
-  Styled,
 } from '../components';
-
-const styles = s.styles({
-  link: {
-    marginBottom: 'var(--spacing-medium)',
-    extend: [
-      s.flex({ v: 'baseline' }),
-    ],
-  },
-  counter: {
-    marginLeft: 'var(--spacing-small)',
-    whiteSpace: 'nowrap',
-  },
-});
 
 class NotesView extends PureComponent {
   static propTypes = {
@@ -49,10 +34,10 @@ class NotesView extends PureComponent {
 
   render() {
     const notes = this.state.notes.map(note => (
-      <Link key={note.id} clean to={{ name: 'note', params: { id: note.id } }} className={styles.link}>
-        <Styled as="small" $marginRight="var(--spacing-small)">
+      <Link key={note.id} clean to={{ name: 'note', params: { id: note.id } }} className="Notes-link">
+        <small className="Notes-ts">
           {formatTs(note.updatedTs)}
-        </Styled>
+        </small>
         {note.fields.name}
       </Link>
     ));
@@ -71,7 +56,7 @@ class NotesView extends PureComponent {
       <Fragment>
         <Toolbar left={left} right={addBtn} />
 
-        <small className={styles.counter}>
+        <small className="Notes-counter">
           {notes.length} items
         </small>
 

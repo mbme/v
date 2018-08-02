@@ -2,9 +2,8 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from '../store';
 import log from '../../shared/log';
-import s from '../styles';
 import { api, authorize } from '../utils';
-import { Backdrop, Input, Styled } from '../components';
+import { Backdrop, Input } from '../components';
 
 async function checkPassword(password) {
   await authorize(password);
@@ -15,20 +14,6 @@ async function checkPassword(password) {
     log.error('auth failed', e);
   }
 }
-
-const styles = s.styles({
-  backdrop: {
-    backgroundColor: 'var(--bg-color)',
-    paddingTop: '20vh',
-    extend: [
-      s.flex({ column: true, h: 'flex-start', v: 'center' }),
-    ],
-  },
-  logo: {
-    width: '150px',
-    marginBottom: 'var(--spacing-medium)',
-  },
-});
 
 class AuthView extends PureComponent {
   static propTypes = {
@@ -57,11 +42,10 @@ class AuthView extends PureComponent {
     }
 
     return (
-      <Backdrop className={styles.backdrop}>
-        <img alt="logo" src="/logo.svg" className={styles.logo} />
-        <Styled
-          as={Input}
-          $width="300px"
+      <Backdrop className="Auth-backdrop">
+        <img alt="logo" src="/logo.svg" className="Auth-logo" />
+        <Input
+          className="Auth-input"
           name="password"
           type="password"
           autoFocus
