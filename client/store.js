@@ -6,7 +6,7 @@ const { Store, inject } = createStore('global', {
     showLocker: false,
     showNav: false,
 
-    isAuthorized: true,
+    isAuthorized: undefined,
 
     route: null,
     params: {},

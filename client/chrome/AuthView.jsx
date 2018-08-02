@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import { inject } from '../store';
 import log from '../../shared/log';
 import s from '../styles';
 import { api, authorize } from '../utils';
@@ -9,7 +11,6 @@ async function checkPassword(password) {
 
   try {
     await api.PING();
-    window.location.reload();
   } catch (e) {
     log.error('auth failed', e);
   }
@@ -29,10 +30,20 @@ const styles = s.styles({
   },
 });
 
-export default class AuthView extends PureComponent {
+class AuthView extends PureComponent {
+  static propTypes = {
+    isAuthorized: PropTypes.bool,
+  };
+
   state = {
     password: '',
   };
+
+  componentDidMount() {
+    if (this.props.isAuthorized === undefined) {
+      api.PING();
+    }
+  }
 
   onPasswordChange = password => this.setState({ password });
 
@@ -41,6 +52,11 @@ export default class AuthView extends PureComponent {
   };
 
   render() {
+    console.error('HERE', this.props.isAuthorized);
+    if (this.props.isAuthorized === undefined) {
+      return null;
+    }
+
     return (
       <Backdrop className={styles.backdrop}>
         <img alt="logo" src="/logo.svg" className={styles.logo} />
@@ -58,3 +74,9 @@ export default class AuthView extends PureComponent {
     );
   }
 }
+
+const mapStoreToProps = state => ({
+  isAuthorized: state.isAuthorized,
+});
+
+export default inject(mapStoreToProps, AuthView);

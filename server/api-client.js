@@ -43,7 +43,7 @@ export default function createApiClient(baseUrl, password) {
         '-L', // follow redirects
         '-w', '|%{http_code}', // print "|" and status code in the last line, like |404 or |200
         '-H', `Cookie: token=${token}`,
-        '-F', `action=${JSON.stringify(action)}`,
+        '--form-string', `action=${JSON.stringify(action)}`,
         ...paths.map((path, i) => [ '-F', `file${i}=@${path}` ]),
         `${baseUrl}/api`,
       ]);

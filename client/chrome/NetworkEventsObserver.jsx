@@ -7,11 +7,19 @@ class NetworkEventsObserver extends PureComponent {
   static propTypes = {
     showLocker: PropTypes.func.isRequired,
     showToast: PropTypes.func.isRequired,
+    isAuthorized: PropTypes.bool,
     setAuthorized: PropTypes.func.isRequired,
   };
 
   onRequestStart = () => this.props.showLocker(true);
-  onRequestEnd = () => this.props.showLocker(false);
+
+  onRequestEnd = () => {
+    if (!this.props.isAuthorized) {
+      this.props.setAuthorized(true);
+    }
+    this.props.showLocker(false);
+  };
+
   onRequestError = (e) => {
     if (e instanceof UnauthorizedError) {
       this.props.setAuthorized(false);

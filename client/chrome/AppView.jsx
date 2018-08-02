@@ -91,7 +91,7 @@ class AppView extends PureComponent {
     route: PropTypes.object,
     isNavVisible: PropTypes.bool.isRequired,
     showNav: PropTypes.func.isRequired,
-    isAuthorized: PropTypes.bool.isRequired,
+    isAuthorized: PropTypes.bool,
     isLockerVisible: PropTypes.bool.isRequired,
   };
 
@@ -146,7 +146,15 @@ class AppView extends PureComponent {
       isLockerVisible,
     } = this.props;
 
-    if (!isAuthorized) return <AuthView />;
+    if (!isAuthorized) {
+      return (
+        <Fragment>
+          <AuthView />
+          <NetworkEventsObserver />
+          {isLockerVisible && <ProgressLocker />}
+        </Fragment>
+      );
+    }
 
     return (
       <div className={styles.appContainer}>
