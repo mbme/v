@@ -2,7 +2,8 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from '../store';
 import { Link, Backdrop } from '../components';
-import { deauthorize, classNames } from '../utils';
+import { classNames } from '../utils';
+import { deauthorize } from '../utils/auth';
 import AuthView from './AuthView';
 import Router from './Router';
 import ProgressLocker from './ProgressLocker';
@@ -90,7 +91,7 @@ class AppView extends PureComponent {
         </div>
 
         <Toaster />
-        <NetworkEventsObserver />
+        <NetworkEventsObserver withToasts />
         {isLockerVisible && <ProgressLocker />}
       </div>
     );

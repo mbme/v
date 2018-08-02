@@ -334,208 +334,6 @@ select {
 
 /* -------------------------------------------------------------------------------- */
 
-.App-container {
-  display: grid;
-  grid-template-areas: "content";
-}
-
-.App-navbar-container {
-  grid-area: sidemenu;
-  position: sticky;
-  top: 0;
-
-  display: none;
-}
-
-@media screen and (min-width: 1024px) {
-  .App-container {
-    grid-template-columns: minmax(180px, 30%) var(--max-width) auto;
-    grid-template-areas: "sidemenu content whitespace";
-  }
-
-  .App-navbar-container {
-    display: block;
-  }
-}
-
-.App-navbar {
-  position: sticky;
-  top: 0;
-
-  height: 100vh;
-  width: 100%;
-  padding: var(--spacing-small) var(--spacing-large);
-
-  background-color: var(--color-secondary);
-  color: var(--color-light);
-  font-size: var(--font-size-medium);
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.App-logout {
-  position: absolute;
-  bottom: var(--spacing-small);
-}
-
-.App-navlink {
-  display: inline-block;
-  margin: var(--spacing-medium) 0;
-}
-.App-navlink.is-selected {
-  color: var(--color-primary);
-}
-
-.App-view {
-  grid-area: content;
-  justify-self: center;
-  padding: 0 var(--spacing-small);
-  width: 100%;
-  max-width: var(--max-width);
-
-  display: flex;
-  flex-direction: column;
-}
-
-@media screen and (min-width: 768px) {
-  .App-view {
-    padding: 0 var(--spacing-medium);
-  }
-}
-
-@media screen and (min-width: 1024px) {
-  .App-view {
-    padding: 0 var(--spacing-large);
-  }
-}
-
-/* -------------------------------------------------------------------------------- */
-
-.Auth-backdrop {
-  background-color: var(--bg-color);
-  padding-top: 20vh;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.Auth-logo {
-  width: 150px;
-  margin-bottom: var(--spacing-medium);
-}
-
-.Auth-input {
-  width: 300px;
-}
-
-/* -------------------------------------------------------------------------------- */
-
-.Progress-backdrop {
-  cursor: progress;
-  align-items: center;
-  opacity: 0;
-}
-
-.Progress-backdrop.is-visible {
-  animation: Progress-pulse 3s infinite;
-}
-
-@keyframes Progress-pulse {
-  0% {
-    opacity: 0.7;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0.7;
-  }
-}
-
-.Progress-spinner {
-  width: 24px;
-  height: 24px;
-  animation: Progress-spin 1.5s infinite;
-}
-
-@keyframes Progress-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-/* -------------------------------------------------------------------------------- */
-
-.Toaster-container {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 100%;
-  max-width: var(--max-width);
-
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  border-radius: 2px;
-  text-align: center;
-  padding: var(--spacing-medium);
-}
-
-.Toaster-container:empty {
-  display: none;
-}
-
-/* -------------------------------------------------------------------------------- */
-
-.Note-title {
-  text-align: center;
-  letter-spacing: 1.4px;
-  font-weight: bold;
-  font-size: var(--font-size-large);
-  margin-bottom: var(--spacing-medium);
-}
-
-.Note-document {
-  hyphens: auto;
-  text-align: justify;
-}
-
-.Note-image {
-  display: block;
-  padding: var(--spacing-medium) 0;
-  margin-bottom: var(--spacing-medium);
-}
-
-/* -------------------------------------------------------------------------------- */
-
-.Notes-link {
-  margin-bottom: var(--spacing-medium);
-  display: flex;
-  align-items: baseline;
-}
-
-.Notes-counter {
-  margin-left: var(--spacing-small);
-  white-space: nowrap;
-}
-
-.Notes-ts {
-  margin-right: var(--spacing-small);
-}
-
-/* -------------------------------------------------------------------------------- */
-
 .Backdrop-container {
   background-color: var(--bg-color-backdrop);
 
@@ -714,6 +512,209 @@ select {
   .Toolbar-menu-icon {
     display: none;
   }
+}
+
+
+/* -------------------------------------------------------------------------------- */
+
+.Progress-backdrop {
+  cursor: progress;
+  align-items: center;
+  opacity: 0;
+}
+
+.Progress-backdrop.is-visible {
+  animation: Progress-pulse 3s infinite;
+}
+
+@keyframes Progress-pulse {
+  0% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.Progress-spinner {
+  width: 24px;
+  height: 24px;
+  animation: Progress-spin 1.5s infinite;
+}
+
+@keyframes Progress-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+/* -------------------------------------------------------------------------------- */
+
+.Toaster-container {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 100%;
+  max-width: var(--max-width);
+
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  border-radius: 2px;
+  text-align: center;
+  padding: var(--spacing-medium);
+}
+
+.Toaster-container:empty {
+  display: none;
+}
+
+/* -------------------------------------------------------------------------------- */
+
+.App-container {
+  display: grid;
+  grid-template-areas: "content";
+}
+
+.App-navbar-container {
+  grid-area: sidemenu;
+  position: sticky;
+  top: 0;
+
+  display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .App-container {
+    grid-template-columns: minmax(180px, 30%) var(--max-width) auto;
+    grid-template-areas: "sidemenu content whitespace";
+  }
+
+  .App-navbar-container {
+    display: block;
+  }
+}
+
+.App-navbar {
+  position: sticky;
+  top: 0;
+
+  height: 100vh;
+  width: 100%;
+  padding: var(--spacing-small) var(--spacing-large);
+
+  background-color: var(--color-secondary);
+  color: var(--color-light);
+  font-size: var(--font-size-medium);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.App-logout {
+  position: absolute;
+  bottom: var(--spacing-small);
+  cursor: pointer;
+}
+
+.App-navlink {
+  display: inline-block;
+  margin: var(--spacing-medium) 0;
+}
+.App-navlink.is-selected {
+  color: var(--color-primary);
+}
+
+.App-view {
+  grid-area: content;
+  justify-self: center;
+  padding: 0 var(--spacing-small);
+  width: 100%;
+  max-width: var(--max-width);
+
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 768px) {
+  .App-view {
+    padding: 0 var(--spacing-medium);
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .App-view {
+    padding: 0 var(--spacing-large);
+  }
+}
+
+/* -------------------------------------------------------------------------------- */
+
+.Auth-backdrop {
+  background-color: var(--bg-color);
+  padding-top: 20vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.Auth-logo {
+  width: 150px;
+  margin-bottom: var(--spacing-medium);
+}
+
+.Auth-input {
+  width: 300px;
+}
+/* -------------------------------------------------------------------------------- */
+
+.Note-title {
+  text-align: center;
+  letter-spacing: 1.4px;
+  font-weight: bold;
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-medium);
+}
+
+.Note-document {
+  hyphens: auto;
+  text-align: justify;
+}
+
+.Note-image {
+  display: block;
+  padding: var(--spacing-medium) 0;
+  margin-bottom: var(--spacing-medium);
+}
+
+/* -------------------------------------------------------------------------------- */
+
+.Notes-link {
+  margin-bottom: var(--spacing-medium);
+  display: flex;
+  align-items: baseline;
+}
+
+.Notes-counter {
+  margin-left: var(--spacing-small);
+  white-space: nowrap;
+}
+
+.Notes-ts {
+  margin-right: var(--spacing-small);
 }
 
 /* -------------------------------------------------------------------------------- */

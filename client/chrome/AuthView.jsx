@@ -2,7 +2,8 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { inject } from '../store';
 import log from '../../shared/log';
-import { api, authorize } from '../utils';
+import { api } from '../utils';
+import { authorize } from '../utils/auth';
 import { Backdrop, Input } from '../components';
 
 async function checkPassword(password) {

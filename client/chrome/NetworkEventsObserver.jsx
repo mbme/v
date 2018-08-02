@@ -1,10 +1,12 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { networkEvents, UnauthorizedError } from '../utils';
+import { networkEvents } from '../utils';
 import { inject } from '../store';
 
 class NetworkEventsObserver extends PureComponent {
   static propTypes = {
+    withToasts: PropTypes.bool,
+
     showLocker: PropTypes.func.isRequired,
     showToast: PropTypes.func.isRequired,
     isAuthorized: PropTypes.bool,
@@ -20,22 +22,27 @@ class NetworkEventsObserver extends PureComponent {
     this.props.showLocker(false);
   };
 
+  onUnauthorized = () => {
+    this.props.setAuthorized(false);
+  };
+
   onRequestError = (e) => {
-    if (e instanceof UnauthorizedError) {
-      this.props.setAuthorized(false);
+    if (this.props.withToasts) {
+      this.props.showToast(e.toString());
     }
-    this.props.showToast(e.toString());
     this.props.showLocker(false);
   };
 
   componentDidMount() {
     networkEvents.on('start', this.onRequestStart);
+    networkEvents.on('unauthorized', this.onUnauthorized);
     networkEvents.on('error', this.onRequestError);
     networkEvents.on('end', this.onRequestEnd);
   }
 
   componentWillUnmount() {
     networkEvents.off('start', this.onRequestStart);
+    networkEvents.off('unauthorized', this.onUnauthorized);
     networkEvents.off('error', this.onRequestError);
     networkEvents.off('end', this.onRequestEnd);
   }
@@ -48,6 +55,7 @@ class NetworkEventsObserver extends PureComponent {
 const mapStoreToProps = (state, actions) => ({
   showLocker: actions.showLocker,
   showToast: actions.showToast,
+  isAuthorized: state.isAuthorized,
   setAuthorized: actions.setAuthorized,
 });
 
