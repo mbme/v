@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { formatTs } from '../../shared/utils';
 import { api } from '../utils';
 import { inject } from '../store';
+import { Consumer } from '../chrome/Router';
 import {
   Button,
   Toolbar,
@@ -43,11 +44,19 @@ class NotesView extends PureComponent {
     ));
 
     const left = (
-      <Filter placeholder="Filter notes" />
+      <Consumer>{
+          ({ replaceParam }) => (
+            <Filter
+              placeholder="Filter notes"
+              filter={this.props.filter}
+              onChange={newFilter => replaceParam('filter', newFilter)}
+            />
+          )}
+      </Consumer>
     );
 
     const addBtn = (
-      <Link to={{ name: 'add-note' }}>
+      <Link to={{ name: 'note' }}>
         <Button primary>Add</Button>
       </Link>
     );
@@ -66,8 +75,8 @@ class NotesView extends PureComponent {
   }
 }
 
-const mapStoreToProps = state => ({
-  filter: state.query.filter || '',
+const mapStoreToProps = ({ route }) => ({
+  filter: route.params.filter || '',
 });
 
 export default inject(mapStoreToProps, NotesView);

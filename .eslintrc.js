@@ -38,6 +38,12 @@ module.exports = {
   ],
   extends: [ 'airbnb', 'plugin:import/errors', 'plugin:import/warnings'],
   plugins: [ 'babel' ],
+  settings: {
+    react: {
+      pragma: 'React',
+      version: require('./package.json').dependencies.react,
+    },
+  },
   rules: {
     'max-len': 0,
     'no-confusing-arrow': 0,

@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { push } from '../router';
 import { api } from '../utils';
 import { Icon, ConfirmationDialog } from '../components';
+import { Consumer } from '../chrome/Router';
 
 export default class DeleteNoteButton extends PureComponent {
   static propTypes = {
@@ -13,14 +13,22 @@ export default class DeleteNoteButton extends PureComponent {
     showConfirmation: false,
   };
 
+  router = null;
+
   deleteNote = async () => {
     await api.DELETE_NOTE({ id: this.props.id });
-    push({ name: 'notes' });
+    this.router.push({ name: 'notes' });
   };
 
   render() {
     return (
       <Fragment>
+        <Consumer>
+          {(router) => {
+            this.router = router;
+          }}
+        </Consumer>
+
         <Icon
           title="Delete note"
           type="trash-2"

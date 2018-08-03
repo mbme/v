@@ -9,8 +9,6 @@ const { Store, inject } = createStore('global', {
     isAuthorized: undefined,
 
     route: null,
-    params: {},
-    query: {},
   },
 
   actions: {
@@ -26,15 +24,8 @@ const { Store, inject } = createStore('global', {
     setAuthorized(isAuthorized, state) {
       return { ...state, isAuthorized };
     },
-
-    setResolvedRoute({ route, params, query }, state) {
-      return {
-        ...state,
-
-        route,
-        params,
-        query,
-      };
+    setRoute(route, state) {
+      return { ...state, route };
     },
   },
 });

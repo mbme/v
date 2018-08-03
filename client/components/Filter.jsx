@@ -1,14 +1,12 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { inject } from '../store';
-import { replaceQueryParam } from '../router';
 import { Input, Icon } from './index';
 
-class Filter extends PureComponent {
+export default class Filter extends PureComponent {
   static propTypes = {
     placeholder: PropTypes.string.isRequired,
-
     filter: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
   };
 
   state = {
@@ -25,14 +23,13 @@ class Filter extends PureComponent {
     if (!this.props.filter.trim()) this.collapse();
   };
 
-  onFilterChange = (filter) => {
+  onChange = (filter) => {
     if (filter.trim() === this.props.filter) return;
 
     window.clearTimeout(this.updateTimoutId);
     this.updateTimoutId = window.setTimeout(
-      replaceQueryParam,
+      this.props.onChange,
       60,
-      'filter',
       filter.trim().length ? filter : undefined,
     );
   };
@@ -49,7 +46,7 @@ class Filter extends PureComponent {
           light
           defaultValue={this.props.filter}
           placeholder={this.props.placeholder}
-          onChange={this.onFilterChange}
+          onChange={this.onChange}
           onClear={this.collapse}
           onBlur={this.onBlur}
           autoFocus
@@ -62,9 +59,3 @@ class Filter extends PureComponent {
     );
   }
 }
-
-const mapStoreToProps = state => ({
-  filter: state.query.filter || '',
-});
-
-export default inject(mapStoreToProps, Filter);

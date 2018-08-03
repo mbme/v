@@ -7,7 +7,6 @@ import {
   parse,
 } from '../../shared/parser';
 import { inject } from '../store';
-import { push } from '../router';
 import { readFile, sha256, api } from '../utils';
 import {
   Button,
@@ -16,6 +15,7 @@ import {
   Input,
   Icon,
 } from '../components';
+import { Consumer } from '../chrome/Router';
 import Note from './Note';
 import AttachFileButton from './AttachFileButton';
 import DeleteNoteButton from './DeleteNoteButton';
@@ -39,12 +39,13 @@ class NoteEditor extends PureComponent {
   localFiles = {};
 
   textAreaRef = null;
+  router = null;
 
   hasChanges = () => this.state.name !== this.props.name || this.state.data !== this.props.data;
   onNameChange = name => this.setState({ name });
   onDataChange = data => this.setState({ data });
 
-  closeEditor = id => push(id ? { name: 'note', params: { id } } : { name: 'notes' });
+  closeEditor = id => this.router.push(id ? { name: 'note', params: { id } } : { name: 'notes' });
 
   togglePreview = () => this.setState(state => ({ preview: !state.preview }));
 
@@ -113,6 +114,12 @@ class NoteEditor extends PureComponent {
 
     return (
       <Fragment>
+        <Consumer>
+          {(router) => {
+            this.router = router;
+          }}
+        </Consumer>
+
         <Toolbar left={leftIcons} right={rightIcons} />
 
         <div className="g-section" hidden={preview}>

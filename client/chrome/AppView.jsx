@@ -27,7 +27,7 @@ class AppView extends PureComponent {
   renderNavbar() {
     const routeName = this.props.route ? this.props.route.name : null;
 
-    const isNoteNavTree = [ 'notes', 'add-note', 'note', 'note-editor' ].includes(routeName);
+    const isNoteNavTree = [ 'notes', 'note', 'note-editor' ].includes(routeName);
 
     const navbar = (
       <nav className="App-navbar">
@@ -66,34 +66,35 @@ class AppView extends PureComponent {
     );
   }
 
-  render() {
-    const {
-      isAuthorized,
-      isLockerVisible,
-    } = this.props;
+  renderAuth = () => (
+    <Fragment>
+      <AuthView />
+      <NetworkEventsObserver />
+      {this.props.isLockerVisible && <ProgressLocker />}
+    </Fragment>
+  );
 
-    if (!isAuthorized) {
-      return (
-        <Fragment>
-          <AuthView />
-          <NetworkEventsObserver />
-          {isLockerVisible && <ProgressLocker />}
-        </Fragment>
-      );
+  renderApp = view => (
+    <div className="App-container">
+      {this.renderNavbar()}
+
+      <div className="App-view">
+        {view}
+      </div>
+
+      <Toaster />
+      <NetworkEventsObserver withToasts />
+      {this.props.isLockerVisible && <ProgressLocker />}
+    </div>
+  );
+
+  render() {
+    if (!this.props.isAuthorized) {
+      return this.renderAuth();
     }
 
     return (
-      <div className="App-container">
-        {this.renderNavbar()}
-
-        <div className="App-view">
-          <Router />
-        </div>
-
-        <Toaster />
-        <NetworkEventsObserver withToasts />
-        {isLockerVisible && <ProgressLocker />}
-      </div>
+      <Router render={this.renderApp} />
     );
   }
 }
