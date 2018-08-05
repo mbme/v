@@ -16,11 +16,11 @@ class Toolbar extends PureComponent {
   render() {
     return (
       <div className="Toolbar">
-        <div className="Toolbar-cell">
+        <div className="Toolbar-cell is-left">
           <Icon type="menu" className="Toolbar-menu-icon" onClick={this.toggleNav} />
           {this.props.left}
         </div>
-        <div className="Toolbar-cell">
+        <div className="Toolbar-cell is-right">
           {this.props.right}
         </div>
       </div>

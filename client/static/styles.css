@@ -392,6 +392,10 @@ select {
 .Icon {
   display: inline-block;
   cursor: pointer;
+  transition: color 0.17s ease;
+}
+.Icon:hover {
+  color: var(--color-primary);
 }
 
 /* -------------------------------------------------------------------------------- */
@@ -465,6 +469,9 @@ select {
   justify-content: flex-end;
   align-items: center;
 }
+.Modal-buttons .Button {
+  margin-left: var(--spacing-medium);
+}
 
 /* -------------------------------------------------------------------------------- */
 
@@ -503,9 +510,14 @@ select {
   justify-content: center;
   align-items: center;
 }
-
-.Toolbar-menu-icon {
+.Toolbar-cell.is-left .Icon,
+.Toolbar-cell.is-left .Button {
   margin-right: var(--spacing-medium);
+}
+
+.Toolbar-cell.is-right .Icon,
+.Toolbar-cell.is-right .Button {
+  margin-left: var(--spacing-medium);
 }
 
 @media screen and (min-width: 1024px) {
