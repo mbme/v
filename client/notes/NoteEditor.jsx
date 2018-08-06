@@ -6,8 +6,7 @@ import {
   extractFileIds,
   parse,
 } from '../../shared/parser';
-import { inject } from '../store';
-import { readFile, sha256, api } from '../utils';
+import { api } from '../utils';
 import {
   Button,
   Textarea,
@@ -22,12 +21,11 @@ import DeleteNoteButton from './DeleteNoteButton';
 
 const isImage = name => [ '.png', '.jpg', '.jpeg' ].reduce((acc, ext) => acc || name.endsWith(ext), false);
 
-class NoteEditor extends PureComponent {
+export default class NoteEditor extends PureComponent {
   static propTypes = {
     id: PropTypes.number,
     name: PropTypes.string.isRequired,
     data: PropTypes.string.isRequired,
-    showLocker: PropTypes.func.isRequired,
   };
 
   state = {
@@ -66,26 +64,18 @@ class NoteEditor extends PureComponent {
   }
 
   onFilesSelected = async (files) => {
-    if (!files.length) return;
-
-    this.props.showLocker(true);
-
     const links = [];
-    await Promise.all(files.map(async (file) => {
-      const data = await readFile(file);
-      const hash = await sha256(data);
 
+    Object.entries(files).forEach(([ hash, { file, data } ]) => {
       links.push((isImage(file.name) ? createImageLink : createLink)(file.name, hash));
 
       if (!this.localFiles[hash]) {
         this.localFiles = {
           ...this.localFiles,
-          [hash]: { data, file },
+          [hash]: { file, data },
         };
       }
-    }));
-
-    this.props.showLocker(false);
+    });
 
     this.textAreaRef.insert(links.join(' '));
     this.textAreaRef.focus();
@@ -135,9 +125,3 @@ class NoteEditor extends PureComponent {
     );
   }
 }
-
-const mapStoreToProps = (state, actions) => ({
-  showLocker: actions.showLocker,
-});
-
-export default inject(mapStoreToProps, NoteEditor);
