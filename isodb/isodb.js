@@ -25,12 +25,17 @@
 }
 
 class Client {
-  _rev = 0;
-  _localRev = 0;
+  _orig = []; // max_rev
+  _patched = []; // max_local_rev
+  _new_attachments = [];
+
+  _getMaxRev() {
+    return this._orig.reduce((maxRev, item) => item._rev > maxRev ? item._rev : maxRev, 0);
+  }
 
   _fetchAll(rev) {}
   _pushChanges(rev) {}
-  _extractPatch() {}
+  _extractPatch() {} // out of _orig & _patched
 
   sync() {
 
@@ -38,10 +43,15 @@ class Client {
 }
 
 class Server {
-  _rev = 0;
+  _items = []; // max_rev
 
-  getAll(rev) {}
+  // []id|item
+  getAll(rev) {
+    return this._items.map(item => item._rev > rev ? item : item._id);
+  }
 
   // patches: []patch
   applyPatch(patches) {}
+
+  compact() {}
 }
