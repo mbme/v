@@ -11,7 +11,7 @@
   data: 'x1',
 }
 { // attachment
-  _id: 'md5',
+  _id: 'md5-2131321',
   _rev: 2, // autoincrement
   _deleted: true,
   _attachment: true,
@@ -24,34 +24,64 @@
   size: 10,
 }
 
-class Client {
-  _orig = []; // max_rev
-  _patched = []; // max_local_rev
-  _new_attachments = [];
+const getMaxRev = (maxRev, item) => item._rev > maxRev ? item._rev : maxRev;
 
-  _getMaxRev() {
-    return this._orig.reduce((maxRev, item) => item._rev > maxRev ? item._rev : maxRev, 0);
+class Client {
+  _storage = null;
+  _api = null;
+
+  constructor(storage, api) {
+    this._storage = storage;
+    this._api = api;
   }
 
-  _fetchAll(rev) {}
-  _pushChanges(rev) {}
-  _extractPatch() {} // out of _orig & _patched
+  _getMaxRev() {
+    return this._storage.getRecords().reduce(getMaxRev, 0);
+  }
+
+  _fetchAll() {
+    const records = this._api.fetchAll(this._getMaxRev());
+    // TODO resolve conflicts
+  }
+
+  // returns bool
+  _pushChanges() {
+    return this._api.pushChanges(
+      this._getMaxRev(),
+      this._storage.getLocalRecords(),
+      this._storage.getLocalAttachments(),
+    );
+  }
 
   sync() {
-
+    while (!this._pushChanges()) {
+      this._fetchAll();
+    }
   }
 }
 
 class Server {
-  _items = []; // max_rev
+  _storage = null;
+
+  constructor(storage) {
+    this._storage = storage;
+  }
 
   // []id|item
   getAll(rev) {
-    return this._items.map(item => item._rev > rev ? item : item._id);
+    return this._storage.getRecords().map(item => item._rev > rev ? item : item._id);
+  }
+
+  getRecord(id) {
+    return this._storage.getRecords().find(item => item._id === id);
+  }
+
+  getAttachment(id) {
+    return this._storage.getAttachment(id);
   }
 
   // patches: []patch
-  applyPatch(patches) {}
+  applyChanges(changes) {}
 
   compact() {}
 }
