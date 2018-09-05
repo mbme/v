@@ -57,15 +57,7 @@ module.exports = {
         allowTernary: true,
       },
     ],
-    'no-underscore-dangle': [
-      'error',
-      {
-        allow: [
-          '__DEVELOPMENT__',
-          '__CLIENT__',
-        ],
-      },
-    ],
+    'no-underscore-dangle': 0,
     'no-prototype-builtins': 0,
     'prefer-arrow-callback': 0,
     'prefer-template': 0,
