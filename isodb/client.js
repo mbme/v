@@ -1,13 +1,6 @@
-import {
-  getMaxRev,
-} from './utils';
-// no revision tree:
-// client forms PATCH and fetches changes from master before pushing
-// (and retries until everything works)
-// so it doesn't matter how many time client updated record - there would be single revision
 // { // record
 //   _id: 'zdfw234d2',
-//   _rev: 2, // autoincrement
+//   _rev: 2,
 //   _refs: ['asdfsad'],
 //   _deleted: true,
 //   name: 'test',
@@ -15,8 +8,7 @@ import {
 // }
 // { // attachment
 //   _id: 'md5-2131321',
-//   _rev: 2, // autoincrement
-//   _deleted: true,
+//   _rev: 2,
 //   _attachment: true,
 //   size: 10,
 // }
@@ -30,19 +22,18 @@ class Client {
     this._api = api;
   }
 
-  _getMaxRev() {
-    return getMaxRev(this._storage.getRecords());
-  }
-
   _fetchAll() {
-    const records = this._api.fetchAll(this._getMaxRev());
+    const {
+      records,
+      rev,
+    } = this._api.fetchAll(this._storage.getRev());
     // TODO resolve conflicts
   }
 
   // returns bool
   _pushChanges() {
     return this._api.pushChanges(
-      this._getMaxRev(),
+      this._storage.getRev(),
       this._storage.getLocalRecords(),
       this._storage.getLocalAttachments(),
     );

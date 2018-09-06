@@ -1,10 +1,3 @@
-import {
-  getMaxRev,
-} from './utils';
-import {
-  removeMut,
-} from '../shared/utils';
-
 export default class Server {
   _storage = null;
 
@@ -18,6 +11,10 @@ export default class Server {
    */
   getAll(rev) {
     return this._storage.getRecords().map(item => item._rev > rev ? item : item._id);
+  }
+
+  getRev() {
+    return this._storage.getRev();
   }
 
   /**
@@ -43,35 +40,76 @@ export default class Server {
    * @returns {boolean}
    */
   applyChanges(rev, changes, newAttachments) {
-    const records = this._storage.getRecords();
-    if (getMaxRev(records) !== rev) { // ensure client had latest revision
+    if (this._storage.getRev() !== rev) { // ensure client had latest revision
       return false;
     }
 
-    for (let i = 0; i < changes.length; i += 1) {
-      const changedRecord = changes[i];
-      changedRecord._rev = rev + i + 1;
+    if (!changes.length) { // skip empty changesets
+      return true;
+    }
 
-      const existingRecord = records.find(item => item._id === changedRecord._id);
-      if (existingRecord) {
+    const newRev = rev + 1;
+
+    for (const changedRecord of changes) {
+      changedRecord._rev = newRev;
+
+      if (this._storage.hasRecord(changedRecord._id)) {
         this._storage.updateRecord(changedRecord, newAttachments);
-        removeMut(records, existingRecord);
       } else {
         this._storage.addRecord(changedRecord, newAttachments);
       }
     }
 
+    this._storage.setRev(newRev);
+
     return true;
   }
 
   /**
-   * Physically remove deleted records
+   * Physically remove orphan deleted records & orphan attachments.
    */
   compact() {
-    // FIXME deleted records? deleted attachments?
-    // what if record with maxRev is removed?
-    this._storage.getRecords()
-      .filter(item => item._deleted)
-      .forEach(item => this._storage.removeRecord(item));
+    const records = this._storage.getRecords();
+
+    const validIds = new Set();
+    for (const record of records) {
+      if (!record._attachment && !record._deleted) {
+        validIds.add(record._id);
+      }
+    }
+
+    const idsToCheck = Array.from(validIds);
+    while (idsToCheck.length) {
+      const record = records.find(item => item._id === idsToCheck[0]);
+      for (const id of (record._refs || [])) { // cause attachments has no _refs
+        if (!validIds.has(id)) {
+          validIds.add(id);
+          idsToCheck.push(id);
+        }
+      }
+
+      idsToCheck.shift(); // pop first item
+    }
+
+    let removedRecords = 0;
+    let removedAttachments = 0;
+
+    for (const record of records) {
+      if (validIds.has(record._id)) {
+        continue;
+      }
+
+      if (record._attachment) {
+        this._storage.removeAttachment(record._id);
+        removedAttachments += 1;
+      } else {
+        this._storage.removeRecord(record._id);
+        removedRecords += 1;
+      }
+    }
+
+    if (removedRecords + removedAttachments) { // update revision if there were any changes
+      this._storage.setRev(this._storage.getRev() + 1);
+    }
   }
 }
