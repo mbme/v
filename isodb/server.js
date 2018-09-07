@@ -1,4 +1,6 @@
-export default class Server {
+import { findById } from './utils';
+
+export default class PrimaryDB {
   _storage = null;
 
   constructor(storage) {
@@ -13,6 +15,9 @@ export default class Server {
     return this._storage.getRecords().map(item => item._rev > rev ? item : item._id);
   }
 
+  /**
+   * @returns {number} storage revision
+   */
   getRev() {
     return this._storage.getRev();
   }
@@ -22,7 +27,7 @@ export default class Server {
    * @returns {Record?}
    */
   getRecord(id) {
-    return this._storage.getRecords().find(item => item._id === id);
+    return findById(this._storage.getRecords(), id);
   }
 
   /**
@@ -34,7 +39,7 @@ export default class Server {
   }
 
   /**
-   * @param {number} rev client revision
+   * @param {number} rev client's storage revision
    * @param {[Record]} changes new or updated records
    * @param {[Stream]} newAttachments new attachments
    * @returns {boolean}
@@ -80,10 +85,16 @@ export default class Server {
 
     const idsToCheck = Array.from(validIds);
     while (idsToCheck.length) {
-      const record = records.find(item => item._id === idsToCheck[0]);
+      const record = findById(records, idsToCheck[0]);
+
       for (const id of (record._refs || [])) { // cause attachments has no _refs
-        if (!validIds.has(id)) {
-          validIds.add(id);
+        if (validIds.has(id)) {
+          continue;
+        }
+
+        validIds.add(id);
+
+        if (!idsToCheck.includes(id)) {
           idsToCheck.push(id);
         }
       }
@@ -100,12 +111,11 @@ export default class Server {
       }
 
       if (record._attachment) {
-        this._storage.removeAttachment(record._id);
         removedAttachments += 1;
       } else {
-        this._storage.removeRecord(record._id);
         removedRecords += 1;
       }
+      this._storage.removeRecord(record._id);
     }
 
     if (removedRecords + removedAttachments) { // update revision if there were any changes
