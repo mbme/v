@@ -1,4 +1,5 @@
-import { capitalize, randomInt } from '../shared/utils';
+import { capitalize } from '../shared/utils';
+import { randomArrValue } from '../randomizer';
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd
 
@@ -217,7 +218,7 @@ export function createTextGenerator(corpus) {
 
     word() {
       const words = Object.keys(stats.words);
-      return words[randomInt(0, words.length - 1)];
+      return randomArrValue(words);
     },
   };
 }

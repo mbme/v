@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import { createArray, randomInt, shuffle } from '../shared/utils';
+import { randomInt, shuffle, randomArrValue } from '../randomizer';
+import { createArray } from '../shared/utils';
 import { createImageLink } from '../shared/parser';
 import { readText, listFiles, sha256 } from '../core/utils';
 import log from '../shared/log';
@@ -31,7 +32,7 @@ async function genText(generator, images) {
       );
 
       if (Math.random() < 0.34) {
-        const image = images[randomInt(0, images.length, false)];
+        const image = randomArrValue(images);
         sentences.push(` ${image.link} `);
       }
 

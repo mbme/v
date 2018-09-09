@@ -75,7 +75,9 @@ class ReplicaDB {
     });
   }
 
-  _genRandomId() {}
+  _genRandomId() {
+
+  }
 
   _compact() {
     // compact local attachments
