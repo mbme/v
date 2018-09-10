@@ -50,7 +50,3 @@ export function randomId(alphabet, size) {
 
   return id;
 }
-
-export function getCollisionsNumber(n, d) {
-  return n - d + d * (((d - 1) / d) ** n);
-}

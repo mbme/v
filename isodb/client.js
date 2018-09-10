@@ -1,4 +1,5 @@
 import { findById } from './utils';
+import { randomId } from '../randomizer';
 
 // { // record
 //   _id: 'zdfw234d2',
@@ -14,6 +15,10 @@ import { findById } from './utils';
 //   _attachment: true,
 //   size: 10,
 // }
+
+const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
+const ID_LENGTH = 15;
+const getRandomId = () => randomId(ID_ALPHABET, ID_LENGTH);
 
 class ReplicaDB {
   _storage = null;
@@ -41,9 +46,8 @@ class ReplicaDB {
   }
 
   addRecord(fields, refs) {
-    const id = this._genRandomId();
     this._storage.addLocalRecord({
-      _id: id,
+      _id: getRandomId(),
       _refs: refs,
       ...fields,
     });
@@ -73,10 +77,6 @@ class ReplicaDB {
       ...record,
       _deleted: true,
     });
-  }
-
-  _genRandomId() {
-
   }
 
   _compact() {
