@@ -9,7 +9,7 @@ export default class PrimaryDB {
 
   /**
    * @param {number} rev minimum revision to include
-   * @returns {[String|Record]} record if _id is >= rev, id otherwise
+   * @returns {[string|Record]} record if _id is >= rev, id otherwise
    */
   getAll(rev) {
     return this._storage.getRecords().map(item => item._rev > rev ? item : item._id);

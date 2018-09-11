@@ -20,22 +20,35 @@ const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 const ID_LENGTH = 15;
 const getRandomId = () => randomId(ID_ALPHABET, ID_LENGTH);
 
-class ReplicaDB {
+export default class ReplicaDB {
   _storage = null;
-  _api = null;
 
-  constructor(storage, api) {
+  constructor(storage) {
     this._storage = storage;
-    this._api = api;
+  }
+
+  /**
+   * @returns {number} storage revision
+   */
+  getRev() {
+    return this._storage.getRev();
   }
 
   getAttachmentUrl(id) {}
 
+  /**
+   * @param {string} id record id
+   * @returns {Record?}
+   */
   getRecord(id) {
     return findById(this._storage.getLocalRecords(), id)
       || findById(this._storage.getRecords(), id);
   }
 
+  /**
+   * @param {string} id sha256 of file content
+   * @param {File} blob file content
+   */
   addAttachment(id, blob) {
     // FIXME in transaction
     this._storage.addLocalRecord({
@@ -45,6 +58,10 @@ class ReplicaDB {
     this._storage.addLocalAttachment(id, blob);
   }
 
+  /**
+   * @param {Object} fields key-value object with fields
+   * @param {[string]} refs record's refs
+   */
   addRecord(fields, refs) {
     this._storage.addLocalRecord({
       _id: getRandomId(),
@@ -53,14 +70,18 @@ class ReplicaDB {
     });
   }
 
+  /**
+   * @param {string} id record id
+   * @param {Object} fields key-value object with changed fields
+   * @param {[string]} refs? new refs (not used if record is attachment)
+   */
   updateRecord(id, fields, refs) {
     const record = this.getRecord(id);
-    if (!record) {
-      throw new Error(`can't update record ${id}: doesn't exist`);
-    }
+    if (!record) throw new Error(`can't update record ${id}: doesn't exist`);
+
     this._storage.addLocalRecord({
       _id: id,
-      _refs: refs,
+      ...(record._attachment ? {} : { _refs: refs }),
       // do not pass through _deleted for auto-revive
       ...fields,
     });
@@ -68,11 +89,13 @@ class ReplicaDB {
     this._compact();
   }
 
+  /**
+   * @param {string} id record id
+   */
   deleteRecord(id) {
     const record = this.getRecord(id);
-    if (!record) {
-      throw new Error(`can't delete record ${id}: doesn't exist`);
-    }
+    if (!record) throw new Error(`can't delete record ${id}: doesn't exist`);
+
     this._storage.addLocalRecord({
       ...record,
       _deleted: true,
@@ -99,26 +122,6 @@ class ReplicaDB {
     }
   }
 
-  _fetchAll() {
-    const {
-      records,
-      rev,
-    } = this._api.fetchAll(this._storage.getRev());
-    // TODO resolve conflicts
-  }
-
-  // returns bool
-  _pushChanges() {
-    return this._api.pushChanges(
-      this._storage.getRev(),
-      this._storage.getLocalRecords(),
-      this._storage.getLocalAttachments(),
-    );
-  }
-
-  sync() {
-    while (!this._pushChanges()) {
-      this._fetchAll();
-    }
-  }
+  // TODO resolve conflicts
+  applyChanges(rev, changes) {}
 }
