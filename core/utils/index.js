@@ -83,6 +83,8 @@ export async function listFiles(filePath) {
   return dirContent.filter((_, i) => fileCheckResults[i]);
 }
 
+export const createTempDir = () => fs.promises.mkdtemp(path.join(os.tmpdir(), 'v-'));
+
 export async function withTempFiles(files, cb) {
   if (!files.length) {
     return cb([]);
@@ -91,17 +93,15 @@ export async function withTempFiles(files, cb) {
   let dir;
   try {
     // create temp dir
-    dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'v-'));
+    dir = await createTempDir();
 
     // write temp files
     const paths = files.map((_, i) => path.join(dir, `temp-file-${i}`));
     await Promise.all(paths.map((filePath, i) => fs.promises.writeFile(filePath, files[i])));
 
     return await Promise.resolve(cb(paths));
-  } catch (e) {
-    throw e;
   } finally { // do cleanup in any case
-    await rmrfSync(dir);
+    if (dir) rmrfSync(dir);
   }
 }
 
