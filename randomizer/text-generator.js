@@ -1,8 +1,7 @@
-import { capitalize } from '../shared/utils';
-import { randomArrValue } from '../randomizer';
+import { capitalize, createArray } from '../shared/utils';
+import { randomInt, shuffle, randomArrValue } from './index';
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd
-
 const SKIP_WORDS = [ 'dr.', 'mr.', 'mrs.' ];
 
 function hasSkipWordAt(text, pos) {
@@ -24,7 +23,7 @@ function hasSkipWordAt(text, pos) {
 const isSeparator = char => char === '.' || char === '?' || char === '!';
 const isPunctuation = char => char === ',' || char === ';' || char === ':';
 
-export function getSentences(text) {
+function getSentences(text) {
   const sentences = [];
 
   let sentenceStart = 0;
@@ -197,7 +196,7 @@ function genSentence(stats) {
   return sentence + pickWord(stats.separators);
 }
 
-export function createTextGenerator(corpus) {
+export default function createTextGenerator(corpus) {
   const stats = calculateTextStats(corpus);
 
   return {
@@ -219,6 +218,31 @@ export function createTextGenerator(corpus) {
     word() {
       const words = Object.keys(stats.words);
       return randomArrValue(words);
+    },
+
+    /**
+     * @param {[string]} imageUrls images to use
+     */
+    async genText(imageUrls) {
+      const name = this.sentence(1, 8);
+
+      const data = createArray(
+        randomInt(1, 7), // paragraphs
+        () => {
+          const sentences = createArray(
+            randomInt(1, 7), // sentences
+            () => this.sentence(),
+          );
+
+          if (Math.random() < 0.34) {
+            sentences.push(` ${randomArrValue(imageUrls)} `);
+          }
+
+          return shuffle(sentences).join(' ');
+        }
+      ).join('\n\n');
+
+      return { name: name.substring(0, name.length - 1), data };
     },
   };
 }

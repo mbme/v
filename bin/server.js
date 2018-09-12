@@ -1,26 +1,61 @@
-import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
+import fs from 'fs';
+import path from 'path';
+
+import webpack from 'webpack';
 import webpackConfig from '../webpack.config.babel';
+
 import startServer from '../server';
-import log from '../shared/log';
-import genData from '../tools/gen-data';
 import createApiClient from '../server/api-client';
+import log from '../shared/log';
+import { createArray } from '../shared/utils';
+import { createImageLink } from '../shared/parser';
+import { readText, listFiles, sha256 } from '../core/utils';
+import createTextGenerator from '../randomizer/text-generator';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
-// FIXME port, rootDir & password in prod mode
-const port = 8080;
-const password = '';
 
-const compiler = webpack(webpackConfig);
-const compilationPromise = new Promise((resolve, reject) => {
-  compiler.watch({ ignored: /(node_modules|dist)/ }, (err, stats) => {
-    err ? reject(err) : resolve();
-    log.simple(stats.toString({ colors: true }));
+async function listImages(basePath) {
+  const files = await listFiles(basePath);
+  const images = files.filter(name => name.match(/\.(jpg|jpeg)$/i));
+
+  return Promise.all(images.map(async (name) => {
+    const data = await fs.promises.readFile(path.join(basePath, name));
+    const link = createImageLink(name, sha256(data));
+
+    return { link, file: { name, data } };
+  }));
+}
+
+async function genData(api, notesCount) {
+  const resourcesPath = path.join(__dirname, '../resources');
+  const images = await listImages(resourcesPath);
+  const text = await readText(path.join(resourcesPath, 'text.txt'));
+  const generator = createTextGenerator(text);
+
+  const notesPromises = createArray(notesCount, async () => {
+    const { name, data } = await generator.genText(images.map(item => item.link));
+    return api.CREATE_NOTE({ name, data }, images.map(image => image.file.data));
   });
-});
 
-async function run(args) {
+  await Promise.all(notesPromises);
+
+  log.info('Generated %s fake notes', notesCount);
+}
+
+
+async function run(port, password, rootDir, ...args) {
+  if (!port || !password || !rootDir) throw new Error('port, password & rootDir are required');
+
+  const compiler = webpack(webpackConfig);
+  const compilationPromise = new Promise((resolve, reject) => {
+    compiler.watch({ ignored: /(node_modules|dist)/ }, (err, stats) => {
+      err ? reject(err) : resolve();
+      log.simple(stats.toString({ colors: true }));
+    });
+  });
+
   const [ server ] = await Promise.all([
-    startServer(port, { rootDir: '/tmp/db', password }),
+    startServer(port, { rootDir, password }),
     compilationPromise,
   ]);
 

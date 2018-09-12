@@ -8,7 +8,7 @@
   "main": "",
   "scripts": {
     "start": "NODE_ENV=production bin/node.js bin/server",
-    "dev": "NODE_ENV=development bin/node.js bin/server",
+    "dev": "NODE_ENV=development bin/node.js bin/server 8080 pass /tmp/db",
     "test": "LOG=ERROR bin/node.js bin/test",
     "test-update": "yarn test --update-snapshots",
     "repl": "bin/node.js bin/repl",
@@ -25,7 +25,8 @@
     "date-fns": "^1.29.0",
     "prop-types": "^15.5.10",
     "react": "^16.3.0",
-    "react-dom": "^16.3.0"
+    "react-dom": "^16.3.0",
+    "webpack": "^4.4.1"
   },
   "devDependencies": {
     "@babel/plugin-syntax-jsx": "^7.0.0",
@@ -37,7 +38,6 @@
     "eslint-plugin-babel": "^5.0.0",
     "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.2.0",
-    "webpack": "^4.4.1"
+    "eslint-plugin-react": "^7.2.0"
   }
 }

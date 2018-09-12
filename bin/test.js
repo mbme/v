@@ -2,7 +2,7 @@
 import path from 'path';
 import { walkSync } from '../core/utils';
 import log from '../shared/log';
-import { collectTests, runTests } from '../tools/test';
+import { collectTests, runTests } from '../tester';
 
 const args = process.argv.slice(3);
 const filter = args.filter(arg => !arg.startsWith('--'))[0] || '';

@@ -1,4 +1,4 @@
-import { test } from '../../tools/test';
+import { test } from '../../tester';
 import { aesEncrypt, aesDecrypt } from './index';
 
 test('Encrypt/decrypt', (assert) => {

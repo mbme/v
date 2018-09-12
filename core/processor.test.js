@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { test, before, after } from '../tools/test';
+import { test, before, after } from '../tester';
 import { createLink } from '../shared/parser';
 import { createArray, apiClient } from '../shared/utils';
 import { sha256, rmrfSync, readStream } from './utils';

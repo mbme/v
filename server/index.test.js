@@ -1,4 +1,4 @@
-import { test, before, after } from '../tools/test';
+import { test, before, after } from '../tester';
 import startServer from './index';
 import { rmrfSync } from '../core/utils';
 import createApiClient from './api-client';

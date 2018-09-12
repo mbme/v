@@ -1,4 +1,4 @@
-import { test, before, after } from '../tools/test';
+import { test, before, after } from '../tester';
 import { parse, select } from './parser';
 
 const text = `
