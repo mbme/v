@@ -4,15 +4,14 @@ import { test, before, after } from '../tester';
 import { createLink } from '../shared/parser';
 import { createArray, apiClient } from '../shared/utils';
 import { sha256, readStream } from './utils';
-import { createTempDir, rmrfSync } from '../fs/utils';
+import { rmrfSync } from '../fs/utils';
 import createProcessor from './processor';
 
 let processor;
 let api;
-let rootDir;
+const rootDir = '/tmp/api-client-test-storage';
 
 const init = async () => {
-  rootDir = await createTempDir();
   processor = await createProcessor({ rootDir });
   api = apiClient(processor.processAction);
 };
