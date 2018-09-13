@@ -9,7 +9,7 @@
   "scripts": {
     "start": "NODE_ENV=production bin/node.js bin/server",
     "dev": "NODE_ENV=development bin/node.js bin/server 8080 pass /tmp/db",
-    "test": "LOG=ERROR bin/node.js bin/test",
+    "test": "LOG=ERROR bin/node.js tester/bin",
     "test-update": "yarn test --update-snapshots",
     "repl": "bin/node.js bin/repl",
     "lint": " eslint . --ext js,jsx",

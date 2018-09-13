@@ -9,7 +9,8 @@ import createApiClient from '../server/api-client';
 import log from '../shared/log';
 import { createArray } from '../shared/utils';
 import { createImageLink } from '../shared/parser';
-import { readText, listFiles, sha256 } from '../core/utils';
+import { sha256 } from '../core/utils';
+import { readText, listFiles } from '../fs/utils';
 import createTextGenerator from '../randomizer/text-generator';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -43,7 +44,7 @@ async function genData(api, notesCount) {
 }
 
 
-async function run(port, password, rootDir, ...args) {
+export default async function run(port, password, rootDir, ...args) {
   if (!port || !password || !rootDir) throw new Error('port, password & rootDir are required');
 
   const compiler = webpack(webpackConfig);
@@ -79,8 +80,3 @@ async function run(port, password, rootDir, ...args) {
   process.on('SIGINT', close);
   process.on('SIGTERM', close);
 }
-
-run(process.argv.slice(3)).catch((e) => {
-  log.error('server: failed to start', e);
-  process.exit(2);
-});

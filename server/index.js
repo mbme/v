@@ -9,14 +9,15 @@ import Busboy from 'busboy';
 import * as utils from '../core/utils';
 import log from '../shared/log';
 import { extend } from '../shared/utils';
+import { listFiles } from '../fs/utils';
 import createProcessor from '../core/processor';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
 const DIST_DIR = path.join(__dirname, '../dist');
 
 async function getFileStream(dir, name) {
-  if (!await utils.existsFile(dir)) return null;
-  if (!await utils.listFiles(dir).then(files => files.includes(name))) return null;
+  if (!fs.existsSync(dir)) return null;
+  if (!await listFiles(dir).then(files => files.includes(name))) return null;
 
   const filePath = path.join(dir, name);
 

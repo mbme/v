@@ -1,10 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import log from '../shared/log';
-import { createTempDir, rmrfSync, sha256 } from '../core/utils';
+import { sha256 } from '../core/utils';
+import { createTempDir, rmrfSync } from './utils';
 
 const OPERATIONS = {
   ADD(filePath, data) {
+    let _madeChanges = false;
+
     return {
       type: 'ADD',
       filePath,
@@ -12,16 +15,21 @@ const OPERATIONS = {
       async apply() {
         if (fs.existsSync(filePath)) throw new Error(`Can't ADD ${filePath}: already exists`);
 
-        return fs.promises.writeFile(filePath, data);
+        await fs.promises.writeFile(filePath, data);
+        _madeChanges = true;
       },
+
       async rollback() {
-        return fs.promises.unlink(filePath);
+        if (_madeChanges) {
+          await fs.promises.unlink(filePath);
+        }
       },
     };
   },
 
   UPDATE(filePath, data) {
     let _tmpFile;
+    let _madeChanges = false;
 
     return {
       type: 'UPDATE',
@@ -32,33 +40,40 @@ const OPERATIONS = {
 
         _tmpFile = path.join(tmpDir, sha256(filePath));
         await fs.promises.rename(filePath, _tmpFile);
+        _madeChanges = true;
 
         return fs.promises.writeFile(filePath, data);
       },
 
-      rollback() {
-        return fs.promises.rename(_tmpFile, filePath);
+      async rollback() {
+        if (_madeChanges) {
+          await fs.promises.rename(_tmpFile, filePath);
+        }
       },
     };
   },
 
   REMOVE(filePath) {
     let _tmpFile;
+    let _madeChanges = false;
 
     return {
       type: 'REMOVE',
       filePath,
 
-      apply(tmpDir) {
+      async apply(tmpDir) {
         if (!fs.existsSync(filePath)) throw new Error(`Can't REMOVE ${filePath}: doesn't exist`);
 
         _tmpFile = path.join(tmpDir, sha256(filePath));
 
-        return fs.promises.rename(filePath, _tmpFile);
+        await fs.promises.rename(filePath, _tmpFile);
+        _madeChanges = true;
       },
 
-      rollback() {
-        return fs.promises.rename(_tmpFile, filePath);
+      async rollback() {
+        if (_madeChanges) {
+          await fs.promises.rename(_tmpFile, filePath);
+        }
       },
     };
   },
@@ -117,8 +132,8 @@ export default function createFsTransaction() {
         log.debug('Temp dir: ', tmpDir);
 
         for (const operation of _operations) {
-          await operation.apply(tmpDir);
           _opCounter += 1;
+          await operation.apply(tmpDir);
         }
       } catch (err) {
         await _rollback(tmpDir);

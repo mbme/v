@@ -2,7 +2,8 @@ import http from 'http';
 import urlParser from 'url';
 import { flatten, apiClient } from '../shared/utils';
 import log from '../shared/log';
-import { readStream, aesEncrypt, sha256, spawn, withTempFiles } from '../core/utils';
+import { withTempFiles } from '../fs/utils';
+import { readStream, aesEncrypt, sha256, spawn } from '../core/utils';
 
 function getAsset(baseUrl, fileId, token) {
   return new Promise((resolve, reject) => {

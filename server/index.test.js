@@ -1,6 +1,6 @@
 import { test, before, after } from '../tester';
 import startServer from './index';
-import { rmrfSync } from '../core/utils';
+import { rmrfSync } from '../fs/utils';
 import createApiClient from './api-client';
 
 let server;

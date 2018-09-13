@@ -3,7 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { recentComparator } from '../../shared/utils';
 import log from '../../shared/log';
-import * as utils from '../utils';
+import { readJSON, writeJSON, isDirectory, listFiles } from '../../fs/utils';
+import { sha256, sha256File, getMimeType } from '../utils';
 import probeMetadata from '../utils/probe';
 import { validateAll, assertAll } from '../validator';
 import createCache from './cache';
@@ -133,8 +134,8 @@ class Storage {
     const dirs = [ this.rootDir, path.join(this.rootDir, 'files') ];
 
     for (const dir of dirs) {
-      if (await utils.existsFile(dir)) {
-        if (!await utils.isDirectory(dir)) throw new Error(`${dir} must be a directory`);
+      if (fs.existsSync(dir)) {
+        if (!await isDirectory(dir)) throw new Error(`${dir} must be a directory`);
         return;
       }
 
@@ -143,7 +144,7 @@ class Storage {
   }
 
   async _listFiles() {
-    const fileNames = await utils.listFiles(path.join(this.rootDir, 'files'));
+    const fileNames = await listFiles(path.join(this.rootDir, 'files'));
 
     const files = {};
 
@@ -155,7 +156,7 @@ class Storage {
       }
 
       const filePath = this._getFilePath(id);
-      const realHash = await utils.sha256File(filePath);
+      const realHash = await sha256File(filePath);
 
       if (realHash !== id) throw new Error(`files: wrong hash in file ${id}: ${realHash}`);
       if (files[id]) throw new Error(`files: duplicate file with id ${id}`);
@@ -169,7 +170,7 @@ class Storage {
   async _readFileInfo(id) {
     const filePath = this._getFilePath(id);
 
-    const mimeType = await utils.getMimeType(filePath);
+    const mimeType = await getMimeType(filePath);
     const stats = await fs.promises.lstat(filePath);
     const meta = await probeMetadata(filePath);
 
@@ -178,7 +179,7 @@ class Storage {
 
   async _listRecords(getFile) {
     const recordIds = [];
-    for (const fileName of await utils.listFiles(this.rootDir)) {
+    for (const fileName of await listFiles(this.rootDir)) {
       if (!fileName.endsWith('.mb')) {
         log.warn(`storage: records: unexpected file ${fileName}`);
         continue;
@@ -202,7 +203,7 @@ class Storage {
 
   async _readRecord(id, getFile) {
     const recordFile = this._getRecordPath(id);
-    const { type, fields, fileIds, updatedTs } = await utils.readJSON(recordFile);
+    const { type, fields, fileIds, updatedTs } = await readJSON(recordFile);
 
     const files = fileIds.map((fileId) => {
       const file = getFile(fileId);
@@ -241,7 +242,7 @@ class Storage {
 
     const attachedFiles = {};
     for (const asset of assets) {
-      attachedFiles[utils.sha256(asset)] = asset;
+      attachedFiles[sha256(asset)] = asset;
     }
 
     const unknownIds = newIds.filter(fileId => !attachedFiles[fileId]);
@@ -291,7 +292,7 @@ class Storage {
 
     try {
       // write into temp file and then rename temp file to achieve "atomic" file writes
-      await utils.writeJSON(tempFile, { type, fields, fileIds, updatedTs: Date.now() });
+      await writeJSON(tempFile, { type, fields, fileIds, updatedTs: Date.now() });
       await fs.promises.rename(tempFile, file);
     } catch (e) {
       await fs.promises.unlink(tempFile); // cleanup temp file if operation fails

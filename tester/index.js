@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import assert from 'assert';
-import { readJSON, writeJSON } from '../core/utils';
+import { readJSON, writeJSON } from '../fs/utils';
 import log from '../shared/log';
 import { uniq } from '../shared/utils';
 
@@ -10,20 +10,18 @@ let _beforeCb;
 let _tests = [];
 let _afterCb;
 
-export function collectTests(cb) {
-  cb();
+export function initTestPlan() {
+  _beforeCb = null;
+  _tests = [];
+  _afterCb = null;
+}
 
-  const result = {
+export function getTestPlan() {
+  return {
     tests: _tests,
     before: _beforeCb,
     after: _afterCb,
   };
-
-  _beforeCb = null;
-  _tests = [];
-  _afterCb = null;
-
-  return result;
 }
 
 export const test = (name, fn, only = false) => _tests.push({ name, fn, only });
@@ -57,6 +55,11 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
         okAsserts += 1;
       },
 
+      true(actual) {
+        assert.equal(actual, true);
+        okAsserts += 1;
+      },
+
       matchSnapshot(actual) {
         if (snapshotPos < oldSnapshots.length) {
           try {
@@ -81,6 +84,7 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
           assert.fail('Expected to throw');
         } catch (e) {
           if (error) assert.equal(e, error);
+          okAsserts += 1;
         }
       },
     }));
