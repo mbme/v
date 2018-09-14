@@ -2,10 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { test, before, after } from '../tester';
 import { createLink } from '../v-parser';
-import { createArray, apiClient } from '../shared/utils';
-import { sha256, readStream } from './utils';
+import { createArray } from '../utils';
+import { sha256, readStream } from '../utils/node';
 import { rmrfSync } from '../fs/utils';
 import createProcessor from './processor';
+import apiProxy from './api-proxy';
 
 let processor;
 let api;
@@ -13,7 +14,7 @@ const rootDir = '/tmp/api-client-test-storage';
 
 const init = async () => {
   processor = await createProcessor({ rootDir });
-  api = apiClient(processor.processAction);
+  api = apiProxy(processor.processAction);
 };
 
 before(async () => {

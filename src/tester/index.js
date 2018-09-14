@@ -4,7 +4,7 @@ import fs from 'fs';
 import assert from 'assert';
 import { readJSON, writeJSON } from '../fs/utils';
 import log from '../logger';
-import { uniq } from '../shared/utils';
+import { uniq } from '../utils';
 
 let _beforeCb;
 let _tests = [];

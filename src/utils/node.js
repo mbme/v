@@ -1,4 +1,3 @@
-import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import readline from 'readline';
@@ -73,12 +72,3 @@ export function spawn(command, ...args) {
     process.on('error', reject);
   });
 }
-
-const MIME = {
-  '.css': 'text/css',
-  '.html': 'text/html',
-  '.json': 'application/json',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-};
-export const getMimeType = async filePath => MIME[path.extname(filePath)] || exec(`file -b -i ${filePath}`);

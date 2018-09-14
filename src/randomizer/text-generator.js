@@ -1,4 +1,4 @@
-import { capitalize, createArray } from '../shared/utils';
+import { capitalize, createArray } from '../utils';
 import { randomInt, shuffle, randomArrValue } from './index';
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd

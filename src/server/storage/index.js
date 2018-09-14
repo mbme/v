@@ -1,13 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 import path from 'path';
 import fs from 'fs';
-import { recentComparator } from '../../shared/utils';
 import log from '../../logger';
 import { readJSON, writeJSON, isDirectory, listFiles } from '../../fs/utils';
-import { sha256, sha256File, getMimeType } from '../utils';
-import probeMetadata from '../utils/probe';
+import { sha256, sha256File } from '../../utils/node';
+import probeMetadata, { getMimeType } from '../../file-prober';
 import { validateAll, assertAll } from '../../asserts';
 import createCache from './cache';
+
+const recentComparator = (r1, r2) => r2.updatedTs - r1.updatedTs;
 
 // FileInfo: { id: string, mimeType: string, updatedTs: number, size: number, meta: {} }
 // Record: { type: RecordType, id: string, fields: object, updatedTs: number, files: FileInfo[] }

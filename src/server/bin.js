@@ -7,9 +7,9 @@ import webpackConfig from '../../webpack.config.babel';
 import startServer from './index';
 import createApiClient from './api-client';
 import log from '../logger';
-import { createArray } from '../shared/utils';
+import { createArray } from '../utils';
+import { sha256 } from '../utils/node';
 import { createImageLink } from '../v-parser';
-import { sha256 } from '../core/utils';
 import { readText, listFiles } from '../fs/utils';
 import createTextGenerator from '../randomizer/text-generator';
 

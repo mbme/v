@@ -109,8 +109,6 @@ export function formatTs(ts) {
   ].join('/');
 }
 
-export const recentComparator = (r1, r2) => r2.updatedTs - r1.updatedTs;
-
 export function mapObject(obj, fn) {
   const result = {};
   Object.entries(obj)
@@ -118,12 +116,4 @@ export function mapObject(obj, fn) {
     .forEach(([ key, newValue ]) => { result[key] = newValue; });
 
   return result;
-}
-
-export function apiClient(onAction) {
-  return new Proxy({}, {
-    get(target, prop) {
-      return (data, newFiles) => onAction({ name: prop, data }, newFiles || []);
-    },
-  });
 }

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import log from '../logger';
-import { sha256 } from '../core/utils';
+import { sha256 } from '../utils/node';
 import { createTempDir, rmrfSync } from './utils';
 
 const OPERATIONS = {

@@ -1,5 +1,5 @@
-import { test } from '../../tester';
-import { aesEncrypt, aesDecrypt } from './index';
+import { test } from '../tester';
+import { aesEncrypt, aesDecrypt } from './node';
 
 test('Encrypt/decrypt', (assert) => {
   const text = 'Some great text: with a colon';

@@ -1,9 +1,10 @@
 import http from 'http';
 import urlParser from 'url';
-import { flatten, apiClient } from '../shared/utils';
 import log from '../logger';
 import { withTempFiles } from '../fs/utils';
-import { readStream, aesEncrypt, sha256, spawn } from '../core/utils';
+import { flatten } from '../utils';
+import { readStream, aesEncrypt, sha256, spawn } from '../utils/node';
+import apiProxy from './api-proxy';
 
 function getAsset(baseUrl, fileId, token) {
   return new Promise((resolve, reject) => {
@@ -25,7 +26,7 @@ function getAsset(baseUrl, fileId, token) {
 export default function createApiClient(baseUrl, password) {
   const token = aesEncrypt(`valid ${Date.now()}`, sha256(password));
 
-  return apiClient(async (action, assets) => {
+  return apiProxy(async (action, assets) => {
     if (action.name === 'READ_ASSET') {
       const resp = await getAsset(baseUrl, action.data.id, token);
 

@@ -3,7 +3,7 @@ import {
   flatten,
   findById,
   removeMut,
-} from '../../shared/utils';
+} from '../../utils';
 
 export default function createCache(records, files) {
   return {

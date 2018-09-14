@@ -1,5 +1,5 @@
 import { test } from '../tester';
-import { isObject, isFunction, createArray, flatten } from './utils';
+import { isObject, isFunction, createArray, flatten } from './index';
 
 test('isObject', (assert) => {
   assert.equal(isObject(null), false);

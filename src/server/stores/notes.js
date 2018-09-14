@@ -1,5 +1,5 @@
 import * as parser from '../../v-parser';
-import { fuzzySearch } from '../../shared/utils';
+import { fuzzySearch } from '../../utils';
 import { assertAll } from '../../asserts';
 
 const TYPE = 'note';

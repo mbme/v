@@ -1,4 +1,5 @@
-import { exec } from './index';
+import path from 'path';
+import { exec } from '../utils/node';
 
 // TODO images, video
 
@@ -24,3 +25,12 @@ export default async function probeMetadata(filePath) {
 
   return {};
 }
+
+const MIME = {
+  '.css': 'text/css',
+  '.html': 'text/html',
+  '.json': 'application/json',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+};
+export const getMimeType = async filePath => MIME[path.extname(filePath)] || exec(`file -b -i ${filePath}`);

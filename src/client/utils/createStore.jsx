@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { mapObject } from '../../shared/utils';
+import { mapObject } from '../../utils';
 
 export default function createStore(name, store) {
   const StoreContext = React.createContext({});

@@ -1,4 +1,4 @@
-import { removeMut } from '../shared/utils';
+import { removeMut } from './index';
 
 export default function observable(initialValue) {
   const subs = [];

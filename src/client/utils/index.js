@@ -1,9 +1,9 @@
 import {
-  apiClient,
   isString,
   isObject,
-} from '../../shared/utils';
-import pubSub from '../../events/pubsub';
+} from '../../utils';
+import pubSub from '../../utils/pubsub';
+import apiProxy from '../../server/api-proxy';
 
 export function readFile(file) {
   return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ export const sha256 = buffer => crypto.subtle.digest('SHA-256', buffer).then(byt
 
 export const getFileUrl = fileId => `/api?fileId=${fileId}`;
 export const networkEvents = pubSub();
-export const api = apiClient(async (action, assets) => {
+export const api = apiProxy(async (action, assets) => {
   if (action.name === 'READ_ASSET') throw new Error('NYI');
 
   networkEvents.emit('start');

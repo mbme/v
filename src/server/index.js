@@ -6,11 +6,12 @@ import zlib from 'zlib';
 
 import Busboy from 'busboy';
 
-import * as utils from '../core/utils';
+import * as utils from '../utils/node';
 import log from '../logger';
-import { extend } from '../shared/utils';
+import { extend } from '../utils';
 import { listFiles } from '../fs/utils';
-import createProcessor from '../core/processor';
+import { getMimeType } from '../file-prober';
+import createProcessor from './processor';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -23,7 +24,7 @@ async function getFileStream(dir, name) {
 
   return {
     stream: fs.createReadStream(filePath),
-    mimeType: await utils.getMimeType(filePath),
+    mimeType: await getMimeType(filePath),
   };
 }
 

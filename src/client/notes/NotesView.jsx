@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { formatTs } from '../../shared/utils';
+import { formatTs } from '../../utils';
 import { api } from '../utils';
 import { inject } from '../store';
 import { Consumer } from '../chrome/Router';

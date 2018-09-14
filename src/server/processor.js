@@ -1,5 +1,5 @@
 import log from '../logger';
-import createQueue from '../tasks/queue';
+import createQueue from '../utils/queue';
 import createCoreStore from './stores/core';
 import createNotesStore from './stores/notes';
 import createStorage from './storage';
