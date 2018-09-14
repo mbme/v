@@ -44,7 +44,7 @@ test('should manage files', async (assert) => {
 });
 
 test('should read file metadata', async (assert) => {
-  const buffer = await fs.promises.readFile(path.resolve(__dirname, '../resources/track.mp3'));
+  const buffer = await fs.promises.readFile(path.resolve(__dirname, '../../resources/track.mp3'));
   const fileId = sha256(buffer);
   const link = createLink('', fileId);
 

@@ -2,10 +2,10 @@ import fs from 'fs';
 import path from 'path';
 
 import webpack from 'webpack';
-import webpackConfig from '../webpack.config.babel';
+import webpackConfig from '../../webpack.config.babel';
 
-import startServer from '../server';
-import createApiClient from '../server/api-client';
+import startServer from './index';
+import createApiClient from './api-client';
 import log from '../shared/log';
 import { createArray } from '../shared/utils';
 import { createImageLink } from '../shared/parser';

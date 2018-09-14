@@ -11,7 +11,7 @@ module.exports = {
   overrides: [
     {
       files: [
-        'shared/**/*.js',
+        'src/shared/**/*.js',
       ],
       env: {
         node: false,
@@ -20,8 +20,8 @@ module.exports = {
     },
     {
       files: [
-        'client/**/*.js',
-        'client/**/*.jsx',
+        'src/client/**/*.js',
+        'src/client/**/*.jsx',
       ],
       env: {
         browser: true,
@@ -29,7 +29,7 @@ module.exports = {
     },
     {
       files: [
-        'server/**/*.js',
+        'src/server/**/*.js',
         '**/*.test.js',
       ],
       env: {

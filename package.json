@@ -7,11 +7,11 @@
   "private": true,
   "main": "",
   "scripts": {
-    "start": "NODE_ENV=production bin/node.js bin/server",
-    "dev": "NODE_ENV=development bin/node.js bin/server 8080 pass /tmp/db",
-    "test": "LOG=ERROR bin/node.js tester/bin",
+    "start": "NODE_ENV=production ./node.js src/server/bin",
+    "dev": "NODE_ENV=development ./node.js src/server/bin 8080 pass /tmp/db",
+    "test": "LOG=ERROR ./node.js src/tester/bin",
     "test-update": "yarn test --update-snapshots",
-    "repl": "bin/node.js bin/repl",
+    "repl": "./node.js bin/repl",
     "lint": " eslint . --ext js,jsx",
     "cloc": "cloc --vcs=git --exclude-ext=json,md,test.js -v *"
   },
