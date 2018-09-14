@@ -1,7 +1,7 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path';
 import { walkSync } from '../fs/utils';
-import log from '../shared/log';
+import log from '../logger';
 import { initTestPlan, getTestPlan, runTests } from './index';
 
 export default async function run(...args) {

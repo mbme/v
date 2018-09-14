@@ -3,7 +3,7 @@
 import fs from 'fs';
 import assert from 'assert';
 import { readJSON, writeJSON } from '../fs/utils';
-import log from '../shared/log';
+import log from '../logger';
 import { uniq } from '../shared/utils';
 
 let _beforeCb;

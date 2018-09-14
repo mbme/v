@@ -1,5 +1,5 @@
-import log from './log';
-import { isString, uniq, isSha256 } from './utils';
+import log from '../logger';
+import { isString, uniq, isSha256 } from '../shared/utils';
 
 function isSubSequence(str, i, seq) {
   for (let pos = 0; pos < seq.length; pos += 1) {

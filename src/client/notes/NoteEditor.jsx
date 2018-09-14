@@ -5,7 +5,7 @@ import {
   createImageLink,
   extractFileIds,
   parse,
-} from '../../shared/parser';
+} from '../../v-parser';
 import { api } from '../utils';
 import {
   Button,

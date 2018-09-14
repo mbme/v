@@ -109,49 +109,6 @@ export function formatTs(ts) {
   ].join('/');
 }
 
-export function pubSub() {
-  const subs = new Map();
-
-  return {
-    on(name, handler) {
-      const eventSubs = subs.get(name) || new Set();
-      eventSubs.add(handler);
-      subs.set(name, eventSubs);
-    },
-
-    off(name, handler) {
-      const eventSubs = subs.get(name) || new Set();
-      eventSubs.delete(handler);
-      if (!eventSubs.length) {
-        subs.delete(name);
-      }
-    },
-
-    emit(name, params) {
-      (subs.get(name) || new Set()).forEach(handler => handler(params));
-    },
-  };
-}
-
-export function observable(initialValue) {
-  const subs = [];
-  let value = initialValue;
-
-  return {
-    get value() {
-      return value;
-    },
-    set(newValue) {
-      value = newValue;
-      subs.forEach(sub => sub(newValue));
-    },
-    on(sub) {
-      subs.push(sub);
-      return () => removeMut(subs, sub);
-    },
-  };
-}
-
 export const recentComparator = (r1, r2) => r2.updatedTs - r1.updatedTs;
 
 export function mapObject(obj, fn) {

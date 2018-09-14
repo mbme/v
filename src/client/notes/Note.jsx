@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { parse } from '../../shared/parser';
+import { parse } from '../../v-parser';
 import { getFileUrl } from '../utils';
 
 export default class Note extends PureComponent {

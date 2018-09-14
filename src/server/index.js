@@ -7,7 +7,7 @@ import zlib from 'zlib';
 import Busboy from 'busboy';
 
 import * as utils from '../core/utils';
-import log from '../shared/log';
+import log from '../logger';
 import { extend } from '../shared/utils';
 import { listFiles } from '../fs/utils';
 import createProcessor from '../core/processor';

@@ -1,6 +1,6 @@
-import * as parser from '../../shared/parser';
+import * as parser from '../../v-parser';
 import { fuzzySearch } from '../../shared/utils';
-import { assertAll } from '../validator';
+import { assertAll } from '../../asserts';
 
 const TYPE = 'note';
 

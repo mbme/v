@@ -1,9 +1,9 @@
 import {
-  pubSub,
   apiClient,
   isString,
   isObject,
 } from '../../shared/utils';
+import pubSub from '../../events/pubsub';
 
 export function readFile(file) {
   return new Promise((resolve, reject) => {

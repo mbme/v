@@ -1,5 +1,5 @@
 import { test } from '../tester';
-import { validate, assert as validationAssert, assertAll } from './validator';
+import { validate, assert as validationAssert, assertAll } from './index';
 
 test('positive-integer', ({ equal }) => {
   equal(validate(2, 'positive-integer').length, 0);

@@ -1,7 +1,7 @@
 import http from 'http';
 import urlParser from 'url';
 import { flatten, apiClient } from '../shared/utils';
-import log from '../shared/log';
+import log from '../logger';
 import { withTempFiles } from '../fs/utils';
 import { readStream, aesEncrypt, sha256, spawn } from '../core/utils';
 

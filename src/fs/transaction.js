@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import log from '../shared/log';
+import log from '../logger';
 import { sha256 } from '../core/utils';
 import { createTempDir, rmrfSync } from './utils';
 

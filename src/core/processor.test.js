@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { test, before, after } from '../tester';
-import { createLink } from '../shared/parser';
+import { createLink } from '../v-parser';
 import { createArray, apiClient } from '../shared/utils';
 import { sha256, readStream } from './utils';
 import { rmrfSync } from '../fs/utils';

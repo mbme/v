@@ -1,5 +1,5 @@
 import { test, before, after } from '../tester';
-import { parse, select } from './parser';
+import { parse, select } from './index';
 
 const text = `
 # Header1
