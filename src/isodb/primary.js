@@ -32,7 +32,7 @@ export default class PrimaryDB {
 
   /**
    * @param {string} id attachment id
-   * @returns {Stream?}
+   * @returns {string?} path to attachment
    */
   getAttachment(id) {
     return this._storage.getAttachment(id);
@@ -41,7 +41,7 @@ export default class PrimaryDB {
   /**
    * @param {number} rev client's storage revision
    * @param {[Record]} changes new or updated records
-   * @param {[Stream]} newAttachments new attachments
+   * @param {Object<String, String>} newAttachments id -> path map of new attachments
    * @returns {boolean}
    */
   applyChanges(rev, changes, newAttachments) {
@@ -58,11 +58,26 @@ export default class PrimaryDB {
     for (const changedRecord of changes) {
       changedRecord._rev = newRev;
 
-      if (this._storage.hasRecord(changedRecord._id)) {
-        this._storage.updateRecord(changedRecord, newAttachments);
-      } else {
-        this._storage.addRecord(changedRecord, newAttachments);
+      const attachment = newAttachments[changedRecord._id];
+      const existingRecord = this.getRecord(changedRecord._id);
+
+      if (existingRecord && existingRecord._attachment !== changedRecord._attachment) {
+        throw new Error(`Can't change _attachment status for the record ${changedRecord._id}`);
       }
+
+      if (existingRecord && existingRecord._attachment && attachment) {
+        throw new Error(`Can't replace attachment for the record ${changedRecord._id}`);
+      }
+
+      if (changedRecord._attachment && !attachment) {
+        throw new Error(`Missing attachment for the record ${changedRecord._id}`);
+      }
+
+      if (!changedRecord._attachment && attachment) {
+        throw new Error(`Unexpected attachment for the record ${changedRecord._id}`);
+      }
+
+      this._storage.putRecord(changedRecord, attachment);
     }
 
     this._storage.setRev(newRev);
