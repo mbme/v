@@ -8,11 +8,11 @@ export default class PrimaryDB {
   }
 
   /**
-   * @param {number} rev minimum revision to include
-   * @returns {[string|Record]} record if _id is >= rev, id otherwise
+   * @param {number} [rev] minimum revision to include
+   * @returns {[string|Record]} array of record if _id is >= rev, id otherwise
    */
-  getAll(rev) {
-    return this._storage.getRecords().map(item => item._rev > rev ? item : item._id);
+  getAll(rev = 0) {
+    return this._storage.getRecords().map(item => item._rev >= rev ? item : item._id);
   }
 
   /**
@@ -41,10 +41,10 @@ export default class PrimaryDB {
   /**
    * @param {number} rev client's storage revision
    * @param {[Record]} changes new or updated records
-   * @param {Object<String, String>} newAttachments id -> path map of new attachments
+   * @param {Object<String, String>} [newAttachments] id -> path map of new attachments
    * @returns {boolean}
    */
-  applyChanges(rev, changes, newAttachments) {
+  applyChanges(rev, changes, newAttachments = {}) {
     if (this._storage.getRev() !== rev) { // ensure client had latest revision
       return false;
     }
@@ -91,30 +91,30 @@ export default class PrimaryDB {
   compact() {
     const records = this._storage.getRecords();
 
-    const validIds = new Set();
-    for (const record of records) {
-      if (!record._attachment && !record._deleted) {
-        validIds.add(record._id);
-      }
-    }
+    const validIds = new Set(
+      records.filter(item => !item._attachment && !item._deleted).map(item => item._id)
+    );
 
     const idsToCheck = Array.from(validIds);
+    const idsChecked = [];
     while (idsToCheck.length) {
       const record = findById(records, idsToCheck[0]);
 
-      for (const id of (record._refs || [])) { // cause attachments has no _refs
+      for (const id of (record._refs || [])) {
         if (validIds.has(id)) {
           continue;
         }
 
-        validIds.add(id);
+        if (!record._deleted) {
+          validIds.add(id);
+        }
 
-        if (!idsToCheck.includes(id)) {
+        if (!idsToCheck.includes(id) && !idsChecked.includes(id)) {
           idsToCheck.push(id);
         }
       }
 
-      idsToCheck.shift(); // pop first item
+      idsChecked.push(idsToCheck.shift()); // pop first item
     }
 
     let removedRecords = 0;
@@ -135,6 +135,7 @@ export default class PrimaryDB {
 
     if (removedRecords + removedAttachments) { // update revision if there were any changes
       this._storage.setRev(this._storage.getRev() + 1);
+      // TODO log numbers
     }
   }
 }

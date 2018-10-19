@@ -34,7 +34,13 @@ export default class ReplicaDB {
     return this._storage.getRev();
   }
 
-  getAttachmentUrl(id) {}
+  /**
+   * @param {string} id attachment id
+   * @returns {string?} path to attachment
+   */
+  getAttachment(id) {
+    return this._storage.getAttachment(id);
+  }
 
   /**
    * @param {string} id record id

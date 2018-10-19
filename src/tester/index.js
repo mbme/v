@@ -60,6 +60,11 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
         okAsserts += 1;
       },
 
+      false(actual) {
+        assert.equal(actual, false);
+        okAsserts += 1;
+      },
+
       matchSnapshot(actual) {
         if (snapshotPos < oldSnapshots.length) {
           try {
@@ -92,7 +97,7 @@ async function runTest({ name, fn }, oldSnapshots, updateSnapshots) {
     log.simple(`  ${name}: ${okAsserts} ok`, snapshotPos ? `/ ${snapshotPos} snapshots` : '');
     return [ snapshots, true ];
   } catch (e) {
-    log.simple(`  ${name} failed\n`, e);
+    log.simple(`\n  ${name}: failed\n`, e, '\n');
     return [ oldSnapshots, false ];
   }
 }

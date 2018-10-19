@@ -1,10 +1,10 @@
-export default class InMemStorage {
+export default class PrimaryInMemStorage {
   _records = [];
   _rev = 0;
   _attachments = {};
 
   getRecords() {
-    return this._records;
+    return this._records.slice(0);
   }
 
   getRev() {
