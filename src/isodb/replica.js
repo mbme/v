@@ -37,9 +37,8 @@ export default class ReplicaDB {
   /**
    * @param {string} id attachment id
    * @returns {string?} path to attachment
-   */
-  getAttachment(id) {
-    return this._storage.getAttachment(id);
+  getAttachmentUrl(id) {
+    return this._storage.getLocalAttachmentUrl(id) || _getRemoteAttachmentUrl(id);
   }
 
   /**
@@ -60,8 +59,7 @@ export default class ReplicaDB {
     this._storage.addLocalRecord({
       _id: id,
       _attachment: true,
-    });
-    this._storage.addLocalAttachment(id, blob);
+    }, blob);
   }
 
   /**
@@ -91,8 +89,6 @@ export default class ReplicaDB {
       // do not pass through _deleted for auto-revive
       ...fields,
     });
-
-    this._compact();
   }
 
   /**
@@ -108,8 +104,10 @@ export default class ReplicaDB {
     });
   }
 
-  _compact() {
-    // compact local attachments
+  /**
+   * Remove unused local attachments
+   */
+  compact() {
     const idsInUse = new Set();
     const attachmentIds = new Set();
     for (const record of this._storage.getLocalRecords()) {
@@ -122,7 +120,7 @@ export default class ReplicaDB {
 
     for (const id of attachmentIds) {
       // remove *new* local attachments
-      if (!idsInUse.has(id) && this._storage.localAttachmentExists(id)) {
+      if (!idsInUse.has(id) && this._storage.getLocalAttachment(id)) {
         this._storage.removeLocalRecord(id);
       }
     }
