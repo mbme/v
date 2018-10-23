@@ -4,5 +4,6 @@ export default class ReplicaInMemStorage {
   getRecords() {}
   addLocalRecord(record, blob) {}
   removeLocalRecord(id) {}
-  getLocalAttachment(id) {}
+  getLocalAttachmentUrl(id) {}
+  getAttachmentUrl(id) {}
 }

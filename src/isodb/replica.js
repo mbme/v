@@ -37,8 +37,10 @@ export default class ReplicaDB {
   /**
    * @param {string} id attachment id
    * @returns {string?} path to attachment
+   */
   getAttachmentUrl(id) {
-    return this._storage.getLocalAttachmentUrl(id) || _getRemoteAttachmentUrl(id);
+    return this._storage.getLocalAttachmentUrl(id)
+      || this._storage.getAttachmentUrl(id);
   }
 
   /**
@@ -104,6 +106,17 @@ export default class ReplicaDB {
     });
   }
 
+  // TODO resolve conflicts
+  async applyChanges(rev, changes) {
+    if (this._storage.getRev() >= rev) {
+      throw new Error(`Got stale revision ${rev} for storage ${this._storage.getRev()}`);
+    }
+
+    if (!changes.length) return;
+
+    
+  }
+
   /**
    * Remove unused local attachments
    */
@@ -125,7 +138,4 @@ export default class ReplicaDB {
       }
     }
   }
-
-  // TODO resolve conflicts
-  applyChanges(rev, changes) {}
 }
