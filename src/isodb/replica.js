@@ -107,14 +107,17 @@ export default class ReplicaDB {
   }
 
   // TODO resolve conflicts
-  async applyChanges(rev, changes) {
-    if (this._storage.getRev() >= rev) {
-      throw new Error(`Got stale revision ${rev} for storage ${this._storage.getRev()}`);
+  applyPatch({ baseRev, storageRev, records }) {
+    const currentRev = this.getRev();
+    if (currentRev !== baseRev) {
+      throw new Error(`Got rev ${baseRev} instead of ${currentRev}`);
     }
 
-    if (!changes.length) return;
-
-    
+    // if local records affected
+    //   if revision changed
+    //     merge
+    //   if references deleted record
+    // else apply patch
   }
 
   /**

@@ -12,6 +12,11 @@ export default class PrimaryDB {
    * @returns {[string|Record]} array of record if _id is >= rev, id otherwise
    */
   getAll(rev = 0) {
+    const currentRev = this.getRev();
+    if (rev > currentRev) {
+      throw new Error(`Got request for the future rev ${rev}, current rev is ${currentRev}`);
+    }
+
     return this._storage.getRecords().map(item => item._rev >= rev ? item : item._id);
   }
 
@@ -20,6 +25,14 @@ export default class PrimaryDB {
    */
   getRev() {
     return this._storage.getRev();
+  }
+
+  getPatch(rev = 0) {
+    return {
+      baseRev: rev,
+      storageRev: this.getRev(),
+      records: this.getAll(rev),
+    };
   }
 
   /**
@@ -130,7 +143,7 @@ export default class PrimaryDB {
       } else {
         removedRecords += 1;
       }
-      this._storage.removeRecord(record._id);
+      this._storage.removeRecord(record._id); // FIXME in transaction
     }
 
     if (removedRecords + removedAttachments) { // update revision if there were any changes
