@@ -117,3 +117,13 @@ export function mapObject(obj, fn) {
 
   return result;
 }
+
+export function array2object(array, getKey) {
+  const result = {};
+
+  for (const item of array) {
+    result[getKey(item)] = item;
+  }
+
+  return result;
+}

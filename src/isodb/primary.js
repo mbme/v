@@ -109,7 +109,7 @@ export default class PrimaryDB {
     );
 
     const idsToCheck = Array.from(validIds);
-    const idsChecked = [];
+    const idsChecked = new Set();
     while (idsToCheck.length) {
       const record = findById(records, idsToCheck[0]);
 
@@ -122,12 +122,12 @@ export default class PrimaryDB {
           validIds.add(id);
         }
 
-        if (!idsToCheck.includes(id) && !idsChecked.includes(id)) {
+        if (!idsToCheck.includes(id) && !idsChecked.has(id)) {
           idsToCheck.push(id);
         }
       }
 
-      idsChecked.push(idsToCheck.shift()); // pop first item
+      idsChecked.add(idsToCheck.shift()); // pop first item
     }
 
     let removedRecords = 0;
