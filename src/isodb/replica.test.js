@@ -59,3 +59,12 @@ test('addAttachment', (assert) => {
 
   assert.true(!!db.getRecord('attachment-0'));
 });
+
+test('updateAttachment', (assert) => {
+  const db = initDB(2, 1);
+
+  db.addAttachment('attachment-0', 'data');
+  db.updateAttachment('attachment-0', { test: true });
+
+  assert.true(db.getRecord('attachment-0').test);
+});
