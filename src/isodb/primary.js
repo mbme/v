@@ -1,3 +1,4 @@
+import { assert } from '../asserts';
 import { findById } from './utils';
 
 export default class PrimaryDB {
@@ -40,6 +41,7 @@ export default class PrimaryDB {
    * @returns {Record?}
    */
   getRecord(id) {
+    assert(id, 'string');
     return findById(this._storage.getRecords(), id);
   }
 
@@ -48,6 +50,7 @@ export default class PrimaryDB {
    * @returns {string?} path to attachment
    */
   getAttachment(id) {
+    assert(id, 'string');
     return this._storage.getAttachment(id);
   }
 

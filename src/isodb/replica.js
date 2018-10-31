@@ -1,3 +1,4 @@
+import { assert } from '../asserts';
 import { isString, array2object, flatten } from '../utils';
 import { randomId } from '../randomizer';
 import { createLogger } from '../logger';
@@ -43,6 +44,8 @@ export default class ReplicaDB {
    * @returns {string?} path to attachment
    */
   getAttachmentUrl(id) {
+    assert(id, 'string');
+
     return this._storage.getLocalAttachmentUrl(id)
       || this._storage.getAttachmentUrl(id);
   }
@@ -52,6 +55,8 @@ export default class ReplicaDB {
    * @returns {Record?}
    */
   getRecord(id) {
+    assert(id, 'string');
+
     return findById(this._storage.getLocalRecords(), id)
       || findById(this._storage.getRecords(), id);
   }
@@ -73,6 +78,7 @@ export default class ReplicaDB {
    * @param {Object} [fields] additional fields
    */
   addAttachment(id, blob, fields = {}) {
+    assert(id, 'string');
     // FIXME in transaction
     this._storage.addLocalRecord({
       _id: id,
@@ -82,6 +88,8 @@ export default class ReplicaDB {
   }
 
   updateAttachment(id, fields) {
+    assert(id, 'string');
+
     const record = this.getRecord(id);
     if (!record) throw new Error(`can't update attachment ${id}: doesn't exist`);
     if (!record._attachment) throw new Error(`can't update attachment ${id}: not an attachment`);
@@ -97,6 +105,8 @@ export default class ReplicaDB {
    * @param {[string]} [refs=[]] record's refs
    */
   addRecord(fields, refs = []) {
+    const id = getRandomId();
+
     this._storage.addLocalRecord({
       _id: getRandomId(),
       _refs: refs,
@@ -104,6 +114,8 @@ export default class ReplicaDB {
     });
 
     this._compact();
+
+    return id;
   }
 
   /**
@@ -113,6 +125,8 @@ export default class ReplicaDB {
    * @param {boolean} [deleted=false] if record is deleted
    */
   updateRecord(id, fields, refs, deleted = false) {
+    assert(id, 'string');
+
     const record = this.getRecord(id);
     if (!record) throw new Error(`can't update record ${id}: doesn't exist`);
     if (record._attachment) throw new Error(`can't update record ${id}: its an attachment`);

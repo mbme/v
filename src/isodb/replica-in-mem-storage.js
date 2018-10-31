@@ -1,3 +1,5 @@
+import { findById } from './utils';
+
 export default class ReplicaInMemStorage {
   _records = [];
   _rev = 0;
@@ -35,8 +37,14 @@ export default class ReplicaInMemStorage {
     delete this._localAttachments[id];
   }
 
-  getAttachmentUrl(id) { // eslint-disable-line class-methods-use-this
-    return `attachment-url(${id})`;
+  getAttachmentUrl(id) {
+    const record = findById(this._records, id);
+
+    if (record && record._attachment) {
+      return `attachment-url(${id})`;
+    }
+
+    return null;
   }
 
   getLocalAttachmentUrl(id) {
