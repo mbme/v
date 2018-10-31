@@ -58,7 +58,8 @@ export default class ReplicaDB {
     assert(id, 'string');
 
     return findById(this._storage.getLocalRecords(), id)
-      || findById(this._storage.getRecords(), id);
+      || findById(this._storage.getRecords(), id)
+      || null;
   }
 
   /**
@@ -79,6 +80,9 @@ export default class ReplicaDB {
    */
   addAttachment(id, blob, fields = {}) {
     assert(id, 'string');
+
+    if (this.getRecord(id)) throw new Error(`can't add attachment ${id}: already exists`);
+
     // FIXME in transaction
     this._storage.addLocalRecord({
       _id: id,

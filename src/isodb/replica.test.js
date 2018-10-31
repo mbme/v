@@ -31,9 +31,31 @@ test('getAll', (assert) => {
 test('getAttachmentUrl', (assert) => {
   const db = initDB(2, 1);
   db._storage._records[0]._attachment = true;
-  db.addAttachment('localid-0', 'data');
+  db.addAttachment('attachment-0', 'data');
 
   assert.equal(db.getAttachmentUrl('-1'), null);
   assert.false(db.getAttachmentUrl('0').startsWith('local-'));
-  assert.true(db.getAttachmentUrl('localid-0').startsWith('local-'));
+  assert.true(db.getAttachmentUrl('attachment-0').startsWith('local-'));
+});
+
+test('getRecord', (assert) => {
+  const db = initDB(2, 1);
+  db._storage._localRecords['1'] = {
+    _id: '1',
+    _refs: [],
+    test: true,
+  };
+
+  assert.equal(db.getRecord('-1'), null);
+  assert.true(!!db.getRecord('0'));
+  assert.true(db.getRecord('1').test);
+});
+
+test('addAttachment', (assert) => {
+  const db = initDB(2, 1);
+
+  db.addAttachment('attachment-0', 'data');
+  assert.true(!!db.getAttachmentUrl('attachment-0'));
+
+  assert.true(!!db.getRecord('attachment-0'));
 });
