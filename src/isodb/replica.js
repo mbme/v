@@ -145,6 +145,14 @@ export default class ReplicaDB {
     this._compact();
   }
 
+  getChanges() {
+    return {
+      rev: this.getRev(),
+      records: this._storage.getLocalRecords(),
+      newAttachments: this._storage.getLocalAttachments(),
+    };
+  }
+
   async applyPatch({ baseRev, storageRev, records }, merge) {
     const currentRev = this.getRev();
     if (currentRev !== baseRev) {

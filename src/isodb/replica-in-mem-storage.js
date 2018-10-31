@@ -24,6 +24,12 @@ export default class ReplicaInMemStorage {
     return Object.values(this._localRecords);
   }
 
+  getLocalAttachments() {
+    return {
+      ...this._localAttachments,
+    };
+  }
+
   // add or update existing local record
   addLocalRecord(record, blob) {
     this._localRecords[record._id] = record;

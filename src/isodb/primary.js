@@ -28,14 +28,6 @@ export default class PrimaryDB {
     return this._storage.getRev();
   }
 
-  getPatch(rev = 0) {
-    return {
-      baseRev: rev,
-      storageRev: this.getRev(),
-      records: this.getAll(rev),
-    };
-  }
-
   /**
    * @param {string} id record id
    * @returns {Record?}
@@ -54,24 +46,32 @@ export default class PrimaryDB {
     return this._storage.getAttachment(id);
   }
 
+  getPatch(rev = 0) {
+    return {
+      baseRev: rev,
+      storageRev: this.getRev(),
+      records: this.getAll(rev),
+    };
+  }
+
   /**
    * @param {number} rev client's storage revision
-   * @param {[Record]} changes new or updated records
+   * @param {[Record]} records new or updated records
    * @param {Object<String, String>} [newAttachments] id -> path map of new attachments
    * @returns {boolean}
    */
-  applyChanges(rev, changes, newAttachments = {}) {
+  applyChanges(rev, records, newAttachments = {}) { // FIXME cleanup attachments
     if (this._storage.getRev() !== rev) { // ensure client had latest revision
       return false;
     }
 
-    if (!changes.length) { // skip empty changesets
+    if (!records.length) { // skip empty changesets
       return true;
     }
 
     const newRev = rev + 1;
 
-    for (const changedRecord of changes) {
+    for (const changedRecord of records) {
       changedRecord._rev = newRev;
 
       const attachment = newAttachments[changedRecord._id];

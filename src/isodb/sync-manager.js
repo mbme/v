@@ -1,29 +1,47 @@
+// TODO logs
 export default class SyncManager {
   constructor(replica, api) {
     this._replica = replica;
     this._api = api;
   }
 
-  _fetchAll() {
+  _merge = async (baseRecord, newBaseRecord, localRecord) => {
+    // FIXME implement merge
+    return localRecord;
+  };
+
+  async _fetchAll() {
     const {
+      baseRev,
+      storageRev,
       records,
-      rev,
-    } = this._api.fetchAll(this._replica.getRev());
-    this._replica.applyChanges(rev, records);
+    } = await this._api.fetchPatch(this._replica.getRev());
+
+    await this._replica.applyPatch({
+      baseRev,
+      storageRev,
+      records,
+    }, this._merge);
   }
 
   // returns bool
   _pushChanges() {
+    const {
+      rev,
+      records,
+      newAttachments,
+    } = this._replica.getChanges();
+
     return this._api.pushChanges(
-      this._replica.getRev(),
-      this._replica.getLocalRecords(),
-      this._replica.getLocalAttachments(),
+      rev,
+      records,
+      newAttachments,
     );
   }
 
-  sync() {
-    while (!this._pushChanges()) {
-      this._fetchAll();
+  async sync() {
+    while (!await this._pushChanges()) {
+      await this._fetchAll();
     }
   }
 }
