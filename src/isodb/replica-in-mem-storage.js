@@ -1,5 +1,3 @@
-import { findById } from './utils';
-
 export default class ReplicaInMemStorage {
   _records = [];
   _rev = 0;
@@ -44,20 +42,10 @@ export default class ReplicaInMemStorage {
   }
 
   getAttachmentUrl(id) {
-    const record = findById(this._records, id);
-
-    if (record && record._attachment) {
-      return `attachment-url(${id})`;
-    }
-
-    return null;
-  }
-
-  getLocalAttachmentUrl(id) {
     if (this._localAttachments[id]) {
       return `local-attachment-url(${id})`;
     }
 
-    return null;
+    return `attachment-url(${id})`;
   }
 }
