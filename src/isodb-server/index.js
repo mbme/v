@@ -1,33 +1,75 @@
-import http from 'http';
+/* eslint-disable no-param-reassign */
+import urlParser from 'url';
 import { createLogger } from '../logger';
+import * as utils from '../utils/node';
+import Server from '../http-server';
 
 const log = createLogger('isodb-server');
 
+// extract auth token from cookies
+function extractToken(cookies) {
+  const [ tokenCookie ] = cookies.split(';').filter(c => c.startsWith('token='));
+
+  if (!tokenCookie) return '';
+
+  return decodeURIComponent(tokenCookie.substring(6));
+}
+
+// token: AES("valid <generation timestamp>", SHA256(password))
+function isValidAuth(token, password) {
+  try {
+    return /^valid \d+$/.test(utils.aesDecrypt(token || '', utils.sha256(password)));
+  } catch (ignored) {
+    return false;
+  }
+}
+
+function bootstrapMiddleware(context, next) {
+  const { req, res, password } = context;
+
+  res.setHeader('Referrer-Policy', 'no-referrer');
+
+  context.url = urlParser.parse(req.url, true);
+  context.isGzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
+  context.isAuthorized = isValidAuth(extractToken(req.headers.cookie || ''), password);
+
+  return next();
+}
+
 export default async function startServer(port, rootDir, password = '') {
+  const server = new Server({ password });
+  server.use(bootstrapMiddleware);
 
-  const server = http.createServer(async (req, res) => {
-    const start = process.hrtime();
-
-    try {
-      res.setHeader('Referrer-Policy', 'no-referrer');
-
-      const url = urlParser.parse(req.url, true);
-      const gzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
-
-    } catch (e) {
-      log.warn('failed to handle request', e);
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: e.toString() }));
-    } finally {
-      const hrend = process.hrtime(start);
-      const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000);
-      log.debug('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage || 'OK', ms);
+  server.post('/api', ({ res, req, isAuthorized }) => {
+    if (!isAuthorized) {
+      res.writeHead(403);
+      return;
     }
+
+
+    const isMultipartRequest = (req.headers['content-type'] || '').startsWith('multipart/form-data');
+    if (!isMultipartRequest) {
+      res.writeHead(415);
+      return;
+    }
+
   });
 
-  const close = () => new Promise(resolve => server.close(resolve));
+  server.get('/api', ({ res, isAuthorized, url }) => {
+    if (!isAuthorized) {
+      res.writeHead(403);
+      return;
+    }
 
-  return new Promise((resolve) => {
-    server.listen(port, () => resolve(close));
+    const { fileId } = url.query;
+    if (!fileId) {
+      res.writeHead(400);
+      return;
+    }
+
   });
+
+  await server.start(port);
+
+  return server;
 }

@@ -81,7 +81,6 @@ export default async function startServer(port, customOptions) {
   const options = extend({
     rootDir: '',
     password: '',
-    html5historyFallback: true,
   }, customOptions);
 
   const processor = await createProcessor({ rootDir: options.rootDir });
@@ -167,12 +166,6 @@ export default async function startServer(port, customOptions) {
         }
 
         res.writeHead(405);
-        res.end();
-        return;
-      }
-
-      if (!options.html5historyFallback) {
-        res.writeHead(404);
         res.end();
         return;
       }
