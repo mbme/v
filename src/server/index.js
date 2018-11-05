@@ -77,14 +77,12 @@ function readAction(req) {
   });
 }
 
-const defaults = {
-  rootDir: '',
-  password: '',
-  html5historyFallback: true,
-};
-
 export default async function startServer(port, customOptions) {
-  const options = extend(defaults, customOptions);
+  const options = extend({
+    rootDir: '',
+    password: '',
+    html5historyFallback: true,
+  }, customOptions);
 
   const processor = await createProcessor({ rootDir: options.rootDir });
 
@@ -105,9 +103,8 @@ export default async function startServer(port, customOptions) {
 
     res.setHeader('Referrer-Policy', 'no-referrer');
 
-    const gzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
-
     try {
+      const gzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
       const url = urlParser.parse(req.url, true);
 
       if (url.pathname === '/api') {
