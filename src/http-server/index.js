@@ -1,5 +1,6 @@
 import http from 'http';
 import log from '../logger';
+import { isString } from '../utils';
 
 async function runMiddlewares(middlewares, context, pos) {
   const middleware = middlewares[pos];
@@ -36,19 +37,23 @@ export default class Server {
     this._middlewares.push(cb);
   }
 
-  _addRoute(method, path, cb) {
+  addRoute(method, pathTest, cb) {
     this._routes.push({
-      test: ({ req, url }) => req.method === method && url.pathname === path,
+      test({ req, url }) {
+        if (req.method !== method) return false;
+        if (isString(pathTest)) return url.pathname === pathTest;
+        return pathTest(url.pathname);
+      },
       cb,
     });
   }
 
-  get(path, cb) {
-    this._addRoute('GET', path, cb);
+  get(pathTest, cb) {
+    this.addRoute('GET', pathTest, cb);
   }
 
-  post(path, cb) {
-    this._addRoute('POST', path, cb);
+  post(pathTest, cb) {
+    this.addRoute('POST', pathTest, cb);
   }
 
   start(port) {
@@ -64,9 +69,13 @@ export default class Server {
       context.res.end();
     });
 
-    this._server = http.createServer(
-      (req, res) => runMiddlewares(this._middlewares, { ...this._initialContext, req, res }, 0)
-    );
+    this._server = http.createServer((req, res) => {
+      runMiddlewares(this._middlewares, { ...this._initialContext, req, res }, 0).catch((e) => {
+        log.warn('failed to handle request', e);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.toString() }));
+      });
+    });
 
     return new Promise(resolve => this._server.listen(port, resolve));
   }

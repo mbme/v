@@ -127,3 +127,7 @@ export function array2object(array, getKey) {
 
   return result;
 }
+
+export function promiseTimeout(timeout) {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
