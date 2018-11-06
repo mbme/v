@@ -47,6 +47,8 @@ export default class PrimaryDB {
   }
 
   getPatch(rev = 0) {
+    assert(rev, 'number');
+
     return {
       baseRev: rev,
       storageRev: this.getRev(),
@@ -60,7 +62,9 @@ export default class PrimaryDB {
    * @param {Object<String, String>} [newAttachments] id -> path map of new attachments
    * @returns {boolean}
    */
-  applyChanges(rev, records, newAttachments = {}) { // FIXME cleanup attachments
+  applyChanges(rev, records, newAttachments = {}) {
+    assert(rev, 'number');
+
     if (this._storage.getRev() !== rev) { // ensure client had latest revision
       return false;
     }

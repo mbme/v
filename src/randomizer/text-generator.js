@@ -159,7 +159,7 @@ function pickWord(wordsDistribution) {
   }
 
   for (let i = 1; i < wordsDistribution.length; i += 1) {
-    word = wordsDistribution[i][0]; // eslint-disable-line prefer-destructuring
+    word = wordsDistribution[i][0];
     distribution += wordsDistribution[i][1];
 
     if (distribution > wordProb) {

@@ -1,26 +1,22 @@
 import log from '../logger';
 import createQueue from '../utils/queue';
 
-export default async function createProcessor(rootDir) {
+export default async function createProcessor(db) {
   const queue = createQueue();
-  const storage = await createStorage(rootDir);
-  const stores = [
-    createCoreStore(storage),
-    createNotesStore(storage),
-  ];
 
   return {
-    processAction({ name, data = {} }, assets = []) {
-      for (const store of stores) {
-        if (store[name]) {
-          return queue.push(async () => {
-            log.info('processor: action %s', name);
-            return store[name](data, assets);
-          });
-        }
-      }
+    readAsset(id) {
+      return queue.push(async () => {
 
-      throw new Error(`unknown action: ${name}`);
+      });
+    },
+
+    getPatch(rev) {
+      return queue.push(() => db.getPatch(rev));
+    },
+
+    applyChanges(rev, records, assets) {
+      return queue.push(() => db.applyChanges(rev, records, assets));
     },
 
     close() {

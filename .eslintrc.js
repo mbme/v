@@ -89,6 +89,7 @@ module.exports = {
     ],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'prefer-promise-reject-errors': 0,
+    'prefer-destructuring': 0,
 
     'react/require-default-props': 0,
     'react/forbid-prop-types': 0,

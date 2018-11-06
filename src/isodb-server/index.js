@@ -2,13 +2,15 @@
 import path from 'path';
 import urlParser from 'url';
 import zlib from 'zlib';
+import * as utils from '../utils/node';
+import { rmrfSync } from '../fs/utils';
 import Server from '../http-server';
+import createProcessor from './processor';
 import {
   isValidAuth,
   extractToken,
   getFileStream,
   readFormData,
-  writeJSONResponse,
 } from './utils';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
@@ -31,11 +33,12 @@ async function bootstrapMiddleware(context, next) {
   await next();
 }
 
-export default async function startServer(port, rootDir, password = '') {
+export default async function startServer(db, port, password = '') {
+  const processor = createProcessor(db);
   const server = new Server({ password });
   server.use(bootstrapMiddleware);
 
-  server.post('/api/changes', async ({ res, req, isGzipSupported }) => {
+  server.post('/api/changes', async ({ res, req }) => {
     const isMultipartRequest = (req.headers['content-type'] || '').startsWith('multipart/form-data');
     if (!isMultipartRequest) {
       res.writeHead(415);
@@ -45,10 +48,18 @@ export default async function startServer(port, rootDir, password = '') {
     const {
       data,
       assets,
-      baseDir,
+      tmpDir,
     } = await readFormData(req);
 
-    await writeJSONResponse(await processor.processAction(action, assets), res, isGzipSupported);
+    try {
+      const rev = parseInt(data.rev, 10);
+      const records = JSON.parse(data.records);
+
+      const success = await processor.applyChanges(rev, records, assets);
+      res.writeHead(success ? 200 : 409);
+    } finally {
+      if (tmpDir) rmrfSync(tmpDir);
+    }
   });
 
   server.get('/api/patch', async ({ res, url, isGzipSupported }) => {
@@ -58,7 +69,17 @@ export default async function startServer(port, rootDir, password = '') {
       return;
     }
 
-    await writeJSONResponse(await processor.processAction(action, assets), res, isGzipSupported);
+    const patch = await processor.getPatch(parseInt(rev, 10));
+    const patchStr = JSON.stringify(patch);
+
+    res.setHeader('Content-Type', 'application/json');
+
+    if (isGzipSupported) {
+      res.setHeader('Content-Encoding', 'gzip');
+      res.end(await utils.gzip(patchStr));
+    } else {
+      res.end(patchStr);
+    }
   });
 
   server.get('/api', async ({ res, url }) => {
@@ -68,14 +89,9 @@ export default async function startServer(port, rootDir, password = '') {
       return;
     }
 
-    const response = await processor.processAction({
-      name: 'READ_ASSET',
-      data: {
-        id: fileId,
-      },
-    });
+    const asset = await processor.readAsset(fileId);
 
-    if (response) {
+    if (asset) {
       res.writeHead(200, {
         'Content-Disposition': `inline; filename=${response.file.id}`,
         'Content-Type': response.file.mimeType,

@@ -20,7 +20,10 @@
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-transform-modules-commonjs": "^7.0.0",
+    "@babel/plugin-syntax-jsx": "^7.0.0",
+    "@babel/plugin-transform-react-jsx": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "babel-loader": "^8.0.0",
     "busboy": "^0.2.14",
     "date-fns": "^1.29.0",
     "prop-types": "^15.5.10",
@@ -29,10 +32,7 @@
     "webpack": "^4.4.1"
   },
   "devDependencies": {
-    "@babel/plugin-syntax-jsx": "^7.0.0",
-    "@babel/plugin-transform-react-jsx": "^7.0.0",
     "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.0",
     "eslint": "^5.4.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-babel": "^5.0.0",

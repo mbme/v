@@ -39,7 +39,7 @@ export function isValidAuth(token, password) {
 export function readFormData(req) {
   const assets = {};
   const data = {};
-  let baseDir;
+  let tmpDir;
 
   const busboy = new Busboy({ headers: req.headers });
 
@@ -48,11 +48,11 @@ export function readFormData(req) {
       throw new Error(`request contains duplicate file "${fieldName}"`);
     }
 
-    if (!baseDir) {
-      baseDir = await createTempDir();
+    if (!tmpDir) {
+      tmpDir = await createTempDir();
     }
 
-    const asset = path.join(baseDir, fieldName);
+    const asset = path.join(tmpDir, fieldName);
     assets[fieldName] = asset;
     file.pipe(fs.createWriteStream(asset));
   });
@@ -66,18 +66,7 @@ export function readFormData(req) {
   });
 
   return new Promise((resolve) => {
-    busboy.on('finish', () => resolve({ data, assets, baseDir }));
+    busboy.on('finish', () => resolve({ data, assets, tmpDir }));
     req.pipe(busboy);
   });
-}
-
-export async function writeJSONResponse(data, res, isGzipSupported) {
-  res.setHeader('Content-Type', 'application/json');
-
-  if (isGzipSupported) {
-    res.setHeader('Content-Encoding', 'gzip');
-    res.end(await utils.gzip(JSON.stringify(data)));
-  } else {
-    res.end(JSON.stringify(data));
-  }
 }
