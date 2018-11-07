@@ -22,9 +22,9 @@ function createLevelLogger(level, namespace) {
   const method = level.toLowerCase();
   const name = level.padEnd(5);
 
-  return (...params) => {
+  return (msg, ...params) => {
     if (PRIORITY[level] >= PRIORITY[minLogLevel]) {
-      console[method](`${formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss,SSS')} ${namespace ? `[${namespace}]` : ''} ${name}`, ...params);
+      console[method](`${formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss,SSS')} ${namespace ? `[${namespace}]` : ''} ${name} ${msg}`, ...params);
     }
   };
 }

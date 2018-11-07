@@ -1,42 +1,45 @@
 /* eslint-disable no-param-reassign */
 import path from 'path';
+import fs from 'fs';
 import urlParser from 'url';
 import zlib from 'zlib';
 import * as utils from '../utils/node';
 import { rmrfSync } from '../fs/utils';
+import { extend } from '../utils';
+import { getMimeType } from '../file-prober';
 import Server from '../http-server';
 import createProcessor from './processor';
 import {
   isValidAuth,
   extractToken,
-  getFileStream,
+  resolveAsset,
   readFormData,
 } from './utils';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
-const DIST_DIR = path.join(__dirname, '../dist');
-
-async function bootstrapMiddleware(context, next) {
-  const { req, res, password } = context;
-
-  res.setHeader('Referrer-Policy', 'no-referrer');
-
-  context.url = urlParser.parse(req.url, true);
-  context.isGzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
-
-  const isAuthorized = isValidAuth(extractToken(req.headers.cookie || ''), password);
-  if (context.url.pathname.startsWith('/api') && !isAuthorized) {
-    res.writeHead(403);
-    return;
-  }
-
-  await next();
-}
+const DIST_DIR = path.join(__dirname, '../../dist');
 
 export default async function startServer(db, port, password = '') {
   const processor = createProcessor(db);
-  const server = new Server({ password });
-  server.use(bootstrapMiddleware);
+
+  const server = new Server();
+
+  server.use(async function bootstrapMiddleware(context, next) {
+    const { req, res } = context;
+
+    res.setHeader('Referrer-Policy', 'no-referrer');
+
+    context.url = urlParser.parse(req.url, true);
+    context.isGzipSupported = /\bgzip\b/.test(req.headers['accept-encoding']);
+
+    const isAuthorized = isValidAuth(extractToken(req.headers.cookie || ''), password);
+    if (context.url.pathname.startsWith('/api') && !isAuthorized) {
+      res.writeHead(403);
+      return;
+    }
+
+    await next();
+  });
 
   server.post('/api/changes', async ({ res, req }) => {
     const isMultipartRequest = (req.headers['content-type'] || '').startsWith('multipart/form-data');
@@ -89,15 +92,15 @@ export default async function startServer(db, port, password = '') {
       return;
     }
 
-    const asset = await processor.readAsset(fileId);
+    const filePath = await processor.getAttachment(fileId);
 
-    if (asset) {
+    if (filePath) {
       res.writeHead(200, {
-        'Content-Disposition': `inline; filename=${response.file.id}`,
-        'Content-Type': response.file.mimeType,
+        'Content-Disposition': `inline; filename=${fileId}`,
+        'Content-Type': await getMimeType(filePath),
         'Cache-Control': 'immutable, private, max-age=31536000', // max caching
       });
-      response.stream.pipe(res);
+      await utils.pipePromise(fs.createReadStream(filePath), res);
     } else {
       res.writeHead(404);
     }
@@ -105,18 +108,20 @@ export default async function startServer(db, port, password = '') {
 
   server.get(() => true, async ({ url, res, isGzipSupported }) => {
     const fileName = url.path.substring(1); // skip leading /
-    const file = await getFileStream(STATIC_DIR, fileName)
-          || await getFileStream(DIST_DIR, fileName)
-          || await getFileStream(STATIC_DIR, 'index.html'); // html5 history fallback
+    const filePath = await resolveAsset(STATIC_DIR, fileName)
+          || await resolveAsset(DIST_DIR, fileName)
+          || await resolveAsset(STATIC_DIR, 'index.html'); // html5 history fallback
 
-    if (file) {
-      res.setHeader('Content-Type', file.mimeType);
+    if (filePath) {
+      res.setHeader('Content-Type', await getMimeType(filePath));
+
+      const stream = fs.createReadStream(filePath);
 
       if (isGzipSupported) {
         res.setHeader('Content-Encoding', 'gzip');
-        file.stream.pipe(zlib.createGzip()).pipe(res);
+        await utils.pipePromise(stream.pipe(zlib.createGzip()), res);
       } else {
-        file.stream.pipe(res);
+        await utils.pipePromise(stream, res);
       }
     } else {
       res.writeHead(404);
@@ -125,5 +130,9 @@ export default async function startServer(db, port, password = '') {
 
   await server.start(port);
 
-  return server;
+  return extend(server, {
+    stop() {
+      return Promise.all([ server.stop(), processor.close() ]);
+    },
+  });
 }

@@ -1,14 +1,11 @@
-import log from '../logger';
 import createQueue from '../utils/queue';
 
-export default async function createProcessor(db) {
+export default function createProcessor(db) {
   const queue = createQueue();
 
   return {
-    readAsset(id) {
-      return queue.push(async () => {
-
-      });
+    getAttachment(id) {
+      return queue.push(async () => db.getAttachment(id));
     },
 
     getPatch(rev) {

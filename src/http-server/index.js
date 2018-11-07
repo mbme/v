@@ -17,8 +17,8 @@ async function loggerMiddleware({ req, res }, next) {
     await next();
   } finally {
     const hrend = process.hrtime(hrstart);
-    const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1_000_000);
-    log.debug('%s %s %d %s - %dms', req.method, req.url, res.statusCode, res.statusMessage || 'OK', ms);
+    const ms = (hrend[0] * 1000) + Math.round(hrend[1] / 1000000);
+    log.debug('%s %s %d %s - %dms', req.method.padEnd(4), req.url, res.statusCode, res.statusMessage || 'OK', ms);
   }
 }
 
@@ -57,7 +57,8 @@ export default class Server {
   }
 
   start(port) {
-    this._middlewares.push(async function routerMiddleware(context) {
+    // router middleware
+    this._middlewares.push(async (context) => {
       const route = this._routes.find(item => item.test(context));
 
       if (route) {
@@ -65,16 +66,17 @@ export default class Server {
       } else {
         context.res.writeHead(404);
       }
-
-      context.res.end();
     });
 
-    this._server = http.createServer((req, res) => {
-      runMiddlewares(this._middlewares, { ...this._initialContext, req, res }, 0).catch((e) => {
+    this._server = http.createServer(async (req, res) => {
+      try {
+        await runMiddlewares(this._middlewares, { ...this._initialContext, req, res }, 0)
+        res.end();
+      } catch (e) {
         log.warn('failed to handle request', e);
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.toString() }));
-      });
+      }
     });
 
     return new Promise(resolve => this._server.listen(port, resolve));

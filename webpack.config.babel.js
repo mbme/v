@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export default {
   mode: isProduction ? 'production' : 'development',
 
-  entry: './client/index.jsx',
+  entry: './src/client/index.jsx',
 
   output: {
     publicPath: '/',

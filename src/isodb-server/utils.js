@@ -3,18 +3,12 @@ import fs from 'fs';
 import Busboy from 'busboy';
 import * as utils from '../utils/node';
 import { listFiles, createTempDir } from '../fs/utils';
-import { getMimeType } from '../file-prober';
 
-export async function getFileStream(dir, name) {
+export async function resolveAsset(dir, name) {
   if (!fs.existsSync(dir)) return null;
   if (!await listFiles(dir).then(files => files.includes(name))) return null;
 
-  const filePath = path.join(dir, name);
-
-  return {
-    stream: fs.createReadStream(filePath),
-    mimeType: await getMimeType(filePath),
-  };
+  return path.join(dir, name);
 }
 
 // extract auth token from cookies

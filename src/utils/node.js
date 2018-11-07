@@ -72,3 +72,12 @@ export function spawn(command, ...args) {
     process.on('error', reject);
   });
 }
+
+export function pipePromise(from, to) {
+  return new Promise((resolve, reject) => {
+    from
+      .on('end', resolve)
+      .on('error', reject)
+      .pipe(to);
+  });
+}

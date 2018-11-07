@@ -7,8 +7,8 @@
   "private": true,
   "main": "",
   "scripts": {
-    "start": "NODE_ENV=production ./node.js src/server/bin",
-    "dev": "NODE_ENV=development ./node.js src/server/bin 8080 pass /tmp/db",
+    "start": "NODE_ENV=production ./node.js src/isodb-server/bin",
+    "dev": "NODE_ENV=development ./node.js src/isodb-server/bin 8080 pass /tmp/db",
     "test": "LOG=ERROR ./node.js src/tester/bin",
     "test-update": "yarn test --update-snapshots",
     "repl": "./node.js bin/repl",
