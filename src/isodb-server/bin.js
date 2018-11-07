@@ -4,6 +4,7 @@ import { createLogger } from '../logger';
 import startServer from './index';
 import PrimaryDB from '../isodb/primary';
 import InMemStorage from '../isodb/primary-in-mem-storage';
+import { getFakeNotes } from '../randomizer/faker';
 
 const log = createLogger('isodb-server');
 
@@ -22,8 +23,12 @@ export default async function run(port, password, rootDir, ...args) {
 
   const db = new PrimaryDB(new InMemStorage());
   if (isDevelopment && args.includes('--gen-data')) {
-    // await genData(createApiClient(`http://localhost:${port}`, password), 30, 10);
-    // TODO gen data
+    const {
+      records,
+      attachments,
+    } = await getFakeNotes(30);
+    db.applyChanges(0, records, attachments);
+    log.info(`Generated ${records.length} fake notes`);
   }
 
   const [ server ] = await Promise.all([

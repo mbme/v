@@ -1,5 +1,5 @@
-import { capitalize, createArray } from '../utils';
-import { randomInt, shuffle, randomArrValue } from './index';
+import { capitalize } from '../utils';
+import { randomArrValue } from './index';
 
 // TODO handle few separators in a row https://github.com/Tessmore/sbd
 const SKIP_WORDS = [ 'dr.', 'mr.', 'mrs.' ];
@@ -218,31 +218,6 @@ export default function createTextGenerator(corpus) {
     word() {
       const words = Object.keys(stats.words);
       return randomArrValue(words);
-    },
-
-    /**
-     * @param {[string]} imageUrls images to use
-     */
-    async genText(imageUrls) {
-      const name = this.sentence(1, 8);
-
-      const data = createArray(
-        randomInt(1, 7), // paragraphs
-        () => {
-          const sentences = createArray(
-            randomInt(1, 7), // sentences
-            () => this.sentence(),
-          );
-
-          if (Math.random() < 0.34) {
-            sentences.push(` ${randomArrValue(imageUrls)} `);
-          }
-
-          return shuffle(sentences).join(' ');
-        }
-      ).join('\n\n');
-
-      return { name: name.substring(0, name.length - 1), data };
     },
   };
 }

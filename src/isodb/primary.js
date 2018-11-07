@@ -47,7 +47,7 @@ export default class PrimaryDB {
   }
 
   getPatch(rev = 0) {
-    assert(rev, 'number');
+    assert(rev, 'non-negative-integer');
 
     return {
       baseRev: rev,
@@ -63,7 +63,7 @@ export default class PrimaryDB {
    * @returns {boolean}
    */
   applyChanges(rev, records, newAttachments = {}) {
-    assert(rev, 'number');
+    assert(rev, 'non-negative-integer');
 
     if (this._storage.getRev() !== rev) { // ensure client had latest revision
       return false;

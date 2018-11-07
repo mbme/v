@@ -1,29 +1,9 @@
 import { assert } from '../asserts';
 import { isString, array2object, flatten } from '../utils';
-import { randomId } from '../randomizer';
 import { createLogger } from '../logger';
-import { findById } from './utils';
+import { findById, getRandomId } from './utils';
 
 const logger = createLogger('isodb-replica');
-
-// { // record
-//   _id: 'zdfw234d2',
-//   _rev: 2,
-//   _refs: ['asdfsad'],
-//   _deleted: true,
-//   name: 'test',
-//   data: 'x1',
-// }
-// { // attachment
-//   _id: 'md5-2131321',
-//   _rev: 2,
-//   _attachment: true,
-//   size: 10,
-// }
-
-const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
-const ID_LENGTH = 15;
-const getRandomId = () => randomId(ID_ALPHABET, ID_LENGTH);
 
 export default class ReplicaDB {
   _storage = null;

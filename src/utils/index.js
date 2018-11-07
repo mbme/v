@@ -36,13 +36,16 @@ export function fuzzySearch(needle, haystack, ignoreCase = true) {
 
 export const capitalize = str => str[0].toUpperCase() + str.substring(1);
 
-export function createArray(size, val) {
+export function createArray(size, val, isAsync = false) {
   const arr = Array(size);
-  if (isFunction(val)) {
-    return arr.fill(0).map((_, i) => val(i));
+
+  const result = isFunction(val) ? arr.fill(0).map((_, i) => val(i)) : arr.fill(val);
+
+  if (isAsync) {
+    return Promise.all(result);
   }
 
-  return arr.fill(val);
+  return result;
 }
 
 /**

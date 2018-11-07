@@ -9,11 +9,11 @@ export default function createProcessor(db) {
     },
 
     getPatch(rev) {
-      return queue.push(() => db.getPatch(rev));
+      return queue.push(async () => db.getPatch(rev));
     },
 
     applyChanges(rev, records, assets) {
-      return queue.push(() => db.applyChanges(rev, records, assets));
+      return queue.push(async () => db.applyChanges(rev, records, assets));
     },
 
     close() {
