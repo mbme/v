@@ -134,3 +134,11 @@ export function array2object(array, getKey) {
 export function promiseTimeout(timeout) {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
+
+export function createProxy(target, handler) {
+  return new Proxy(target, {
+    get(_, prop) {
+      return handler(prop, target);
+    },
+  });
+}

@@ -1,4 +1,4 @@
-export default function pubSub() {
+export default function createPubSub() {
   const subs = new Map();
 
   const getEventSubs = name => (subs.get(name) || new Set());

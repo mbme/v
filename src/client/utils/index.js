@@ -1,24 +1,7 @@
-import {
-  isString,
-  isObject,
-} from '../../utils';
+import { aesEncrypt, text2buffer } from '../../utils/browser';
 import pubSub from '../../utils/pubsub';
 import apiProxy from '../../server/api-proxy';
 
-export function readFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = e => resolve(new Uint8Array(e.target.result));
-    reader.onerror = reject;
-
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-export const bytesToHexString = buffer => Array.from(new Uint8Array(buffer)).map(b => ('00' + b.toString(16)).slice(-2)).join('');
-
-export const sha256 = buffer => crypto.subtle.digest('SHA-256', buffer).then(bytesToHexString);
 
 export const getFileUrl = fileId => `/api?fileId=${fileId}`;
 export const networkEvents = pubSub();
@@ -63,16 +46,11 @@ export const api = apiProxy(async (action, assets) => {
   }
 });
 
-export function classNames(...args) {
-  return args.reduce((acc, val) => {
-    if (isString(val)) {
-      acc.push(val);
-    } else if (isObject(val)) {
-      Object.entries(val).forEach(([ key, assertion ]) => {
-        if (assertion) acc.push(key);
-      });
-    }
+export async function authorize(password) {
+  const token = await aesEncrypt(`valid ${Date.now()}`, await sha256(text2buffer(password)));
+  document.cookie = `token=${token}; path=/`;
+}
 
-    return acc;
-  }, []).join(' ');
+export async function deauthorize() {
+  document.cookie = 'token=0; path=/';
 }

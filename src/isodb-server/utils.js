@@ -3,6 +3,8 @@ import fs from 'fs';
 import Busboy from 'busboy';
 import * as utils from '../utils/node';
 import { listFiles, createTempDir } from '../fs/utils';
+import createQueue from '../utils/queue';
+import { createProxy } from '../utils';
 
 export async function resolveAsset(dir, name) {
   if (!fs.existsSync(dir)) return null;
@@ -63,4 +65,19 @@ export function readFormData(req) {
     busboy.on('finish', () => resolve({ data, assets, tmpDir }));
     req.pipe(busboy);
   });
+}
+
+const CLOSE_PROCESSOR = Symbol('close-processor');
+
+export function closeProcessor(processor) {
+  return processor[CLOSE_PROCESSOR]();
+}
+
+export function createProcessor(db) {
+  const queue = createQueue();
+
+  const proxy = createProxy(db, prop => (...params) => queue.push(async () => db[prop](...params)));
+  proxy[CLOSE_PROCESSOR] = () => queue.close();
+
+  return proxy;
 }

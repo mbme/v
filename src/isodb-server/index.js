@@ -8,12 +8,13 @@ import { rmrfSync } from '../fs/utils';
 import { extend } from '../utils';
 import { getMimeType } from '../file-prober';
 import Server from '../http-server';
-import createProcessor from './processor';
 import {
   isValidAuth,
   extractToken,
   resolveAsset,
   readFormData,
+  createProcessor,
+  closeProcessor,
 } from './utils';
 
 const STATIC_DIR = path.join(__dirname, '../client/static');
@@ -132,7 +133,7 @@ export default async function startServer(db, port, password = '') {
 
   return extend(server, {
     stop() {
-      return Promise.all([ server.stop(), processor.close() ]);
+      return Promise.all([ server.stop(), closeProcessor(processor) ]);
     },
   });
 }

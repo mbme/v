@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { mapObject } from '../../utils';
 
-export default function createStore(name, store) {
+export default function createStore(store) {
   const StoreContext = React.createContext({});
 
   let currentState = store.initialState;
@@ -41,9 +41,7 @@ export default function createStore(name, store) {
   }
 
   function inject(mapStoreToProps, Component) {
-    return class extends PureComponent {
-      static displayName = `StoreInjector<${name}>`;
-
+    return class StoreInjector extends PureComponent {
       renderComponent = ({ state, actions }) => {
         const mappedProps = mapStoreToProps(state, actions, this.props);
 
