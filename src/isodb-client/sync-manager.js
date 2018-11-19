@@ -1,8 +1,13 @@
+import {
+  fetchPatch,
+  pushChanges,
+} from './api';
+
 // TODO logs
 export default class SyncManager {
-  constructor(replica, api) {
+  constructor(replica, lockManager) {
     this._replica = replica;
-    this._api = api;
+    this._lockManager = lockManager;
   }
 
   _merge = async (baseRecord, newBaseRecord, localRecord) => {
@@ -10,12 +15,12 @@ export default class SyncManager {
     return localRecord;
   };
 
-  async _fetchAll() {
+  async _fetchPatch() {
     const {
       baseRev,
       storageRev,
       records,
-    } = await this._api.fetchPatch(this._replica.getRev());
+    } = await fetchPatch(this._replica.getRev());
 
     await this._replica.applyPatch({
       baseRev,
@@ -25,23 +30,36 @@ export default class SyncManager {
   }
 
   // returns bool
-  _pushChanges() {
+  async _pushChanges() {
     const {
       rev,
       records,
       newAttachments,
     } = this._replica.getChanges();
 
-    return this._api.pushChanges(
+    const result = await pushChanges(
       rev,
       records,
       newAttachments,
     );
+    if (!result.success) {
+      // log something
+      return false;
+    }
+    // FIXME approve local changes, then fetch patch from the server
+    this._replica.approveChanges();
+    return true;
   }
 
-  async sync() {
+  async _sync() {
     while (!await this._pushChanges()) {
-      await this._fetchAll();
+      await this._fetchPatch();
     }
   }
+
+
+  start() {
+    // schedule sync once per minute
+  }
+  stop() {}
 }

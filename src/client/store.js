@@ -1,6 +1,6 @@
 import createStore from './utils/createStore';
 
-const { Store, inject } = createStore('global', {
+const { Store, inject } = createStore({
   initialState: {
     toast: null,
     showLocker: false,
