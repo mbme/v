@@ -1,9 +1,13 @@
+import createPubSub from '../utils/pubsub';
+
 export default class ReplicaInMemStorage {
   _records = [];
   _rev = 0;
 
   _localRecords = {};
   _localAttachments = {};
+
+  events = createPubSub();
 
   getRev() {
     return this._rev;
@@ -16,6 +20,7 @@ export default class ReplicaInMemStorage {
   setRecords(rev, records) {
     this._rev = rev;
     this._records = records;
+    this.events.emit('update');
   }
 
   getLocalRecords() {
@@ -34,11 +39,13 @@ export default class ReplicaInMemStorage {
     if (blob) {
       this._localAttachments[record._id] = blob;
     }
+    this.events.emit('update');
   }
 
   removeLocalRecord(id) {
     delete this._localRecords[id];
     delete this._localAttachments[id];
+    this.events.emit('update');
   }
 
   getAttachmentUrl(id) {
@@ -47,5 +54,11 @@ export default class ReplicaInMemStorage {
     }
 
     return `attachment-url(${id})`;
+  }
+
+  clearLocalRecords() {
+    this._localRecords = {};
+    this._localAttachments = {};
+    this.events.emit('update');
   }
 }

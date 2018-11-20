@@ -61,6 +61,7 @@ export default async function startServer(db, port, password = '') {
 
       const success = await processor.applyChanges(rev, records, assets);
       res.writeHead(success ? 200 : 409);
+      // FIXME send patch in response
     } finally {
       if (tmpDir) rmrfSync(tmpDir);
     }

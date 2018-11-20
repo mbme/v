@@ -37,29 +37,54 @@ export default class SyncManager {
       newAttachments,
     } = this._replica.getChanges();
 
+    if (!records.length) {
+      return true;
+    }
+
     const result = await pushChanges(
       rev,
       records,
       newAttachments,
     );
+
     if (!result.success) {
-      // log something
+      // FIXME log something
       return false;
     }
-    // FIXME approve local changes, then fetch patch from the server
-    this._replica.approveChanges();
+
+    await this._replica.applyPatch({
+      baseRev: result.baseRev,
+      storageRev: result.storageRev,
+      records: result.records,
+      ack: true,
+    });
+
     return true;
   }
 
   async _sync() {
-    while (!await this._pushChanges()) {
-      await this._fetchPatch();
+    const unlock = await this._lockManager.lockDB();
+
+    try {
+      let tries = 0;
+      while (!await this._pushChanges()) {
+        if (tries > 2) {
+          throw new Error('Failed to sync, try again later');
+        }
+
+        await this._fetchPatch();
+
+        tries += 1;
+      }
+    } finally {
+      unlock();
     }
   }
 
 
   start() {
-    // schedule sync once per minute
+    // FIXME schedule sync once per minute
+    this._sync();
   }
   stop() {}
 }

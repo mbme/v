@@ -136,7 +136,7 @@ export default class ReplicaDB {
     };
   }
 
-  async applyPatch({ baseRev, storageRev, records }, merge) {
+  async applyPatch({ baseRev, storageRev, records, ack = false }, merge) {
     const currentRev = this.getRev();
     if (currentRev !== baseRev) {
       throw new Error(`Got rev ${baseRev} instead of ${currentRev}`);
@@ -144,6 +144,12 @@ export default class ReplicaDB {
 
     const currentRecords = array2object(this._storage.getRecords(), record => record._id);
     const newRecords = records.map(item => isString(item) ? currentRecords[item] : item);
+
+    if (ack) {
+      this._storage.setRecords(storageRev, newRecords);
+      this._storage.clearLocalRecords();
+      return;
+    }
 
     // for each local record
     for (const localRecord of this._storage.getLocalRecords()) {
