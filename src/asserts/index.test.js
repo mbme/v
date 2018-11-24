@@ -12,11 +12,6 @@ test('string!', ({ equal }) => {
   equal(validate('', 'string!').length, 1);
 });
 
-test('buffer', ({ equal }) => {
-  equal(validate(Buffer.from([]), 'buffer').length, 0);
-  equal(validate('test', 'buffer').length, 1);
-});
-
 test('validation asserts', (assert) => {
   assert.throws(() => validationAssert(1, 'string'));
   assert.equal(validationAssert('1', 'string'), undefined);

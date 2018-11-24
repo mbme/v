@@ -26,6 +26,7 @@ export default async function run(port, password, rootDir, ...args) {
   log.info(`listening on http://localhost:${port}`);
 
   async function close() {
+    console.log(); // eslint-disable-line no-console
     log.debug('stopping...');
     try {
       await server.stop();

@@ -6,13 +6,11 @@ const Types = {
   'string': utils.isString,
   'object': utils.isObject,
   'string!': val => utils.isString(val) && val, // not empty string
-  'buffer': Buffer.isBuffer,
   'function': utils.isFunction,
   'async-function': utils.isAsyncFunction,
   'sha256': val => utils.isString(val) && utils.isSha256(val),
 
   'file-name': 'string!',
-  'file-data': 'buffer',
   'file-id': 'sha256',
 
   'record-type': 'string!',
