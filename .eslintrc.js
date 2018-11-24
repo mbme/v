@@ -11,17 +11,10 @@ module.exports = {
   overrides: [
     {
       files: [
-        'src/shared/**/*.js',
-      ],
-      env: {
-        node: false,
-        browser: false,
-      },
-    },
-    {
-      files: [
         'src/client/**/*.js',
         'src/client/**/*.jsx',
+        'src/web-client/**/*.js',
+        'src/web-client/**/*.jsx',
       ],
       env: {
         browser: true,

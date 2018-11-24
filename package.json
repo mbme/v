@@ -8,7 +8,7 @@
   "main": "",
   "scripts": {
     "start": "NODE_ENV=production ./node.js src/isodb-server/bin",
-    "dev": "NODE_ENV=development ./node.js src/isodb-server/bin 8080 pass /tmp/db",
+    "dev": "webpack-dev-server & LOG=DEBUG ./node.js src/isodb-server/bin 8081 pass /tmp/db",
     "test": "LOG=ERROR ./node.js src/tester/bin",
     "test-update": "yarn test --update-snapshots",
     "repl": "./node.js bin/repl",
@@ -28,8 +28,7 @@
     "date-fns": "^1.29.0",
     "prop-types": "^15.5.10",
     "react": "^16.3.0",
-    "react-dom": "^16.3.0",
-    "webpack": "^4.4.1"
+    "react-dom": "^16.3.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
@@ -38,6 +37,9 @@
     "eslint-plugin-babel": "^5.0.0",
     "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.2.0"
+    "eslint-plugin-react": "^7.2.0",
+    "webpack": "^4.26.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
   }
 }

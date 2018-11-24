@@ -5,8 +5,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 export default {
   mode: isProduction ? 'production' : 'development',
+  devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
 
-  entry: './src/client/index.jsx',
+  entry: './src/web-client/index.jsx',
 
   output: {
     publicPath: '/',
@@ -46,8 +47,16 @@ export default {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         LOG: JSON.stringify(process.env.LOG),
       },
+      __SERVER__: JSON.stringify(false),
     }),
   ],
 
-  devtool: isProduction ? 'source-map' : 'cheap-module-eval-source-map',
+  devServer: {
+    port: 8080,
+    proxy: {
+      '/': {
+        target: 'http://localhost:8081',
+      },
+    },
+  },
 };

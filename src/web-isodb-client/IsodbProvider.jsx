@@ -8,7 +8,7 @@ import SyncManager from './sync-manager';
 
 const IsodbContext = React.createContext(null);
 
-export default class IsodbClient extends PureComponent {
+export default class IsodbProvider extends PureComponent {
   static propTypes = {
     children: PropTypes.node,
   };
