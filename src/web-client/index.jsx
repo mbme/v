@@ -1,17 +1,17 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
-import IsodbProvider from '../web-isodb-client/IsodbProvider';
 import StoreProvider from './store';
+import { IsodbContext } from './isodb';
 
 const rootEl = document.getElementById('root');
 
 ReactDOM.render(
   <StrictMode>
-    <IsodbProvider>
+    <IsodbContext.Provider>
       <StoreProvider>
         <h1>HELLO WORLD</h1>
       </StoreProvider>
-    </IsodbProvider>
+    </IsodbContext.Provider>
   </StrictMode>,
   rootEl,
   () => {
